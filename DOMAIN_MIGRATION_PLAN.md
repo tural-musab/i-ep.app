@@ -24,7 +24,7 @@
 - [x] Cloudflare yapılandırmasını güncelleyin (`CLOUDFLARE_ZONE_ID` vb.)
 
 ### 2.2. Sabit Kodlanmış Değerleri Değiştirme
-Aşağıdaki dosyalarda geçen tüm "i-es.app" referanslarını yeni domain ile değiştirin:
+Aşağıdaki dosyalarda geçen tüm "i-ep.app" referanslarını yeni domain ile değiştirin:
 
 - [x] `src/middleware.ts`
 - [x] `src/lib/swagger.ts`
@@ -44,16 +44,16 @@ Aşağıdaki dosyalarda geçen tüm "i-es.app" referanslarını yeni domain ile 
 - [ ] Tenant subdomain bilgilerini içeren tabloda gerekli güncellemeleri yapın
 ```sql
 UPDATE tenants
-SET domain = REPLACE(domain, 'i-es.app', 'yenidomain.com')
-WHERE domain LIKE '%.i-es.app';
+SET domain = REPLACE(domain, 'i-ep.app', 'yenidomain.com')
+WHERE domain LIKE '%.i-ep.app';
 ```
 
 ### 3.2. E-posta Adresleri
 - [ ] Kullanıcı e-posta adreslerini kontrol edin ve gerekiyorsa güncelleyin
 ```sql
 UPDATE users
-SET email = REPLACE(email, '@i-es.app', '@yenidomain.com')
-WHERE email LIKE '%@i-es.app';
+SET email = REPLACE(email, '@i-ep.app', '@yenidomain.com')
+WHERE email LIKE '%@i-ep.app';
 ```
 
 ### 3.3. Diğer Domain Referansları

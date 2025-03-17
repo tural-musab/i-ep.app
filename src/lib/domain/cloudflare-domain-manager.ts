@@ -42,7 +42,7 @@ export class CloudflareDomainManager {
     const apiToken = process.env.CLOUDFLARE_API_TOKEN;
     const email = process.env.CLOUDFLARE_EMAIL;
     this.zoneId = process.env.CLOUDFLARE_ZONE_ID || '';
-    this.baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-es.app';
+    this.baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app';
     
     if (!apiToken) {
       throw new Error('CLOUDFLARE_API_TOKEN çevre değişkeni tanımlanmamış');
@@ -74,7 +74,7 @@ export class CloudflareDomainManager {
       await this.client.dnsRecords.add(this.zoneId, {
         type: 'CNAME',
         name: subdomain,
-        content: process.env.NEXT_PUBLIC_APP_URL || 'i-es.app',
+        content: process.env.NEXT_PUBLIC_APP_URL || 'i-ep.app',
         ttl: 1, // Auto
         proxied: true // Cloudflare proxy aktif
       });

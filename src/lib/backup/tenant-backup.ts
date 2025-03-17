@@ -24,7 +24,7 @@ const logger = getLogger('tenant-backup');
 const CONFIG = {
   BACKUP_ROOT_DIR: process.env.BACKUP_ROOT_DIR || './backups',
   ENCRYPTION_KEY: process.env.BACKUP_ENCRYPTION_KEY || '',
-  S3_BUCKET: process.env.S3_BUCKET_NAME || 'i-es-app-backups',
+  S3_BUCKET: process.env.S3_BUCKET_NAME || 'i-ep-app-backups',
   S3_PREFIX: process.env.S3_PREFIX || 'tenant-backups',
   S3_REGION: process.env.AWS_REGION || 'eu-central-1',
   DB_HOST: process.env.DB_HOST || 'localhost',

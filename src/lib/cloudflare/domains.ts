@@ -54,7 +54,7 @@ export async function createDnsRecord({
     const fullDomain = subdomain ? `${subdomain}.${rootDomain}` : rootDomain;
 
     // Vercel'in uygulama URL'i
-    const vercelDomain = env.VERCEL_URL || "i-es.app";
+    const vercelDomain = env.VERCEL_URL || "i-ep.app";
 
     // DNS kaydı oluşturma isteği gönder
     const response = await fetch(
@@ -233,7 +233,7 @@ export async function setupTenantDomain(
   subdomain: string
 ): Promise<CloudflareResponse> {
   // Varsayılan root domain
-  const rootDomain = env.ROOT_DOMAIN || "i-es.app";
+  const rootDomain = env.ROOT_DOMAIN || "i-ep.app";
 
   // DNS kaydını oluştur
   const result = await createDnsRecord({
@@ -258,7 +258,7 @@ export async function removeTenantDomain(
   subdomain: string
 ): Promise<CloudflareResponse> {
   // Varsayılan root domain
-  const rootDomain = env.ROOT_DOMAIN || "i-es.app";
+  const rootDomain = env.ROOT_DOMAIN || "i-ep.app";
 
   // DNS kaydını sil
   const result = await deleteDnsRecord(subdomain, rootDomain);
@@ -283,7 +283,7 @@ export async function verifyCustomDomain(
     // Bu örnek basitleştirilmiştir, gerçek uygulamada daha kapsamlı olmalıdır
 
     // DNS sorgusu yapılır
-    const vercelDomain = env.VERCEL_URL || "i-es.app";
+    const vercelDomain = env.VERCEL_URL || "i-ep.app";
     
     // Burada gerçek bir DNS sorgusu yapılmalıdır
     // Şimdilik basit bir simülasyon

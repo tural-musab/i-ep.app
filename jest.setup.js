@@ -27,6 +27,6 @@ afterAll(() => {
 // Global ortam değişkenlerini ayarla
 process.env = {
   ...process.env,
-  NEXT_PUBLIC_DOMAIN: 'i-es.app',
+  NEXT_PUBLIC_DOMAIN: 'i-ep.app',
   NODE_ENV: 'test',
 }; 

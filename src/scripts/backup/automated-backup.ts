@@ -37,7 +37,7 @@ const execPromise = promisify(exec);
 const BACKUP_CONFIG = {
   LOCAL_BACKUP_DIR: process.env.LOCAL_BACKUP_DIR || './backups',
   REMOTE_BACKUP_ENABLED: process.env.REMOTE_BACKUP_ENABLED === 'true',
-  S3_BUCKET: process.env.S3_BUCKET_NAME || 'i-es-app-backups',
+  S3_BUCKET: process.env.S3_BUCKET_NAME || 'i-ep-app-backups',
   S3_PREFIX: process.env.S3_PREFIX || 'database-backups',
   ENCRYPTION_KEY: process.env.BACKUP_ENCRYPTION_KEY,
   ENCRYPTION_ENABLED: process.env.BACKUP_ENCRYPTION_ENABLED === 'true',

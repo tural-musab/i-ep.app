@@ -61,11 +61,11 @@ export async function POST(req: NextRequest) {
       case "create":
         result = await createDnsRecord({
           subdomain,
-          rootDomain: "i-es.app",
+          rootDomain: "i-ep.app",
         });
         break;
       case "delete":
-        result = await deleteDnsRecord(subdomain, "i-es.app");
+        result = await deleteDnsRecord(subdomain, "i-ep.app");
         break;
       case "verify":
         const domain = body.domain;

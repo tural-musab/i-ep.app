@@ -11,7 +11,7 @@ export const getApiDocs = () => {
         description: 'Iqra Eğitim Portalı SaaS için API dokümantasyonu',
         contact: {
           name: 'Iqra Eğitim Portalı Destek',
-          email: 'destek@i-es.app',
+          email: 'destek@i-ep.app',
         },
       },
       components: {
@@ -30,11 +30,11 @@ export const getApiDocs = () => {
       ],
       servers: [
         {
-          url: 'https://api.i-es.app',
+          url: 'https://api.i-ep.app',
           description: 'Üretim Ortamı',
         },
         {
-          url: 'https://api-dev.i-es.app',
+          url: 'https://api-dev.i-ep.app',
           description: 'Geliştirme Ortamı',
         },
         {

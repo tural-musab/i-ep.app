@@ -53,12 +53,12 @@ export default function GettingStartedGuidePage() {
             
             <h3 className="text-lg font-medium mb-2">1. Projeyi klonlayın</h3>
             <div className="bg-gray-100 p-3 rounded-md">
-              <code>git clone https://github.com/i-es/i-es.app.git</code>
+              <code>git clone https://github.com/i-es/i-ep.app.git</code>
             </div>
             
             <h3 className="text-lg font-medium mb-2 mt-4">2. Proje dizinine girin</h3>
             <div className="bg-gray-100 p-3 rounded-md">
-              <code>cd i-es.app</code>
+              <code>cd i-ep.app</code>
             </div>
             
             <h4>3. Bağımlılıkları Yükleyin</h4>

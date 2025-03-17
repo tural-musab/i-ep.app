@@ -24,7 +24,7 @@ export const env = createEnv({
     CLOUDFLARE_ACCOUNT_ID: z.string().min(1).optional(),
     
     // Domain
-    ROOT_DOMAIN: z.string().min(1).default("i-es.app"),
+    ROOT_DOMAIN: z.string().min(1).default("i-ep.app"),
     VERCEL_URL: z.string().optional(),
     
     // Mail

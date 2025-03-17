@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
   }
   
   // Ana domain üzerindeki lansman sayfaları için tenant kontrolü yok
-  const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-es.app';
+  const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app';
   if (hostname === BASE_DOMAIN || hostname === `www.${BASE_DOMAIN}`) {
     // Ana domain'de sadece lansman sayfalarına ve auth sayfalarına erişim izni
     if (

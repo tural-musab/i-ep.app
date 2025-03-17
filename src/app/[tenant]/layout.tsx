@@ -9,7 +9,7 @@ export default async function TenantLayout({
   params: { tenant: string };
 }) {
   const subdomain = params.tenant;
-  const domain = `${subdomain}.i-es.app`;
+  const domain = `${subdomain}.i-ep.app`;
   
   // Tenant bilgisini al
   const tenant = await getTenantByDomain(domain);

@@ -45,7 +45,7 @@ Bu SQL scriptleri, multi-tenant yapısını destekleyecek şekilde tasarlanmış
 Script, otomatik olarak bir demo tenant oluşturur:
 
 - Subdomain: `demo`
-- Domain: `demo.i-es.app`
+- Domain: `demo.i-ep.app`
 - Plan: `premium`
 
 ## Row Level Security (RLS)
