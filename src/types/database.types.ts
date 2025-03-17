@@ -24,8 +24,8 @@ export interface Database {
           id?: string
           name: string
           subdomain: string
-          plan_type: string
-          settings: Json
+          plan_type?: string
+          settings?: Json
           is_active?: boolean
           created_at?: string
           updated_at?: string
@@ -42,6 +42,47 @@ export interface Database {
         }
         Relationships: []
       }
+      tenant_domains: {
+        Row: {
+          id: string
+          tenant_id: string
+          domain: string
+          is_primary: boolean
+          is_verified: boolean
+          type: string
+          created_at: string
+          verified_at: string | null
+        }
+        Insert: {
+          id?: string
+          tenant_id: string
+          domain: string
+          is_primary?: boolean
+          is_verified?: boolean
+          type?: string
+          created_at?: string
+          verified_at?: string | null
+        }
+        Update: {
+          id?: string
+          tenant_id?: string
+          domain?: string
+          is_primary?: boolean
+          is_verified?: boolean
+          type?: string
+          created_at?: string
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_domains_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       tenant_usage_metrics: {
         Row: {
           id: string
@@ -54,7 +95,7 @@ export interface Database {
           id?: string
           tenant_id: string
           metric_name: string
-          metric_value: number
+          metric_value?: number
           recorded_at?: string
         }
         Update: {
@@ -79,7 +120,16 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      execute_raw_query: {
+        Args: {
+          query_text: string
+        }
+        Returns: Json
+      }
+      tenant_isolation_policy: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
