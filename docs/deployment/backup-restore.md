@@ -2,7 +2,7 @@
 
 ## Genel Bakış
 
-Maarif Okul Portalı SaaS platformu, eğitim kurumlarının kritik verilerini barındırdığından, kapsamlı ve güvenilir bir yedekleme ve geri yükleme stratejisi hayati öneme sahiptir. Bu doküman, platformumuzun veri yedekleme ve geri yükleme prosedürlerini, tenant izolasyonu dikkate alınarak detaylandırır.
+Iqra Eğitim Portalı SaaS platformu, eğitim kurumlarının kritik verilerini barındırdığından, kapsamlı ve güvenilir bir yedekleme ve geri yükleme stratejisi hayati öneme sahiptir. Bu doküman, platformumuzun veri yedekleme ve geri yükleme prosedürlerini, tenant izolasyonu dikkate alınarak detaylandırır.
 
 ## Temel Prensipler
 
@@ -49,13 +49,20 @@ Tüm veritabanı, günlük olarak tam yedeklenir:
 ```bash
 # PostgreSQL tam yedekleme script örneği
 #!/bin/bash
+set -e
+
+# Yedekleme hatalarında bildirim gönderme
+handle_error() {
+  echo "Yedekleme başarısız!" | mail -s "Iqra Eğitim Portalı Yedekleme Hatası" admin@i-ep.app
+  exit 1
+}
 
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 BACKUP_DIR="/var/backups/postgres"
-S3_BUCKET="maarifportal-backups"
+S3_BUCKET="i-es-backups"
 
 # Tam veritabanı yedeği
-pg_dump -U postgres -F custom -f "$BACKUP_DIR/full_backup_$TIMESTAMP.dump" maarifportal_db
+pg_dump -U postgres -F custom -f "$BACKUP_DIR/full_backup_$TIMESTAMP.dump" i-es_db || handle_error
 
 # Yedekleme başarılı mı kontrol et
 if [ $? -eq 0 ]; then
@@ -67,7 +74,7 @@ if [ $? -eq 0 ]; then
   # 30 günden eski yerel yedekleri temizle
   find "$BACKUP_DIR" -name "full_backup_*.dump" -mtime +30 -delete
 else
-  echo "Yedekleme başarısız!" | mail -s "Maarif Portal Yedekleme Hatası" admin@maarifportal.com
+  handle_error
 fi
 ```
 
@@ -77,13 +84,22 @@ Her tenant için ayrı şema yedeklemeleri, günlük olarak gerçekleştirilir:
 
 ```bash
 #!/bin/bash
+set -e
+
+# Tenant-spesifik yedekleme hatalarında bildirim gönderme
+handle_tenant_error() {
+  local TENANT_ID=$1
+  echo "Tenant $TENANT_ID yedekleme başarısız!" | mail -s "Iqra Eğitim Portalı Tenant Yedekleme Hatası" admin@i-ep.app
+  # Hata durumunda script'i durdurmak istemiyoruz, çünkü diğer tenant'ları yedeklemek istiyoruz
+  return 1
+}
 
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 BACKUP_DIR="/var/backups/postgres/tenants"
-S3_BUCKET="maarifportal-backups"
+S3_BUCKET="i-es-backups"
 
 # Tüm tenant ID'lerini listele
-TENANT_IDS=$(psql -U postgres -d maarifportal_db -t -c "SELECT id FROM public.tenants WHERE is_active = true;")
+TENANT_IDS=$(psql -U postgres -d i-es_db -t -c "SELECT id FROM public.tenants WHERE is_active = true;")
 
 # Her tenant için şema yedeği al
 for TENANT_ID in $TENANT_IDS; do
@@ -91,7 +107,7 @@ for TENANT_ID in $TENANT_IDS; do
   echo "Tenant yedekleniyor: $TENANT_ID"
   
   # Tenant şemasını yedekle
-  pg_dump -U postgres -F custom -n "tenant_$TENANT_ID" -f "$BACKUP_DIR/tenant_${TENANT_ID}_$TIMESTAMP.dump" maarifportal_db
+  pg_dump -U postgres -F custom -n "tenant_$TENANT_ID" -f "$BACKUP_DIR/tenant_${TENANT_ID}_$TIMESTAMP.dump" i-es_db || handle_tenant_error $TENANT_ID
   
   # Yedekleme başarılı mı kontrol et
   if [ $? -eq 0 ]; then
@@ -103,7 +119,7 @@ for TENANT_ID in $TENANT_IDS; do
     # 14 günden eski yerel tenant yedeklerini temizle
     find "$BACKUP_DIR" -name "tenant_${TENANT_ID}_*.dump" -mtime +14 -delete
   else
-    echo "Tenant $TENANT_ID yedekleme başarısız!" | mail -s "Maarif Portal Tenant Yedekleme Hatası" admin@maarifportal.com
+    handle_tenant_error $TENANT_ID
   fi
 done
 ```
@@ -124,7 +140,7 @@ archive_command = 'test ! -f /var/lib/postgresql/archive/%f && cp %p /var/lib/po
 #!/bin/bash
 
 ARCHIVE_DIR="/var/lib/postgresql/archive"
-S3_BUCKET="maarifportal-backups"
+S3_BUCKET="i-es-backups"
 
 # Yeni WAL dosyalarını bul ve S3'e yükle
 find "$ARCHIVE_DIR" -type f -name "*.wal" -mmin -60 | while read -r wal_file; do
@@ -151,39 +167,39 @@ Bu kılavuz, tek bir tenant'ın acil durumda geri yüklenmesi için adım adım 
 1. **Tenant'ın En Son Yedeğini Belirle**
 
    ```bash
-   aws s3 ls s3://maarifportal-backups/postgres/tenants/TENANT_ID/ --recursive | sort | tail -n 5
+   aws s3 ls s3://i-es-backups/postgres/tenants/TENANT_ID/ --recursive | sort | tail -n 5
    ```
 
 2. **Yedek Dosyasını İndir**
 
    ```bash
-   aws s3 cp s3://maarifportal-backups/postgres/tenants/TENANT_ID/tenant_TENANT_ID_YYYYMMDD_HHMMSS.dump /tmp/
+   aws s3 cp s3://i-es-backups/postgres/tenants/TENANT_ID/tenant_TENANT_ID_YYYYMMDD_HHMMSS.dump /tmp/
    ```
 
 3. **Mevcut Tenant Şemasını Yedekle (İsteğe Bağlı Güvenlik Önlemi)**
 
    ```bash
-   pg_dump -U postgres -F custom -n "tenant_TENANT_ID" -f "/tmp/tenant_TENANT_ID_before_restore.dump" maarifportal_db
+   pg_dump -U postgres -F custom -n "tenant_TENANT_ID" -f "/tmp/tenant_TENANT_ID_before_restore.dump" i-es_db
    ```
 
 4. **Şemayı Sil ve Yeniden Oluştur**
 
    ```bash
-   psql -U postgres -d maarifportal_db -c "DROP SCHEMA IF EXISTS tenant_TENANT_ID CASCADE;"
-   psql -U postgres -d maarifportal_db -c "CREATE SCHEMA tenant_TENANT_ID;"
+   psql -U postgres -d i-es_db -c "DROP SCHEMA IF EXISTS tenant_TENANT_ID CASCADE;"
+   psql -U postgres -d i-es_db -c "CREATE SCHEMA tenant_TENANT_ID;"
    ```
 
 5. **Yedeği Geri Yükle**
 
    ```bash
-   pg_restore -U postgres -d maarifportal_db -n tenant_TENANT_ID /tmp/tenant_TENANT_ID_YYYYMMDD_HHMMSS.dump
+   pg_restore -U postgres -d i-es_db -n tenant_TENANT_ID /tmp/tenant_TENANT_ID_YYYYMMDD_HHMMSS.dump
    ```
 
 6. **Storage Verilerini Geri Yükle**
 
    ```bash
    # Tenant storage verilerini S3'ten indir
-   aws s3 sync s3://maarifportal-backups/storage/tenant-TENANT_ID/YYYYMMDD_HHMMSS/ /tmp/restore-storage/
+   aws s3 sync s3://i-es-backups/storage/tenant-TENANT_ID/YYYYMMDD_HHMMSS/ /tmp/restore-storage/
    
    # Storage verilerini Supabase'e yükle (özel script kullanılır)
    node scripts/restore-storage.js --tenant=TENANT_ID --source=/tmp/restore-storage/
@@ -193,8 +209,8 @@ Bu kılavuz, tek bir tenant'ın acil durumda geri yüklenmesi için adım adım 
 
    ```bash
    # Tablolardaki kayıt sayılarını kontrol et
-   psql -U postgres -d maarifportal_db -c "SELECT COUNT(*) FROM tenant_TENANT_ID.users;"
-   psql -U postgres -d maarifportal_db -c "SELECT COUNT(*) FROM tenant_TENANT_ID.students;"
+   psql -U postgres -d i-es_db -c "SELECT COUNT(*) FROM tenant_TENANT_ID.users;"
+   psql -U postgres -d i-es_db -c "SELECT COUNT(*) FROM tenant_TENANT_ID.students;"
    
    # Referans bütünlüğünü kontrol et
    # ...
@@ -203,12 +219,12 @@ Bu kılavuz, tek bir tenant'ın acil durumda geri yüklenmesi için adım adım 
 8. **Tenant'ı Aktifleştir**
 
    ```bash
-   psql -U postgres -d maarifportal_db -c "UPDATE public.tenants SET is_active = TRUE WHERE id = 'TENANT_ID';"
+   psql -U postgres -d i-es_db -c "UPDATE public.tenants SET is_active = TRUE WHERE id = 'TENANT_ID';"
    ```
 
 ## KVKK Uyumluluğu
 
-Maarif Okul Portalı SaaS platformu, Kişisel Verilerin Korunması Kanunu (KVKK) gereksinimlerini karşılamak için yedekleme ve geri yükleme süreçlerinde aşağıdaki önlemleri uygulamaktadır:
+Iqra Eğitim Portalı SaaS platformu, Kişisel Verilerin Korunması Kanunu (KVKK) gereksinimlerini karşılamak için yedekleme ve geri yükleme süreçlerinde aşağıdaki önlemleri uygulamaktadır:
 
 1. **Veri Şifreleme**:
    * Tüm yedekler, AES-256 algoritması kullanılarak şifrelenir

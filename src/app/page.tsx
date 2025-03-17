@@ -4,7 +4,7 @@ import Image from 'next/image';
 /**
  * Ana Sayfa (Landing Page)
  * 
- * Maarif Okul Portalı'nın açılış sayfası, kayıt ve giriş için yönlendirmeler içerir.
+ * Iqra Eğitim Portalı'nın açılış sayfası, kayıt ve giriş için yönlendirmeler içerir.
  */
 export default function HomePage() {
   return (
@@ -17,11 +17,11 @@ export default function HomePage() {
               <div className="flex-shrink-0 flex items-center">
         <Image
                   src="/logo.svg" 
-                  alt="Maarif Okul Portalı" 
+                  alt="Iqra Eğitim Portalı" 
                   width={40} 
                   height={40} 
                 />
-                <span className="ml-2 text-lg font-semibold text-gray-900">Maarif Okul Portalı</span>
+                <span className="ml-2 text-lg font-semibold text-gray-900">Iqra Eğitim Portalı</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -49,7 +49,7 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
-                Maarif Okul Portalı
+                Iqra Eğitim Portalı
               </h1>
               <p className="mt-4 text-xl text-gray-500">
                 Okul yönetimini kolaylaştıran modern, güvenli ve kullanıcı dostu platform
@@ -236,12 +236,12 @@ export default function HomePage() {
               <div className="flex items-center">
           <Image
                   src="/logo.svg" 
-                  alt="Maarif Okul Portalı" 
+                  alt="Iqra Eğitim Portalı" 
                   width={40} 
                   height={40} 
                   className="invert" // Beyaz logo
                 />
-                <span className="ml-2 text-lg font-semibold text-white">Maarif Okul Portalı</span>
+                <span className="ml-2 text-lg font-semibold text-white">Iqra Eğitim Portalı</span>
               </div>
               <p className="text-gray-300 text-base">
                 Okulunuzu yönetmek için modern, güvenli ve kullanıcı dostu platform.
@@ -379,7 +379,7 @@ export default function HomePage() {
           </div>
           <div className="mt-12 border-t border-gray-700 pt-8">
             <p className="text-base text-gray-400 xl:text-center">
-              &copy; 2025 Maarif Okul Portalı. Tüm hakları saklıdır.
+              &copy; 2025 Iqra Eğitim Portalı. Tüm hakları saklıdır.
             </p>
           </div>
         </div>

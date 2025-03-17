@@ -2,7 +2,7 @@
 
 ## Genel Bakış
 
-Maarif Okul Portalı SaaS platformu, modern, ölçeklenebilir ve sürdürülebilir bir eğitim yönetim sistemi sunmak için dikkatle seçilmiş bir teknoloji yığını üzerine inşa edilmiştir. Bu doküman, platformumuzda kullanılan teknolojileri, seçim kriterlerini ve mimari entegrasyonlarını detaylandırır.
+Iqra Eğitim Portalı SaaS platformu, modern, ölçeklenebilir ve sürdürülebilir bir eğitim yönetim sistemi sunmak için dikkatle seçilmiş bir teknoloji yığını üzerine inşa edilmiştir. Bu doküman, platformumuzda kullanılan teknolojileri, seçim kriterlerini ve mimari entegrasyonlarını detaylandırır.
 
 ## Teknoloji Seçim Kriterleri
 

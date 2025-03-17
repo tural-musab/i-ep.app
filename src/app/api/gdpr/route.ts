@@ -1,5 +1,5 @@
 /**
- * Maarif Okul Portalı - GDPR/KVKK Veri Silme API
+ * Iqra Eğitim Portalı - GDPR/KVKK Veri Silme API
  * 
  * Bu API, kullanıcıların GDPR (Genel Veri Koruma Yönetmeliği) ve KVKK (Kişisel Verilerin Korunması Kanunu)
  * kapsamında veri silme haklarını kullanabilmelerini sağlar.

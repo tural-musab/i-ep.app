@@ -9,7 +9,7 @@ export default async function TenantLayout({
   params: { tenant: string };
 }) {
   const subdomain = params.tenant;
-  const domain = `${subdomain}.i-ep.app`;
+  const domain = `${subdomain}.i-es.app`;
   
   // Tenant bilgisini al
   const tenant = await getTenantByDomain(domain);
@@ -29,7 +29,7 @@ export default async function TenantLayout({
       <main>{children}</main>
       
       <footer className="p-4 text-center text-sm text-gray-500">
-        &copy; {new Date().getFullYear()} Maarif Okul Portalı
+        &copy; {new Date().getFullYear()} Iqra Eğitim Portalı
       </footer>
     </div>
   );

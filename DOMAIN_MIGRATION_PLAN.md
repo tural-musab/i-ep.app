@@ -24,7 +24,7 @@
 - [x] Cloudflare yapılandırmasını güncelleyin (`CLOUDFLARE_ZONE_ID` vb.)
 
 ### 2.2. Sabit Kodlanmış Değerleri Değiştirme
-Aşağıdaki dosyalarda geçen tüm "maarifportal.com" referanslarını yeni domain ile değiştirin:
+Aşağıdaki dosyalarda geçen tüm "i-es.app" referanslarını yeni domain ile değiştirin:
 
 - [x] `src/middleware.ts`
 - [x] `src/lib/swagger.ts`
@@ -44,16 +44,16 @@ Aşağıdaki dosyalarda geçen tüm "maarifportal.com" referanslarını yeni dom
 - [ ] Tenant subdomain bilgilerini içeren tabloda gerekli güncellemeleri yapın
 ```sql
 UPDATE tenants
-SET domain = REPLACE(domain, 'maarifportal.com', 'yenidomain.com')
-WHERE domain LIKE '%.maarifportal.com';
+SET domain = REPLACE(domain, 'i-es.app', 'yenidomain.com')
+WHERE domain LIKE '%.i-es.app';
 ```
 
 ### 3.2. E-posta Adresleri
 - [ ] Kullanıcı e-posta adreslerini kontrol edin ve gerekiyorsa güncelleyin
 ```sql
 UPDATE users
-SET email = REPLACE(email, '@maarifportal.com', '@yenidomain.com')
-WHERE email LIKE '%@maarifportal.com';
+SET email = REPLACE(email, '@i-es.app', '@yenidomain.com')
+WHERE email LIKE '%@i-es.app';
 ```
 
 ### 3.3. Diğer Domain Referansları

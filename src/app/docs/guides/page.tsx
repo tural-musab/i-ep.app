@@ -1,11 +1,12 @@
 import Link from 'next/link';
+import { FaGithub } from 'react-icons/fa';
 
 export default function GuidesDocsPage() {
   // Rehber listesi
   const guides = [
     {
       title: 'Başlangıç Rehberi',
-      description: 'Maarif Okul Portalı SaaS projesini kurmak ve çalıştırmak için adım adım rehber.',
+      description: 'Iqra Eğitim Portalı SaaS projesini kurmak ve çalıştırmak için adım adım rehber.',
       link: '/docs/guides/getting-started',
       tags: ['Başlangıç', 'Kurulum'],
     },
@@ -23,7 +24,7 @@ export default function GuidesDocsPage() {
     },
     {
       title: 'API Entegrasyonu',
-      description: 'Maarif Okul Portalı API\'lerini harici uygulamalarla entegre etme rehberi.',
+      description: 'Iqra Eğitim Portalı API\'lerini harici uygulamalarla entegre etme rehberi.',
       link: '/docs/guides/api-integration',
       tags: ['API', 'Entegrasyon'],
     },
@@ -40,7 +41,7 @@ export default function GuidesDocsPage() {
       <h1 className="text-4xl font-bold mb-6">Geliştirici Rehberleri</h1>
       
       <p className="text-lg mb-8">
-        Bu bölümde, Maarif Okul Portalı SaaS projesinin çeşitli yönlerini
+        Bu bölümde, Iqra Eğitim Portalı SaaS projesinin çeşitli yönlerini
         anlamanıza ve kullanmanıza yardımcı olacak rehberler bulacaksınız.
         Her rehber, belirli bir görevi gerçekleştirmek için adım adım talimatlar içerir.
       </p>
@@ -78,14 +79,17 @@ export default function GuidesDocsPage() {
           Rehberlerimizi geliştirmemize yardımcı olmak ister misiniz? Yeni rehberler ekleyebilir 
           veya mevcut rehberleri güncelleyebilirsiniz.
         </p>
-        <a 
-          href="https://github.com/maarifportal/maarif-okul-portali" 
-          target="_blank" 
-          rel="noreferrer"
-          className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
-          GitHub'da Katkıda Bulun
-        </a>
+        <div className="mt-10">
+          <a
+            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 inline-flex items-center"
+            href="https://github.com/i-es/i-es.app"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FaGithub className="mr-2" />
+            GitHub Repo
+          </a>
+        </div>
       </div>
     </div>
   );

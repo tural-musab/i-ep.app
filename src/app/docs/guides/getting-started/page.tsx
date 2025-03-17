@@ -9,7 +9,7 @@ export default function GettingStartedGuidePage() {
   return (
     <div>
       <h1 className="text-4xl font-bold mb-2">Başlangıç Rehberi</h1>
-      <p className="text-gray-600 mb-8">Maarif Okul Portalı SaaS projesini kurma ve geliştirmeye başlama rehberi</p>
+      <p className="text-gray-600 mb-8">Iqra Eğitim Portalı SaaS projesini kurma ve geliştirmeye başlama rehberi</p>
       
       {/* Rehber İçindekiler */}
       <div className="flex border-b mb-6">
@@ -39,7 +39,7 @@ export default function GettingStartedGuidePage() {
           <div>
             <h2>Kurulum</h2>
             <p>
-              Maarif Okul Portalı SaaS projesini kurmak için aşağıdaki adımları izleyin:
+              Iqra Eğitim Portalı SaaS projesini kurmak için aşağıdaki adımları izleyin:
             </p>
             
             <h3>Önkoşullar</h3>
@@ -51,15 +51,15 @@ export default function GettingStartedGuidePage() {
             
             <h3>Adım Adım Kurulum</h3>
             
-            <h4>1. Repo'yu Klonlayın</h4>
-            <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
-              <code>git clone https://github.com/maarifportal/maarif-okul-portali.git</code>
-            </pre>
+            <h3 className="text-lg font-medium mb-2">1. Projeyi klonlayın</h3>
+            <div className="bg-gray-100 p-3 rounded-md">
+              <code>git clone https://github.com/i-es/i-es.app.git</code>
+            </div>
             
-            <h4>2. Proje Dizinine Gidin</h4>
-            <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
-              <code>cd maarif-okul-portali</code>
-            </pre>
+            <h3 className="text-lg font-medium mb-2 mt-4">2. Proje dizinine girin</h3>
+            <div className="bg-gray-100 p-3 rounded-md">
+              <code>cd i-es.app</code>
+            </div>
             
             <h4>3. Bağımlılıkları Yükleyin</h4>
             <pre className="bg-gray-100 p-4 rounded overflow-x-auto">

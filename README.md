@@ -1,12 +1,12 @@
-# Maarif Okul Portalı
+# Iqra Eğitim Portalı
 
-![Maarif Okul Portalı Logo](public/logo.svg)
+![Iqra Eğitim Portalı Logo](public/logo.svg)
 
-**Maarif Okul Portalı**, Türkiye'deki eğitim kurumları için özel olarak geliştirilmiş, çok kiracılı (multi-tenant) bir SaaS okul yönetim sistemidir. Platform, okulların yönetim süreçlerini dijitalleştirerek, öğrenci, öğretmen, veli ve yöneticiler arasında kesintisiz bir iletişim ve işbirliği sağlar.
+**Iqra Eğitim Portalı**, Türkiye'deki eğitim kurumları için özel olarak geliştirilmiş, çok kiracılı (multi-tenant) bir SaaS okul yönetim sistemidir. Platform, okulların yönetim süreçlerini dijitalleştirerek, öğrenci, öğretmen, veli ve yöneticiler arasında kesintisiz bir iletişim ve işbirliği sağlar.
 
 ## 🌟 Genel Bakış
 
-Maarif Okul Portalı, modern eğitim teknolojileriyle Türk eğitim sisteminin ihtiyaçlarını buluşturan, ölçeklenebilir ve güvenli bir platformdur. Her okul (tenant), kendi alt alan adında izole edilmiş bir ortamda çalışır, böylece veriler güvenle korunurken, ortak altyapı sayesinde maliyet avantajı sağlanır.
+Iqra Eğitim Portalı, modern eğitim teknolojileriyle Türk eğitim sisteminin ihtiyaçlarını buluşturan, ölçeklenebilir ve güvenli bir platformdur. Her okul (tenant), kendi alt alan adında izole edilmiş bir ortamda çalışır, böylece veriler güvenle korunurken, ortak altyapı sayesinde maliyet avantajı sağlanır.
 
 ### 🎯 Vizyon
 
@@ -87,8 +87,8 @@ Türkiye'deki her okul için kolay erişilebilir, kullanıcı dostu ve ekonomik 
 
 1. Repoyu klonlayın:
    ```bash
-   git clone https://github.com/maarifportal/maarifokul.git
-   cd maarifokul
+   git clone https://github.com/i-es/i-es.app.git
+   cd i-es.app
    ```
 
 2. Bağımlılıkları yükleyin:
@@ -280,8 +280,8 @@ Projenin ilerleme durumu ve geliştirme adımları için [PROGRESS.md](PROGRESS.
 
 - E-posta: info@i-ep.app
 - Website: [https://i-ep.app](https://i-ep.app)
-- Twitter: [@MaarifPortal](https://twitter.com/MaarifPortal)
-- LinkedIn: [Maarif Okul Portalı](https://linkedin.com/company/maarifportal)
+- Twitter: [@iEsApp](https://twitter.com/iEsApp)
+- LinkedIn: [Iqra Eğitim Portalı](https://linkedin.com/company/i-es)
 
 ## 📄 Lisans
 
@@ -289,4 +289,4 @@ Bu proje [MIT Lisansı](LICENSE) altında lisanslanmıştır.
 
 ---
 
-Maarif Okul Portalı - Türkiye'nin eğitim geleceği için
+Iqra Eğitim Portalı - Türkiye'nin eğitim geleceği için

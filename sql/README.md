@@ -1,6 +1,6 @@
-# Maarif Okul Portalı - Supabase SQL Kurulumu
+# Iqra Eğitim Portalı - Supabase SQL Kurulumu
 
-Bu klasör, Maarif Okul Portalı'nın veritabanı yapılandırması için gerekli SQL dosyalarını içermektedir. Bu dosyalar, Supabase projenizin veritabanı yapılandırmasını otomatize etmek için kullanılır.
+Bu klasör, Iqra Eğitim Portalı'nın veritabanı yapılandırması için gerekli SQL dosyalarını içermektedir. Bu dosyalar, Supabase projenizin veritabanı yapılandırmasını otomatize etmek için kullanılır.
 
 ## İçerikler
 

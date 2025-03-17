@@ -1,6 +1,6 @@
 # API Endpoints Dokümantasyonu - Domain Yönetimi
 
-Bu belge, Maarif Okul Portalı'nın domain yönetimi API endpointlerini açıklamaktadır.
+Bu belge, Iqra Eğitim Portalı'nın domain yönetimi API endpointlerini açıklamaktadır.
 
 ## Domain Endpoints
 
@@ -31,7 +31,7 @@ GET /api/domains
     {
       "id": "domain-uuid-1",
       "tenant_id": "tenant-uuid-1",
-      "domain": "ornek.maarifportal.com",
+      "domain": "ornek.i-ep.app",
       "is_primary": true,
       "is_verified": true,
       "type": "subdomain",
@@ -69,7 +69,7 @@ GET /api/domains/{domainId}
   "data": {
     "id": "domain-uuid-1",
     "tenant_id": "tenant-uuid-1",
-    "domain": "ornek.maarifportal.com",
+    "domain": "ornek.i-ep.app",
     "is_primary": true,
     "is_verified": true,
     "type": "subdomain",
@@ -109,7 +109,7 @@ POST /api/domains/subdomain
   "data": {
     "id": "domain-uuid-1",
     "tenant_id": "tenant-uuid-1",
-    "domain": "ornek.maarifportal.com",
+    "domain": "ornek.i-ep.app",
     "is_primary": true,
     "is_verified": true,
     "type": "subdomain",
@@ -154,7 +154,7 @@ POST /api/domains/custom
     "verification_instructions": {
       "type": "CNAME",
       "host": "ornek.com",
-      "value": "maarifportal.com",
+      "value": "i-ep.app",
       "ttl": "3600"
     }
   }
@@ -297,17 +297,17 @@ Domain API'leri aşağıdaki hata kodlarını döndürebilir:
 
 ```bash
 # Domain listesi
-curl -X GET "https://api.maarifportal.com/api/domains" \
+curl -X GET "https://api.i-ep.app/api/domains" \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # Subdomain oluşturma
-curl -X POST "https://api.maarifportal.com/api/domains/subdomain" \
+curl -X POST "https://api.i-ep.app/api/domains/subdomain" \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"tenantId": "tenant-uuid-1", "subdomain": "ornek"}'
 
 # Domain doğrulama
-curl -X POST "https://api.maarifportal.com/api/domains/verify/domain-uuid-2" \
+curl -X POST "https://api.i-ep.app/api/domains/verify/domain-uuid-2" \
   -H "Authorization: Bearer YOUR_TOKEN"
 ```
 

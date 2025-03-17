@@ -178,8 +178,8 @@ export function isFeatureEnabled(tenant: Tenant, featureName: string): boolean {
  * Alt alan adından tenant ID'sini ayıklar
  */
 export function extractTenantFromSubdomain(host: string): string | null {
-  // 'okul1.maarifokul.com' gibi bir alan adından 'okul1' kısmını çıkar
-  const mainDomain = process.env.NEXT_PUBLIC_DOMAIN || 'maarifokul.com';
+  // 'okul1.i-es.app' gibi bir alan adından 'okul1' kısmını çıkar
+  const mainDomain = process.env.NEXT_PUBLIC_DOMAIN || 'i-es.app';
   
   if (!host.includes(mainDomain)) {
     return null;
@@ -223,7 +223,7 @@ export async function getCurrentTenant(req?: NextRequest): Promise<Tenant | null
  * Tenant'a özgü bir URL oluşturur
  */
 export function createTenantUrl(subdomain: string, path: string = '/'): string {
-  const mainDomain = process.env.NEXT_PUBLIC_DOMAIN || 'maarifokul.com';
+  const mainDomain = process.env.NEXT_PUBLIC_DOMAIN || 'i-es.app';
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
   
   return `${protocol}://${subdomain}.${mainDomain}${path}`;

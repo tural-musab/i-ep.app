@@ -1,5 +1,5 @@
 /**
- * Maarif Okul Portalı - Tenant Bazlı Yedekleme Mekanizması
+ * Iqra Eğitim Portalı - Tenant Bazlı Yedekleme Mekanizması
  * 
  * Bu modül, çok kiracılı mimari için tenant bazlı yedekleme işlemlerini gerçekleştirir.
  * Hybrid tenant izolasyon yaklaşımına uygun şekilde tasarlanmıştır.
@@ -24,11 +24,12 @@ const logger = getLogger('tenant-backup');
 const CONFIG = {
   BACKUP_ROOT_DIR: process.env.BACKUP_ROOT_DIR || './backups',
   ENCRYPTION_KEY: process.env.BACKUP_ENCRYPTION_KEY || '',
-  S3_BUCKET: process.env.S3_BUCKET_NAME || 'maarif-okul-portal-backups',
+  S3_BUCKET: process.env.S3_BUCKET_NAME || 'i-es-app-backups',
+  S3_PREFIX: process.env.S3_PREFIX || 'tenant-backups',
   S3_REGION: process.env.AWS_REGION || 'eu-central-1',
   DB_HOST: process.env.DB_HOST || 'localhost',
   DB_USER: process.env.DB_USER || 'postgres',
-  DB_NAME: process.env.DB_NAME || 'maarif',
+  DB_NAME: process.env.DB_NAME || 'i-es',
   DB_PORT: process.env.DB_PORT || '5432',
   DB_PASSWORD: process.env.DB_PASSWORD || '',
   SLACK_WEBHOOK: process.env.SLACK_WEBHOOK_URL,

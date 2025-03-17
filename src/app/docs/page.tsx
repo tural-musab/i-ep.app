@@ -3,10 +3,10 @@ import Link from 'next/link';
 export default function DocsPage() {
   return (
     <div>
-      <h1 className="text-4xl font-bold mb-6">Maarif Okul Portalı Geliştirici Dokümantasyonu</h1>
+      <h1 className="text-4xl font-bold mb-6">Iqra Eğitim Portalı Geliştirici Dokümantasyonu</h1>
       
       <p className="text-lg mb-8">
-        Bu dokümantasyon, Maarif Okul Portalı SaaS projesini geliştirmek ve entegre etmek isteyen
+        Bu dokümantasyon, Iqra Eğitim Portalı SaaS projesini geliştirmek ve entegre etmek isteyen
         geliştiriciler için hazırlanmıştır. Aşağıdaki bölümlerde projenin mimarisi, API'leri ve 
         kullanım rehberlerini bulabilirsiniz.
       </p>
@@ -49,11 +49,11 @@ export default function DocsPage() {
           <ol className="list-decimal pl-6 space-y-3">
             <li>
               <strong>Projeyi Klonla:</strong> 
-              <pre className="bg-gray-100 p-2 mt-1 rounded">git clone https://github.com/maarifportal/maarif-okul-portali.git</pre>
+              <pre className="bg-gray-100 p-2 mt-1 rounded">git clone https://github.com/i-es/i-es.app.git</pre>
             </li>
             <li>
               <strong>Bağımlılıkları Yükle:</strong> 
-              <pre className="bg-gray-100 p-2 mt-1 rounded">cd maarif-okul-portali && npm install</pre>
+              <pre className="bg-gray-100 p-2 mt-1 rounded">cd i-es.app && npm install</pre>
             </li>
             <li>
               <strong>Ortam Değişkenlerini Ayarla:</strong> 
@@ -71,7 +71,7 @@ export default function DocsPage() {
         <h2 className="text-2xl font-semibold mb-4">Mimari Genel Bakış</h2>
         <div className="bg-white p-6 rounded-lg shadow-md">
           <p className="mb-4">
-            Maarif Okul Portalı, modern ve ölçeklenebilir bir mimari üzerine inşa edilmiştir:
+            Iqra Eğitim Portalı, modern ve ölçeklenebilir bir mimari üzerine inşa edilmiştir:
           </p>
           <ul className="list-disc pl-6 space-y-2">
             <li><strong>Frontend:</strong> Next.js 14, TypeScript, Tailwind CSS</li>

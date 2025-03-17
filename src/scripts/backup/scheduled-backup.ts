@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Maarif Okul Portalı - Zamanlanmış Yedekleme Betiği
+ * Iqra Eğitim Portalı - Zamanlanmış Yedekleme Betiği
  * 
  * Bu betik, cron job olarak çalıştırılmak üzere tasarlanmıştır. 
  * Backup tipi ve hedef tenant parametreleri ile çalışır.
@@ -56,7 +56,7 @@ const args = parse<BackupArguments>(
   {
     helpArg: 'help',
     headerContentSections: [
-      { header: 'Maarif Okul Portalı Yedekleme Aracı', content: 'Tenant bazlı veritabanı yedekleme işlemi yapar.' }
+      { header: 'Iqra Eğitim Portalı Yedekleme Aracı', content: 'Tenant bazlı veritabanı yedekleme işlemi yapar.' }
     ],
     footerContentSections: [
       { header: 'Örnekler', content: [

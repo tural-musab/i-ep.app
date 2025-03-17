@@ -1,6 +1,6 @@
-# Maarif Okul Portalı Dokümantasyon Stratejisi
+# Iqra Eğitim Portalı Dokümantasyonu
 
-Bu dizin, Maarif Okul Portalı SaaS projesi için dokümantasyon kaynak dosyalarını içerir. Dokümantasyon, geliştiricilerin projeyi anlamasını, kullanmasını ve katkıda bulunmasını kolaylaştırmak için tasarlanmıştır.
+Bu dizin, Iqra Eğitim Portalı SaaS projesi için dokümantasyon kaynak dosyalarını içerir. Dokümantasyon, geliştiricilerin projeyi anlamasını, kullanmasını ve katkıda bulunmasını kolaylaştırmak için tasarlanmıştır.
 
 ## Dokümantasyon Yapısı
 

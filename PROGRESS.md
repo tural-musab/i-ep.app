@@ -1,4 +1,4 @@
-# Maarif Okul Portalı Gelişim Süreci
+# Iqra Eğitim Portalı Gelişim Süreci
 
 ## Aşama 1: Temel Mimari, Dokümantasyon ve Test (Ay 1-3)
 

@@ -5,7 +5,7 @@ describe('Tenant Utilities', () => {
   describe('extractTenantFromSubdomain', () => {
     it('geçerli bir alt alan adından tenant ID döndürmelidir', () => {
       // Arrange
-      const host = 'okul1.maarifokul.com';
+      const host = 'okul1.i-es.app';
       
       // Act
       const result = extractTenantFromSubdomain(host);
@@ -27,7 +27,7 @@ describe('Tenant Utilities', () => {
     
     it('protokolleri temizlemelidir', () => {
       // Arrange
-      const host = 'https://okul1.maarifokul.com';
+      const host = 'https://okul1.i-es.app';
       
       // Act
       const result = extractTenantFromSubdomain(host);
@@ -49,7 +49,7 @@ describe('Tenant Utilities', () => {
       const result = createTenantUrl(subdomain, path);
       
       // Assert
-      expect(result).toBe('https://okul1.maarifokul.com/dashboard');
+      expect(result).toBe('https://okul1.i-es.app/dashboard');
       
       // Cleanup
       process.env.NODE_ENV = originalEnv;
@@ -65,7 +65,7 @@ describe('Tenant Utilities', () => {
       const result = createTenantUrl(subdomain);
       
       // Assert
-      expect(result).toBe('http://okul1.maarifokul.com/');
+      expect(result).toBe('http://okul1.i-es.app/');
       
       // Cleanup
       process.env.NODE_ENV = originalEnv;
@@ -75,7 +75,7 @@ describe('Tenant Utilities', () => {
   describe('detectTenantFromUrl', () => {
     it('URL\'den tenant ID\'yi tespit etmelidir', () => {
       // Arrange
-      const url = 'https://okul1.maarifokul.com/dashboard';
+      const url = 'https://okul1.i-es.app/dashboard';
       
       // Act
       const result = detectTenantFromUrl(url);

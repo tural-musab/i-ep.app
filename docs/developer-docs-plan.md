@@ -2,7 +2,7 @@
 
 ## Genel Bakış
 
-Bu doküman, Maarif Okul Portalı projesi için kapsamlı bir geliştirici dokümantasyonu stratejisi ve planı sunmaktadır. İyi hazırlanmış bir geliştirici dokümantasyonu, projenin bakım ve geliştirme sürecini kolaylaştırır, yeni geliştiricilerin daha hızlı adapte olmasını sağlar ve kod kalitesini artırır. Bu plan, dokümantasyon türlerini, içerik stratejisini, sorumlulukları ve süreçleri tanımlamaktadır.
+Bu doküman, Iqra Eğitim Portalı projesi için kapsamlı bir geliştirici dokümantasyonu stratejisi ve planı sunmaktadır. İyi hazırlanmış bir geliştirici dokümantasyonu, projenin bakım ve geliştirme sürecini kolaylaştırır, yeni geliştiricilerin daha hızlı adapte olmasını sağlar ve kod kalitesini artırır. Bu plan, dokümantasyon türlerini, içerik stratejisini, sorumlulukları ve süreçleri tanımlamaktadır.
 
 ## Dokümantasyon Hedefleri
 
@@ -69,14 +69,14 @@ API dokümantasyonu, sistemin diğer sistemlerle ve bileşenlerle nasıl etkile�
 
 #### REST API Dokümantasyonu
 
-Maarif Okul Portalı'nın REST API'lerini belgelemek için OpenAPI (Swagger) standardını kullanacağız:
+Iqra Eğitim Portalı'nın REST API'lerini belgelemek için OpenAPI (Swagger) standardını kullanacağız:
 
 ```yaml
 # openapi.yaml örneği
 openapi: 3.0.0
 info:
-  title: Maarif Okul Portalı API
-  description: Maarif Okul Portalı için RESTful API
+  title: Iqra Eğitim Portalı API
+  description: Iqra Eğitim Portalı için RESTful API
   version: 1.0.0
 paths:
   /api/tenants/{tenantId}/users:
@@ -224,7 +224,7 @@ graph TD
 
 ## Bağlam
 
-Maarif Okul Portalı frontend çerçevesi seçimi için birden fazla alternatif değerlendirildi:
+Iqra Eğitim Portalı frontend çerçevesi seçimi için birden fazla alternatif değerlendirildi:
 - React + Custom Setup
 - Next.js
 - Remix
@@ -295,8 +295,8 @@ Teknik kılavuzlar, geliştiricilerin belirli görevleri nasıl gerçekleştirec
 ### 1. Depoyu Klonlama
 
 ```bash
-git clone https://github.com/maarifportal/maarifokul.git
-cd maarifokul
+git clone https://github.com/i-es/iqraokul.git
+cd iqraokul
 ```
 
 ### 2. Bağımlılıkları Yükleme
@@ -342,7 +342,7 @@ PostgreSQL bağlantı hatası alırsanız:
 ```markdown
 # Özellik Geliştirme İş Akışı
 
-Bu doküman, Maarif Okul Portalı projesi için özellik geliştirme sürecini tanımlar.
+Bu doküman, Iqra Eğitim Portalı projesi için özellik geliştirme sürecini tanımlar.
 
 ## Geliştirme İş Akışı
 
@@ -389,7 +389,7 @@ Referans dokümantasyonu, geliştirici araç setinin kapsamlı bir açıklaması
 ```markdown
 # Veri Modelleri
 
-Bu doküman, Maarif Okul Portalı'nın temel veri modellerini tanımlar.
+Bu doküman, Iqra Eğitim Portalı'nın temel veri modellerini tanımlar.
 
 ## Tenant
 
@@ -436,7 +436,7 @@ Tenant modeli, sistemi kullanan eğitim kurumlarını temsil eder.
       "advancedReporting": true,
       "apiAccess": false
     },
-    "logo_url": "https://storage.maarifportal.com/tenants/550e8400/logo.png"
+    "logo_url": "https://storage.i-ep.app/tenants/550e8400/logo.png"
   }
 }
 ```
@@ -447,7 +447,7 @@ Tenant modeli, sistemi kullanan eğitim kurumlarını temsil eder.
 ```markdown
 # Sistem Yapılandırması
 
-Bu doküman, Maarif Okul Portalı'nın yapılandırma seçeneklerini tanımlar.
+Bu doküman, Iqra Eğitim Portalı'nın yapılandırma seçeneklerini tanımlar.
 
 ## Çevre Değişkenleri
 
@@ -811,7 +811,7 @@ Değerlendirilen alternatifler ve neden seçilmedikleri.
 
 ## Sonuç
 
-Bu geliştirici dokümantasyonu planı, Maarif Okul Portalı projesinin çeşitli dokümantasyon ihtiyaçlarını karşılamayı amaçlamaktadır. İyi bir geliştirici dokümantasyonu, daha yüksek kod kalitesi, daha hızlı geliştirici onboarding'i ve daha sürdürülebilir bir geliştirme süreci sağlayacaktır.
+Bu geliştirici dokümantasyonu planı, Iqra Eğitim Portalı projesinin çeşitli dokümantasyon ihtiyaçlarını karşılamayı amaçlamaktadır. İyi bir geliştirici dokümantasyonu, daha yüksek kod kalitesi, daha hızlı geliştirici onboarding'i ve daha sürdürülebilir bir geliştirme süreci sağlayacaktır.
 
 Dokümantasyon bir süreç olarak görülmeli ve projenin yaşam döngüsü boyunca sürekli geliştirilmelidir. Ekip üyelerinin katkılarını teşvik etmek ve dokümantasyon kalitesini ölçmek için metrikler ve süreçler oluşturulmalıdır.
 

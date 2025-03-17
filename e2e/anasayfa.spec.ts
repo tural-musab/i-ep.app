@@ -8,7 +8,7 @@ test.describe('Anasayfa Testleri', () => {
 
   test('Anasayfa başlığını kontrol et', async ({ page }) => {
     // Sayfa başlığını kontrol et
-    await expect(page).toHaveTitle(/Maarif Okul Portalı/);
+    await expect(page).toHaveTitle(/Iqra Eğitim Portalı/);
   });
 
   test('Anasayfa ana bileşenlerini kontrol et', async ({ page }) => {
@@ -16,7 +16,7 @@ test.describe('Anasayfa Testleri', () => {
     await expect(page.locator('nav')).toBeVisible();
     
     // Logo görünür mü?
-    await expect(page.locator('img[alt="Maarif Okul Portalı Logo"]')).toBeVisible();
+    await expect(page.locator('img[alt="Iqra Eğitim Portalı Logo"]')).toBeVisible();
     
     // Giriş butonu mevcut mu?
     await expect(page.getByRole('link', { name: /giriş/i })).toBeVisible();

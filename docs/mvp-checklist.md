@@ -2,7 +2,7 @@
 
 ## Genel Bakış
 
-Bu doküman, Maarif Okul Portalı'nın MVP (Minimum Viable Product - Minimum Uygulanabilir Ürün) sürümünün yayınlanmasından önce tamamlanması ve kontrol edilmesi gereken kritik öğelerin kapsamlı bir listesini sunmaktadır. Bu kontrol listesi, MVP'nin teknik, fonksiyonel ve işletme gereksinimlerini karşıladığından emin olmak için bir rehber niteliğindedir.
+Bu doküman, Iqra Eğitim Portalı'nın MVP (Minimum Viable Product - Minimum Uygulanabilir Ürün) sürümünün yayınlanmasından önce tamamlanması ve kontrol edilmesi gereken kritik öğelerin kapsamlı bir listesini sunmaktadır. Bu kontrol listesi, MVP'nin teknik, fonksiyonel ve işletme gereksinimlerini karşıladığından emin olmak için bir rehber niteliğindedir.
 
 ## Amaç ve Hedefler
 
@@ -274,7 +274,7 @@ Bu kontrol listesinin amaçları:
 
 ## Sonuç
 
-Bu MVP öncesi kontrol listesi, Maarif Okul Portalı'nın ilk sürümünün başarılı bir şekilde yayınlanması için gereken kritik adımları kapsamaktadır. Bu liste, proje ilerledikçe güncellenebilir ve genişletilebilir. Her adımın tamamlanması, ürünün piyasaya hazır olduğundan emin olmak için önemlidir.
+Bu MVP öncesi kontrol listesi, Iqra Eğitim Portalı'nın ilk sürümünün başarılı bir şekilde yayınlanması için gereken kritik adımları kapsamaktadır. Bu liste, proje ilerledikçe güncellenebilir ve genişletilebilir. Her adımın tamamlanması, ürünün piyasaya hazır olduğundan emin olmak için önemlidir.
 
 Tüm ekip üyelerinin bu kontrol listesini düzenli olarak gözden geçirmesi ve ilerleyişi takip etmesi önerilir. Herhangi bir boşluk veya eksiklik tespit edildiğinde, ilgili konunun hızla ele alınması için uygun aksiyonlar planlanmalıdır.
 

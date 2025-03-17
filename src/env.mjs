@@ -49,7 +49,7 @@ export const env = createEnv({
    * Client tarafı ve server tarafı için ortak değişkenler
    */
   shared: {
-    NEXT_PUBLIC_APP_NAME: z.string().min(1).default("Maarif Okul Portalı"),
+    NEXT_PUBLIC_APP_NAME: z.string().min(1).default("Iqra Eğitim Portalı"),
   },
 
   /**

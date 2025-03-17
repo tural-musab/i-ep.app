@@ -128,11 +128,11 @@ export default function DashboardPage() {
               <div className="flex-shrink-0 flex items-center">
                 <Image 
                   src="/logo.svg" 
-                  alt="Maarif Okul Portalı" 
+                  alt="Iqra Eğitim Portalı" 
                   width={40} 
                   height={40} 
                 />
-                <span className="ml-2 text-lg font-semibold text-gray-900">Maarif Okul Portalı</span>
+                <span className="ml-2 text-lg font-semibold text-gray-900">Iqra Eğitim Portalı</span>
               </div>
             </div>
             <div className="flex items-center">

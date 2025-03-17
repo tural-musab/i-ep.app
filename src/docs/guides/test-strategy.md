@@ -1,6 +1,6 @@
-# Maarif Okul Portalı Test Stratejisi
+# Iqra Eğitim Portalı Test Stratejisi
 
-Bu doküman, Maarif Okul Portalı projesinin test yaklaşımını ve stratejisini açıklar. Test stratejimiz, yazılım kalitesini sağlamak, hataları erken tespit etmek ve kullanıcı deneyimini iyileştirmek için tasarlanmıştır.
+Bu doküman, Iqra Eğitim Portalı projesinin test yaklaşımını ve stratejisini açıklar. Test stratejimiz, yazılım kalitesini sağlamak, hataları erken tespit etmek ve kullanıcı deneyimini iyileştirmek için tasarlanmıştır.
 
 ## 1. Test Seviyeleri
 

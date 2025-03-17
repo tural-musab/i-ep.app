@@ -1,8 +1,8 @@
-# Maarif Okul Portalı - Yedekleme ve Geri Yükleme Stratejisi
+# Iqra Eğitim Portalı - Yedekleme ve Geri Yükleme Stratejisi
 
 ## 1. Genel Bakış
 
-Maarif Okul Portalı, çok kiracılı (multi-tenant) bir SaaS uygulaması olarak, farklı okulların verilerini güvenli bir şekilde saklar ve yönetir. Bu dokümantasyon, veri yedekleme, geri yükleme ve taşınabilirlik stratejilerimizi kapsamlı bir şekilde açıklar.
+Iqra Eğitim Portalı, çok kiracılı (multi-tenant) bir SaaS uygulaması olarak, farklı okulların verilerini güvenli bir şekilde saklar ve yönetir. Bu dokümantasyon, veri yedekleme, geri yükleme ve taşınabilirlik stratejilerimizi kapsamlı bir şekilde açıklar.
 
 ## 2. Tenant Bazlı Yedekleme Stratejisi
 

@@ -2,7 +2,7 @@
 
 ## Genel Bakış
 
-Maarif Okul Portalı SaaS, çok kiracılı (multi-tenant) bir mimari üzerine inşa edilmiştir. Bu mimari, farklı eğitim kurumlarının (tenant'lar) aynı uygulama kodu ve altyapı üzerinden, ancak izole edilmiş veri ve konfigürasyonlarla hizmet almasını sağlar. Bu doküman, sistemimizin multi-tenant mimarisinin temel prensiplerini, tasarım kararlarını ve uygulama detaylarını açıklar.
+Iqra Eğitim Portalı SaaS, çok kiracılı (multi-tenant) bir mimari üzerine inşa edilmiştir. Bu mimari, farklı eğitim kurumlarının (tenant'lar) aynı uygulama kodu ve altyapı üzerinden, ancak izole edilmiş veri ve konfigürasyonlarla hizmet almasını sağlar. Bu doküman, sistemimizin multi-tenant mimarisinin temel prensiplerini, tasarım kararlarını ve uygulama detaylarını açıklar.
 
 ## Tenant Tanımı ve Yapısı
 
@@ -64,7 +64,7 @@ CREATE TABLE public.tenant_usage_metrics (
 
 Tenant'lar için iki URL stratejisi desteklenir:
 
-1. **Subdomain Tabanlı**: `okul-adi.maarifportal.com`
+1. **Subdomain Tabanlı**: `okul-adi.i-ep.app`
 2. **Özel Domain**: `portal.okul-adi.edu.tr` (Premium planda)
 
 ### Tenant Tanımlama Süreci
@@ -85,8 +85,8 @@ export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   
   // Ana domain kontrolü
-  const isRootDomain = hostname === 'maarifportal.com' || 
-                        hostname === 'www.maarifportal.com';
+  const isRootDomain = hostname === 'i-ep.app' || 
+                        hostname === 'www.i-ep.app';
   
   if (isRootDomain) {
     // Ana site için işlem yok
@@ -259,7 +259,7 @@ export async function createNewTenant(
 ### Subdomain ve Özel Domain Desteği
 Her tenant için aşağıdaki domain yapıları desteklenmektedir:
 
-1. **Subdomain yapısı**: `{tenant-subdomain}.maarifportal.com`
+1. **Subdomain yapısı**: `{tenant-subdomain}.i-ep.app`
    - Tüm tenantlar için otomatik olarak oluşturulur
    - Tenant oluşturulduğunda subdomain otomatik olarak atanır
    

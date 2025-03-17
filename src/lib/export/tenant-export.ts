@@ -1,5 +1,5 @@
 /**
- * Maarif Okul Portalı - Tenant Veri Dışa Aktarma Modülü
+ * Iqra Eğitim Portalı - Tenant Veri Dışa Aktarma Modülü
  * 
  * Bu modül, kiracı verilerinin CSV, JSON veya Excel formatlarında
  * dışa aktarılması için gerekli fonksiyonları içerir.

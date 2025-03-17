@@ -2,7 +2,7 @@
 
 ## Genel Bakış
 
-Bu doküman, Maarif Okul Portalı'nın kullanıcı topluluğunu oluşturmak, güçlendirmek ve sürdürmek için izlenecek stratejileri tanımlamaktadır. Eğitim kurumları, öğretmenler, öğrenciler ve velilerden oluşan aktif bir topluluk geliştirerek, platformun benimsenmesini hızlandırmayı, kullanıcı deneyimini iyileştirmeyi ve uzun vadeli başarıyı sağlamayı hedefliyoruz.
+Bu doküman, Iqra Eğitim Portalı'nın kullanıcı topluluğunu oluşturmak, güçlendirmek ve sürdürmek için izlenecek stratejileri tanımlamaktadır. Eğitim kurumları, öğretmenler, öğrenciler ve velilerden oluşan aktif bir topluluk geliştirerek, platformun benimsenmesini hızlandırmayı, kullanıcı deneyimini iyileştirmeyi ve uzun vadeli başarıyı sağlamayı hedefliyoruz.
 
 ## Stratejik Hedefler
 
@@ -14,7 +14,7 @@ Bu doküman, Maarif Okul Portalı'nın kullanıcı topluluğunu oluşturmak, gü
 
 ## Hedef Topluluk Segmentleri
 
-Maarif Okul Portalı topluluğu dört ana segmentten oluşmaktadır:
+Iqra Eğitim Portalı topluluğu dört ana segmentten oluşmaktadır:
 
 ### 1. Eğitim Kurumu Yöneticileri
 - Okul müdürleri, yardımcıları ve BT yöneticileri
@@ -67,7 +67,7 @@ Maarif Okul Portalı topluluğu dört ana segmentten oluşmaktadır:
 **Stratejiler:**
 - Referans programı (mevcut kullanıcılardan yeni kullanıcılara)
 - Şampiyon kullanıcı programının başlatılması
-- İlk Maarif Okul Portalı Kullanıcı Konferansı düzenlenmesi
+- İlk Iqra Eğitim Portalı Kullanıcı Konferansı düzenlenmesi
 - Öğretmenler için içerik paylaşım platformu oluşturulması
 
 **Metrikler:**
@@ -87,7 +87,7 @@ Maarif Okul Portalı topluluğu dört ana segmentten oluşmaktadır:
 - Topluluk moderatörleri programı
 - Bölgesel kullanıcı grupları
 - Açık API ve entegrasyon ekosistemi
-- Yıllık Maarif Okul Portalı Eğitim İnovasyon Ödülleri
+- Yıllık Iqra Eğitim Portalı Eğitim İnovasyon Ödülleri
 
 **Metrikler:**
 - Topluluk katılım oranları (forum yazıları, etkinlikler)
@@ -97,7 +97,7 @@ Maarif Okul Portalı topluluğu dört ana segmentten oluşmaktadır:
 
 ## Topluluk Etkileşim Kanalları
 
-### 1. Maarif Topluluğu Portalı
+### 1. Iqra Topluluğu Portalı
 
 Merkezi topluluk platformu şu özelliklere sahip olacaktır:
 
@@ -163,7 +163,7 @@ export const forumCategories = [
   {
     id: 'success-stories',
     title: 'Başarı Hikayeleri',
-    description: 'Maarif Okul Portalı kullanım örnekleri ve sonuçları',
+    description: 'Iqra Eğitim Portalı kullanım örnekleri ve sonuçları',
     subForums: [
       { id: 'case-studies', title: 'Vaka Çalışmaları' },
       { id: 'testimonials', title: 'Kullanıcı Deneyimleri' },
@@ -184,7 +184,7 @@ Düzenli olarak gerçekleştirilecek çevrimiçi etkinlikler:
 
 ### 3. Yüz Yüze Etkinlikler
 
-- **Yıllık Maarif Eğitim Teknolojileri Konferansı**
+- **Yıllık Iqra Eğitim Teknolojileri Konferansı**
 - **Bölgesel Kullanıcı Grubu Buluşmaları**
 - **Eğitim Kurumları Ziyaretleri**
 - **Hack-a-thon**: Eğitim problemlerine yenilikçi çözümler
@@ -218,7 +218,7 @@ Platformun en aktif ve bilgili kullanıcılarının diğer kullanıcılara rehbe
 - Erken erişim yeni özelliklere
 - Özel eğitim oturumları
 - Yıllık şampiyonlar zirvesine katılım
-- Maarif Okul Portalı sertifikasyonu
+- Iqra Eğitim Portalı sertifikasyonu
 
 ```typescript
 // lib/community/champion-program.ts
@@ -487,7 +487,7 @@ Her başarı hikayesi şu bileşenleri içerecektir:
 
 1. **Okul/Kurum Profili**: Büyüklük, tür, lokasyon, öğrenci profili
 2. **Zorluk**: Çözülmeye çalışılan sorun veya hedef
-3. **Çözüm**: Maarif Okul Portalı'nın nasıl uygulandığı
+3. **Çözüm**: Iqra Eğitim Portalı'nın nasıl uygulandığı
 4. **Uygulama**: Süreç, adaptasyon, karşılaşılan zorluklar
 5. **Sonuçlar**: Nicel ve nitel sonuçlar, etkiler
 6. **Dersler**: Edinilen dersler ve tavsiyeler
@@ -533,7 +533,7 @@ Her başarı hikayesi şu bileşenleri içerecektir:
 
 - Bölgesel kullanıcı grupları kurma
 - İçerik paylaşım platformunu ölçeklendirme
-- İlk Maarif Eğitim Teknolojileri Konferansı
+- İlk Iqra Eğitim Teknolojileri Konferansı
 - Topluluk tarafından yönetilen moderasyon sistemi
 
 ### 2025 ve Sonrası: Kendini Sürdüren Ekosistem

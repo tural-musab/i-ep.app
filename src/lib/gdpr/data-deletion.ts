@@ -1,5 +1,5 @@
 /**
- * Maarif Okul Portalı - GDPR/KVKK Veri Silme İşlemleri
+ * Iqra Eğitim Portalı - GDPR/KVKK Veri Silme İşlemleri
  * 
  * Bu modül, GDPR (Genel Veri Koruma Yönetmeliği) ve KVKK (Kişisel Verilerin Korunması Kanunu)
  * kapsamında kullanıcı verilerinin silinmesi, anonimleştirilmesi ve yönetilmesi için

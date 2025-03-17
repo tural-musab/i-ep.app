@@ -6,12 +6,12 @@ export const getApiDocs = () => {
     definition: {
       openapi: '3.0.0',
       info: {
-        title: 'Maarif Okul Portalı API Dokümantasyonu',
+        title: 'Iqra Eğitim Portalı API Dokümantasyonu',
         version: '1.0.0',
-        description: 'Maarif Okul Portalı SaaS için API dokümantasyonu',
+        description: 'Iqra Eğitim Portalı SaaS için API dokümantasyonu',
         contact: {
-          name: 'Maarif Okul Portalı Destek',
-          email: 'destek@i-ep.app',
+          name: 'Iqra Eğitim Portalı Destek',
+          email: 'destek@i-es.app',
         },
       },
       components: {
@@ -30,11 +30,11 @@ export const getApiDocs = () => {
       ],
       servers: [
         {
-          url: 'https://api.i-ep.app',
+          url: 'https://api.i-es.app',
           description: 'Üretim Ortamı',
         },
         {
-          url: 'https://api-dev.i-ep.app',
+          url: 'https://api-dev.i-es.app',
           description: 'Geliştirme Ortamı',
         },
         {

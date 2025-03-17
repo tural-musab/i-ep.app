@@ -1,6 +1,6 @@
 # Domain Yönetimi
 
-Bu belge, Maarif Okul Portalı'nda domain yönetimi, tenant-domain ilişkileri ve domain doğrulama süreçleri hakkında detaylı bilgiler içerir.
+Bu belge, Iqra Eğitim Portalı'nda domain yönetimi, tenant-domain ilişkileri ve domain doğrulama süreçleri hakkında detaylı bilgiler içerir.
 
 ## İçerik
 
@@ -15,11 +15,11 @@ Bu belge, Maarif Okul Portalı'nda domain yönetimi, tenant-domain ilişkileri v
 
 ## Genel Bakış
 
-Maarif Okul Portalı, çok kiracılı (multi-tenant) bir mimari kullanır ve her kiracı (okul) benzersiz bir subdomain üzerinden veya özel domain aracılığıyla erişilebilir. Domain yönetimi, tenant izolasyonu ve erişim kontrolünün önemli bir parçasıdır.
+Iqra Eğitim Portalı, çok kiracılı (multi-tenant) bir mimari kullanır ve her kiracı (okul) benzersiz bir subdomain üzerinden veya özel domain aracılığıyla erişilebilir. Domain yönetimi, tenant izolasyonu ve erişim kontrolünün önemli bir parçasıdır.
 
 Sistem şu domain yapılandırmalarını destekler:
 
-1. **Subdomain**: `okuladi.maarifportal.com`
+1. **Subdomain**: `okuladi.i-ep.app`
 2. **Özel Domain**: `okuladi.com` veya `portal.okuladi.com`
 
 ## Domain Türleri
@@ -85,124 +85,3 @@ Subdomain oluşturma otomatiktir ve doğrulama gerekmez. Sistem, DNS kaydını o
 
 1. **DNS Doğrulama**: Kullanıcı, kendi DNS sağlayıcısında bir CNAME kaydı oluşturmalıdır:
    ```
-   CNAME example.com -> maarifportal.com
-   ```
-
-2. **Doğrulama Kontrolü**: Sistem, düzenli aralıklarla doğrulama durumunu kontrol eder ve doğrulama tamamlandığında domain'i aktifleştirir.
-
-3. **SSL Sertifikası**: Domain doğrulandıktan sonra, Cloudflare otomatik olarak SSL sertifikası sağlar.
-
-## SSL Sertifikaları
-
-Tüm domainler için SSL sertifikaları otomatik olarak Cloudflare tarafından sağlanır. Bu, güvenli HTTPS bağlantıları için gereklidir.
-
-**Özellikler:**
-- Otomatik yenileme
-- Geniş tarayıcı uyumluluğu
-- HTTP/2 desteği
-- Gelişmiş güvenlik özellikleri
-
-## DNS Yapılandırması
-
-### Subdomain DNS Yapılandırması
-
-```
-[subdomain].[base-domain].com. CNAME [app-url]
-```
-
-Örnek:
-```
-okul1.maarifportal.com. CNAME maarifportal.com
-```
-
-### Özel Domain DNS Yapılandırması
-
-```
-[custom-domain].com. CNAME [base-domain].com
-```
-
-veya
-
-```
-portal.[custom-domain].com. CNAME [base-domain].com
-```
-
-## Sorun Giderme
-
-### Yaygın Sorunlar ve Çözümleri
-
-1. **Domain Doğrulama Hatası**
-   
-   Sorun: Domain doğrulama süreci tamamlanamıyor.
-   
-   Çözüm:
-   - DNS önbelleği temizlemeyi bekleyin (24 saate kadar sürebilir)
-   - DNS kayıtlarının doğru yapılandırıldığından emin olun
-   - DNS propagasyonunu kontrol edin (`dig` veya `nslookup` ile)
-
-2. **SSL Hatası**
-   
-   Sorun: SSL sertifikası oluşturulamıyor veya geçersiz.
-   
-   Çözüm:
-   - Domain doğrulamasının tamamlandığından emin olun
-   - Cloudflare'de SSL modunun "Full" olarak ayarlandığını kontrol edin
-   - 24 saat bekleyin, SSL oluşturma zaman alabilir
-
-3. **Subdomain Çakışması**
-   
-   Sorun: Seçilen subdomain zaten kullanımda.
-   
-   Çözüm:
-   - Farklı bir subdomain adı seçin
-   - Mevcut tenant'ın silinmesini bekleyin (eğer eski bir tenant ise)
-
-## API Referansı
-
-### Domain Servisi
-
-```typescript
-// Domain kayıt yapısı
-interface DomainRecord {
-  id: string;
-  tenant_id: string;
-  domain: string;
-  is_primary: boolean;
-  is_verified: boolean;
-  type: 'subdomain' | 'custom';
-  created_at: Date;
-  verified_at?: Date;
-}
-
-// Temel domain işlemleri
-class DomainService {
-  // Subdomain oluştur
-  async createSubdomain(subdomain: string, tenantId: string): Promise<DomainRecord>;
-  
-  // Özel domain ekle
-  async addCustomDomain(domain: string, tenantId: string, isPrimary?: boolean): Promise<DomainRecord>;
-  
-  // Domain yapılandırmasını doğrula
-  async verifyDomain(domainId: string): Promise<boolean>;
-  
-  // Domain sil
-  async deleteDomain(domainId: string): Promise<boolean>;
-  
-  // Tenant'a ait domainleri getir
-  async getDomainsByTenantId(tenantId: string): Promise<DomainRecord[]>;
-  
-  // Primary domain'i değiştir
-  async setPrimaryDomain(domainId: string, tenantId: string): Promise<boolean>;
-}
-```
-
-### Domain API Endpoints
-
-| Endpoint | Metod | Açıklama |
-|----------|-------|----------|
-| `/api/domains` | GET | Tenant'a ait tüm domainleri listeler |
-| `/api/domains/verify/{domainId}` | POST | Domain doğrulama işlemini başlatır |
-| `/api/domains/{domainId}` | DELETE | Domain'i siler |
-| `/api/domains/{domainId}/primary` | PUT | Domain'i primary olarak ayarlar |
-| `/api/domains/subdomain` | POST | Yeni subdomain oluşturur |
-| `/api/domains/custom` | POST | Özel domain ekler | 

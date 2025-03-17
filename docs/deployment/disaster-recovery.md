@@ -2,11 +2,11 @@
 
 ## Genel Bakış
 
-Bu doküman, Maarif Okul Portalı SaaS platformunun beklenmedik bir felaketle karşılaşması durumunda, hizmet sürekliliğini sağlamak ve verileri korumak için izlenecek stratejileri, prosedürleri ve metrikleri tanımlar. Felaketten kurtarma planı, kritik verilerin ve sistemlerin korunması, kesinti sürelerinin minimuma indirilmesi ve normal operasyonlara hızlı geri dönüşün sağlanması amacıyla hazırlanmıştır.
+Bu doküman, Iqra Eğitim Portalı SaaS platformunun beklenmedik bir felaketle karşılaşması durumunda, hizmet sürekliliğini sağlamak ve verileri korumak için izlenecek stratejileri, prosedürleri ve metrikleri tanımlar. Felaketten kurtarma planı, kritik verilerin ve sistemlerin korunması, kesinti sürelerinin minimuma indirilmesi ve normal operasyonlara hızlı geri dönüşün sağlanması amacıyla hazırlanmıştır.
 
 ## Yönetici Özeti
 
-Maarif Okul Portalı Felaketten Kurtarma Planı, çeşitli felaket senaryolarında iş sürekliliğini sağlamak ve veri kaybını en aza indirmek için kapsamlı bir çerçeve sunmaktadır. Plan, farklı abonelik seviyelerine göre ölçeklenebilir hizmet seviyesi hedefleri (RTO ve RPO) tanımlamakta ve modern teknolojik altyapı ile desteklenmektedir.
+Iqra Eğitim Portalı Felaketten Kurtarma Planı, çeşitli felaket senaryolarında iş sürekliliğini sağlamak ve veri kaybını en aza indirmek için kapsamlı bir çerçeve sunmaktadır. Plan, farklı abonelik seviyelerine göre ölçeklenebilir hizmet seviyesi hedefleri (RTO ve RPO) tanımlamakta ve modern teknolojik altyapı ile desteklenmektedir.
 
 Temel hedeflerimiz:
 * **Güvenilirlik**: Kritik eğitim verilerinin korunması ve sürekliliğinin sağlanması
@@ -14,7 +14,7 @@ Temel hedeflerimiz:
 * **Şeffaflık**: Olay sırasında ve sonrasında açık iletişim
 * **Sürekli İyileştirme**: Düzenli testler ve değerlendirmelerle planın güncellenmesi
 
-Planımız, teknik detayların yanı sıra organizasyonel sorumlulukları, iletişim stratejilerini ve yasal gereklilikleri de kapsamaktadır. Bu sayede Maarif Okul Portalı, kullanıcılarına güvenilir ve dayanıklı bir eğitim yönetim platformu sunmaya devam edecektir.
+Planımız, teknik detayların yanı sıra organizasyonel sorumlulukları, iletişim stratejilerini ve yasal gereklilikleri de kapsamaktadır. Bu sayede Iqra Eğitim Portalı, kullanıcılarına güvenilir ve dayanıklı bir eğitim yönetim platformu sunmaya devam edecektir.
 
 ## Temel Prensipler
 
@@ -30,7 +30,7 @@ Felaketten kurtarma stratejimiz aşağıdaki temel prensipler üzerine inşa edi
 
 ### Risk Kategorileri
 
-Maarif Okul Portalı için aşağıdaki risk kategorileri tanımlanmıştır:
+Iqra Eğitim Portalı için aşağıdaki risk kategorileri tanımlanmıştır:
 
 | Risk Kategorisi | Açıklama | Olasılık | Etki |
 |-----------------|----------|----------|------|
@@ -65,7 +65,7 @@ Maarif Okul Portalı için aşağıdaki risk kategorileri tanımlanmıştır:
 
 ## Kurtarma Hedefleri
 
-Maarif Okul Portalı'nın hizmet seviyesi anlaşmaları (SLA) ve tenant beklentileri doğrultusunda aşağıdaki kurtarma hedefleri belirlenmiştir:
+Iqra Eğitim Portalı'nın hizmet seviyesi anlaşmaları (SLA) ve tenant beklentileri doğrultusunda aşağıdaki kurtarma hedefleri belirlenmiştir:
 
 ### Kurtarma Süresi Hedefi (RTO)
 
@@ -142,7 +142,7 @@ export const replicationConfig = {
 
 ### Yüksek Kullanılabilirlik Mimarisi
 
-Maarif Okul Portalı, yüksek kullanılabilirlik sağlamak için aşağıdaki mimari bileşenleri kullanır:
+Iqra Eğitim Portalı, yüksek kullanılabilirlik sağlamak için aşağıdaki mimari bileşenleri kullanır:
 
 #### Veritabanı Yüksek Kullanılabilirliği
 
@@ -152,7 +152,7 @@ Maarif Okul Portalı, yüksek kullanılabilirlik sağlamak için aşağıdaki mi
 
 ```yaml
 # patroni.yml örneği
-scope: maarifportal
+scope: i-es
 namespace: /service/
 name: postgresql0
 
@@ -302,7 +302,7 @@ fi
 BACKUP_DATETIME=$1
 TARGET_DB=$2
 BACKUP_FILE="full_backup_${BACKUP_DATETIME}.dump"
-S3_BACKUP_PATH="s3://maarifportal-backups/postgres/full/${BACKUP_FILE}"
+S3_BACKUP_PATH="s3://i-es-backups/postgres/full/${BACKUP_FILE}"
 
 echo "Kurtarma işlemi başlatılıyor: ${BACKUP_FILE} -> ${TARGET_DB}"
 
@@ -751,7 +751,7 @@ export const communicationTemplates = {
     body: `
 Değerli {{tenant.name}} Yöneticisi,
 
-Maarif Okul Portalı'nın performansını ve güvenliğini artırmak için {{startDate}} tarihinde {{startTime}} - {{endTime}} saatleri arasında planlı bakım çalışması gerçekleştireceğiz.
+Iqra Eğitim Portalı'nın performansını ve güvenliğini artırmak için {{startDate}} tarihinde {{startTime}} - {{endTime}} saatleri arasında planlı bakım çalışması gerçekleştireceğiz.
 
 **Bakım Detayları:**
 - Tarih: {{startDate}}
@@ -764,7 +764,7 @@ Bakım sırasında sisteme erişiminiz kısıtlı olabilir veya kısa süreli ke
 Sorularınız için destek ekibimize 7/24 ulaşabilirsiniz.
 
 Saygılarımızla,
-Maarif Okul Portalı Ekibi
+Iqra Eğitim Portalı Ekibi
 `
   },
   
@@ -773,7 +773,7 @@ Maarif Okul Portalı Ekibi
     body: `
 Değerli {{tenant.name}} Yöneticisi,
 
-Maarif Okul Portalı'nda şu anda {{incidentType}} kaynaklı bir sorun yaşanmaktadır.
+Iqra Eğitim Portalı'nda şu anda {{incidentType}} kaynaklı bir sorun yaşanmaktadır.
 
 **Durum Bilgisi:**
 - Başlangıç Zamanı: {{startTime}}
@@ -783,12 +783,12 @@ Maarif Okul Portalı'nda şu anda {{incidentType}} kaynaklı bir sorun yaşanmak
 
 {{statusDetails}}
 
-Teknik ekibimiz sorunu çözmek için çalışmaktadır. Gelişmeleri status.maarifportal.com adresinden takip edebilirsiniz.
+Teknik ekibimiz sorunu çözmek için çalışmaktadır. Gelişmeleri status.i-ep.app adresinden takip edebilirsiniz.
 
 Bu durumdan dolayı özür dileriz. Anlayışınız için teşekkür ederiz.
 
 Saygılarımızla,
-Maarif Okul Portalı Ekibi
+Iqra Eğitim Portalı Ekibi
 `
   },
   
@@ -810,7 +810,7 @@ Değerli {{tenant.name}} Yöneticisi,
 Yaşanan kesintiden dolayı özür dileriz. Hizmet kalitemizi artırmak için gerekli önlemleri alıyoruz. Herhangi bir sorunla karşılaşırsanız 7/24 destek ekibimize ulaşabilirsiniz.
 
 Saygılarımızla,
-Maarif Okul Portalı Ekibi
+Iqra Eğitim Portalı Ekibi
 `
   },
   
@@ -819,7 +819,7 @@ Maarif Okul Portalı Ekibi
     body: `
 Değerli {{tenant.name}} Yöneticisi,
 
-Maarif Okul Portalı'nda {{breachDate}} tarihinde bir veri güvenliği olayı tespit edilmiştir. Bu olay, sisteminize veya verilerinize erişimi etkilemiş olabilir.
+Iqra Eğitim Portalı'nda {{breachDate}} tarihinde bir veri güvenliği olayı tespit edilmiştir. Bu olay, sisteminize veya verilerinize erişimi etkilemiş olabilir.
 
 **Önemli Bilgiler:**
 - Tespit Tarihi: {{detectionDate}}
@@ -833,7 +833,7 @@ KVKK düzenlemeleri gereğince bu bildirimi yapma zorunluluğumuz bulunmaktadır
 Şifrenizi değiştirmenizi ve sistemde şüpheli aktivite görürseniz derhal bildirmenizi rica ederiz.
 
 Saygılarımızla,
-Maarif Okul Portalı Güvenlik Ekibi
+Iqra Eğitim Portalı Güvenlik Ekibi
 `
   }
 };
@@ -1103,7 +1103,7 @@ export async function evaluateDRPerformanceKPIs(
 
 ### KVKK Uyumluluğu
 
-Maarif Okul Portalı, felaketten kurtarma planlamasında KVKK (Kişisel Verilerin Korunması Kanunu) gerekliliklerine uymak için aşağıdaki önlemleri almaktadır:
+Iqra Eğitim Portalı, felaketten kurtarma planlamasında KVKK (Kişisel Verilerin Korunması Kanunu) gerekliliklerine uymak için aşağıdaki önlemleri almaktadır:
 
 1. **Veri Bütünlüğü ve Gizliliği**:
    * Tüm yedekler şifrelenerek saklanır

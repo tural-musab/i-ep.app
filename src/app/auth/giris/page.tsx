@@ -109,7 +109,7 @@ export default function GirisPage() {
         <div className="text-center">
           <Image
             src="/logo.svg"
-            alt="Maarif Okul Portalı"
+            alt="Iqra Eğitim Portalı"
             width={100}
             height={100}
             className="mx-auto h-24 w-auto"
@@ -118,7 +118,7 @@ export default function GirisPage() {
             Hesabınıza Giriş Yapın
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Maarif Okul Portalı'na hoş geldiniz
+            Iqra Eğitim Portalı'na hoş geldiniz
           </p>
         </div>
         

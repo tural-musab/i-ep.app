@@ -1,8 +1,8 @@
-# Maarif Okul Portalı SaaS - Proje Planı
+# Iqra Eğitim Portalı SaaS - Proje Planı
 
 ## Proje Özeti
 
-Maarif Okul Portalı, eğitim kurumları için geliştirilen çok kiracılı (multi-tenant) SaaS modelli bir okul yönetim sistemidir. Bu platform, Türkiye eğitim sistemine uygun olarak tasarlanmış olup, her eğitim kurumunun kendi alt alan adı (subdomain) veya özel alan adı üzerinden hizmet almasını sağlar.
+Iqra Eğitim Portalı, eğitim kurumları için geliştirilen çok kiracılı (multi-tenant) SaaS modelli bir okul yönetim sistemidir. Bu platform, Türkiye eğitim sistemine uygun olarak tasarlanmış olup, her eğitim kurumunun kendi alt alan adı (subdomain) veya özel alan adı üzerinden hizmet almasını sağlar.
 
 Sistem, Next.js 14, TypeScript, Tailwind CSS ve Supabase teknolojilerini kullanarak modern ve ölçeklenebilir bir mimari üzerine inşa edilmiştir. Proje, MVP (Minimum Viable Product) yaklaşımıyla başlayıp kademeli olarak genişletilecek şekilde planlanmıştır.
 
@@ -17,12 +17,12 @@ Sistem, Next.js 14, TypeScript, Tailwind CSS ve Supabase teknolojilerini kullana
 
 ## Abonelik Modeli
 
-Maarif Okul Portalı üç farklı abonelik planı sunacaktır:
+Iqra Eğitim Portalı üç farklı abonelik planı sunacaktır:
 
 1. **Ücretsiz Plan**
    - 30 öğrenciye kadar
    - Temel özellikler
-   - Subdomain (okul.maarifportal.com)
+   - Subdomain (okul.i-ep.app)
    - Topluluk desteği
 
 2. **Standart Plan**

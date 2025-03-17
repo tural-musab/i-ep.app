@@ -1,10 +1,9 @@
-
 ## Kullanıcı Deneyimi İzleme Planı (Yeni Eklendi)
 
 ```markdown
 # Kullanıcı Deneyimi İzleme Planı
 
-Maarif Okul Portalı SaaS çözümü için kapsamlı kullanıcı deneyimi izleme planı, kullanıcıların nasıl etkileşimde bulunduğunu anlamak, sorunları tespit etmek ve ürünü sürekli iyileştirmek için uygulanacaktır.
+Iqra Eğitim Portalı SaaS çözümü için kapsamlı kullanıcı deneyimi izleme planı, kullanıcıların nasıl etkileşimde bulunduğunu anlamak, sorunları tespit etmek ve ürünü sürekli iyileştirmek için uygulanacaktır.
 
 ## 1. İzleme Hedefleri
 

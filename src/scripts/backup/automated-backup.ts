@@ -1,5 +1,5 @@
 /**
- * Maarif Okul Portalı Otomatik Yedekleme Betiği
+ * Iqra Eğitim Portalı Otomatik Yedekleme Betiği
  * 
  * Bu betik, tenant verilerini otomatik olarak yedeklemek için kullanılır.
  * Cron görevi olarak çalıştırılmak üzere tasarlanmıştır.
@@ -37,7 +37,7 @@ const execPromise = promisify(exec);
 const BACKUP_CONFIG = {
   LOCAL_BACKUP_DIR: process.env.LOCAL_BACKUP_DIR || './backups',
   REMOTE_BACKUP_ENABLED: process.env.REMOTE_BACKUP_ENABLED === 'true',
-  S3_BUCKET: process.env.S3_BUCKET_NAME || 'maarif-okul-portali-backups',
+  S3_BUCKET: process.env.S3_BUCKET_NAME || 'i-es-app-backups',
   S3_PREFIX: process.env.S3_PREFIX || 'database-backups',
   ENCRYPTION_KEY: process.env.BACKUP_ENCRYPTION_KEY,
   ENCRYPTION_ENABLED: process.env.BACKUP_ENCRYPTION_ENABLED === 'true',
@@ -76,7 +76,7 @@ async function runBackup() {
     
     if (args.help) {
       console.log(`
-        Maarif Okul Portalı Otomatik Yedekleme Aracı
+        Iqra Eğitim Portalı Otomatik Yedekleme Aracı
         
         Kullanım: npm run backup:auto [--type=full|incremental] [--tenant=tenant_id] [--dryRun]
         

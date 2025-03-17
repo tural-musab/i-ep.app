@@ -4,7 +4,7 @@ export default function ComponentsDocsPage() {
       <h1 className="text-4xl font-bold mb-6">UI Bileşenleri</h1>
       
       <p className="text-lg mb-8">
-        Bu bölümde, Maarif Okul Portalı SaaS projesinde kullanılan UI bileşenlerinin 
+        Bu bölümde, Iqra Eğitim Portalı SaaS projesinde kullanılan UI bileşenlerinin 
         dokümantasyonunu bulabilirsiniz. Bu bileşenler, tutarlı bir kullanıcı deneyimi 
         sağlamak ve geliştirme sürecini hızlandırmak için tasarlanmıştır.
       </p>

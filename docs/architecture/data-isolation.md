@@ -2,7 +2,7 @@
 
 ## Genel Bakış
 
-Maarif Okul Portalı SaaS, eğitim kurumlarının hassas verilerini barındıran bir platform olacağından, güçlü bir veri izolasyon stratejisi kritik öneme sahiptir. Bu doküman, farklı eğitim kurumlarının (tenant'ların) verilerinin birbirinden nasıl izole edileceğini ve bu izolasyonun nasıl sağlanacağını detaylandırır.
+Iqra Eğitim Portalı SaaS, eğitim kurumlarının hassas verilerini barındıran bir platform olacağından, güçlü bir veri izolasyon stratejisi kritik öneme sahiptir. Bu doküman, farklı eğitim kurumlarının (tenant'ların) verilerinin birbirinden nasıl izole edileceğini ve bu izolasyonun nasıl sağlanacağını detaylandırır.
 
 ## Temel Prensipler
 
@@ -16,7 +16,7 @@ Veri izolasyon stratejimiz aşağıdaki prensiplere dayanmaktadır:
 
 ## İzolasyon Modelleri ve Uygulama
 
-Maarif Okul Portalı, aşağıdaki izolasyon modellerini hibrit bir yaklaşımla uygular:
+Iqra Eğitim Portalı, aşağıdaki izolasyon modellerini hibrit bir yaklaşımla uygular:
 
 ### 1. Veritabanı Şema İzolasyonu
 
@@ -397,7 +397,7 @@ async function importTenantData(
 
 ## KVKK Uyumluluğu ve Veri İzolasyonu
 
-Maarif Okul Portalı, Kişisel Verilerin Korunması Kanunu (KVKK) uyumluluğu için veri izolasyonunu şu şekilde kullanır:
+Iqra Eğitim Portalı, Kişisel Verilerin Korunması Kanunu (KVKK) uyumluluğu için veri izolasyonunu şu şekilde kullanır:
 
 1. **Veri Lokalizasyonu**: Türkiye sınırları içinde veri saklama
 2. **Erişim Kontrolü**: Kişisel verilere yalnızca yetkili personelin erişimi

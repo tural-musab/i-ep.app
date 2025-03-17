@@ -128,7 +128,7 @@ export default function KayitPage() {
           <div>
             <Image
               src="/logo.png"
-              alt="Maarif Okul Portalı"
+              alt="Iqra Eğitim Portalı"
               width={100}
               height={100}
               className="mx-auto h-24 w-auto"
@@ -174,7 +174,7 @@ export default function KayitPage() {
         <div className="text-center">
           <Image
             src="/logo.png"
-            alt="Maarif Okul Portalı"
+            alt="Iqra Eğitim Portalı"
             width={100}
             height={100}
             className="mx-auto h-24 w-auto"

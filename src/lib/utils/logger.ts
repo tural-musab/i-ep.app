@@ -1,5 +1,5 @@
 /**
- * Maarif Okul Portalı - Logger Modülü
+ * Iqra Eğitim Portalı - Logger Modülü
  * 
  * Bu modül, uygulama genelinde tutarlı loglama sağlar.
  * Geliştirme ortamında konsola, üretim ortamında ise

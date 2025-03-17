@@ -1,5 +1,5 @@
 /**
- * Maarif Okul Portalı - Yedekten Geri Dönme Servisi
+ * Iqra Eğitim Portalı - Yedekten Geri Dönme Servisi
  * 
  * Bu modül, yedeklerden geri dönme (restore) işlemleri için gerekli
  * fonksiyonları içerir. Tam tenant geri yükleme ve kısmi geri yükleme
@@ -23,12 +23,13 @@ const logger = getLogger('restore-service');
 // Yapılandırma sabitleri
 const CONFIG = {
   RESTORE_TEMP_DIR: process.env.RESTORE_TEMP_DIR || './restore_temp',
-  ENCRYPTION_KEY: process.env.BACKUP_ENCRYPTION_KEY || '',
-  S3_BUCKET: process.env.S3_BUCKET_NAME || 'maarif-okul-portal-backups',
+  ENCRYPTION_KEY: process.env.BACKUP_ENCRYPTION_KEY,
+  S3_BUCKET: process.env.S3_BUCKET_NAME || 'i-es-app-backups',
+  S3_PREFIX: process.env.S3_PREFIX || 'tenant-backups',
   S3_REGION: process.env.AWS_REGION || 'eu-central-1',
   DB_HOST: process.env.DB_HOST || 'localhost',
   DB_USER: process.env.DB_USER || 'postgres',
-  DB_NAME: process.env.DB_NAME || 'maarif',
+  DB_NAME: process.env.DB_NAME || 'i-es',
   DB_PORT: process.env.DB_PORT || '5432',
   DB_PASSWORD: process.env.DB_PASSWORD || '',
   SLACK_WEBHOOK: process.env.SLACK_WEBHOOK_URL,

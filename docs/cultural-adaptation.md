@@ -2,7 +2,7 @@
 
 ## Genel Bakış
 
-Bu doküman, Maarif Okul Portalı'nın Türkiye'nin farklı bölgelerindeki çeşitli eğitim kurumlarının kültürel ve bölgesel ihtiyaçlarına uyum sağlaması için gerekli stratejileri ve uygulamaları içermektedir. Platformun her okul tipine, her bölgeye ve farklı kültürel özelliklere sahip kullanıcılara hizmet verebilmesi için adaptasyon planını tanımlar.
+Bu doküman, Iqra Eğitim Portalı'nın Türkiye'nin farklı bölgelerindeki çeşitli eğitim kurumlarının kültürel ve bölgesel ihtiyaçlarına uyum sağlaması için gerekli stratejileri ve uygulamaları içermektedir. Platformun her okul tipine, her bölgeye ve farklı kültürel özelliklere sahip kullanıcılara hizmet verebilmesi için adaptasyon planını tanımlar.
 
 ## Stratejik Hedefler
 
@@ -1034,7 +1034,7 @@ export const regionalTrainingPlans: Record<string, RegionalTrainingPlan> = {
     materials: [
       {
         type: 'video',
-        title: 'Maarif Okul Portalı Temel Kullanım',
+        title: 'Iqra Eğitim Portalı Temel Kullanım',
         isRegionallyAdapted: false
       },
       {
@@ -1069,7 +1069,7 @@ export const regionalTrainingPlans: Record<string, RegionalTrainingPlan> = {
     materials: [
       {
         type: 'presentation',
-        title: 'Maarif Okul Portalı Temel Eğitim',
+        title: 'Iqra Eğitim Portalı Temel Eğitim',
         isRegionallyAdapted: true
       },
       {
@@ -1104,7 +1104,7 @@ export const regionalTrainingPlans: Record<string, RegionalTrainingPlan> = {
     materials: [
       {
         type: 'presentation',
-        title: 'Maarif Okul Portalı Temel Eğitim',
+        title: 'Iqra Eğitim Portalı Temel Eğitim',
         isRegionallyAdapted: true
       },
       {
@@ -1366,7 +1366,7 @@ export const multilingualSupportPlans: MultilingualSupportPlan[] = [
 
 ### Sonuç
 
-Maarif Okul Portalı'nın kültürel ve bölgesel farklılıklar yönetimi stratejisi, Türkiye'nin zengin kültürel çeşitliliğini ve bölgesel ihtiyaçlarını göz önünde bulundurarak, her bölgedeki eğitim kurumlarına en iyi şekilde hizmet vermeyi amaçlamaktadır. Bu stratejinin başarılı bir şekilde uygulanması, platformun tüm ülke genelinde benimsenmesini hızlandıracak, kullanıcı memnuniyetini artıracak ve eğitim teknolojilerinin kapsayıcı bir şekilde yaygınlaşmasına katkıda bulunacaktır.
+Iqra Eğitim Portalı'nın kültürel ve bölgesel farklılıklar yönetimi stratejisi, Türkiye'nin zengin kültürel çeşitliliğini ve bölgesel ihtiyaçlarını göz önünde bulundurarak, her bölgedeki eğitim kurumlarına en iyi şekilde hizmet vermeyi amaçlamaktadır. Bu stratejinin başarılı bir şekilde uygulanması, platformun tüm ülke genelinde benimsenmesini hızlandıracak, kullanıcı memnuniyetini artıracak ve eğitim teknolojilerinin kapsayıcı bir şekilde yaygınlaşmasına katkıda bulunacaktır.
 
 Kültürel adaptasyon, tek seferlik bir proje değil, sürekli gelişen ve iyileştirilen bir süreçtir. Kullanıcı geri bildirimleri, bölgesel ihtiyaçlardaki değişimler ve yeni teknolojik imkanlar doğrultusunda bu strateji düzenli olarak güncellenecek ve geliştirilecektir.
 

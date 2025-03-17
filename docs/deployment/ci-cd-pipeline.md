@@ -2,11 +2,11 @@
 
 ## Genel Bakış
 
-Bu doküman, Maarif Okul Portalı SaaS platformu için CI/CD (Sürekli Entegrasyon ve Sürekli Dağıtım) pipeline'ının tasarımını, yapılandırmasını ve iş akışlarını detaylandırmaktadır. CI/CD pipeline, kod değişikliklerinin güvenli, otomatik ve tutarlı bir şekilde test edilmesini ve dağıtılmasını sağlayarak, geliştirme süreçlerini hızlandırır ve yazılım kalitesini artırır.
+Bu doküman, Iqra Eğitim Portalı SaaS platformu için CI/CD (Sürekli Entegrasyon ve Sürekli Dağıtım) pipeline'ının tasarımını, yapılandırmasını ve iş akışlarını detaylandırmaktadır. CI/CD pipeline, kod değişikliklerinin güvenli, otomatik ve tutarlı bir şekilde test edilmesini ve dağıtılmasını sağlayarak, geliştirme süreçlerini hızlandırır ve yazılım kalitesini artırır.
 
 ## Temel Prensipler
 
-Maarif Okul Portalı CI/CD pipeline'ı aşağıdaki prensiplere dayanmaktadır:
+Iqra Eğitim Portalı CI/CD pipeline'ı aşağıdaki prensiplere dayanmaktadır:
 
 1. **Otomatizasyon**: Manuel müdahaleleri en aza indirerek tüm entegrasyon ve dağıtım süreçlerini otomatikleştirme
 2. **Güvenlik**: Her aşamada güvenlik kontrolleri ve savunma katmanları ekleme
@@ -20,7 +20,7 @@ Maarif Okul Portalı CI/CD pipeline'ı aşağıdaki prensiplere dayanmaktadır:
 
 ### Genel Mimari
 
-Maarif Okul Portalı için aşağıdaki CI/CD mimarisi kullanılmaktadır:
+Iqra Eğitim Portalı için aşağıdaki CI/CD mimarisi kullanılmaktadır:
 
 [Kod Değişiklikleri] → [GitHub] → [GitHub Actions] → [Test, Build, Analiz] → [Dağıtım]
 ↓
@@ -43,7 +43,7 @@ Maarif Okul Portalı için aşağıdaki CI/CD mimarisi kullanılmaktadır:
 
 ### Branching Stratejisi
 
-Maarif Okul Portalı, GitFlow'un özelleştirilmiş bir versiyonunu kullanmaktadır:
+Iqra Eğitim Portalı, GitFlow'un özelleştirilmiş bir versiyonunu kullanmaktadır:
 
 - **main**: Üretim ortamı kodu (korumalı)
 - **develop**: Geliştirme ortamı kodu
@@ -212,25 +212,25 @@ jobs:
 
 ### Ortamlar
 
-Maarif Okul Portalı, aşağıdaki ortamlara sahiptir:
+Iqra Eğitim Portalı, aşağıdaki ortamlara sahiptir:
 
 1. **Geliştirme (Development)**: Geliştirme ve entegrasyon için
-   - URL: dev.maarifportal.com
+   - URL: dev.i-ep.app
    - Dalı: develop
    - Otomatik dağıtım: Her commit sonrası
 
 2. **Staging (UAT)**: Kullanıcı kabul testleri için
-   - URL: staging.maarifportal.com
+   - URL: staging.i-ep.app
    - Dalı: release/*
    - Otomatik dağıtım: Her release dalı güncellemesinde
 
 3. **Üretim (Production)**: Canlı ortam
-   - URL: *.maarifportal.com
+   - URL: *.i-ep.app
    - Dalı: main
    - Otomatik dağıtım: Manuel onay sonrası
 
 4. **Önizleme (Preview)**: PR'lar için geçici ortamlar
-   - URL: pr-{number}.maarifportal.com
+   - URL: pr-{number}.i-ep.app
    - Dalı: PR dalları
    - Otomatik dağıtım: Her PR güncellemesinde
 
@@ -308,7 +308,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: maarifportal-backend
+          ECR_REPOSITORY: i-es-backend
           IMAGE_TAG: ${{ github.sha }}
         run: |
           cd backend
@@ -333,8 +333,8 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: infrastructure/ecs/task-definition-dev.json
-          service: maarifportal-backend-dev
-          cluster: maarifportal-dev
+          service: i-es-backend-dev
+          cluster: i-es-dev
           image: ${{ needs.build-and-push.outputs.image }}
           wait-for-service-stability: true
       
@@ -343,8 +343,8 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: infrastructure/ecs/task-definition-prod.json
-          service: maarifportal-backend-prod
-          cluster: maarifportal-prod
+          service: i-es-backend-prod
+          cluster: i-es-prod
           image: ${{ needs.build-and-push.outputs.image }}
           wait-for-service-stability: true
 ```
@@ -548,7 +548,7 @@ export function isFeatureEnabled(
 
 ## Tenant Dağıtım Stratejisi
 
-Maarif Okul Portalı, multi-tenant bir yapıya sahip olduğu için, dağıtım stratejisi tenant'ları korumak üzere özel olarak tasarlanmıştır:
+Iqra Eğitim Portalı, multi-tenant bir yapıya sahip olduğu için, dağıtım stratejisi tenant'ları korumak üzere özel olarak tasarlanmıştır:
 
 ### Tenant Izolasyonu
 
@@ -989,12 +989,12 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Build Docker image
-        run: docker build -t maarifportal-backend:${{ github.sha }} ./backend
+        run: docker build -t i-es-backend:${{ github.sha }} ./backend
       
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'maarifportal-backend:${{ github.sha }}'
+          image-ref: 'i-es-backend:${{ github.sha }}'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
@@ -1111,7 +1111,7 @@ jobs:
           # package-lock.json dosyasını optimize et
           npm ci
           npm dedupe
-          git config --local user.email "ci-bot@maarifportal.com"
+          git config --local user.email "ci-bot@i-ep.app"
           git config --local user.name "CI Bot"
           git add package-lock.json
           git commit -m "Optimize package-lock.json for better caching"
@@ -1157,7 +1157,7 @@ CI/CD pipeline'ı kullanan geliştiriciler için dokümantasyon:
 # Geliştirici CI/CD Kılavuzu
 
 ## Genel Bakış
-Maarif Okul Portalı, geliştirme süreçlerini hızlandırmak ve kod kalitesini artırmak için otomatik bir CI/CD pipeline kullanmaktadır. Bu dokümantasyon, pipeline'ın nasıl çalıştığını ve geliştirme sürecinde nasıl kullanılacağını açıklar.
+Iqra Eğitim Portalı, geliştirme süreçlerini hızlandırmak ve kod kalitesini artırmak için otomatik bir CI/CD pipeline kullanmaktadır. Bu dokümantasyon, pipeline'ın nasıl çalıştığını ve geliştirme sürecinde nasıl kullanılacağını açıklar.
 
 ## Branching Stratejisi
 - `main`: Üretim kodu (korumalı)
@@ -1222,14 +1222,14 @@ Type '{ prop1: string; }' is missing the following properties from type 'YourCom
 **Çözüm**: Eksik props'ları ekleyin veya interfacenizi güncelleyin.
 
 ## Ortamlar
-- **Dev**: [dev.maarifportal.com](https://dev.maarifportal.com)
-- **Staging**: [staging.maarifportal.com](https://staging.maarifportal.com)
-- **Production**: [maarifportal.com](https://maarifportal.com)
+- **Dev**: [dev.i-ep.app](https://dev.i-ep.app)
+- **Staging**: [staging.i-ep.app](https://staging.i-ep.app)
+- **Production**: [i-ep.app](https://i-ep.app)
 
 ## Yardım ve Destek
 CI/CD pipeline ile ilgili sorunlar için:
 - Slack kanalı: #ci-cd-support
-- E-posta: devops@maarifportal.com
+- E-posta: devops@i-ep.app
 ```
 
 ### İyileştirme ve Yol Haritası
@@ -1319,11 +1319,11 @@ jobs:
 
 | Sorumlu Alan | Ekip | İletişim |
 |--------------|------|----------|
-| CI Pipeline | DevOps Ekibi | devops@maarifportal.com |
-| Deployment | Platform Ekibi | platform@maarifportal.com |
-| Test Otomasyonu | QA Ekibi | qa@maarifportal.com |
-| Güvenlik Taramaları | Güvenlik Ekibi | security@maarifportal.com |
-| Code Review | Geliştirme Ekibi | dev@maarifportal.com |
+| CI Pipeline | DevOps Ekibi | devops@i-ep.app |
+| Deployment | Platform Ekibi | platform@i-ep.app |
+| Test Otomasyonu | QA Ekibi | qa@i-ep.app |
+| Güvenlik Taramaları | Güvenlik Ekibi | security@i-ep.app |
+| Code Review | Geliştirme Ekibi | dev@i-ep.app |
 
 #### İlgili Kaynaklar
 * [Felaketten Kurtarma Planı](/docs/deployment/disaster-recovery.md)

@@ -1,6 +1,6 @@
-# Maarif Okul Portalı Kod Stil Rehberi
+# Iqra Eğitim Portalı Kod Stil Rehberi
 
-Bu rehber, Maarif Okul Portalı SaaS projesi için kod yazım standartlarını tanımlar. Tutarlı bir kod stili sürdürmek, kod okunabilirliğini artırır ve bakımı kolaylaştırır.
+Bu rehber, Iqra Eğitim Portalı SaaS projesi için kod yazım standartlarını tanımlar. Tutarlı bir kod stili sürdürmek, kod okunabilirliğini artırır ve bakımı kolaylaştırır.
 
 ## Genel Prensipler
 

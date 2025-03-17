@@ -161,7 +161,7 @@ SLA ihlali durumunda kredi talep süreci aşağıdaki şekilde işleyecektir:
 
 1. Kullanıcı, ihlali tespit ettikten sonra 30 gün içinde yazılı olarak talepte bulunmalıdır
 2. Talep, destekleyici verileri (tarih/saat, etkilenen işlevler, hata mesajları) içermelidir
-3. Maarif Okul Portalı ekibi talebi 10 iş günü içinde değerlendirecektir
+3. Iqra Eğitim Portalı ekibi talebi 10 iş günü içinde değerlendirecektir
 4. Onaylanan krediler, bir sonraki fatura dönemine indirim olarak yansıtılacaktır
 5. Yıllık ödeme yapan müşteriler için, kredi abonelik süresine eklenecektir
 
@@ -179,7 +179,7 @@ Aşağıdaki durumlar SLA taahhütleri dışında tutulur:
 
 ## SLA Değişiklikleri
 
-Maarif Okul Portalı, bu SLA'da değişiklik yapma hakkını saklı tutar. Değişiklikler aşağıdaki şekilde bildirilecektir:
+Iqra Eğitim Portalı, bu SLA'da değişiklik yapma hakkını saklı tutar. Değişiklikler aşağıdaki şekilde bildirilecektir:
 
 | Plan | Bildirim Süresi |
 |------|-----------------|
@@ -193,7 +193,7 @@ Değişiklikler, e-posta ve platform içi bildirimlerle kullanıcılara iletilec
 
 ### Sistem İzleme
 
-Maarif Okul Portalı, aşağıdaki izleme altyapısını kullanarak hizmet seviyelerini sürekli olarak izler:
+Iqra Eğitim Portalı, aşağıdaki izleme altyapısını kullanarak hizmet seviyelerini sürekli olarak izler:
 
 ```typescript
 // monitoring/config.ts örneği
@@ -201,14 +201,14 @@ export const monitoringConfig = {
   uptimeChecks: [
     {
       name: 'Main Application',
-      endpoint: 'https://app.maarifportal.com/api/health',
+      endpoint: 'https://app.i-ep.app/api/health',
       interval: 60, // saniye
       regions: ['eu-west-1', 'eu-central-1', 'eu-south-1'],
       alertThreshold: 120, // saniye
     },
     {
       name: 'Authentication Service',
-      endpoint: 'https://auth.maarifportal.com/health',
+      endpoint: 'https://auth.i-ep.app/health',
       interval: 30,
       regions: ['eu-west-1', 'eu-central-1', 'eu-south-1'],
       alertThreshold: 60,
@@ -233,7 +233,7 @@ export const monitoringConfig = {
     },
     {
       type: 'email',
-      recipients: ['oncall@maarifportal.com'],
+      recipients: ['oncall@i-ep.app'],
       severity: ['critical', 'high', 'medium'],
     },
     {
@@ -248,15 +248,15 @@ export const monitoringConfig = {
     levels: [
       {
         timeout: 10, // dakika
-        contacts: ['primary-oncall@maarifportal.com'],
+        contacts: ['primary-oncall@i-ep.app'],
       },
       {
         timeout: 20,
-        contacts: ['secondary-oncall@maarifportal.com', '+905XXXXXXXXX'],
+        contacts: ['secondary-oncall@i-ep.app', '+905XXXXXXXXX'],
       },
       {
         timeout: 30,
-        contacts: ['cto@maarifportal.com', '+905XXXXXXXXX'],
+        contacts: ['cto@i-ep.app', '+905XXXXXXXXX'],
       }
     ]
   }
@@ -302,7 +302,7 @@ Bir kesinti veya performans sorunu tespit edildiğinde izlenecek prosedür:
 
 ### Düzenli SLA Performans Değerlendirmesi
 
-Maarif Okul Portalı, SLA performansını sürekli olarak değerlendirir ve iyileştirir:
+Iqra Eğitim Portalı, SLA performansını sürekli olarak değerlendirir ve iyileştirir:
 
 - **Aylık Gözden Geçirme**: Operasyonel ekip, aylık SLA performans metriklerini gözden geçirir
 - **Çeyrek Dönem Değerlendirmesi**: Yönetim ekibi, çeyrek dönemlik SLA eğilimlerini analiz eder
@@ -323,7 +323,7 @@ Bu geri bildirimler, SLA taahhütlerinin ve hizmet kalitesinin iyileştirilmesi 
 
 ### Felaket Kurtarma Planı
 
-Maarif Okul Portalı, geniş çaplı kesintilere karşı kapsamlı bir felaket kurtarma planına sahiptir:
+Iqra Eğitim Portalı, geniş çaplı kesintilere karşı kapsamlı bir felaket kurtarma planına sahiptir:
 
 ```typescript
 // recovery/disaster-recovery-config.ts örneği
@@ -344,7 +344,7 @@ export const disasterRecoveryConfig = {
     },
     storage: {
       type: 's3',
-      buckets: ['maarifportal-prod-data', 'maarifportal-prod-files'],
+      buckets: ['i-es-prod-data', 'i-es-prod-files'],
       replicationEnabled: true,
     }
   },
@@ -365,7 +365,7 @@ export const disasterRecoveryConfig = {
     },
     storage: {
       type: 's3',
-      buckets: ['maarifportal-dr-data', 'maarifportal-dr-files'],
+      buckets: ['i-es-dr-data', 'i-es-dr-files'],
     }
   },
   
@@ -393,7 +393,7 @@ Felaket kurtarma planı hakkında detaylı bilgi için [Felaketten Kurtarma Plan
 
 ### İş Sürekliliği Stratejisi
 
-Maarif Okul Portalı, iş sürekliliğini sağlamak için:
+Iqra Eğitim Portalı, iş sürekliliğini sağlamak için:
 
 - Çoklu bölge dağıtımı (EU-West ve EU-Central)
 - Otomatik yük dengeleme ve ölçeklendirme
@@ -423,10 +423,10 @@ SLA taahhütlerinin karşılanabilmesi için müşterilerin aşağıdaki sorumlu
 
 | Plan | Kanal | İletişim Detayları | Yanıt Beklentisi |
 |------|-------|-------------------|------------------|
-| **Free** | E-posta | support@maarifportal.com | 24 iş saati |
-| **Standard** | E-posta | support@maarifportal.com | 8-16 iş saati |
+| **Free** | E-posta | support@i-ep.app | 24 iş saati |
+| **Standard** | E-posta | support@i-ep.app | 8-16 iş saati |
 |  | İletişim Formu | Portal üzerinden | 8-16 iş saati |
-| **Premium** | E-posta | premium-support@maarifportal.com | 2-8 saat |
+| **Premium** | E-posta | premium-support@i-ep.app | 2-8 saat |
 |  | İletişim Formu | Portal üzerinden | 2-8 saat |
 |  | Telefon | +90 212 XXX XX XX | Anında (7/24) |
 
@@ -437,32 +437,32 @@ Sorunlar çözülmediğinde veya SLA ihlali durumunda izlenecek eskalasyon adım
 #### Premium Plan
 
 1. **Seviye 1**: Destek Yöneticisi
-   - İletişim: support-manager@maarifportal.com
+   - İletişim: support-manager@i-ep.app
    - Yanıt Beklentisi: 2 saat
 
 2. **Seviye 2**: Teknik Operasyonlar Direktörü
-   - İletişim: technical-ops@maarifportal.com
+   - İletişim: technical-ops@i-ep.app
    - Yanıt Beklentisi: 4 saat
 
 3. **Seviye 3**: CTO
-   - İletişim: cto@maarifportal.com
+   - İletişim: cto@i-ep.app
    - Yanıt Beklentisi: 24 saat
 
 #### Standard Plan
 
 1. **Seviye 1**: Destek Ekibi Lideri
-   - İletişim: support-lead@maarifportal.com
+   - İletişim: support-lead@i-ep.app
    - Yanıt Beklentisi: 8 iş saati
 
 2. **Seviye 2**: Müşteri Başarı Yöneticisi
-   - İletişim: customer-success@maarifportal.com
+   - İletişim: customer-success@i-ep.app
    - Yanıt Beklentisi: 24 iş saati
 
 ## Sonuç
 
-Bu SLA dokümanı, Maarif Okul Portalı'nın hizmet kalitesi taahhütlerini, ölçüm metodolojisini ve müşterilerin ihtiyaç duyabileceği tüm SLA detaylarını içerir. Bu taahhütler, platformun güvenilir, yüksek performanslı ve kullanıcı ihtiyaçlarına uygun bir hizmet sunmasını sağlamak için tasarlanmıştır.
+Bu SLA dokümanı, Iqra Eğitim Portalı'nın hizmet kalitesi taahhütlerini, ölçüm metodolojisini ve müşterilerin ihtiyaç duyabileceği tüm SLA detaylarını içerir. Bu taahhütler, platformun güvenilir, yüksek performanslı ve kullanıcı ihtiyaçlarına uygun bir hizmet sunmasını sağlamak için tasarlanmıştır.
 
-SLA'nın güncel versiyonuna her zaman [portal.maarifportal.com/sla](https://portal.maarifportal.com/sla) adresinden erişilebilir.
+SLA'nın güncel versiyonuna her zaman [portal.i-ep.app/sla](https://portal.i-ep.app/sla) adresinden erişilebilir.
 
 ## İlgili Dokümanlar
 

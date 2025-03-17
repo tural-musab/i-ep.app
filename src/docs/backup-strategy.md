@@ -1,10 +1,10 @@
 # Veritabanı Yedekleme Stratejisi
 
-Bu doküman, Maarif Okul Portalı için veritabanı yedekleme stratejisini detaylı olarak açıklar. Strateji, çok kiracılı (multi-tenant) mimariye uygun şekilde tasarlanmıştır ve veri güvenliğini en üst düzeyde tutmayı amaçlar.
+Bu doküman, Iqra Eğitim Portalı için veritabanı yedekleme stratejisini detaylı olarak açıklar. Strateji, çok kiracılı (multi-tenant) mimariye uygun şekilde tasarlanmıştır ve veri güvenliğini en üst düzeyde tutmayı amaçlar.
 
 ## 1. Genel Bakış
 
-Maarif Okul Portalı, eğitim kurumlarının kritik verilerini barındıran bir SaaS uygulamasıdır. Verilerin güvenliği ve sürekliliği, platformun en temel gereksinimlerindendir. Bu doküman, hem genel sistem yedeklemeleri hem de tenant-bazlı yedekleme stratejilerimizi kapsar.
+Iqra Eğitim Portalı, eğitim kurumlarının kritik verilerini barındıran bir SaaS uygulamasıdır. Verilerin güvenliği ve sürekliliği, platformun en temel gereksinimlerindendir. Bu doküman, hem genel sistem yedeklemeleri hem de tenant-bazlı yedekleme stratejilerimizi kapsar.
 
 ## 2. Yedekleme Tipleri ve Sıklıkları
 

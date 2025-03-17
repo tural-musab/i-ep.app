@@ -2,7 +2,7 @@
 
 ## Genel Bakış
 
-Bu doküman, Maarif Okul Portalı'nın demo tenant'larının (demo kiracılarının) oluşturulması, yapılandırılması ve yönetilmesi için kapsamlı bir kılavuz sunmaktadır. Demo tenant'lar, potansiyel müşterilere platformun özelliklerini göstermek, satış sürecini desteklemek ve kullanıcı eğitimlerinde örnek olarak kullanmak amacıyla oluşturulan özel ortamlardır.
+Bu doküman, Iqra Eğitim Portalı'nın demo tenant'larının (demo kiracılarının) oluşturulması, yapılandırılması ve yönetilmesi için kapsamlı bir kılavuz sunmaktadır. Demo tenant'lar, potansiyel müşterilere platformun özelliklerini göstermek, satış sürecini desteklemek ve kullanıcı eğitimlerinde örnek olarak kullanmak amacıyla oluşturulan özel ortamlardır.
 
 ## Demo Tenant'ın Amacı ve Önemi
 
@@ -16,7 +16,7 @@ Demo tenant'lar aşağıdaki amaçlara hizmet eder:
 
 ## Demo Tenant Tipleri
 
-Maarif Okul Portalı için üç farklı demo tenant tipi tanımlanmıştır:
+Iqra Eğitim Portalı için üç farklı demo tenant tipi tanımlanmıştır:
 
 ### 1. Satış Demo Tenant'ı
 
@@ -300,7 +300,7 @@ echo "Veri seti yükleniyor: ${DATA_SET:-standard}"
 # Veri yükleme komutları...
 
 # Subdomain yapılandırması
-echo "Subdomain yapılandırılıyor: $SUBDOMAIN.maarifportal.com"
+echo "Subdomain yapılandırılıyor: $SUBDOMAIN.i-ep.app"
 # DNS ve Web server yapılandırma komutları...
 
 # Erişim ayarları
@@ -308,8 +308,8 @@ echo "Erişim ayarları yapılandırılıyor: ${ACCESS_PERIOD:-14} gün"
 # Erişim ayarları...
 
 echo "Demo tenant başarıyla oluşturuldu!"
-echo "URL: https://$SUBDOMAIN.maarifportal.com"
-echo "Admin kullanıcı: admin@$SUBDOMAIN.maarifportal.com"
+echo "URL: https://$SUBDOMAIN.i-ep.app"
+echo "Admin kullanıcı: admin@$SUBDOMAIN.i-ep.app"
 echo "Şifre: DemoPassXXX"
 ```
 
@@ -367,9 +367,9 @@ async function createDemoTenant(config: DemoTenantConfig): Promise<{
     return {
       success: true,
       tenantId: tenant.id,
-      url: `https://${config.subdomain}.maarifportal.com`,
+      url: `https://${config.subdomain}.i-ep.app`,
       adminCredentials: {
-        email: `admin@${config.subdomain}.maarifportal.com`,
+        email: `admin@${config.subdomain}.i-ep.app`,
         password: adminPassword
       }
     };
@@ -451,8 +451,8 @@ async function configureSchoolProfile(
     city: baseProfile.city || 'İstanbul',
     region: baseProfile.region || 'Marmara',
     phoneNumber: baseProfile.phoneNumber || '+90 212 555 0000',
-    email: baseProfile.email || `info@${tenantId}.maarifportal.com`,
-    website: baseProfile.website || `https://${tenantId}.maarifportal.com`,
+    email: baseProfile.email || `info@${tenantId}.i-ep.app`,
+    website: baseProfile.website || `https://${tenantId}.i-ep.app`,
     foundedYear: baseProfile.foundedYear || 2000,
     studentCount: baseProfile.studentCount || 500,
     classCount: baseProfile.classCount || 20,
@@ -524,7 +524,7 @@ async function createDemoUsers(
     
     users.admins.push({
       fullName: `${name.first} ${name.last}`,
-      email: `${username}@${tenantId}.maarifportal.com`,
+      email: `${username}@${tenantId}.i-ep.app`,
       role: 'admin',
       username,
       password: `Demo${tenantId}2023!`,
@@ -550,7 +550,7 @@ async function createDemoUsers(
     
     users.teachers.push({
       fullName: `${name.first} ${name.last}`,
-      email: `${username}@${tenantId}.maarifportal.com`,
+      email: `${username}@${tenantId}.i-ep.app`,
       role: 'teacher',
       username,
       password: `Demo${tenantId}2023!`,
@@ -572,7 +572,7 @@ async function createDemoUsers(
     
     users.students.push({
       fullName: `${name.first} ${name.last}`,
-      email: `${username}@${tenantId}.maarifportal.com`,
+      email: `${username}@${tenantId}.i-ep.app`,
       role: 'student',
       username,
       password: `Demo${tenantId}2023!`,
@@ -598,7 +598,7 @@ async function createDemoUsers(
     
     users.parents.push({
       fullName: `${name.first} ${name.last}`,
-      email: `${username}@${tenantId}.maarifportal.com`,
+      email: `${username}@${tenantId}.i-ep.app`,
       role: 'parent',
       username,
       password: `Demo${tenantId}2023!`,
@@ -1598,16 +1598,16 @@ const demoFollowupTemplates: DemoFollowupTemplate[] = [
     body: `
 Merhaba {{user.name}},
 
-Maarif Okul Portalı demo hesabınız kullanıma hazır! Aşağıdaki bilgilerle giriş yapabilirsiniz:
+Iqra Eğitim Portalı demo hesabınız kullanıma hazır! Aşağıdaki bilgilerle giriş yapabilirsiniz:
 
-URL: https://{{tenant.subdomain}}.maarifportal.com
+URL: https://{{tenant.subdomain}}.i-ep.app
 Kullanıcı Adı: {{user.email}}
 Şifre: {{user.password}}
 
 Demo hesabınız {{tenant.expiry_date}} tarihine kadar aktif olacaktır.
 
 İyi çalışmalar,
-Maarif Okul Portalı Ekibi
+Iqra Eğitim Portalı Ekibi
     `,
     delay_hours: 0,
     trigger_event: 'demo_creation'
@@ -1619,7 +1619,7 @@ Maarif Okul Portalı Ekibi
     body: `
 Merhaba {{user.name}},
 
-Maarif Okul Portalı demo hesabınıza ilk girişinizi yaptığınızı gördük. Umarız platformumuzu keşfetmeye başlamışsınızdır.
+Iqra Eğitim Portalı demo hesabınıza ilk girişinizi yaptığınızı gördük. Umarız platformumuzu keşfetmeye başlamışsınızdır.
 
 Keşfetmenizi önerdiğimiz bazı özellikler:
 - Öğrenci ve sınıf yönetimi
@@ -1629,7 +1629,7 @@ Keşfetmenizi önerdiğimiz bazı özellikler:
 Herhangi bir sorunuz veya yardıma ihtiyacınız olursa, demo hesabınızdaki "Yardım" bölümünden bize ulaşabilirsiniz.
 
 İyi çalışmalar,
-Maarif Okul Portalı Ekibi
+Iqra Eğitim Portalı Ekibi
     `,
     delay_hours: 2,
     trigger_event: 'first_login'
@@ -1641,7 +1641,7 @@ Maarif Okul Portalı Ekibi
     body: `
 Merhaba {{user.name}},
 
-Maarif Okul Portalı'nın akademik yönetim özelliklerini kullandığınızı gördük. Bu özellikler hakkında ne düşündüğünüzü öğrenmek isteriz.
+Iqra Eğitim Portalı'nın akademik yönetim özelliklerini kullandığınızı gördük. Bu özellikler hakkında ne düşündüğünü öğrenmek isteriz.
 
 Premium planımızda aşağıdaki ek akademik özellikler de bulunmaktadır:
 - Gelişmiş sınav analiz araçları
@@ -1651,7 +1651,7 @@ Premium planımızda aşağıdaki ek akademik özellikler de bulunmaktadır:
 Bu özellikleri detaylı görmek ister misiniz? Bize yanıt vererek özel bir demo randevusu alabilirsiniz.
 
 İyi çalışmalar,
-Maarif Okul Portalı Ekibi
+Iqra Eğitim Portalı Ekibi
     `,
     delay_hours: 24,
     trigger_event: 'feature_usage',
@@ -1666,16 +1666,16 @@ Maarif Okul Portalı Ekibi
     body: `
 Merhaba {{user.name}},
 
-Maarif Okul Portalı demo hesabınızın süresi {{tenant.days_left}} gün içinde dolacak. Demo deneyiminizin nasıl gittiğini öğrenmek isteriz.
+Iqra Eğitim Portalı demo hesabınızın süresi {{tenant.days_left}} gün içinde dolacak. Demo deneyiminizin nasıl gittiğini öğrenmek isteriz.
 
-Eğer platformumuzu beğendiyseniz ve okul yönetim süreçlerinizi Maarif Okul Portalı ile dijitalleştirmek istiyorsanız, aşağıdaki bağlantıdan uygun abonelik planlarımızı inceleyebilirsiniz:
+Eğer platformumuzu beğendiyseniz ve okul yönetim süreçlerinizi Iqra Eğitim Portalı ile dijitalleştirmek istiyorsanız, aşağıdaki bağlantıdan uygun abonelik planlarımızı inceleyebilirsiniz:
 
-https://maarifportal.com/tr/fiyatlandirma
+https://i-ep.app/tr/fiyatlandirma
 
 Sorularınız için bizimle iletişime geçebilirsiniz.
 
 İyi çalışmalar,
-Maarif Okul Portalı Ekibi
+Iqra Eğitim Portalı Ekibi
     `,
     delay_hours: 72,
     trigger_event: 'demo_expiry'
@@ -2055,7 +2055,7 @@ async function configureEmailInterception(tenantId: string): Promise<void> {
     RETURNS TRIGGER AS $$
     BEGIN
       NEW.original_recipient := NEW.recipient;
-      NEW.recipient := 'demo-emails@maarifportal.com';
+      NEW.recipient := 'demo-emails@i-ep.app';
       NEW.subject := CONCAT('[DEMO: ', NEW.original_recipient, '] ', NEW.subject);
       RETURN NEW;
     END;
@@ -2364,7 +2364,7 @@ Demo tenant stratejisi için planlanan gelecek geliştirmeler:
 
 ## Sonuç
 
-Demo tenant stratejisi, Maarif Okul Portalı'nın potansiyel müşterilere etkili bir şekilde tanıtılması, satış süreçlerinin desteklenmesi ve kullanıcıların eğitilmesi için kritik bir bileşendir. Bu doküman, demo tenant'ların oluşturulması, yapılandırılması, yönetilmesi ve optimize edilmesi için kapsamlı bir kılavuz sağlamaktadır.
+Demo tenant stratejisi, Iqra Eğitim Portalı'nın potansiyel müşterilere etkili bir şekilde tanıtılması, satış süreçlerinin desteklenmesi ve kullanıcıların eğitilmesi için kritik bir bileşendir. Bu doküman, demo tenant'ların oluşturulması, yapılandırılması, yönetilmesi ve optimize edilmesi için kapsamlı bir kılavuz sağlamaktadır.
 
 Etkili bir demo stratejisi ile:
 * Potansiyel müşteriler platformun değerini hızlıca anlayabilir

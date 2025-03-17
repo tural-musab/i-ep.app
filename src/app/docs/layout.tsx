@@ -10,7 +10,7 @@ export default function DocsLayout({
       <header className="bg-primary text-white p-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="text-2xl font-bold">
-            Maarif Okul Portalı
+            Iqra Eğitim Portalı
           </Link>
           <nav>
             <ul className="flex space-x-6">
@@ -47,7 +47,7 @@ export default function DocsLayout({
         <div className="container mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="mb-4 md:mb-0">
-              <p>&copy; {new Date().getFullYear()} Maarif Okul Portalı. Tüm hakları saklıdır.</p>
+              <p>&copy; {new Date().getFullYear()} Iqra Eğitim Portalı. Tüm hakları saklıdır.</p>
             </div>
             <div>
               <ul className="flex space-x-4">
@@ -62,7 +62,7 @@ export default function DocsLayout({
                   </Link>
                 </li>
                 <li>
-                  <a href="https://github.com/maarifportal" target="_blank" rel="noreferrer" className="hover:underline">
+                  <a href="https://github.com/i-es" target="_blank" rel="noreferrer" className="hover:underline">
                     GitHub
                   </a>
                 </li>

@@ -1,6 +1,6 @@
 # Admin Kullanıcıları İçin Domain Yönetimi Kılavuzu
 
-Bu kılavuz, Maarif Okul Portalı sistem yöneticileri için domain yönetimi süreçlerini adım adım açıklamaktadır. Domain yönetimi, tenant izolasyonu ve erişim kontrolü için kritik öneme sahiptir.
+Bu kılavuz, Iqra Eğitim Portalı sistem yöneticileri için domain yönetimi süreçlerini adım adım açıklamaktadır. Domain yönetimi, tenant izolasyonu ve erişim kontrolü için kritik öneme sahiptir.
 
 ## İçerik
 
@@ -14,7 +14,7 @@ Bu kılavuz, Maarif Okul Portalı sistem yöneticileri için domain yönetimi s�
 
 ## Genel Bakış
 
-Maarif Okul Portalı, her okul için ayrı bir domain veya subdomain kullanarak multi-tenant mimarisi üzerinde çalışır. Bu yapı sayesinde:
+Iqra Eğitim Portalı, her okul için ayrı bir domain veya subdomain kullanarak multi-tenant mimarisi üzerinde çalışır. Bu yapı sayesinde:
 
 - Her okul benzersiz bir URL'ye sahip olur
 - Tenant izolasyonu sağlanır
@@ -70,7 +70,7 @@ Admin panelinde domain yönetimi için şu adımları izleyin:
 
 ```
 CNAME kaydı ekleyin:
-okuladi.com -> maarifportal.com
+okuladi.com -> i-ep.app
 ```
 
 6. Bu talimatları domain sağlayıcınızın DNS yönetim panelinde uygulayın
@@ -171,6 +171,6 @@ SSL sertifikaları, Cloudflare tarafından otomatik olarak sağlanır ve yöneti
 
 Domain yönetimi ile ilgili sorunlarınız için:
 
-- E-posta: domain-support@maarifportal.com
-- Destek portalı: https://destek.maarifportal.com
+- E-posta: domain-support@i-ep.app
+- Destek portalı: https://destek.i-ep.app
 - Telefon: +90 (212) XXX-XX-XX (Mesai saatleri içinde) 

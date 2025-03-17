@@ -1,8 +1,8 @@
-# Maarif Okul Portalı - Felaket Kurtarma Planı
+# Iqra Eğitim Portalı - Felaket Kurtarma Planı
 
 ## 1. Giriş
 
-Bu belge, Maarif Okul Portalı'nın hizmet kesintilerini ve veri kayıplarını en aza indirmek için oluşturulan felaket kurtarma planını detaylandırmaktadır. Planın amacı, felaket durumunda sistemlerin hızlı ve güvenilir bir şekilde geri yüklenmesini sağlamaktır.
+Bu belge, Iqra Eğitim Portalı'nın hizmet kesintilerini ve veri kayıplarını en aza indirmek için oluşturulan felaket kurtarma planını detaylandırmaktadır. Planın amacı, felaket durumunda sistemlerin hızlı ve güvenilir bir şekilde geri yüklenmesini sağlamaktır.
 
 ## 2. Kurtarma Hedefleri
 
