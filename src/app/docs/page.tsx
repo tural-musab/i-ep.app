@@ -49,7 +49,7 @@ export default function DocsPage() {
           <ol className="list-decimal pl-6 space-y-3">
             <li>
               <strong>Projeyi Klonla:</strong> 
-              <pre className="bg-gray-100 p-2 mt-1 rounded">git clone https://github.com/i-es/i-ep.app.git</pre>
+              <pre className="bg-gray-100 p-2 mt-1 rounded">git clone https://github.com/tural-musab/i-ep.app.git</pre>
             </li>
             <li>
               <strong>Bağımlılıkları Yükle:</strong> 

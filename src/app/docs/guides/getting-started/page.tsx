@@ -53,7 +53,7 @@ export default function GettingStartedGuidePage() {
             
             <h3 className="text-lg font-medium mb-2">1. Projeyi klonlayın</h3>
             <div className="bg-gray-100 p-3 rounded-md">
-              <code>git clone https://github.com/i-es/i-ep.app.git</code>
+              <code>git clone https://github.com/tural-musab/i-ep.app.git</code>
             </div>
             
             <h3 className="text-lg font-medium mb-2 mt-4">2. Proje dizinine girin</h3>

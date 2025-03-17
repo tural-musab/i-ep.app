@@ -82,7 +82,7 @@ export default function GuidesDocsPage() {
         <div className="mt-10">
           <a
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 inline-flex items-center"
-            href="https://github.com/i-es/i-ep.app"
+            href="https://github.com/tural-musab/i-ep.app"
             target="_blank"
             rel="noreferrer"
           >

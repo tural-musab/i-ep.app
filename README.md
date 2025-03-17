@@ -87,7 +87,7 @@ Türkiye'deki her okul için kolay erişilebilir, kullanıcı dostu ve ekonomik 
 
 1. Repoyu klonlayın:
    ```bash
-   git clone https://github.com/i-es/i-ep.app.git
+   git clone https://github.com/tural-musab/i-ep.app.git
    cd i-ep.app
    ```
 
