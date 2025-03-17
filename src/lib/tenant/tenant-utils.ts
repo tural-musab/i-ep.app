@@ -1,9 +1,7 @@
 import { Tenant } from '@/types/tenant';
-import { cookies } from 'next/headers';
 import * as tenantService from './tenant-service';
 import { NextRequest } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { headers } from 'next/headers';
 
 /**
  * Domain veya subdomain ile tenant bilgilerini getir
@@ -104,7 +102,7 @@ export async function getTenantById(tenantId: string): Promise<Tenant | null> {
 /**
  * Mevcut tenant ID'sini al. Client veya server tarafında çalışır.
  */
-export async function getTenantId(): Promise<string | null> {
+export async function getTenantId(req?: NextRequest): Promise<string | null> {
   try {
     // Client-side tenant ID kontrolü
     if (typeof window !== 'undefined') {
@@ -123,26 +121,34 @@ export async function getTenantId(): Promise<string | null> {
       }
       return null;
     } 
-    // Server-side tenant ID kontrolü
-    else {
-      const cookiesList = await cookies();
-      const tenantIdCookie = cookiesList.get('tenant-id');
+    // Server-side tenant ID kontrolü - Edge API uyumlu
+    else if (req) {
+      const tenantIdCookie = req.cookies.get('tenant-id')?.value;
       
-      if (tenantIdCookie?.value) {
-        return tenantIdCookie.value;
+      if (tenantIdCookie) {
+        return tenantIdCookie;
       }
       
-      const subdomainCookie = cookiesList.get('subdomain');
-      if (subdomainCookie?.value) {
-        if (subdomainCookie.value === 'demo') {
+      const subdomainCookie = req.cookies.get('subdomain')?.value;
+      if (subdomainCookie) {
+        if (subdomainCookie === 'demo') {
           return 'tenant_demo_id';
         } else {
-          return `tenant_${subdomainCookie.value}`;
+          return `tenant_${subdomainCookie}`;
         }
       }
       
-      return null;
+      const hostname = req.headers.get('host') || '';
+      const subdomain = extractTenantFromSubdomain(hostname);
+      
+      if (subdomain === 'demo') {
+        return 'tenant_demo_id';
+      } else if (subdomain) {
+        return `tenant_${subdomain}`;
+      }
     }
+    
+    return null;
   } catch (error) {
     console.error('getTenantId error:', error);
     return null;
@@ -198,25 +204,14 @@ export async function getCurrentTenant(req?: NextRequest): Promise<Tenant | null
       const hostname = req.headers.get('host') || '';
       return await getTenantByDomain(hostname);
     } 
-    // Server Components için
+    // Client-side için
+    else if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      return await getTenantByDomain(hostname);
+    }
+    // Middleware veya default davranış
     else {
-      const cookiesList = await cookies();
-      const tenantIdCookie = cookiesList.get('tenant-id');
-      
-      if (tenantIdCookie?.value) {
-        const supabase = createServerSupabaseClient();
-        const { data } = await supabase
-          .from('tenants')
-          .select('*')
-          .eq('id', tenantIdCookie.value)
-          .single();
-          
-        return data || null;
-      }
-      
-      const headersList = await headers();
-      const host = headersList.get('host') || '';
-      return await getTenantByDomain(host);
+      return null;
     }
   } catch (error) {
     console.error('getCurrentTenant error:', error);
