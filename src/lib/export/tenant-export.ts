@@ -171,6 +171,124 @@ export async function exportUserData(
 }
 
 /**
+ * Kiracı verilerini tamamen dışa aktarır
+ * GDPR ve KVKK uyumlu veri taşınabilirliği için kullanılır
+ * 
+ * @param tenantId Kiracı ID'si
+ * @param options Dışa aktarma seçenekleri
+ * @returns Dışa aktarma sonucu
+ */
+export async function exportFullTenant(
+  tenantId: string,
+  options: Omit<ExportOptions, 'tables'>
+): Promise<ExportResult> {
+  // Tüm tabloları alarak dışa aktarma işlemini gerçekleştir
+  return exportTenantData(tenantId, options);
+}
+
+/**
+ * GDPR uyumlu kullanıcı verisi dışa aktarır
+ * 
+ * @param userId Kullanıcı ID'si
+ * @param tenantId Kiracı ID'si
+ * @param format Dışa aktarma formatı
+ * @returns Dışa aktarma sonucu
+ */
+export async function exportUserDataForGDPR(
+  userId: string,
+  tenantId: string,
+  format: ExportFormat = 'json'
+): Promise<ExportResult> {
+  return exportUserData(userId, tenantId, {
+    format,
+    anonymizePersonalData: false,
+    includeRelations: true
+  });
+}
+
+/**
+ * Belirli bir tabloyu dışa aktarır
+ * 
+ * @param tenantId Kiracı ID'si
+ * @param tableName Tablo adı
+ * @param options Dışa aktarma seçenekleri
+ * @returns Dışa aktarma sonucu
+ */
+export async function exportTenantTable(
+  tenantId: string,
+  tableName: string,
+  options: Omit<ExportOptions, 'tables'>
+): Promise<ExportResult> {
+  return exportTenantData(tenantId, {
+    ...options,
+    tables: [tableName]
+  });
+}
+
+/**
+ * Sorgu sonuçlarını dışa aktarır
+ * 
+ * @param tenantId Kiracı ID'si
+ * @param query Sorgu
+ * @param tableName Sonuçların kaydedileceği tablo adı
+ * @param format Dışa aktarma formatı
+ * @returns Dışa aktarma sonucu
+ */
+export async function exportQueryResults(
+  tenantId: string,
+  query: string,
+  tableName: string,
+  format: ExportFormat = 'csv'
+): Promise<ExportResult> {
+  try {
+    logger.info(`Sorgu sonuçları dışa aktarma başlatıldı. Tenant: ${tenantId}`);
+    
+    // Tenant-specific Supabase client
+    const supabase = await getTenantSupabaseClient(tenantId);
+    
+    // SQL sorgusu çalıştır
+    const { data, error } = await supabase.rpc('execute_raw_query', { query_text: query });
+    
+    if (error) {
+      logger.error(`Sorgu çalıştırılırken hata:`, error);
+      return {
+        success: false,
+        tenantId,
+        format,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      };
+    }
+    
+    // Verileri formata dönüştür
+    const formattedData = formatExportData({ [tableName]: data }, format);
+    
+    // Dosya boyutunu hesapla
+    const fileSize = calculateFileSize(formattedData);
+    
+    return {
+      success: true,
+      tenantId,
+      format,
+      data: formattedData,
+      tables: [tableName],
+      recordCount: data?.length || 0,
+      fileSize,
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    logger.error(`Sorgu sonuçları dışa aktarma hatası:`, error);
+    return {
+      success: false,
+      tenantId,
+      format,
+      error: error instanceof Error ? error.message : String(error),
+      timestamp: new Date().toISOString()
+    };
+  }
+}
+
+/**
  * Varsayılan dışa aktarılacak tabloları döndürür
  */
 async function getDefaultTables(tenantId: string): Promise<string[]> {

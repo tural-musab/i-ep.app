@@ -42,6 +42,7 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   lastLogin?: Date;
+  allowedTenants?: string[];
 }
 
 /**

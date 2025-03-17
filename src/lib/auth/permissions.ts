@@ -1,4 +1,4 @@
-import { User } from '@/types/auth';
+import { User, UserRole } from '@/types/auth';
 
 // Yetki seviyeleri
 export enum PermissionLevel {
@@ -139,4 +139,32 @@ export function canExportTenantData(user: User | null): boolean {
  */
 export function canCreateStudent(user: User | null): boolean {
   return hasPermission(user, ResourceType.STUDENT, ActionType.CREATE);
+}
+
+/**
+ * Kullanıcının tenant'a erişim hakkını doğrular
+ * @param user Kontrol edilecek kullanıcı
+ * @param tenantId Erişilmek istenen tenant ID'si
+ * @returns Erişim varsa true, yoksa false
+ */
+export async function validateTenantAccess(
+  user: User | null,
+  tenantId: string
+): Promise<boolean> {
+  // Kullanıcı yoksa erişim reddet
+  if (!user) return false;
+  
+  // Admin her tenant'a erişebilir
+  if (user.role === PermissionLevel.ADMIN) return true;
+  
+  // Kullanıcı bu tenant'a atanmış mı kontrol et
+  if (user.tenantId === tenantId) return true;
+  
+  // Yönetici rolü veya üstü olan kişilere çoklu tenant erişimi izni verilebilir
+  if (user.role === PermissionLevel.MANAGER && user.allowedTenants?.includes(tenantId)) {
+    return true;
+  }
+  
+  // Erişim reddedildi
+  return false;
 } 
