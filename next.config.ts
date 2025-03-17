@@ -10,7 +10,8 @@ const nextConfig = {
   },
   // Swagger UI bileşeni için gerekli olan transpile seçeneği
   // transpilePackages: ['swagger-ui-react'],
-  output: 'standalone',
+  // Vercel'de dağıtım sorunları nedeniyle standalone modunu devre dışı bırakıyoruz
+  // output: 'standalone',
   serverExternalPackages: [],
 };
 

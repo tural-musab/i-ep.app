@@ -1,0 +1,5 @@
+[33mcommit 6b0b1094ec8c83499579d508f2dc6ee5d09cb8aa[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: tural-musab <tural.musab.osmanli@gmail.com>
+Date:   Tue Mar 18 00:15:38 2025 +0400
+
+    Build sorunlarını gidermek için ESLint ve TypeScript kontrolleri devre dışı bırakıldı
