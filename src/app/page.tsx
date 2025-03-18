@@ -20,6 +20,7 @@ export default function HomePage() {
                   alt="Iqra Eğitim Portalı" 
                   width={120} 
                   height={120} 
+                  priority={true}
                   className="h-24 w-auto"
                 />
                 <span className="ml-3 text-xl font-bold text-gray-900">Iqra Eğitim Portalı</span>
@@ -240,6 +241,7 @@ export default function HomePage() {
                   alt="Iqra Eğitim Portalı" 
                   width={80} 
                   height={80} 
+                  priority={true}
                   className="h-20 w-auto invert" // Beyaz logo
                 />
                 <span className="ml-2 text-lg font-semibold text-white">Iqra Eğitim Portalı</span>

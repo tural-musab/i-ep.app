@@ -108,10 +108,11 @@ export default function GirisPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <Image
-            src="/logo.webp"
+            src="https://i-ep.app/logo.webp"
             alt="Iqra Eğitim Portalı"
             width={160}
             height={160}
+            priority={true}
             className="mx-auto h-32 w-auto"
           />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
