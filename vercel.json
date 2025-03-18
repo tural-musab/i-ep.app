@@ -1,13 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
   "env": {
     "NEXTAUTH_URL": "${NEXTAUTH_URL}",
     "NEXTAUTH_SECRET": "${NEXTAUTH_SECRET}",
