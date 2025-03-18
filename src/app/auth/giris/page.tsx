@@ -108,7 +108,7 @@ export default function GirisPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <Image
-            src="/logo.svg"
+            src="/logo.webp"
             alt="Iqra Eğitim Portalı"
             width={160}
             height={160}

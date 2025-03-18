@@ -82,7 +82,7 @@
 - [ ] Tenant arası erişim koruması
 - [ ] Güvenlik izleme ve olay günlükleri
 
-### 2.2. Domain Yönetimi ve Kurumsal Doğrulama ✅
+### 2.2. Domain Yönetimi ve Kurumsal Doğrulama 🔄
 - [x] Cloudflare API entegrasyonu
 - [x] Tenant subdomain yönetimi
 - [x] Özel domain ekleme ve doğrulama

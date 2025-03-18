@@ -127,7 +127,7 @@ export default function DashboardPage() {
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
                 <Image 
-                  src="/logo.svg" 
+                  src="/logo.webp" 
                   alt="Iqra Eğitim Portalı" 
                   width={120} 
                   height={120}

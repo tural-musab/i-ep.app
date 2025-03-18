@@ -16,7 +16,7 @@ export default function HomePage() {
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
         <Image
-                  src="/logo.svg" 
+                  src="/logo.webp" 
                   alt="Iqra Eğitim Portalı" 
                   width={120} 
                   height={120} 
@@ -236,7 +236,7 @@ export default function HomePage() {
             <div className="space-y-8 xl:col-span-1">
               <div className="flex items-center">
         <Image
-                  src="/logo.svg" 
+                  src="/logo.webp" 
                   alt="Iqra Eğitim Portalı" 
                   width={80} 
                   height={80} 

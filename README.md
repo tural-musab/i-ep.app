@@ -1,6 +1,6 @@
-# Iqra Eğitim Portalı
+# Iqra Eğitim Portalı (i-ep.app)
 
-![Iqra Eğitim Portalı Logo](public/logo.svg)
+![Iqra Eğitim Portalı Logo](public/logo.webp)
 
 **Iqra Eğitim Portalı**, Türkiye'deki eğitim kurumları için özel olarak geliştirilmiş, çok kiracılı (multi-tenant) bir SaaS okul yönetim sistemidir. Platform, okulların yönetim süreçlerini dijitalleştirerek, öğrenci, öğretmen, veli ve yöneticiler arasında kesintisiz bir iletişim ve işbirliği sağlar.
 
