@@ -18,10 +18,11 @@ export default function HomePage() {
         <Image
                   src="/logo.svg" 
                   alt="Iqra Eğitim Portalı" 
-                  width={40} 
-                  height={40} 
+                  width={120} 
+                  height={120} 
+                  className="h-24 w-auto"
                 />
-                <span className="ml-2 text-lg font-semibold text-gray-900">Iqra Eğitim Portalı</span>
+                <span className="ml-3 text-xl font-bold text-gray-900">Iqra Eğitim Portalı</span>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -234,12 +235,12 @@ export default function HomePage() {
           <div className="xl:grid xl:grid-cols-3 xl:gap-8">
             <div className="space-y-8 xl:col-span-1">
               <div className="flex items-center">
-          <Image
+        <Image
                   src="/logo.svg" 
                   alt="Iqra Eğitim Portalı" 
-                  width={40} 
-                  height={40} 
-                  className="invert" // Beyaz logo
+                  width={80} 
+                  height={80} 
+                  className="h-20 w-auto invert" // Beyaz logo
                 />
                 <span className="ml-2 text-lg font-semibold text-white">Iqra Eğitim Portalı</span>
               </div>

@@ -129,8 +129,9 @@ export default function DashboardPage() {
                 <Image 
                   src="/logo.svg" 
                   alt="Iqra Eğitim Portalı" 
-                  width={40} 
-                  height={40} 
+                  width={120} 
+                  height={120}
+                  className="h-16 w-auto"
                 />
                 <span className="ml-2 text-lg font-semibold text-gray-900">Iqra Eğitim Portalı</span>
               </div>

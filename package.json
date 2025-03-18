@@ -30,6 +30,7 @@
     "next-swagger-doc": "^0.4.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-icons": "^5.5.0",
     "rehype-highlight": "^7.0.2",
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^3.0.1",

@@ -127,11 +127,11 @@ export default function KayitPage() {
         <div className="max-w-md w-full space-y-8 text-center">
           <div>
             <Image
-              src="/logo.png"
+              src="/logo.svg"
               alt="Iqra Eğitim Portalı"
-              width={100}
-              height={100}
-              className="mx-auto h-24 w-auto"
+              width={160}
+              height={160}
+              className="mx-auto h-32 w-auto"
             />
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
               Kayıt Başarılı!
@@ -173,11 +173,11 @@ export default function KayitPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <Image
-            src="/logo.png"
+            src="/logo.svg"
             alt="Iqra Eğitim Portalı"
-            width={100}
-            height={100}
-            className="mx-auto h-24 w-auto"
+            width={160}
+            height={160}
+            className="mx-auto h-32 w-auto"
           />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Yeni Hesap Oluşturun

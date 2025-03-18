@@ -2,22 +2,30 @@
 
 ## Aşama 1: Temel Mimari, Dokümantasyon ve Test (Ay 1-3)
 
-### 1.1. Proje Altyapısı ve Mimari Tasarım ✅
+### Referans Belgeler
+- [Tech Stack](docs/architecture/tech-stack.md): Proje teknoloji seçimlerinin detaylı dokümantasyonu
+- [Multi-Tenant Strateji](docs/architecture/multi-tenant-strategy.md): Çok kiracılı mimari yaklaşım dokümanı
+- [Veri İzolasyonu](docs/architecture/data-isolation.md): Tenant veri izolasyonu stratejileri
+- [Domain Yönetimi](docs/domain-management.md): Domain yönetimi teknik detayları
+- [Developer Docs Plan](docs/developer-docs-plan.md): Geliştirici dokümanları planı
+- [Teknik Borç Yönetimi](docs/technical-debt.md): Teknik borçların takibi ve yönetimi
+
+### 1.1. Proje Altyapısı ve Mimari Tasarım 🔄
 - [x] Next.js 14 ile proje yapısı oluşturma (App Router)
-- [x] TypeScript konfigürasyonu ve tip güvenliği
+- [🔄] TypeScript konfigürasyonu ve tip güvenliği (kısmen tamamlandı - yapılandırma var ancak 'any' tipi yaygın ve build hatalarını göz ardı ediliyor)
 - [x] Tailwind CSS kurulumu ve özel tema yapılandırması
 - [x] Çok kiracılı (multi-tenant) mimari tasarımı (hibrit yaklaşım)
 - [x] Genel proje dizin yapısının düzenlenmesi
-- [x] ESLint, Prettier ve diğer geliştirme araçlarının yapılandırması
-- [x] Git workflow ve temel CI/CD pipeline kurulumu
+- [🔄] ESLint, Prettier ve diğer geliştirme araçlarının yapılandırması (kısmen tamamlandı - ESLint kurulu ancak Prettier eksik)
+- [🔄] Git workflow ve temel CI/CD pipeline kurulumu (kısmen tamamlandı - kapsamlı dokümantasyon mevcut ancak GitHub Actions yapılandırması eksik)
 
-### 1.2. Dokümantasyon Altyapısı ve Başlangıcı ✅
+### 1.2. Dokümantasyon Altyapısı ve Başlangıcı 🔄
 - [x] Dokümantasyon stratejisi ve araçların belirlenmesi
 - [x] API dokümantasyon sisteminin kurulması (Swagger/OpenAPI)
 - [x] Temel geliştirici dokümantasyonunun yazılması
 - [x] Kod stili rehberinin oluşturulması
 - [x] Component kütüphanesi dokümantasyonu başlangıcı
-- [x] Mimari kararlar kaydı (ADR) tutulması
+- [❌] Mimari kararlar kaydı (ADR) tutulması (şablon hazırlanmış ancak gerçek ADR dosyaları bulunamadı)
 - [x] Yeni geliştirici onboarding dokümantasyonu
 
 ### 1.3. Test Stratejisi Kurulumu ✅
@@ -52,6 +60,13 @@
 - [x] Yedekten geri dönme test prosedürleri
 
 ## Aşama 2: Temel İşlevsellik ve Güvenlik (Ay 4-6)
+
+### Referans Belgeler
+- [SLA Tanımları](docs/sla-definitions.md): Servis seviye anlaşmaları ve metrikleri
+- [API Endpoints](docs/api-endpoints.md): API endpoint tanımları
+- [Super Admin Genel Bakış](docs/features/super-admin/overview.md): Super Admin paneli genel bakış
+- [Super Admin API](docs/api/super-admin-api.md): Super Admin API dokümantasyonu
+- [Super Admin Komponentleri](docs/components/super-admin/README.md): Komponent listesi ve açıklamaları
 
 ### 2.1. Kimlik Doğrulama ve Güvenlik 🚧
 - [🔄] Supabase Auth entegrasyonu (başlatıldı)
@@ -127,7 +142,63 @@
 - [ ] Ödeme başarısızlığı yönetimi
 - [ ] Faturalandırma geçmişi görüntüleme
 
+### 2.7. Super Admin Paneli Geliştirme
+- [x] Super Admin panel dokümantasyonunun oluşturulması
+- [x] Panel gereksinimlerinin ve modüllerinin belirlenmesi
+- [x] Komponent yapılarının dokümante edilmesi
+- [ ] Ana Dashboard tasarımı ve geliştirilmesi
+- [ ] Sistem Sağlığı modülünün geliştirilmesi
+   - [ ] SSL sertifika durumu izleme
+   - [ ] Sistem metrikleri görselleştirme
+   - [ ] Canlı durum takibi
+- [ ] Yedekleme ve Kurtarma modülünün geliştirilmesi
+   - [ ] Yedekleme listesi ve yönetimi
+   - [ ] Kurtarma işlemleri
+- [ ] Denetim ve Güvenlik modülünün geliştirilmesi
+   - [ ] Audit log görüntüleme ve analizi
+   - [ ] Güvenlik uyarıları
+- [ ] Webhook Yönetimi modülünün geliştirilmesi
+   - [ ] Webhook yapılandırma ve test
+   - [ ] Webhook teslimat izleme
+   - [ ] Webhook performans analizi
+- [ ] Tenant Yönetimi modülünün geliştirilmesi
+   - [ ] Tenant ekleme ve yapılandırma
+   - [ ] Kullanım metrikleri
+- [ ] Domain yönetimi arayüzünün geliştirilmesi
+- [ ] System ayarları ve yapılandırma
+- [ ] Kullanıcı yönetimi ve rol atama
+- [ ] Super Admin API entegrasyonları
+- [ ] Unit ve e2e testlerin yazılması
+
+#### 2.7 Super Admin Modül Referans Belgeleri
+- **Sistem Sağlığı Modülü**:
+  - [SSLStatus Komponenti](docs/components/super-admin/system/SSLStatus.md)
+  - [SystemHealth Komponenti](docs/components/super-admin/system/SystemHealth.md)
+  - [MetricsChart Komponenti](docs/components/super-admin/system/MetricsChart.md)
+  
+- **Yedekleme ve Kurtarma Modülü**:
+  - [BackupCreate Komponenti](docs/components/super-admin/backup/BackupCreate.md)
+  - [BackupStatus Komponenti](docs/components/super-admin/backup/BackupStatus.md)
+  - [BackupList Komponenti](docs/components/super-admin/backup/BackupList.md)
+  
+- **Denetim ve Güvenlik Modülü**:
+  - [AuditLogs Komponenti](docs/components/super-admin/audit/AuditLogs.md)
+  - [AuditLogDetail Komponenti](docs/components/super-admin/audit/AuditLogDetail.md)
+  - [LogFilters Komponenti](docs/components/super-admin/audit/LogFilters.md)
+  
+- **Webhook Yönetimi Modülü**:
+  - [WebhookCreate Komponenti](docs/components/super-admin/webhook/WebhookCreate.md)
+  - [WebhookList Komponenti](docs/components/super-admin/webhook/WebhookList.md)
+  - [WebhookDetail Komponenti](docs/components/super-admin/webhook/WebhookDetail.md)
+  - [WebhookStats Komponenti](docs/components/super-admin/webhook/WebhookStats.md)
+  - [Webhook API Dokümantasyonu](docs/api/super-admin/webhooks.md)
+
 ## Aşama 3: MVP Lansman ve Geri Bildirim (Ay 7-8)
+
+### Referans Belgeler
+- [MVP Kontrol Listesi](docs/mvp-checklist.md): MVP öncesi kontrol listesi
+- [Demo Tenant Rehberi](docs/demo-tenant-guide.md): Demo ortamı hazırlama rehberi
+- [UX Monitoring Plan](docs/ux-monitoring-plan.md): Kullanıcı deneyimi izleme planı
 
 ### 3.1. Demo Okul Ortamı Oluşturma
 - [ ] Demo tenant için kapsamlı veri yapısı tasarımı
@@ -178,6 +249,10 @@
 - [ ] Analitik kurulumu ve kullanım analizi
 
 ## Aşama 4: Gelişmiş Özellikler ve Entegrasyonlar (Ay 9-12)
+
+### Referans Belgeler
+- [Community Strategy](docs/community-strategy.md): Topluluk oluşturma stratejisi
+- [Cultural Adaptation](docs/cultural-adaptation.md): Kültürel ve bölgesel farklılıklar yaklaşımı
 
 ### 4.1. İletişim ve Bildirim Sistemi
 - [ ] Duyuru sistemi
@@ -230,6 +305,10 @@
 
 ## Aşama 5: Ölçeklendirme ve Genişletme (Ay 12-14)
 
+### Referans Belgeler
+- [Deployment Stratejileri](docs/deployment/README.md): Deployment ve ölçeklendirme stratejileri
+- [Admin Rehberleri](docs/admin-guides/README.md): Sistem yönetimi rehberleri
+
 ### 5.1. API ve Entegrasyon Katmanı
 - [ ] Açık API dokümantasyonu
 - [ ] Üçüncü parti servis entegrasyonları
@@ -281,6 +360,10 @@
 
 ## Aşama 6: Yapay Zeka ve Gelecek Özellikler (14+ ay)
 
+### Referans Belgeler
+- [UI/UX Gelecek Vizyonu](docs/ui-ux/future-vision.md): Gelecek arayüz vizyonu
+- [AI Stratejisi](docs/features/ai-strategy.md): Yapay zeka entegrasyon stratejisi
+
 ### 6.1. Yapay Zeka ve Machine Learning
 - [ ] Öğrenci başarı tahmini
 - [ ] İçerik önerileri
@@ -318,6 +401,10 @@
 
 ## Teknik Borçlar ve İyileştirmeler
 
+### Referans Belgeler
+- [Teknik Borç Takibi](docs/technical-debt.md): Teknik borçların detaylı takibi
+- [Performans İyileştirme](docs/performance-optimization.md): Performans iyileştirme stratejileri
+
 ### Mevcut Teknik Borçlar
 - [ ] Tenant-utils.ts dosyasındaki cookie işleme hatalarının giderilmesi
 - [ ] Supabase bağlantı hatalarının çözülmesi
@@ -353,3 +440,89 @@ Proje şu ana kadar aşağıdaki temel bileşenleri içermektedir:
 4. **Test Altyapısı**:
    - Jest ve React Testing Library entegrasyonu
    - E2E testleri için Playwright kurulumu
+
+## Super Admin Gelişim Süreci Detayları
+
+Super Admin panelinin detaylı geliştirme aşamaları, milestoneları ve görevleri [docs/PROGRESS.md](docs/PROGRESS.md) dosyasında ayrıntılı olarak belgelenmiştir. Bu dosya, Super Admin paneli geliştirme sürecini takip etmek ve ilerlemeyi izlemek için kullanılacaktır.
+
+## Sürdürülebilirlik Stratejileri
+
+### Teknik Sürdürülebilirlik
+- [ ] Teknik Borç Yönetimi: Her sprint'in %20'si teknik borç azaltımına ayrılacak
+- [ ] Kod Kalitesi: Pull request'lerin minimum %90 test kapsamı gerektirmesi
+- [ ] Dokümantasyon: Kodun sürekli olarak belgelendirilmesi
+- [ ] Modüler Tasarım: Yeni özelliklerin modüler şekilde eklenmesi
+
+### Operasyonel Sürdürülebilirlik
+- [ ] SLA Yönetimi: Net SLA metrikleri tanımlama ve ölçüm mekanizmaları
+- [ ] Otomasyon: Rutin işlemlerin otomatikleştirilmesi
+- [ ] İzleme: Kapsamlı sistem izleme ve uyarı mekanizmaları
+- [ ] Felaket Kurtarma: Kapsamlı yedekleme ve iş sürekliliği planları
+
+### Topluluk Sürdürülebilirliği
+- [ ] Kullanıcı Eğitimi: Eğitim materyalleri ve webinarlar
+- [ ] Topluluk Forumu: Kullanıcılar arası yardımlaşma platformu
+- [ ] Açık Geri Bildirim: Kullanıcı geri bildirimi toplama mekanizmaları
+- [ ] Topluluk Geliştirme: Aktif kullanıcı topluluğu oluşturma ve sürdürme
+
+### Kültürel Sürdürülebilirlik
+- [ ] Bölgesel Uyum: Türkiye'nin farklı bölgelerindeki ihtiyaçlara adaptasyon
+- [ ] Eğitim Sistemi Uyumluluğu: MEB müfredatı ve gereksinimlerine uygunluk
+- [ ] Kültürel Hassasiyet: Farklı okul türleri için özelleştirilebilir içerik
+
+## Başarı Metrikleri
+
+### Kullanıcı Metrikleri
+- [ ] Aktif tenant sayısı ve büyüme oranı 
+- [ ] Günlük/haftalık/aylık aktif kullanıcı sayısı
+- [ ] Kullanıcı başına ortalama kullanım süresi
+- [ ] Özellik kullanım oranları ve dağılımı
+
+### Finansal Metrikleri
+- [ ] Kullanıcı başına aylık gelir (ARPU)
+- [ ] Müşteri edinme maliyeti (CAC)
+- [ ] Müşteri yaşam boyu değeri (LTV)
+- [ ] Aylık tekrarlayan gelir (MRR) ve büyüme oranı
+
+### Operasyonel Metrikleri
+- [ ] Sistem uptime yüzdesi
+- [ ] Ortalama yanıt süresi
+- [ ] Destek ticket sayısı ve çözüm süresi
+- [ ] Hata oranları ve çözüm süreleri
+
+### Müşteri Memnuniyeti Metrikleri
+- [ ] Net Promoter Score (NPS)
+- [ ] Müşteri memnuniyet anketi sonuçları
+- [ ] Churn oranı ve sebepleri
+- [ ] Özellik talep ve şikayet oranları
+
+## Riskler ve Azaltma Stratejileri
+
+| Risk | Olasılık | Etki | Azaltma Stratejisi |
+|------|----------|------|---------------------|
+| Teknik ölçeklenebilirlik sorunları | Orta | Yüksek | Erken yük testleri, hibrit izolasyon yaklaşımı |
+| Düşük kullanıcı adaptasyonu | Orta | Yüksek | Kullanıcı merkezli tasarım, kapsamlı onboarding |
+| Veri güvenliği ihlalleri | Düşük | Çok Yüksek | Düzenli güvenlik denetimleri, penetrasyon testleri |
+| Rekabet baskısı | Orta | Orta | Farklılaştırma, topluluk odaklı yaklaşım |
+| Mevzuat değişiklikleri | Düşük | Orta | Proaktif mevzuat takibi, uyarlanabilir tasarım |
+| Teknik borç birikimi | Yüksek | Orta | Sprint'lerin %20'sinin teknik borca ayrılması |
+| Tenant izolasyon hataları | Düşük | Çok Yüksek | Kapsamlı test senaryoları, izolasyon denetimleri |
+| Kullanıcı veri kaybı | Çok Düşük | Çok Yüksek | Düzenli yedekleme, veri kurtarma senaryoları |
+| Performans darboğazları | Orta | Yüksek | Performans izleme, load testing ve hotspot analizi |
+
+## Risk Yönetim Süreci
+
+### Risk Belirleme
+- [ ] Düzenli risk değerlendirme toplantıları (iki haftada bir)
+- [ ] Teknik, operasyonel ve iş risklerinin tanımlanması
+- [ ] Risk önceliklerinin belirlenmesi
+
+### Risk İzleme
+- [ ] Risk göstergelerinin tanımlanması ve takibi
+- [ ] Erken uyarı sistemleri kurulması
+- [ ] Düzenli risk raporlama
+
+### Risk Yanıtı
+- [ ] Risk azaltma planlarının geliştirilmesi
+- [ ] Acil durum prosedürlerinin belirlenmesi
+- [ ] İş sürekliliği planlarının test edilmesi

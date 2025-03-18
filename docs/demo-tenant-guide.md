@@ -460,7 +460,7 @@ async function configureSchoolProfile(
     motto: template.motto || 'Eğitimde kalite, başarıda süreklilik',
     description: template.description || 'Modern eğitim anlayışıyla öğrencilerimizi geleceğe hazırlıyoruz.',
     facilities: template.facilities || ['Kütüphane', 'Spor Salonu', 'Laboratuvar'],
-    logo: baseProfile.logo || `/demo-assets/${schoolType}/logo.png`,
+    logo: baseProfile.logo || `/demo-assets/${schoolType}/logo.svg`,
     coverImage: baseProfile.coverImage || `/demo-assets/${schoolType}/cover.jpg`
   };
   

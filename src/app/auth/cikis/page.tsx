@@ -34,7 +34,7 @@ export default function CikisPage() {
       <div className="max-w-md w-full space-y-8 text-center">
         <div>
           <Image
-            src="/logo.png"
+            src="/logo.svg"
             alt="Iqra Eğitim Portalı"
             width={100}
             height={100}

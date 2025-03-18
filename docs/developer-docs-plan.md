@@ -436,7 +436,7 @@ Tenant modeli, sistemi kullanan eğitim kurumlarını temsil eder.
       "advancedReporting": true,
       "apiAccess": false
     },
-    "logo_url": "https://storage.i-ep.app/tenants/550e8400/logo.png"
+    "logo_url": "https://storage.i-ep.app/tenants/550e8400/logo.svg"
   }
 }
 ```
