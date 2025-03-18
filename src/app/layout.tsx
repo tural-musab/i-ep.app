@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import dynamic from "next/dynamic";
+import AnalyticsClient from "../components/AnalyticsClient";
 import "./globals.css";
-
-// Analytics bileşenini dinamik olarak yükle
-const Analytics = dynamic(() => import('@vercel/analytics/react').then(mod => mod.Analytics), {
-  ssr: false,
-  loading: () => null,
-});
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,7 +19,7 @@ export default function RootLayout({
     <html lang="tr">
       <body className={inter.className}>
         {children}
-        <Analytics />
+        <AnalyticsClient />
       </body>
     </html>
   );
