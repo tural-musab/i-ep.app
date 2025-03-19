@@ -150,6 +150,7 @@
 - [ ] Sistem Sağlığı modülünün geliştirilmesi
    - [ ] SSL sertifika durumu izleme
    - [ ] Sistem metrikleri görselleştirme
+   - [x] Redis önbellekleme sistemi entegrasyonu ve sağlık kontrolü
    - [ ] Canlı durum takibi
 - [ ] Yedekleme ve Kurtarma modülünün geliştirilmesi
    - [ ] Yedekleme listesi ve yönetimi
@@ -303,7 +304,7 @@
 - [ ] Kamera ve dosya erişimi
 - [ ] Mobil-spesifik UI/UX iyileştirmeleri
 
-## Aşama 5: Ölçeklendirme ve Genişletme (Ay 12-14)
+## Aşama 5: İleri Özellikler ve Ölçeklendirme (Ay 10-14)
 
 ### Referans Belgeler
 - [Deployment Stratejileri](docs/deployment/README.md): Deployment ve ölçeklendirme stratejileri
@@ -339,6 +340,18 @@
 - [ ] Multi-dil desteği (i18n)
 - [ ] Yeni okul yılı hazırlık sihirbazı
 
+### 5.4. Performans Optimizasyonu ve Ölçeklendirme (Ay 12-14)
+- [ ] Kod optimizasyonu ve refactoring
+- [ ] Veritabanı sorgu optimizasyonu
+- [ ] Otomatik ölçeklendirme kurulumu
+- [x] Redis önbellek sistemi entegrasyonu ve uygulama
+- [ ] CDN entegrasyonu ve statik varlık optimizasyonu
+- [ ] İstek daraltma ve önbellekleme stratejileri
+- [ ] Yük testi ve stres testi
+- [ ] Performans izleme araçları entegrasyonu
+- [ ] Özel metrik toplama ve analiz
+- [ ] Dinamik servis ayırma stratejileri
+- [ ] Mikroservis mimarisine geçiş (gerekirse)
 ### 5.4. Performans Optimizasyonu
 - [ ] Frontend optimizasyonu
 - [ ] Database indeksleme ve optimizasyon
@@ -348,6 +361,7 @@
 - [ ] API performans iyileştirmeleri
 - [ ] Load testing ve stress testi
 - [ ] Multi-region dağıtım (isteğe bağlı)
+
 
 ### 5.5. Gelişmiş Güvenlik ve Uyumluluk
 - [ ] Penetrasyon testleri
@@ -526,3 +540,13 @@ Super Admin panelinin detaylı geliştirme aşamaları, milestoneları ve görev
 - [ ] Risk azaltma planlarının geliştirilmesi
 - [ ] Acil durum prosedürlerinin belirlenmesi
 - [ ] İş sürekliliği planlarının test edilmesi
+
+## Planlanan İyileştirmeler
+
+### Kısa Vadeli İyileştirmeler (Ay 1-3)
+- Lint ve tip güvenliği: Eksik TypeScript tiplerinin tamamlanması, ESLint kurallarının iyileştirilmesi
+- Rol ve izin sisteminin tamamlanması
+- Super Admin panelinin temel işlevlerle hayata geçirilmesi
+- Redis önbellek sistemi kullanımının yaygınlaştırılması (temel entegrasyon tamamlandı)
+
+### Orta Vadeli İyileştirmeler (Ay 3-6)

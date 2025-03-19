@@ -287,6 +287,24 @@ Projenin ilerleme durumu ve geliştirme adımları için [PROGRESS.md](PROGRESS.
 
 Bu proje [MIT Lisansı](LICENSE) altında lisanslanmıştır.
 
+## Redis Önbellek Yapılandırması
+
+Proje, Upstash Redis kullanarak önbellekleme işlemleri yapar. Kurulum için:
+
+1. [Upstash](https://upstash.com/) hesabı oluşturun
+2. Yeni bir Redis veritabanı oluşturun (önerilen bölge: Frankfurt, EU Central)
+3. Veritabanı detaylarından `UPSTASH_REDIS_URL` ve `UPSTASH_REDIS_TOKEN` değerlerini alın
+4. Bu değerleri `.env.local` dosyanıza ekleyin:
+
+```
+UPSTASH_REDIS_URL=https://eu2-xxxxx.upstash.io
+UPSTASH_REDIS_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+Redis önbellek durumunu kontrol etmek için [http://localhost:3000/api/health/redis](http://localhost:3000/api/health/redis) adresini ziyaret edebilirsiniz.
+
+Örnek önbellek kullanımını test etmek için: [http://localhost:3000/api/cached-example](http://localhost:3000/api/cached-example)
+
 ---
 
 Iqra Eğitim Portalı - Türkiye'nin eğitim geleceği için

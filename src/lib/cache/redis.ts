@@ -1,9 +1,13 @@
-import { Redis } from '@upstash/redis';
+import { createClient, RedisClientType } from 'redis';
 
-// Upstash Redis bağlantısı
-export const redis = new Redis({
+// Redis Cloud bağlantısı
+export const redis: RedisClientType = createClient({
   url: process.env.UPSTASH_REDIS_URL || '',
-  token: process.env.UPSTASH_REDIS_TOKEN || '',
+});
+
+// Redis bağlantısını otomatik olarak aç
+redis.connect().catch((err: Error) => {
+  console.error('Redis bağlantısı hatası:', err);
 });
 
 /**
@@ -22,8 +26,8 @@ export async function getCachedValue<T>(
 ): Promise<T | null> {
   try {
     const cacheKey = createCacheKey(tenantId, key);
-    const cachedData = await redis.get<T>(cacheKey);
-    return cachedData;
+    const cachedData = await redis.get(cacheKey);
+    return cachedData ? JSON.parse(cachedData) : null;
   } catch (error) {
     console.error('Önbellekten veri alınırken hata oluştu:', error);
     return null;
@@ -41,7 +45,9 @@ export async function setCachedValue<T>(
 ): Promise<void> {
   try {
     const cacheKey = createCacheKey(tenantId, key);
-    await redis.set(cacheKey, value, { ex: expirySeconds });
+    await redis.set(cacheKey, JSON.stringify(value), {
+      EX: expirySeconds
+    });
   } catch (error) {
     console.error('Önbelleğe veri kaydedilirken hata oluştu:', error);
   }
@@ -74,7 +80,7 @@ export async function clearCachePattern(
     const keys = await redis.keys(cachePattern);
     
     if (keys && keys.length > 0) {
-      await redis.del(...keys);
+      await redis.del(keys);
     }
   } catch (error) {
     console.error('Önbellek temizlenirken hata oluştu:', error);
@@ -90,7 +96,7 @@ export async function clearTenantCache(tenantId: string): Promise<void> {
     const keys = await redis.keys(cachePattern);
     
     if (keys && keys.length > 0) {
-      await redis.del(...keys);
+      await redis.del(keys);
     }
   } catch (error) {
     console.error(`${tenantId} için önbellek temizlenirken hata oluştu:`, error);
