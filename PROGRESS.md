@@ -244,7 +244,7 @@
 - [ ] Üretim ortamı yapılandırması
 - [ ] İlk tenant'lar için dağıtım
 - [ ] Kanaryalı yayınlama yaklaşımı
-- [ ] İzleme ve hata yakalama sistemleri
+- [x] İzleme ve hata yakalama sistemleri (Sentry entegrasyonu)
 - [ ] Beta kullanıcı grubu oluşturma ve davet
 - [ ] Kullanıcı geri bildirim mekanizması kurulumu
 - [ ] Analitik kurulumu ve kullanım analizi

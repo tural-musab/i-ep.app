@@ -1,4 +1,5 @@
 import { createClient, RedisClientType } from 'redis';
+import { reportRedisError } from '@/utils/error-reporting';
 
 // Redis Cloud bağlantısı
 export const redis: RedisClientType = createClient({
@@ -8,6 +9,7 @@ export const redis: RedisClientType = createClient({
 // Redis bağlantısını otomatik olarak aç
 redis.connect().catch((err: Error) => {
   console.error('Redis bağlantısı hatası:', err);
+  reportRedisError(err, 'connect');
 });
 
 /**
@@ -30,6 +32,7 @@ export async function getCachedValue<T>(
     return cachedData ? JSON.parse(cachedData) : null;
   } catch (error) {
     console.error('Önbellekten veri alınırken hata oluştu:', error);
+    reportRedisError(error, 'get', key, tenantId);
     return null;
   }
 }
@@ -50,6 +53,7 @@ export async function setCachedValue<T>(
     });
   } catch (error) {
     console.error('Önbelleğe veri kaydedilirken hata oluştu:', error);
+    reportRedisError(error, 'set', key, tenantId);
   }
 }
 
@@ -65,6 +69,7 @@ export async function deleteCachedValue(
     await redis.del(cacheKey);
   } catch (error) {
     console.error('Önbellekteki veri silinirken hata oluştu:', error);
+    reportRedisError(error, 'delete', key, tenantId);
   }
 }
 
@@ -84,6 +89,7 @@ export async function clearCachePattern(
     }
   } catch (error) {
     console.error('Önbellek temizlenirken hata oluştu:', error);
+    reportRedisError(error, 'clearPattern', pattern, tenantId);
   }
 }
 
@@ -100,6 +106,7 @@ export async function clearTenantCache(tenantId: string): Promise<void> {
     }
   } catch (error) {
     console.error(`${tenantId} için önbellek temizlenirken hata oluştu:`, error);
+    reportRedisError(error, 'clearTenantCache', '*', tenantId);
   }
 }
 
@@ -130,22 +137,29 @@ export function Cached(
         ? keyGenerator(tenantId, ...args.slice(1))
         : `${propertyKey}:${JSON.stringify(args.slice(1))}`;
       
-      // Önbellekten veriyi almaya çalış
-      const cachedValue = await getCachedValue(tenantId, key);
-      
-      if (cachedValue !== null) {
-        return cachedValue;
-      }
+      try {
+        // Önbellekten veriyi almaya çalış
+        const cachedValue = await getCachedValue(tenantId, key);
+        
+        if (cachedValue !== null) {
+          return cachedValue;
+        }
 
-      // Önbellekte yoksa, metodu çalıştır
-      const result = await originalMethod.apply(this, args);
-      
-      // Sonucu önbelleğe ekle
-      if (result !== null && result !== undefined) {
-        await setCachedValue(tenantId, key, result, expirySeconds);
+        // Önbellekte yoksa, metodu çalıştır
+        const result = await originalMethod.apply(this, args);
+        
+        // Sonucu önbelleğe ekle
+        if (result !== null && result !== undefined) {
+          await setCachedValue(tenantId, key, result, expirySeconds);
+        }
+        
+        return result;
+      } catch (error) {
+        console.error(`Önbellekleme hatası (${propertyKey}):`, error);
+        reportRedisError(error, 'decorator', propertyKey, tenantId);
+        // Hata durumunda orijinal metodu çalıştır
+        return originalMethod.apply(this, args);
       }
-      
-      return result;
     };
 
     return descriptor;

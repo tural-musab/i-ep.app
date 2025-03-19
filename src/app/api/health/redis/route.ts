@@ -1,5 +1,6 @@
 import { redis } from '@/lib/cache/redis';
 import { NextResponse } from 'next/server';
+import { reportRedisError } from '@/utils/error-reporting';
 
 /**
  * GET /api/health/redis
@@ -32,6 +33,9 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Redis health check hatası:', error);
+    
+    // Sentry'e hata rapor et
+    reportRedisError(error, 'health_check');
     
     return NextResponse.json(
       {
