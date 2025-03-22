@@ -84,21 +84,6 @@ BEGIN
   -- Yeni tenant'a bir başlangıç okulu ekle
   EXECUTE format('INSERT INTO %I.schools (name) VALUES (%L)', schema_name, NEW.name);
   
-  -- Audit log için kayıt
-  INSERT INTO audit.audit_logs (
-    tenant_id, 
-    action, 
-    entity_type, 
-    entity_id, 
-    new_data
-  ) VALUES (
-    NEW.id,
-    'tenant.created',
-    'tenant',
-    NEW.id::TEXT,
-    to_jsonb(NEW)
-  );
-  
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
@@ -122,21 +107,6 @@ BEGIN
   SET deleted_at = now() 
   WHERE id = OLD.id;
   
-  -- Audit log için kayıt
-  INSERT INTO audit.audit_logs (
-    tenant_id, 
-    action, 
-    entity_type, 
-    entity_id, 
-    old_data
-  ) VALUES (
-    OLD.id,
-    'tenant.deleted',
-    'tenant',
-    OLD.id::TEXT,
-    to_jsonb(OLD)
-  );
-  
   RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
@@ -154,23 +124,6 @@ RETURNS TRIGGER AS $$
 BEGIN
   -- Tenant güncellendi, updated_at alanını güncelle
   NEW.updated_at := now();
-  
-  -- Audit log için kayıt
-  INSERT INTO audit.audit_logs (
-    tenant_id, 
-    action, 
-    entity_type, 
-    entity_id, 
-    old_data,
-    new_data
-  ) VALUES (
-    NEW.id,
-    'tenant.updated',
-    'tenant',
-    NEW.id::TEXT,
-    to_jsonb(OLD),
-    to_jsonb(NEW)
-  );
   
   RETURN NEW;
 END;

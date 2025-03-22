@@ -101,7 +101,7 @@ CREATE TABLE public.user_verifications (
 -- Denetim günlüğü tablosu
 CREATE TABLE audit.audit_logs (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  tenant_id UUID REFERENCES management.tenants(id) ON DELETE SET NULL,
+  tenant_id UUID,
   user_id UUID REFERENCES public.users(id) ON DELETE SET NULL,
   action TEXT NOT NULL,
   entity_type TEXT NOT NULL,
