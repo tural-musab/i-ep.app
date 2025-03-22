@@ -75,6 +75,8 @@ CREATE OR REPLACE FUNCTION public.create_tenant_schema(tenant_id UUID)
 RETURNS VOID AS $$
 DECLARE
   schema_name TEXT;
+  table_array TEXT[] := ARRAY['users', 'students', 'teachers', 'classes'];
+  table_name TEXT;
 BEGIN
   -- Şema adı oluştur
   schema_name := 'tenant_' || tenant_id;
@@ -169,24 +171,33 @@ BEGIN
     USING (tenant_id = get_current_tenant_id())';
     
   -- Tetikleyici oluştur: Yeni kayıtlar için tenant_id otomatik ekle
-  FOR table_name IN SELECT 'users' UNION SELECT 'students' UNION SELECT 'teachers' UNION SELECT 'classes' LOOP
-    EXECUTE '
-      CREATE OR REPLACE FUNCTION ' || schema_name || '.set_tenant_id()
-      RETURNS TRIGGER AS $$
+  FOREACH table_name IN ARRAY table_array LOOP
+    -- Düzeltilen kısım - FORMAT kullanarak güvenli dinamik SQL oluştur
+    EXECUTE FORMAT('
+      CREATE OR REPLACE FUNCTION %I.set_tenant_id()
+      RETURNS TRIGGER AS $func$
       BEGIN
-        NEW.tenant_id := ''' || tenant_id || '''::UUID;
+        NEW.tenant_id := %L::UUID;
         RETURN NEW;
       END;
-      $$ LANGUAGE plpgsql;
+      $func$ LANGUAGE plpgsql;
       
-      DROP TRIGGER IF EXISTS ensure_tenant_id_' || table_name || ' ON ' || schema_name || '.' || table_name || ';
+      DROP TRIGGER IF EXISTS ensure_tenant_id_%I ON %I.%I;
       
-      CREATE TRIGGER ensure_tenant_id_' || table_name || '
-      BEFORE INSERT ON ' || schema_name || '.' || table_name || '
+      CREATE TRIGGER ensure_tenant_id_%I
+      BEFORE INSERT ON %I.%I
       FOR EACH ROW
       WHEN (NEW.tenant_id IS NULL)
-      EXECUTE FUNCTION ' || schema_name || '.set_tenant_id();
-    ';
+      EXECUTE FUNCTION %I.set_tenant_id();
+    ', 
+    schema_name, -- %I: set_tenant_id() fonksiyonunun şema adı
+    tenant_id,   -- %L: tenant_id değeri
+    table_name,  -- %I: trigger adındaki tablo adı
+    schema_name, table_name, -- %I.%I: tablo adı
+    table_name,  -- %I: trigger adı
+    schema_name, table_name, -- %I.%I: tablo adı
+    schema_name  -- %I: fonksiyon adı
+    );
   END LOOP;
   
   -- Uygulamanın şemaya erişimini sağla
@@ -250,4 +261,4 @@ DROP TRIGGER IF EXISTS drop_tenant_schema_trigger ON public.tenants;
 CREATE TRIGGER drop_tenant_schema_trigger
 BEFORE DELETE ON public.tenants
 FOR EACH ROW
-EXECUTE FUNCTION public.tenant_deleted_trigger(); 
+EXECUTE FUNCTION public.tenant_deleted_trigger();
