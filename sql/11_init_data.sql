@@ -60,6 +60,50 @@ INSERT INTO management.tenants (
   now() + interval '1 year'
 );
 
+-- Burada tenant oluşturma tetikleyicisinin çalışmasını bekleyelim
+-- Tetikleyici bazı tablolar oluşturmalı, ama tetikleyici çalışmayabilir
+-- O yüzden elle tenant_demo şemasını ve tablolarını oluşturalım
+DO $$
+BEGIN
+  -- Şemayı oluştur
+  EXECUTE 'CREATE SCHEMA IF NOT EXISTS tenant_demo';
+  
+  -- Grade levels tablosu oluştur
+  EXECUTE 'CREATE TABLE IF NOT EXISTS tenant_demo.grade_levels (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    display_order INTEGER NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
+  )';
+  
+  -- Okullar tablosu oluştur
+  EXECUTE 'CREATE TABLE IF NOT EXISTS tenant_demo.schools (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    address TEXT,
+    phone TEXT,
+    email TEXT,
+    website TEXT,
+    principal_name TEXT,
+    logo_url TEXT,
+    settings JSONB DEFAULT ''{}'',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
+  )';
+  
+  -- Akademik yıllar tablosu
+  EXECUTE 'CREATE TABLE IF NOT EXISTS tenant_demo.academic_years (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    is_current BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now() NOT NULL
+  )';
+END $$;
+
 -- Demo okul için domain oluştur
 INSERT INTO management.domains (
   tenant_id,
