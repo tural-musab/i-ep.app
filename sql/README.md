@@ -1,75 +1,140 @@
-# Iqra Eğitim Portalı - Supabase SQL Kurulumu
+# Iqra Eğitim Portalı Veritabanı Kurulumu
 
-Bu klasör, Iqra Eğitim Portalı'nın veritabanı yapılandırması için gerekli SQL dosyalarını içermektedir. Bu dosyalar, Supabase projenizin veritabanı yapılandırmasını otomatize etmek için kullanılır.
+Bu dizin, Iqra Eğitim Portalı (i-ep.app) için gerekli veritabanı yapısını oluşturan SQL dosyalarını içerir.
 
-## İçerikler
+## Gereksinimler
 
-- `initial-setup.sql`: Temel veritabanı yapısını oluşturan ana script
-  - Tenant tabloları ve ilişkileri
-  - Demo tenant ve ilgili şema
-  - Row Level Security (RLS) politikaları
-  - Yardımcı fonksiyonlar
+- PostgreSQL 14 veya üzeri
+- Supabase CLI (opsiyonel)
+- psql (PostgreSQL komut satırı aracı)
 
 ## Kurulum Adımları
 
-Aşağıdaki adımları takip ederek SQL scriptlerini Supabase projenize uygulayabilirsiniz:
+### 1. Supabase Kullanarak
 
-### 1. Supabase Studio'yu Kullanarak
+Supabase projenizi oluşturduktan sonra, bu SQL dosyalarını Supabase Studio aracılığıyla veya Supabase CLI kullanarak çalıştırabilirsiniz.
 
-1. [Supabase Dashboard](https://app.supabase.io)'a giriş yapın
+#### Supabase Studio ile
+
+1. Supabase Dashboard'a giriş yapın
 2. Projenizi seçin
-3. Sol menüden "SQL Editor" seçeneğine tıklayın
-4. "New Query" butonuna tıklayın
-5. `initial-setup.sql` dosyasının içeriğini kopyalayıp SQL editörüne yapıştırın
-6. "Run" butonuna tıklayarak scripti çalıştırın
+3. SQL Editor sekmesine tıklayın
+4. `setup.sql` dosyasını kopyalayıp yapıştırın ve çalıştırın
 
-### 2. Supabase CLI'ı Kullanarak
-
-Supabase CLI kurulu ise, aşağıdaki komutu kullanabilirsiniz:
+#### Supabase CLI ile
 
 ```bash
-supabase db execute --file ./sql/initial-setup.sql
+# Supabase CLI'yi kullanarak oturum açın
+supabase login
+
+# Proje dizinine gidin
+cd /path/to/project
+
+# SQL dosyalarını Supabase projenize uygulayın
+supabase db push --db-url=<SUPABASE_DB_URL>
 ```
 
-## Multi-tenant Yapısı
+### 2. PostgreSQL ile Doğrudan Kurulum
 
-Bu SQL scriptleri, multi-tenant yapısını destekleyecek şekilde tasarlanmıştır:
+PostgreSQL veritabanınıza doğrudan SQL dosyalarını uygulayabilirsiniz:
 
-1. Her tenant için ayrı bir şema oluşturulur (`tenant_[UUID]` formatında)
-2. Her tenant kendi izole edilmiş verilerine sahiptir
-3. Row Level Security (RLS) politikaları, tenant izolasyonunu güçlendirir
-4. Public şema, tüm tenant'lar için ortak meta verileri içerir
+```bash
+# PostgreSQL'e bağlanın
+psql -h <host> -U <username> -d <database> -f sql/setup.sql
+```
 
-## Demo Tenant
+## Dosya Yapısı
 
-Script, otomatik olarak bir demo tenant oluşturur:
+- `setup.sql` - Ana kurulum dosyası, tüm diğer dosyaları çağırır
+- `01_schemas.sql` - Şemaları oluşturur
+- `02_extensions.sql` - Gerekli PostgreSQL uzantılarını kurar
+- `03_types.sql` - Enum ve kompozit tipleri tanımlar
+- `04_functions.sql` - Yardımcı fonksiyonları tanımlar
+- `05_management_tables.sql` - Tenant yönetimi ve sistem tablolarını oluşturur
+- `06_public_tables.sql` - Public şemasındaki ortak tabloları oluşturur
+- `07_tenant_template_tables.sql` - Tenant şablon tablolarını oluşturur
+- `08_rls_policies.sql` - Row Level Security politikalarını tanımlar
+- `09_triggers.sql` - Tetikleyicileri oluşturur
+- `10_indexes.sql` - Veritabanı indekslerini oluşturur
+- `11_init_data.sql` - İlk veriyi ekler (demo tenant ve süper admin)
 
-- Subdomain: `demo`
-- Domain: `demo.i-ep.app`
-- Plan: `premium`
+## Çok Kiracılı (Multi-Tenant) Mimari
 
-## Row Level Security (RLS)
+Bu veritabanı kurulumu, hibrit bir tenant izolasyon stratejisi kullanır:
 
-Veritabanı güvenliği, Row Level Security (RLS) politikaları ile sağlanır:
+1. **Şema İzolasyonu**: Her tenant için ayrı bir PostgreSQL şeması oluşturulur (`tenant_{id}`)
+2. **Prefix İzolasyonu**: Bazı ortak tablolarda `tenant_id` sütunu ve Row Level Security (RLS) kullanılır
+3. **Row Level Security (RLS)**: Tüm tablolarda tenant erişimi için RLS politikaları uygulanır
 
-- Her tenant, yalnızca kendi verilerine erişebilir
-- Sistem yöneticileri, tüm tenant'ların verilerine erişebilir
-- Kullanıcılar, yalnızca izin verilen kaynaklara erişebilir
+Bu hibrit yaklaşım, güvenli tenant izolasyonu sağlarken ortak tablolar için esneklik sunar.
 
-## Supabase ile Entegrasyon
+## Tenant Oluşturma
 
-Bu veritabanı yapısını kullanmak için uygulamanın Supabase bağlantı kodunu doğru şekilde yapılandırmanız gerekmektedir. Daha fazla bilgi için `src/lib/supabase/server.ts` dosyasını inceleyebilirsiniz.
+Yeni bir tenant oluşturmak için:
+
+```sql
+-- Yeni tenant ekle (tetikleyici otomatik olarak şema ve tabloları oluşturacak)
+INSERT INTO management.tenants (
+  name, 
+  display_name, 
+  status,
+  subscription_plan
+) VALUES (
+  'okul-adi', 
+  'Okul Adı', 
+  'trial',
+  'free'
+) RETURNING id;
+```
+
+## Süper Admin Kullanıcı Oluşturma
+
+Ek süper admin kullanıcısı eklemek için:
+
+```sql
+-- Önce auth.users tablosuna kullanıcı ekleyin
+INSERT INTO auth.users (
+  email,
+  encrypted_password,
+  email_confirmed_at
+) VALUES (
+  'yeni-admin@i-ep.app',
+  crypt('guvenli-sifre', gen_salt('bf')),
+  now()
+) RETURNING id;
+
+-- Sonra public.users tablosuna kullanıcı ekleyin
+INSERT INTO public.users (
+  id, -- auth.users'dan dönen ID'yi kullanın
+  email,
+  first_name,
+  last_name,
+  role
+) VALUES (
+  '...', -- auth.users'dan dönen ID
+  'yeni-admin@i-ep.app',
+  'Ad',
+  'Soyad',
+  'super_admin'
+);
+```
+
+## Güvenlik Notları
+
+1. Bu SQL dosyaları hassas bilgiler içerebilir, güvenli şekilde saklayın
+2. Üretim ortamında kullanmadan önce `11_init_data.sql` dosyasındaki şifreleri değiştirin
+3. Tenant izolasyonunu test edin ve güvenlik açıklarına karşı kontrol edin
+4. Row Level Security politikalarının doğru çalıştığından emin olun
 
 ## Sorun Giderme
 
-SQL scriptleri çalıştırılırken hatalarla karşılaşırsanız:
+Kurulum sırasında hata alırsanız:
 
-1. Hata mesajlarını dikkatlice okuyun
-2. Scriptin parçalarını ayrı ayrı çalıştırmayı deneyin
-3. Mevcut veritabanı durumunu kontrol edin
+1. Hata mesajını dikkatlice okuyun
+2. SQL dosyalarını sırayla manuel olarak çalıştırın hataları tespit edin
+3. PostgreSQL sürümünüzün 14 veya üzeri olduğundan emin olun
+4. Gerekli uzantıların kurulu olduğunu kontrol edin
 
-## Referans Dokümanlar
+## İletişim
 
-- `docs/architecture/multi-tenant-strategy.md`
-- `docs/architecture/data-isolation.md`
-- `docs/architecture/backup-restore.md` 
+Sorularınız veya sorunlarınız için: info@i-ep.app 

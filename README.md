@@ -305,6 +305,98 @@ Redis önbellek durumunu kontrol etmek için [http://localhost:3000/api/health/r
 
 Örnek önbellek kullanımını test etmek için: [http://localhost:3000/api/cached-example](http://localhost:3000/api/cached-example)
 
+## Ortam Değişkenleri (Environment Variables)
+
+Proje farklı ortamlar için farklı env dosyaları kullanmaktadır:
+
+### Env Dosya Yapısı
+
+- `.env.development` - Geliştirme ortamı için temel değişkenler
+- `.env.development.local` - Geliştirme ortamı için yerel değişkenler (git'e eklenmez)
+- `.env.production` - Üretim ortamı için temel değişkenler
+- `.env.production.local` - Üretim ortamı için yerel değişkenler (git'e eklenmez)
+- `.env.staging` - Staging ortamı için temel değişkenler
+- `.env.staging.local` - Staging ortamı için yerel değişkenler (git'e eklenmez)
+- `.env.test` - Test ortamı için temel değişkenler
+- `.env.test.local` - Test ortamı için yerel değişkenler (git'e eklenmez)
+- `.env.local` - Tüm ortamlarda geçerli yerel değişkenler (git'e eklenmez)
+- `.env.local-remote` - Local frontend + Remote backend hibrit ortamı (git'e eklenmez)
+
+### Kurulum
+
+1. `.env.example` dosyasını kopyalayarak `.env.local` dosyası oluşturun
+2. Gerekli değişkenleri kendi ortamınıza göre güncelleyin
+
+### Ortam-Spesifik Komutlar
+
+```bash
+# Geliştirme
+npm run dev             # Geliştirme ortamı
+npm run dev:staging     # Staging ortamı
+npm run dev:test        # Test ortamı
+npm run dev:local-remote # Local frontend + Remote backend hibrit ortamı
+
+# Build
+npm run build             # Üretim ortamı için build
+npm run build:staging     # Staging ortamı için build
+npm run build:local-remote # Local frontend + Remote backend hibrit ortamı için build
+
+# Başlatma
+npm start                # Üretim ortamı
+npm run start:staging     # Staging ortamı
+npm run start:local-remote # Local frontend + Remote backend hibrit ortamı
+
+# Env Doğrulama
+npm run validate:env      # Env değişkenlerinin doğruluğunu kontrol et
+```
+
+### Local Frontend + Remote Backend Hibrit Geliştirme
+
+Bazen yerel geliştirme yaparken gerçek (uzaktaki) backend servislerine bağlanmak isteyebilirsiniz. Bu durumda hibrit bir ortam oluşturabilirsiniz:
+
+1. `.env.local-remote` dosyasını yapılandırın:
+   ```
+   # Yerel frontend ayarları
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
+   NODE_ENV=development
+
+   # Remote backend ayarları
+   NEXT_PUBLIC_SUPABASE_URL=https://your-remote-instance.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-remote-anon-key
+   SUPABASE_SERVICE_ROLE_KEY=your-remote-service-role-key
+   ```
+
+2. Hibrit modda geliştirme sunucusunu başlatın:
+   ```bash
+   npm run dev:local-remote
+   ```
+
+3. Ortamlar arasında geçiş yapmak için:
+   ```bash
+   # Tamamen yerel ortama geçiş
+   npm run dev
+   
+   # Yerel frontend + Uzak backend ortamına geçiş
+   npm run dev:local-remote
+   
+   # Gerçek staging ortamına geçiş
+   npm run dev:staging
+   ```
+
+#### Hibrit Ortam için Önemli Notlar
+
+1. **CORS Ayarları**: Remote backend'e yerel ortamdan erişirken CORS hatalarını önlemek için backend tarafındaki CORS ayarlarını yapılandırmanız gerekebilir.
+2. **Güvenlik**: Geliştirme makinenizde hassas üretim bilgilerini saklamayın. `.env.local-remote` dosyasını `.gitignore` dosyasına ekleyin.
+3. **Ağ Güvenliği**: Uzak backend'e erişirken gerekirse VPN kullanın ve üretim ortamı yerine staging ortamını tercih edin.
+4. **Düzenli Temizleme**: Geliştirme veya test amaçlı oluşturduğunuz verileri düzenli olarak temizleyin.
+
+### Önemli Notlar
+
+- Hassas bilgileri içeren `.env.*.local` dosyaları asla git'e eklenmemelidir
+- Üretim ortamı değişkenleri güvenli bir şekilde deployment platformunda (örn. Vercel) saklanmalıdır
+- `NEXT_PUBLIC_` öneki ile başlayan değişkenler client-side'da kullanılabilir
+- Diğer tüm değişkenler sadece server-side'da kullanılabilir
+
 ---
 
 Iqra Eğitim Portalı - Türkiye'nin eğitim geleceği için
