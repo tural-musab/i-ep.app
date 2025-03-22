@@ -1,6 +1,10 @@
 -- Management.tenants tablosu için RLS
 ALTER TABLE management.tenants ENABLE ROW LEVEL SECURITY;
 
+-- Önceki politikaları kaldır
+DROP POLICY IF EXISTS tenant_super_admin_policy ON management.tenants;
+DROP POLICY IF EXISTS tenant_user_policy ON management.tenants;
+
 -- Sadece super_admin'ler tüm tenant'ları görebilir
 CREATE POLICY tenant_super_admin_policy ON management.tenants 
   FOR ALL 
@@ -15,6 +19,11 @@ CREATE POLICY tenant_user_policy ON management.tenants
 
 -- Domains tablosu için RLS
 ALTER TABLE management.domains ENABLE ROW LEVEL SECURITY;
+
+-- Önceki politikaları kaldır
+DROP POLICY IF EXISTS domain_super_admin_policy ON management.domains;
+DROP POLICY IF EXISTS domain_user_policy ON management.domains;
+DROP POLICY IF EXISTS domain_admin_policy ON management.domains;
 
 -- Super admin'ler tüm domain'leri görebilir
 CREATE POLICY domain_super_admin_policy ON management.domains 
@@ -39,6 +48,12 @@ CREATE POLICY domain_admin_policy ON management.domains
 
 -- Users tablosu için RLS
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+-- Önceki politikaları kaldır
+DROP POLICY IF EXISTS users_super_admin_policy ON public.users;
+DROP POLICY IF EXISTS users_self_policy ON public.users;
+DROP POLICY IF EXISTS users_admin_policy ON public.users;
+DROP POLICY IF EXISTS users_teacher_policy ON public.users;
 
 -- Super admin'ler tüm kullanıcıları görebilir
 CREATE POLICY users_super_admin_policy ON public.users 
@@ -72,10 +87,15 @@ CREATE POLICY users_teacher_policy ON public.users
 
 -- Tüm tenant şablonu tabloları için RLS politikaları
 -- Burada, tüm tenant_template tabloları için benzer politikalar oluşturulmalıdır.
--- Bu, tenant'lar oluşturulduğunda kopyalandığında düzenlenecektir.
+-- Bu, tenant'lar oluşturulduğunda kopyalanacak şablondur.
 
 -- Örnek olarak bir tenant şablon tablosuna politika:
 ALTER TABLE tenant_template.schools ENABLE ROW LEVEL SECURITY;
+
+-- Önceki politikaları kaldır
+DROP POLICY IF EXISTS schools_admin_policy ON tenant_template.schools;
+DROP POLICY IF EXISTS schools_teacher_policy ON tenant_template.schools;
+DROP POLICY IF EXISTS schools_student_parent_policy ON tenant_template.schools;
 
 -- Tenant'taki admin'ler okulları tam yönetebilir
 CREATE POLICY schools_admin_policy ON tenant_template.schools 
@@ -101,6 +121,10 @@ CREATE POLICY schools_student_parent_policy ON tenant_template.schools
 -- Audit logs için RLS
 ALTER TABLE audit.audit_logs ENABLE ROW LEVEL SECURITY;
 
+-- Önceki politikaları kaldır
+DROP POLICY IF EXISTS audit_logs_super_admin_policy ON audit.audit_logs;
+DROP POLICY IF EXISTS audit_logs_admin_policy ON audit.audit_logs;
+
 -- Super admin tüm log'ları görebilir
 CREATE POLICY audit_logs_super_admin_policy ON audit.audit_logs 
   FOR SELECT 
@@ -118,6 +142,10 @@ CREATE POLICY audit_logs_admin_policy ON audit.audit_logs
 
 -- API Tokens için RLS
 ALTER TABLE public.api_tokens ENABLE ROW LEVEL SECURITY;
+
+-- Önceki politikaları kaldır
+DROP POLICY IF EXISTS api_tokens_super_admin_policy ON public.api_tokens;
+DROP POLICY IF EXISTS api_tokens_admin_policy ON public.api_tokens;
 
 -- Super admin tüm token'ları görebilir
 CREATE POLICY api_tokens_super_admin_policy ON public.api_tokens 
@@ -137,6 +165,10 @@ CREATE POLICY api_tokens_admin_policy ON public.api_tokens
 -- Subscriptions için RLS
 ALTER TABLE management.subscriptions ENABLE ROW LEVEL SECURITY;
 
+-- Önceki politikaları kaldır
+DROP POLICY IF EXISTS subscriptions_super_admin_policy ON management.subscriptions;
+DROP POLICY IF EXISTS subscriptions_admin_policy ON management.subscriptions;
+
 -- Super admin tüm abonelikleri görebilir
 CREATE POLICY subscriptions_super_admin_policy ON management.subscriptions 
   FOR ALL 
@@ -154,6 +186,10 @@ CREATE POLICY subscriptions_admin_policy ON management.subscriptions
 
 -- Invoices için RLS
 ALTER TABLE management.invoices ENABLE ROW LEVEL SECURITY;
+
+-- Önceki politikaları kaldır
+DROP POLICY IF EXISTS invoices_super_admin_policy ON management.invoices;
+DROP POLICY IF EXISTS invoices_admin_policy ON management.invoices;
 
 -- Super admin tüm faturaları görebilir
 CREATE POLICY invoices_super_admin_policy ON management.invoices 
