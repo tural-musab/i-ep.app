@@ -11,6 +11,10 @@ const nextConfig = {
   // Vercel'de dağıtım sorunları nedeniyle standalone modunu devre dışı bırakıyoruz
   // output: 'standalone',
   serverExternalPackages: [],
+  // Resim optimizasyonu için alan adı yapılandırması
+  images: {
+    domains: ['i-ep.app'],
+  },
 };
 
 // Sentry yapılandırması

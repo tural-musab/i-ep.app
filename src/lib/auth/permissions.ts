@@ -143,14 +143,34 @@ export function canCreateStudent(user: User | null): boolean {
 
 /**
  * Kullanıcının tenant'a erişim hakkını doğrular
- * @param user Kontrol edilecek kullanıcı
- * @param tenantId Erişilmek istenen tenant ID'si
+ * @param userOrParams Kontrol edilecek kullanıcı veya parametre objesi
+ * @param tenantIdParam Erişilmek istenen tenant ID'si (eğer ilk parametre obje değilse)
  * @returns Erişim varsa true, yoksa false
  */
 export async function validateTenantAccess(
-  user: User | null,
-  tenantId: string
+  userOrParams: any,
+  tenantIdParam?: string
 ): Promise<boolean> {
+  // Parametre formatını belirle
+  let user: any = null;
+  let tenantId: string = '';
+  
+  if (typeof userOrParams === 'object' && userOrParams !== null) {
+    if ('userId' in userOrParams && 'tenantId' in userOrParams) {
+      // Yeni format: { userId, tenantId }
+      tenantId = userOrParams.tenantId;
+      
+      // userId'den user nesnesini getir
+      // Bu örnekte sadece kullanıcı ID'si kontrol ediliyor
+      // Gerçek uygulamada veritabanından kullanıcı bilgisi çekilebilir
+      user = { id: userOrParams.userId, role: 'admin' }; // Basitleştirilmiş örnek
+    } else {
+      // Supabase user nesnesi
+      user = userOrParams;
+      tenantId = tenantIdParam || '';
+    }
+  }
+  
   // Kullanıcı yoksa erişim reddet
   if (!user) return false;
   

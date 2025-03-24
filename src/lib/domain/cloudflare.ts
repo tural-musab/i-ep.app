@@ -1,4 +1,4 @@
-import { DomainProvider, CloudflareZoneConfig } from './types';
+import { DomainProvider, CloudflareZoneConfig, DomainVerificationStatus } from './types';
 
 export class CloudflareDomainManager implements DomainProvider {
   private config: CloudflareZoneConfig;
@@ -135,9 +135,9 @@ export class CloudflareDomainManager implements DomainProvider {
    * @param domain Doğrulanacak domain
    * @returns Doğrulama durumu
    */
-  async verifyCustomDomain(domain: string): Promise<boolean> {
+  async verifyCustomDomain(domain: string): Promise<DomainVerificationStatus> {
     try {
-      // Cloudflare'den domain durumunu kontrol et
+      // Cloudflare API ile domain durumunu kontrol etme
       const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${this.config.zoneId}/custom_hostnames?hostname=${domain}`, {
         method: 'GET',
         headers: {
@@ -148,15 +148,57 @@ export class CloudflareDomainManager implements DomainProvider {
       
       const data = await response.json();
       
-      if (!data.success || data.result.length === 0) {
-        return false;
+      if (!data.success) {
+        console.error('Cloudflare domain durumu kontrolü hatası:', data.errors);
+        return {
+          domain,
+          verified: false,
+          status: 'error',
+          lastChecked: new Date(),
+          error: data.errors[0]?.message || 'Domain durumu kontrol edilirken bir hata oluştu'
+        };
       }
       
-      const domainInfo = data.result[0];
-      return domainInfo.ssl.status === 'active';
+      // Eğer domain kaydı varsa ve SSL aktifse
+      const customHostname = data.result[0];
+      
+      if (customHostname) {
+        const verified = customHostname.status === 'active';
+        const sslActive = customHostname.ssl?.status === 'active';
+        
+        let status: 'pending' | 'active' | 'error' = 'pending';
+        if (verified && sslActive) {
+          status = 'active';
+        } else if (customHostname.status === 'error') {
+          status = 'error';
+        }
+        
+        return {
+          domain,
+          verified,
+          status,
+          lastChecked: new Date(),
+          error: customHostname.status === 'error' ? 'Domain yapılandırmasında hata' : undefined
+        };
+      }
+      
+      // Domain kaydı bulunamadı
+      return {
+        domain,
+        verified: false,
+        status: 'pending',
+        lastChecked: new Date(),
+        error: 'Cloudflare\'de domain kaydı bulunamadı'
+      };
     } catch (error) {
-      console.error('Domain doğrulama hatası:', error);
-      return false;
+      console.error('Cloudflare domain doğrulama işleminde hata:', error);
+      return {
+        domain,
+        verified: false,
+        status: 'error',
+        lastChecked: new Date(),
+        error: 'Domain doğrulama işlemi sırasında bir hata oluştu'
+      };
     }
   }
   

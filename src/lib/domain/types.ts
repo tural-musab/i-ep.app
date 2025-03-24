@@ -2,7 +2,7 @@ export interface DomainProvider {
   createSubdomain(tenant: { id: string; subdomain: string }): Promise<boolean>;
   setupCustomDomain(tenant: { id: string }, customDomain: string): Promise<{success: boolean; verificationDetails?: any}>;
   removeSubdomain(tenantId: string, subdomain: string): Promise<boolean>;
-  verifyCustomDomain(domain: string): Promise<boolean>;
+  verifyCustomDomain(domain: string): Promise<DomainVerificationStatus>;
 }
 
 export interface CloudflareZoneConfig {

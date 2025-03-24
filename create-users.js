@@ -82,7 +82,7 @@ async function createUsers() {
   });
 
   // 2. Demo Okul Admin
-  const demoAdmin = await createUser('admin@demo-okul.i-ep.app', 'password', {
+  const demoAdmin = await createUser('admin@demo.i-ep.app', 'password', {
     tenant_id: '11111111-1111-1111-1111-111111111111',
     first_name: 'Demo',
     last_name: 'Admin',

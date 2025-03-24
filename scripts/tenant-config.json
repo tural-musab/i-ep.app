@@ -1,0 +1,5 @@
+{
+  "name": "Test Tenant",
+  "subdomain": "test-tenant",
+  "email": "admin@test-tenant.com"
+} 

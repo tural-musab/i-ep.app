@@ -51,7 +51,7 @@ INSERT INTO management.tenants (
   subscription_end_date
 ) VALUES (
   '11111111-1111-1111-1111-111111111111',
-  'demo-okul',
+  'demo',
   'Demo Okul',
   'tenant_demo',
   'active',
@@ -112,7 +112,7 @@ INSERT INTO management.domains (
   status
 ) VALUES (
   '11111111-1111-1111-1111-111111111111',
-  'demo-okul.i-ep.app',
+  'demo.i-ep.app',
   TRUE,
   'active'
 );
@@ -129,7 +129,7 @@ INSERT INTO auth.users (
   updated_at
 ) VALUES (
   '22222222-2222-2222-2222-222222222222',
-  'admin@demo-okul.i-ep.app',
+  'admin@demo.i-ep.app',
   crypt('password', gen_salt('bf')),
   now(),
   '{"provider": "email", "providers": ["email"]}',
@@ -151,7 +151,7 @@ INSERT INTO public.users (
 ) VALUES (
   '22222222-2222-2222-2222-222222222222',
   '11111111-1111-1111-1111-111111111111',
-  'admin@demo-okul.i-ep.app',
+  'admin@demo.i-ep.app',
   'Demo',
   'Admin',
   'admin',

@@ -1,0 +1,5 @@
+[33mbcbbe4b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Temel dosyaları ve Supabase super admin kullanıcı oluşturma scriptini ekle
+[33md7a2719[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m fix: Add manual schema and table creation for tenant_demo in init_data
+[33m6db657f[m fix: Add DROP POLICY statements before policy creation to avoid errors on repeated runs
+[33m9363d74[m fix: Remove tenant_id foreign key constraint from audit_logs and audit log insert from triggers
+[33m8876da9[m feat: Add Supabase setup SQL files and documentation

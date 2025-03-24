@@ -22,7 +22,9 @@
     "test:coverage": "jest --coverage",
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
-    "validate:env": "tsx src/env.ts"
+    "validate:env": "tsx src/env.ts",
+    "create-tenant": "node scripts/create-tenant.js",
+    "create-tenant-config": "node scripts/create-tenant.js"
   },
   "dependencies": {
     "@auth/supabase-adapter": "^1.8.0",

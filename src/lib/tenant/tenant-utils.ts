@@ -1,7 +1,11 @@
+import { Tenant } from '@/types/tenant';
+import * as tenantService from './tenant-service';
 import { NextRequest } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { TenantSettings, Tenant } from '@/types/tenant';
 
+/**
+ * Domain veya subdomain ile tenant bilgilerini getir
+ */
 export async function getTenantByDomain(domain: string): Promise<Tenant | null> {
   try {
     const supabase = createServerSupabaseClient();
@@ -27,213 +31,213 @@ export async function getTenantByDomain(domain: string): Promise<Tenant | null> 
         return null;
       }
       
-      const settings = customDomainData.tenants.settings as Record<string, unknown>;
-      return {
-        id: customDomainData.tenants.id,
-        name: customDomainData.tenants.name,
-        subdomain: customDomainData.tenants.subdomain,
-        planType: customDomainData.tenants.plan_type as 'free' | 'standard' | 'premium',
-        createdAt: new Date(customDomainData.tenants.created_at),
-        settings: {
-          allowParentRegistration: settings?.allowParentRegistration as boolean ?? false,
-          allowTeacherRegistration: settings?.allowTeacherRegistration as boolean ?? false,
-          languagePreference: settings?.languagePreference as 'tr' | 'en' ?? 'tr',
-          timeZone: settings?.timeZone as string ?? 'Europe/Istanbul',
-          primaryColor: settings?.primaryColor as string,
-          secondaryColor: settings?.secondaryColor as string,
-          logoUrl: settings?.logoUrl as string,
-          favIconUrl: settings?.favIconUrl as string,
-          customCss: settings?.customCss as string,
-          smsProvider: settings?.smsProvider as 'netgsm' | 'twilio' | 'none',
-          emailProvider: settings?.emailProvider as 'smtp' | 'aws' | 'none',
-          notificationSettings: settings?.notificationSettings as TenantSettings['notificationSettings']
-        },
-        isActive: customDomainData.tenants.is_active
-      };
+      return customDomainData.tenants;
     }
     
-    const settings = data.settings as Record<string, unknown>;
-    return {
-      id: data.id,
-      name: data.name,
-      subdomain: data.subdomain,
-      planType: data.plan_type as 'free' | 'standard' | 'premium',
-      createdAt: new Date(data.created_at),
-      settings: {
-        allowParentRegistration: settings?.allowParentRegistration as boolean ?? false,
-        allowTeacherRegistration: settings?.allowTeacherRegistration as boolean ?? false,
-        languagePreference: settings?.languagePreference as 'tr' | 'en' ?? 'tr',
-        timeZone: settings?.timeZone as string ?? 'Europe/Istanbul',
-        primaryColor: settings?.primaryColor as string,
-        secondaryColor: settings?.secondaryColor as string,
-        logoUrl: settings?.logoUrl as string,
-        favIconUrl: settings?.favIconUrl as string,
-        customCss: settings?.customCss as string,
-        smsProvider: settings?.smsProvider as 'netgsm' | 'twilio' | 'none',
-        emailProvider: settings?.emailProvider as 'smtp' | 'aws' | 'none',
-        notificationSettings: settings?.notificationSettings as TenantSettings['notificationSettings']
-      },
-      isActive: data.is_active
-    };
+    return data;
   } catch (error) {
     console.error('getTenantByDomain error:', error);
     return null;
   }
 }
 
+/**
+ * Subdomain ile tenant bilgilerini getir
+ */
 export async function getTenantBySubdomain(subdomain: string): Promise<Tenant | null> {
-  const supabase = createServerSupabaseClient();
+  // Gerçek uygulamada Supabase'den veritabanı sorgusu yapılacak
+  // Bu şimdilik demo amaçlı
   
-  try {
-    const { data, error } = await supabase
-      .from('tenants')
-      .select('*')
-      .eq('subdomain', subdomain)
-      .single();
-      
-    if (error || !data) return null;
-    
-    const settings = data.settings as Record<string, unknown>;
+  if (subdomain === 'demo') {
     return {
-      id: data.id,
-      name: data.name,
-      subdomain: data.subdomain,
-      planType: data.plan_type as 'free' | 'standard' | 'premium',
-      createdAt: new Date(data.created_at),
+      id: 'demo-tenant-id',
+      name: 'Demo Okul',
+      subdomain: 'demo',
+      planType: 'premium',
+      createdAt: new Date(),
       settings: {
-        allowParentRegistration: settings?.allowParentRegistration as boolean ?? false,
-        allowTeacherRegistration: settings?.allowTeacherRegistration as boolean ?? false,
-        languagePreference: settings?.languagePreference as 'tr' | 'en' ?? 'tr',
-        timeZone: settings?.timeZone as string ?? 'Europe/Istanbul',
-        primaryColor: settings?.primaryColor as string,
-        secondaryColor: settings?.secondaryColor as string,
-        logoUrl: settings?.logoUrl as string,
-        favIconUrl: settings?.favIconUrl as string,
-        customCss: settings?.customCss as string,
-        smsProvider: settings?.smsProvider as 'netgsm' | 'twilio' | 'none',
-        emailProvider: settings?.emailProvider as 'smtp' | 'aws' | 'none',
-        notificationSettings: settings?.notificationSettings as TenantSettings['notificationSettings']
+        allowParentRegistration: true,
+        allowTeacherRegistration: true,
+        languagePreference: 'tr',
+        timeZone: 'Europe/Istanbul',
+        primaryColor: '#4a86e8',
+        secondaryColor: '#ff9900'
       },
-      isActive: data.is_active
+      isActive: true
     };
-  } catch (error) {
-    console.error('getTenantBySubdomain error:', error);
-    return null;
   }
+  
+  return null;
 }
 
+/**
+ * Tenant ID ile tenant bilgilerini getir
+ */
 export async function getTenantById(tenantId: string): Promise<Tenant | null> {
-  const supabase = createServerSupabaseClient();
+  // Gerçek uygulamada Supabase'den veritabanı sorgusu yapılacak
+  // Bu şimdilik demo amaçlı
   
-  try {
-    const { data, error } = await supabase
-      .from('tenants')
-      .select('*')
-      .eq('id', tenantId)
-      .single();
-      
-    if (error || !data) return null;
-    
-    const settings = data.settings as Record<string, unknown>;
+  if (tenantId === 'demo-tenant-id') {
     return {
-      id: data.id,
-      name: data.name,
-      subdomain: data.subdomain,
-      planType: data.plan_type as 'free' | 'standard' | 'premium',
-      createdAt: new Date(data.created_at),
+      id: 'demo-tenant-id',
+      name: 'Demo Okul',
+      subdomain: 'demo',
+      planType: 'premium',
+      createdAt: new Date(),
       settings: {
-        allowParentRegistration: settings?.allowParentRegistration as boolean ?? false,
-        allowTeacherRegistration: settings?.allowTeacherRegistration as boolean ?? false,
-        languagePreference: settings?.languagePreference as 'tr' | 'en' ?? 'tr',
-        timeZone: settings?.timeZone as string ?? 'Europe/Istanbul',
-        primaryColor: settings?.primaryColor as string,
-        secondaryColor: settings?.secondaryColor as string,
-        logoUrl: settings?.logoUrl as string,
-        favIconUrl: settings?.favIconUrl as string,
-        customCss: settings?.customCss as string,
-        smsProvider: settings?.smsProvider as 'netgsm' | 'twilio' | 'none',
-        emailProvider: settings?.emailProvider as 'smtp' | 'aws' | 'none',
-        notificationSettings: settings?.notificationSettings as TenantSettings['notificationSettings']
+        allowParentRegistration: true,
+        allowTeacherRegistration: true,
+        languagePreference: 'tr',
+        timeZone: 'Europe/Istanbul',
+        primaryColor: '#4a86e8',
+        secondaryColor: '#ff9900'
       },
-      isActive: data.is_active
+      isActive: true
     };
-  } catch (error) {
-    console.error('getTenantById error:', error);
-    return null;
   }
+  
+  return null;
 }
 
-export function getTenantId(req?: NextRequest): string | null {
+/**
+ * Mevcut tenant ID'sini al. Client veya server tarafında çalışır.
+ */
+export async function getTenantId(req?: NextRequest): Promise<string | null> {
   try {
+    // Client-side tenant ID kontrolü
     if (typeof window !== 'undefined') {
-      // Client-side
-      const storedTenantId = localStorage.getItem('tenant-id');
+      // Local storage'dan tenant ID'sini al
+      const storedTenantId = localStorage.getItem('tenantId');
       if (storedTenantId) return storedTenantId;
       
+      // Subdomain'den tenant ID'sini oluştur
       const hostname = window.location.hostname;
-      return extractTenantFromSubdomain(hostname);
+      const subdomain = extractTenantFromSubdomain(hostname);
+      
+      if (subdomain === 'demo') {
+        return 'tenant_demo_id';
+      } else if (subdomain) {
+        return `tenant_${subdomain}`;
+      }
+      return null;
+    } 
+    // Server-side tenant ID kontrolü - Edge API uyumlu
+    else if (req) {
+      const tenantIdCookie = req.cookies.get('tenant-id')?.value;
+      
+      if (tenantIdCookie) {
+        return tenantIdCookie;
+      }
+      
+      const subdomainCookie = req.cookies.get('subdomain')?.value;
+      if (subdomainCookie) {
+        if (subdomainCookie === 'demo') {
+          return 'tenant_demo_id';
+        } else {
+          return `tenant_${subdomainCookie}`;
+        }
+      }
+      
+      const hostname = req.headers.get('host') || '';
+      const subdomain = extractTenantFromSubdomain(hostname);
+      
+      if (subdomain === 'demo') {
+        return 'tenant_demo_id';
+      } else if (subdomain) {
+        return `tenant_${subdomain}`;
+      }
     }
     
-    // Server-side
-    if (!req) return null;
-    
-    const tenantId = req.cookies.get('tenant-id')?.value;
-    if (tenantId) return tenantId;
-    
-    const hostname = req.headers.get('host') || '';
-    return extractTenantFromSubdomain(hostname);
+    return null;
   } catch (error) {
     console.error('getTenantId error:', error);
     return null;
   }
 }
 
+/**
+ * Tenant'ın belirli bir özelliğinin etkin olup olmadığını kontrol et
+ */
 export function isFeatureEnabled(tenant: Tenant, featureName: string): boolean {
+  // Bu basit implementasyon, gerçek uygulamada
+  // tenant tipine göre özellik kontrolü yapacak
+  
+  // Premium planın tüm özelliklere erişimi var
   if (tenant.planType === 'premium') return true;
   
+  // Standart planda bazı özellikler var
   if (tenant.planType === 'standard') {
     return !['advanced_analytics', 'custom_branding', 'api_access'].includes(featureName);
   }
   
+  // Ücretsiz planda temel özellikler var
   return ['basic_dashboard', 'student_management', 'simple_grading'].includes(featureName);
 }
 
-export function extractTenantFromSubdomain(domain: string): string | null {
-  if (!domain) return null;
+/**
+ * Alt alan adından tenant ID'sini ayıklar
+ */
+export function extractTenantFromSubdomain(host: string): string | null {
+  // 'okul1.i-ep.app' gibi bir alan adından 'okul1' kısmını çıkar
+  const mainDomain = process.env.NEXT_PUBLIC_DOMAIN || 'i-ep.app';
   
-  const parts = domain.split('.');
-  if (parts.length < 2) return null;
-  
-  if (domain.includes('localhost')) {
-    return 'tenant_local_id';
+  if (!host.includes(mainDomain)) {
+    return null;
   }
   
-  return parts[0];
+  // Alt alan adını çıkar
+  const subdomain = host
+    .replace(`.${mainDomain}`, '')
+    .replace(`https://`, '')
+    .replace(`http://`, '');
+  
+  return subdomain;
 }
 
+/**
+ * HTTP isteğinden mevcut tenant bilgilerini al
+ */
 export async function getCurrentTenant(req?: NextRequest): Promise<Tenant | null> {
   try {
-    const tenantId = getTenantId(req);
-    if (!tenantId) return null;
-    
-    return await getTenantById(tenantId);
+    // API Routes veya Edge functions için
+    if (req) {
+      const hostname = req.headers.get('host') || '';
+      return await getTenantByDomain(hostname);
+    } 
+    // Client-side için
+    else if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      return await getTenantByDomain(hostname);
+    }
+    // Middleware veya default davranış
+    else {
+      return null;
+    }
   } catch (error) {
     console.error('getCurrentTenant error:', error);
     return null;
   }
 }
 
+/**
+ * Tenant'a özgü bir URL oluşturur
+ */
 export function createTenantUrl(subdomain: string, path: string = '/'): string {
-  const domain = process.env.NEXT_PUBLIC_DOMAIN || 'i-ep.app';
-  return `https://${subdomain}.${domain}${path}`;
+  const mainDomain = process.env.NEXT_PUBLIC_DOMAIN || 'i-ep.app';
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  
+  return `${protocol}://${subdomain}.${mainDomain}${path}`;
 }
 
+/**
+ * Belirtilen URL'in hangi tenant'a ait olduğunu tespit eder
+ */
 export function detectTenantFromUrl(url: string): string | null {
   try {
-    const urlObj = new URL(url);
-    return extractTenantFromSubdomain(urlObj.hostname);
+    const parsedUrl = new URL(url);
+    return extractTenantFromSubdomain(parsedUrl.hostname);
   } catch (error) {
-    console.error('detectTenantFromUrl error:', error);
+    console.error('URL parse hatası:', error);
     return null;
   }
 } 
