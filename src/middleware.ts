@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { resolveTenantFromDomain, TenantInfo } from './lib/tenant/tenant-domain-resolver';
 
 /**
@@ -9,9 +10,29 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const hostname = request.headers.get('host') || '';
   
+  // Supabase auth middleware client oluştur
+  const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() });
+  
+  // Mevcut oturumu al
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  
+  // Auth durumunu headerda tut
+  const response = NextResponse.next();
+  
   // Localhost kontrolü - geliştirme ortamında sadece header'ları ayarla
   if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
-    return addTenantHeadersInDevelopment(request);
+    const devResponse = await addTenantHeadersInDevelopment(request);
+    
+    // Geliştirme ortamında Auth headerlarını kopyala
+    if (session) {
+      devResponse.headers.set('x-auth-user-id', session.user.id);
+      devResponse.headers.set('x-auth-user-email', session.user.email || '');
+      devResponse.headers.set('x-auth-user-role', session.user.app_metadata?.role || 'user');
+    }
+    
+    return devResponse;
   }
   
   // Sistem yönetimi ve auth gibi genel pathler için izolasyon kontrolü yok
@@ -35,12 +56,30 @@ export async function middleware(request: NextRequest) {
   }
   
   // Tenant okumak için header'a tenant bilgisi ekle
-  const response = NextResponse.next();
   response.headers.set('x-tenant-id', tenantInfo.id);
   response.headers.set('x-tenant-hostname', hostname);
   response.headers.set('x-tenant-name', tenantInfo.name || '');
   response.headers.set('x-tenant-primary', String(tenantInfo.isPrimary));
   response.headers.set('x-tenant-custom-domain', String(tenantInfo.isCustomDomain));
+  
+  // Auth headerlarını ekle
+  if (session) {
+    response.headers.set('x-auth-user-id', session.user.id);
+    response.headers.set('x-auth-user-email', session.user.email || '');
+    response.headers.set('x-auth-user-role', session.user.app_metadata?.role || 'user');
+    
+    // Tenant bilgisini kullanıcı metadatasına ekle/güncelle
+    if (!session.user.user_metadata.tenant_id || session.user.user_metadata.tenant_id !== tenantInfo.id) {
+      // Kullanıcı metadatasını güncelle
+      await supabase.auth.updateUser({
+        data: { 
+          tenant_id: tenantInfo.id,
+          tenant_name: tenantInfo.name,
+          last_tenant_access: new Date().toISOString() 
+        }
+      });
+    }
+  }
   
   return response;
 }

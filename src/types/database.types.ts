@@ -115,6 +115,108 @@ export interface Database {
           }
         ]
       }
+      users: {
+        Row: {
+          id: string
+          tenant_id: string
+          email: string
+          first_name: string
+          last_name: string
+          avatar_url: string | null
+          role: string
+          is_active: boolean
+          verification_status: string
+          preferences: Json
+          metadata: Json
+          created_at: string
+          updated_at: string
+          last_login_at: string | null
+          deleted_at: string | null
+        }
+        Insert: {
+          id: string
+          tenant_id: string
+          email: string
+          first_name: string
+          last_name: string
+          avatar_url?: string | null
+          role: string
+          is_active?: boolean
+          verification_status?: string
+          preferences?: Json
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+          last_login_at?: string | null
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          tenant_id?: string
+          email?: string
+          first_name?: string
+          last_name?: string
+          avatar_url?: string | null
+          role?: string
+          is_active?: boolean
+          verification_status?: string
+          preferences?: Json
+          metadata?: Json
+          created_at?: string
+          updated_at?: string
+          last_login_at?: string | null
+          deleted_at?: string | null
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          id: string
+          user_id: string
+          bio: string | null
+          phone: string | null
+          address: string | null
+          city: string | null
+          country: string | null
+          postal_code: string | null
+          birth_date: string | null
+          gender: string | null
+          profile_picture: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          bio?: string | null
+          phone?: string | null
+          address?: string | null
+          city?: string | null
+          country?: string | null
+          postal_code?: string | null
+          birth_date?: string | null
+          gender?: string | null
+          profile_picture?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          bio?: string | null
+          phone?: string | null
+          address?: string | null
+          city?: string | null
+          country?: string | null
+          postal_code?: string | null
+          birth_date?: string | null
+          gender?: string | null
+          profile_picture?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
