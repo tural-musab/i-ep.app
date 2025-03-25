@@ -25,45 +25,41 @@ export default function SifremiUnuttumPage() {
   // Şifre sıfırlama isteği gönder
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Form doğrulama
-    if (!email) {
-      setError('E-posta adresinizi giriniz');
-      return;
-    }
-    
+    setIsLoading(true);
+    setError('');
+    setIsSuccess(false);
+
     try {
-      setIsLoading(true);
-      setError('');
-      
-      // Tenant'ı kontrol et
+      // E-posta kontrolü
+      if (!email) {
+        setError('Lütfen e-posta adresinizi girin');
+        setIsLoading(false);
+        return;
+      }
+
+      // Tenant kontrolü
       const tenantId = await getTenantId();
       if (!tenantId) {
-        setError('Geçersiz tenant');
+        console.error('Geçerli bir tenant ID bulunamadı');
+        setError('Geçerli bir organizasyon bilgisi bulunamadı. Lütfen yöneticinize başvurun.');
         setIsLoading(false);
         return;
       }
-      
+
       // Şifre sıfırlama e-postası gönder
-      // Supabase'in beklediği şekilde redirectTo URL'sini ayarlıyoruz
-      // URL'de hash ve tenant sorgusu ekliyoruz (# işareti ile)
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/sifre-yenile?tenant=${tenantId}`,
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/sifre-yenile?tenant=${tenantId}&tenant_id=${tenantId}`,
       });
-      
-      if (resetError) {
-        console.error('Şifre sıfırlama hatası:', resetError);
-        setError('Şifre sıfırlama e-postası gönderilirken bir hata oluştu: ' + resetError.message);
-        setIsLoading(false);
-        return;
+
+      if (error) {
+        console.error('Şifre sıfırlama hatası:', error);
+        setError(`Şifre sıfırlama başarısız: ${error.message}`);
+      } else {
+        setIsSuccess(true);
       }
-      
-      // Başarılı
-      setIsSuccess(true);
-      
-    } catch (err: any) {
-      console.error('Şifre sıfırlama hatası:', err);
-      setError(err.message || 'Şifre sıfırlama sırasında bir hata oluştu');
+    } catch (err) {
+      console.error('Şifre sıfırlama işlemi sırasında bir hata oluştu:', err);
+      setError('Şifre sıfırlama e-postası gönderilirken bir hata oluştu.');
     } finally {
       setIsLoading(false);
     }
