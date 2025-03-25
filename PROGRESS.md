@@ -126,6 +126,10 @@
 - [ ] KVKK/GDPR uyumlu veri toplama ve işleme
 - [ ] Tenant arası erişim koruması
 - [ ] Güvenlik izleme ve olay günlükleri
+- [ ] RLS politikalarının genişletilmesi ve iyileştirilmesi (ADR-0002, ADR-0003)
+- [ ] Supabase Auth Hooks ile tenant bazlı kullanıcı işlemleri
+- [ ] JWT içeriğinin genişletilmesi ve tenant bilgileri eklenmesi
+- [ ] Auth Policies için kapsamlı test senaryoları oluşturulması
 
 ### 2.2. Domain Yönetimi ve Kurumsal Doğrulama 🔄
 - [x] Cloudflare API entegrasyonu
@@ -226,6 +230,9 @@
 - [ ] Kullanıcı yönetimi ve rol atama
 - [ ] Super Admin API entegrasyonları
 - [ ] Unit ve e2e testlerin yazılması
+- [ ] Supabase Database üzerinde sistem yönetimi işlemleri için özel tablolar
+- [ ] Super Admin özel RLS politikaları
+- [ ] Tenant izolasyon testleri ve güvenlik kontrolleri
 
 #### 2.7 Super Admin Modül Referans Belgeleri
 - **Sistem Sağlığı Modülü**:
@@ -341,6 +348,10 @@
 - [ ] Sınıf bazlı analitik
 - [ ] Not ve başarı grafikleri
 - [ ] Öğretmen performans göstergeleri
+- [ ] Supabase Database Views için optimizasyon
+- [ ] PostgreSQL performans iyileştirmeleri (indeksleme, sorgu optimizasyonu)
+- [ ] Analitik sorgular için materialized view'lar oluşturma
+- [ ] Raporlama için Supabase Functions entegrasyonu
 
 ### 4.4. Otomatik İş Akışları
 - [ ] İş akışı motoru entegrasyonu
@@ -377,6 +388,10 @@
 - [ ] Google Workspace/Microsoft 365 entegrasyonu
 - [ ] Takvim entegrasyonları
 - [ ] Video konferans entegrasyonu (Zoom/Meet)
+- [ ] Supabase Edge Functions ile API genişletmeleri
+- [ ] Supabase Realtime API konfigürasyonu ve tenant-bazlı yapılandırma
+- [ ] Webhook işlemleri için Supabase Functions
+- [ ] Scheduled tasks için Supabase altyapısı
 
 ### 5.2. İçerik Yönetim Sistemi (CMS)
 - [ ] Okul web sitesi yönetimi
@@ -399,7 +414,6 @@
 ### 5.4. Performans Optimizasyonu ve Ölçeklendirme (Ay 12-14)
 - [ ] Kod optimizasyonu ve refactoring
 - [ ] Veritabanı sorgu optimizasyonu
-- [ ] Otomatik ölçeklendirme kurulumu
 - [x] Redis önbellek sistemi entegrasyonu ve uygulama
 - [ ] CDN entegrasyonu ve statik varlık optimizasyonu
 - [ ] İstek daraltma ve önbellekleme stratejileri
@@ -408,16 +422,10 @@
 - [ ] Özel metrik toplama ve analiz
 - [ ] Dinamik servis ayırma stratejileri
 - [ ] Mikroservis mimarisine geçiş (gerekirse)
-### 5.4. Performans Optimizasyonu
-- [ ] Frontend optimizasyonu
-- [ ] Database indeksleme ve optimizasyon
-- [ ] Caching stratejileri
-- [ ] Statik site oluşturma (SSG)
-- [ ] Code splitting ve lazy loading
-- [ ] API performans iyileştirmeleri
-- [ ] Load testing ve stress testi
-- [ ] Multi-region dağıtım (isteğe bağlı)
-
+- [ ] Supabase Database indeksleme stratejisi uygulama
+- [ ] PostgreSQL query planlayıcı optimizasyonları
+- [ ] Supabase Storage performans iyileştirmeleri
+- [ ] Birden fazla region için veri replikasyonu (gerekirse)
 
 ### 5.5. Gelişmiş Güvenlik ve Uyumluluk
 - [ ] Penetrasyon testleri
@@ -459,6 +467,10 @@
 - [ ] İşbirlikçi doküman düzenleme
 - [ ] Canlı etkinlik akışı
 - [ ] Sınıf içi canlı etkileşim araçları
+- [ ] Supabase Realtime API performans iyileştirmeleri
+- [ ] Realtime broadcast için optimizasyon
+- [ ] Tenant-bazlı kanal izolasyonu
+- [ ] Presence API ile çevrimiçi kullanıcı yönetimi
 
 ### 6.4. İş Büyütme ve Pazarlama Araçları
 - [ ] Referans programı
@@ -471,15 +483,14 @@
 
 ## Teknik Borçlar ve İyileştirmeler
 
-### Referans Belgeler
-- [Teknik Borç Takibi](docs/technical-debt.md): Teknik borçların detaylı takibi
-- [Performans İyileştirme](docs/performance-optimization.md): Performans iyileştirme stratejileri
-
 ### Mevcut Teknik Borçlar
 - [ ] Tenant-utils.ts dosyasındaki cookie işleme hatalarının giderilmesi
 - [ ] Supabase bağlantı hatalarının çözülmesi
 - [ ] TypeScript tip tanımlamalarının tamamlanması
 - [ ] Eksik test kapsamının genişletilmesi
+- [ ] Supabase Auth hooks üzerindeki hataların giderilmesi
+- [ ] RLS politikalarının kapsamlı gözden geçirilmesi
+- [ ] Database migration ve seed işlemlerinin otomatize edilmesi
 
 ### Planlanan İyileştirmeler
 - [ ] Kod organizasyonunun gözden geçirilmesi
@@ -487,6 +498,22 @@
 - [ ] Database indeksleme ve optimizasyon çalışması
 - [ ] Caching stratejilerinin uygulanması
 - [ ] API performans iyileştirmeleri
+- [ ] Supabase client yapılandırmasının modülerleştirilmesi
+- [ ] Tenant-specific database işlemlerinin optimize edilmesi
+- [ ] Merkezi Zod şema tanımlarına geçiş (ADR-0006)
+- [ ] Backend validasyon sisteminin güçlendirilmesi
+
+### Kısa Vadeli İyileştirmeler (Ay 1-3)
+- Lint ve tip güvenliği: Eksik TypeScript tiplerinin tamamlanması, ESLint kurallarının iyileştirilmesi
+- Rol ve izin sisteminin tamamlanması
+- Super Admin panelinin temel işlevlerle hayata geçirilmesi
+- Redis önbellek sistemi kullanımının yaygınlaştırılması (temel entegrasyon tamamlandı)
+- ADR-0007'de tanımlanan test hiyerarşisinin ve kapsama hedeflerinin uygulanması
+- ADR-0005'te tanımlanan bileşen hiyerarşisinin (Atom/Molekül/Organizma) kurulması
+- ADR-0006'ya uygun form ve validasyon sisteminin tamamlanması
+- Supabase RLS politikalarının gözden geçirilmesi ve iyileştirilmesi (ADR-0002, ADR-0003)
+- Tenant-aware kimlik doğrulama sisteminin tamamlanması
+- Veritabanı şema iyileştirmeleri ve indeksleme
 
 ## Mevcut Proje Yapısı
 
@@ -607,5 +634,8 @@ Super Admin panelinin detaylı geliştirme aşamaları, milestoneları ve görev
 - ADR-0007'de tanımlanan test hiyerarşisinin ve kapsama hedeflerinin uygulanması
 - ADR-0005'te tanımlanan bileşen hiyerarşisinin (Atom/Molekül/Organizma) kurulması
 - ADR-0006'ya uygun form ve validasyon sisteminin tamamlanması
+- Supabase RLS politikalarının gözden geçirilmesi ve iyileştirilmesi (ADR-0002, ADR-0003)
+- Tenant-aware kimlik doğrulama sisteminin tamamlanması
+- Veritabanı şema iyileştirmeleri ve indeksleme
 
 ### Orta Vadeli İyileştirmeler (Ay 3-6)
