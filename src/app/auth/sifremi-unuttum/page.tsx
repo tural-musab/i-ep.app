@@ -45,13 +45,15 @@ export default function SifremiUnuttumPage() {
       }
       
       // Şifre sıfırlama e-postası gönder
+      // Supabase'in beklediği şekilde redirectTo URL'sini ayarlıyoruz
+      // URL'de hash ve tenant sorgusu ekliyoruz (# işareti ile)
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/sifre-yenile?tenant=${tenantId}`,
       });
       
       if (resetError) {
         console.error('Şifre sıfırlama hatası:', resetError);
-        setError('Şifre sıfırlama e-postası gönderilirken bir hata oluştu');
+        setError('Şifre sıfırlama e-postası gönderilirken bir hata oluştu: ' + resetError.message);
         setIsLoading(false);
         return;
       }
