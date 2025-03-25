@@ -35,22 +35,101 @@ export default function SuperAdminSetupPage() {
     }
   };
   
+  const createPublicUser = async () => {
+    setLoading(true);
+    setError('');
+    setMessage('');
+    
+    try {
+      // Önce auth kullanıcısını bul
+      const { data: authData, error: authError } = await supabase
+        .from('auth.users')
+        .select('id')
+        .eq('email', email)
+        .single();
+      
+      if (authError) {
+        setError('Auth kullanıcısı bulunamadı: ' + authError.message);
+        setLoading(false);
+        return;
+      }
+      
+      // Kullanıcı var mı kontrol et
+      const { data: existingUser, error: checkError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .single();
+      
+      if (!checkError && existingUser) {
+        setMessage(`${email} adresi için public.users tablosunda zaten bir kayıt var.`);
+        setLoading(false);
+        return;
+      }
+      
+      // Public users tablosuna kullanıcı ekle
+      const { data, error } = await supabase
+        .from('users')
+        .insert([
+          {
+            auth_id: authData.id,
+            email: email,
+            role: 'super_admin',
+            tenant_id: 'tenant_i-ep.app',
+            status: 'active',
+            name: 'Süper Admin',
+          }
+        ]);
+      
+      if (error) {
+        setError(error.message);
+      } else {
+        setMessage(`Başarıyla ${email} adresi public.users tablosuna eklendi!`);
+      }
+    } catch (err) {
+      setError('İşlem sırasında bir hata oluştu: ' + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   const checkUserRole = async () => {
     setLoading(true);
     setError('');
     setMessage('');
     
     try {
-      // Kullanıcının rol bilgilerini kontrol et
-      const { data, error } = await supabase.auth.admin.getUserById(email);
+      // Auth kullanıcısını kontrol et
+      const { data: authData, error: authError } = await supabase.auth.admin.getUserById(email);
       
-      if (error) {
-        setError(error.message);
-      } else if (data?.user) {
-        setMessage(`Kullanıcı bilgileri: ${JSON.stringify(data.user, null, 2)}`);
-      } else {
-        setMessage('Kullanıcı bulunamadı');
+      if (authError) {
+        setError('Auth kullanıcısı kontrolünde hata: ' + authError.message);
+        setLoading(false);
+        return;
       }
+      
+      // Public kullanıcısını kontrol et
+      const { data: publicUser, error: publicError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .single();
+      
+      let resultMessage = '';
+      
+      if (authData?.user) {
+        resultMessage += `Auth kullanıcısı: ${JSON.stringify(authData.user, null, 2)}\n\n`;
+      } else {
+        resultMessage += 'Auth kullanıcısı bulunamadı.\n\n';
+      }
+      
+      if (!publicError && publicUser) {
+        resultMessage += `Public kullanıcısı: ${JSON.stringify(publicUser, null, 2)}`;
+      } else {
+        resultMessage += 'Public kullanıcısı bulunamadı veya hata oluştu: ' + (publicError?.message || 'Bilinmeyen hata');
+      }
+      
+      setMessage(resultMessage);
     } catch (err) {
       setError('İşlem sırasında bir hata oluştu: ' + (err instanceof Error ? err.message : String(err)));
     } finally {
@@ -63,7 +142,7 @@ export default function SuperAdminSetupPage() {
       <h1 className="text-3xl font-bold mb-6">Süper Admin Kurulum</h1>
       
       <div className="bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Süper Admin Rolü Ata</h2>
+        <h2 className="text-xl font-semibold mb-4">Süper Admin Kullanıcı Yönetimi</h2>
         
         <div className="mb-4">
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -79,13 +158,21 @@ export default function SuperAdminSetupPage() {
           />
         </div>
         
-        <div className="flex space-x-4">
+        <div className="flex flex-wrap gap-3 mb-4">
           <Button
             onClick={setSuperAdminRole}
             disabled={loading}
             className="bg-primary text-white"
           >
-            {loading ? 'İşleniyor...' : 'Süper Admin Rolü Ata'}
+            {loading ? 'İşleniyor...' : '1. Auth Kullanıcısına Rol Ata'}
+          </Button>
+          
+          <Button
+            onClick={createPublicUser}
+            disabled={loading}
+            className="bg-blue-600 text-white"
+          >
+            {loading ? 'İşleniyor...' : '2. Public Kullanıcısı Oluştur'}
           </Button>
           
           <Button
@@ -97,9 +184,14 @@ export default function SuperAdminSetupPage() {
           </Button>
         </div>
         
+        <div className="bg-yellow-50 p-3 rounded-md text-sm text-yellow-800">
+          <p className="font-semibold">Önemli:</p>
+          <p>Süper admin kurulumu için önce "1. Auth Kullanıcısına Rol Ata" butonuna, ardından "2. Public Kullanıcısı Oluştur" butonuna tıklayın.</p>
+        </div>
+        
         {message && (
-          <div className="mt-4 p-3 bg-green-50 text-green-800 rounded-md">
-            {message}
+          <div className="mt-4 p-3 bg-green-50 text-green-800 rounded-md overflow-auto max-h-60">
+            <pre className="whitespace-pre-wrap text-sm">{message}</pre>
           </div>
         )}
         
@@ -115,19 +207,16 @@ export default function SuperAdminSetupPage() {
         
         <div className="prose">
           <p>
-            Eğer süper admin rolünü ayarladıktan sonra giriş yapamıyorsanız, aşağıdaki adımları deneyin:
+            Süper admin kullanıcısı oluşturmak için iki adım gereklidir:
           </p>
           
           <ol className="list-decimal pl-5 space-y-2">
-            <li>Kullanıcının oturumunu kapatın ve tekrar giriş yapın.</li>
-            <li>Tarayıcı önbelleğini temizleyin.</li>
-            <li>Kullanıcının veritabanında <code>raw_app_meta_data</code> değerinin doğru olduğundan emin olun.</li>
-            <li>Middleware.ts dosyasında rol kontrolünün doğru yapıldığından emin olun.</li>
+            <li><strong>Auth Kullanıcısına Rol Atama:</strong> Kullanıcıya <code>raw_app_meta_data</code> içinde <code>role: "super_admin"</code> değerini atar.</li>
+            <li><strong>Public Kullanıcısı Oluşturma:</strong> <code>public.users</code> tablosunda karşılık gelen bir kullanıcı kaydı oluşturur.</li>
           </ol>
           
           <p className="mt-4">
-            <strong>Not:</strong> Bu sayfa yalnızca geliştirme ve kurulum aşamasında kullanılmalıdır.
-            Güvenlik nedeniyle üretim ortamında kapatılmalıdır.
+            Her iki adım da başarılı olduktan sonra, oturumu kapatıp yeniden giriş yapın. Süper admin sayfalarına artık erişebilmeniz gerekir.
           </p>
         </div>
       </div>
