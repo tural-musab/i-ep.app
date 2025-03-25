@@ -67,11 +67,15 @@ export default function SuperAdminSetupPage() {
         return;
       }
       
+      // UUID oluştur
+      const uuid = crypto.randomUUID();
+      
       // Public users tablosuna kullanıcı ekle
       const { data, error } = await supabase
         .from('users')
         .insert([
           {
+            id: uuid, // UUID belirtiyoruz
             auth_id: authData.id,
             email: email,
             role: 'super_admin',

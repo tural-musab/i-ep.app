@@ -33,6 +33,7 @@ BEGIN
   -- Eğer kullanıcı yoksa ekle
   IF NOT v_user_exists THEN
     INSERT INTO public.users (
+      id,
       auth_id,
       email,
       role,
@@ -43,6 +44,7 @@ BEGIN
       created_at,
       updated_at
     ) VALUES (
+      gen_random_uuid(), -- UUID oluştur
       v_auth_user_id,
       'admin@i-ep.app',
       'super_admin',
