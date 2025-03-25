@@ -7,6 +7,21 @@ interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
   onValueChange?: (value: string) => void;
 }
 
+interface TabsContextValue {
+  value: string;
+  onValueChange: (value: string) => void;
+}
+
+const TabsContext = React.createContext<TabsContextValue | undefined>(undefined);
+
+function useTabsContext() {
+  const context = React.useContext(TabsContext);
+  if (!context) {
+    throw new Error("useTabsContext must be used within a Tabs component");
+  }
+  return context;
+}
+
 export function Tabs({
   className,
   defaultValue,
@@ -23,28 +38,22 @@ export function Tabs({
     }
   }, [value]);
 
-  const handleValueChange = (newValue: string) => {
+  const handleValueChange = React.useCallback((newValue: string) => {
     setActiveTab(newValue);
     onValueChange?.(newValue);
-  };
+  }, [onValueChange]);
 
-  // Provide context value to children
-  const contextValue = {
+  const contextValue = React.useMemo(() => ({
     value: activeTab,
     onValueChange: handleValueChange,
-  };
+  }), [activeTab, handleValueChange]);
 
   return (
-    <div className={cn("w-full", className)} {...props}>
-      {React.Children.map(children, child => {
-        if (!React.isValidElement(child)) return child;
-        
-        // Pass context to all children
-        return React.cloneElement(child as React.ReactElement<any>, {
-          ...contextValue,
-        });
-      })}
-    </div>
+    <TabsContext.Provider value={contextValue}>
+      <div className={cn("w-full", className)} {...props}>
+        {children}
+      </div>
+    </TabsContext.Provider>
   );
 }
 
@@ -72,13 +81,8 @@ export function TabsTrigger({
   children,
   ...props
 }: TabsTriggerProps) {
-  // Get value from parent Tabs component
-  const context = (props as any).value;
-  const isActive = context === value;
-
-  const handleClick = () => {
-    (props as any).onValueChange?.(value);
-  };
+  const { value: activeValue, onValueChange } = useTabsContext();
+  const isActive = activeValue === value;
 
   return (
     <button
@@ -89,7 +93,7 @@ export function TabsTrigger({
           : "text-muted-foreground hover:text-foreground",
         className
       )}
-      onClick={handleClick}
+      onClick={() => onValueChange(value)}
       {...props}
     >
       {children}
@@ -107,9 +111,8 @@ export function TabsContent({
   children,
   ...props
 }: TabsContentProps) {
-  // Get value from parent Tabs component
-  const context = (props as any).value;
-  const isActive = context === value;
+  const { value: activeValue } = useTabsContext();
+  const isActive = activeValue === value;
 
   if (!isActive) return null;
 
