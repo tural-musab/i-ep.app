@@ -2,9 +2,17 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 /**
+ * cn (className) utility fonksiyonu
+ * Tailwind sınıf isimlerini birleştirmek için kullanılır
+ */
+export function cn(...classes: any[]) {
+  return classes.filter(Boolean).join(' ');
+}
+
+/**
  * Tailwind sınıflarını birleştiren yardımcı fonksiyon
  */
-export function cn(...inputs: ClassValue[]) {
+export function cnOld(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
