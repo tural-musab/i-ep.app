@@ -78,6 +78,9 @@
 - [x] Test coverage hedeflerinin belirlenmesi
 - [x] CI/CD içinde test otomasyonu kurulumu
 - [x] Test dökümentasyonu oluşturma
+- [ ] ADR-0007'de belirtilen test klasör yapısının (__tests__, __e2e__, test-utils, mocks) oluşturulması
+- [ ] Test coverage hedeflerinin izleme ve raporlama mekanizmasının kurulması
+- [ ] Jest ve Testing Library ile örnek test şablonlarının oluşturulması
 
 ### 1.4. Veritabanı ve Çok Kiracılı Backend ✅
 - [x] Supabase projesi oluşturma
@@ -141,6 +144,9 @@
 - [ ] Veli ve öğrenci hesap doğrulama (okul tarafından)
 - [ ] Öğretmen hesapları doğrulama mekanizması
 - [ ] Kurumsal onboarding kontrol listesi
+- [ ] Özel domain ekleme işlemi için doğrulama akışının otomatizasyonu
+- [ ] SSL sertifikası oluşturma ve izleme sisteminin tamamlanması (ADR-0004)
+- [ ] Domain health check ve izleme mekanizmalarının eklenmesi
 
 ### 2.3. Temel Kullanıcı Arayüzü ve Yönetim
 - [ ] Çok kiracılı UI mimarisi
@@ -153,6 +159,14 @@
 - [ ] Okul yönetici dashboard'u
 - [ ] Kullanıcı profil yönetimi
 - [ ] Okul ayarları ve yapılandırma
+- [ ] ADR-0005'e uygun Atom/Molekül/Organizma komponent hiyerarşisinin uygulanması
+- [ ] Tenant bazlı dinamik tema sisteminin tamamlanması
+- [ ] Design tokens ve CSS değişkenlerinin tenant meta verilerine bağlanması
+- [ ] Komponent dokümantasyon sisteminin kurulması (Storybook veya özel çözüm)
+- [ ] ADR-0006'ya uygun merkezi Zod şema tanımlarının oluşturulması
+- [ ] Form komponentlerinin React Hook Form ile entegrasyonu
+- [ ] Server-side ve client-side validasyon entegrasyonu
+- [ ] Form state yönetimi için performans optimizasyonları
 
 ### 2.4. Öğrenci ve Sınıf Yönetimi
 - [ ] Öğrenci CRUD işlemleri
@@ -590,5 +604,8 @@ Super Admin panelinin detaylı geliştirme aşamaları, milestoneları ve görev
 - Rol ve izin sisteminin tamamlanması
 - Super Admin panelinin temel işlevlerle hayata geçirilmesi
 - Redis önbellek sistemi kullanımının yaygınlaştırılması (temel entegrasyon tamamlandı)
+- ADR-0007'de tanımlanan test hiyerarşisinin ve kapsama hedeflerinin uygulanması
+- ADR-0005'te tanımlanan bileşen hiyerarşisinin (Atom/Molekül/Organizma) kurulması
+- ADR-0006'ya uygun form ve validasyon sisteminin tamamlanması
 
 ### Orta Vadeli İyileştirmeler (Ay 3-6)
