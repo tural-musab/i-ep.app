@@ -7,7 +7,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Button from "@/components/ui/button"; // Button bileşenini düzelttik
+import { Button } from "@/components/ui/button";
 
 // Toast servisi için basit bir fallback oluşturalım
 const toast = (message: string) => {
@@ -513,7 +513,7 @@ export function DomainVerification({
         </Button>
         
         <Button
-          variant="primary"
+          variant="default"
           onClick={checkVerificationStatus}
           disabled={checking}
         >
