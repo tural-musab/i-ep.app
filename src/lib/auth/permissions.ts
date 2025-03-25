@@ -1,14 +1,7 @@
 import { User, UserRole } from '@/types/auth';
 
-// Yetki seviyeleri
-export enum PermissionLevel {
-  ADMIN = 'admin',
-  MANAGER = 'manager',
-  TEACHER = 'teacher',
-  STUDENT = 'student',
-  PARENT = 'parent',
-  GUEST = 'guest'
-}
+// Yetki seviyeleri - UserRole'ü yeniden kullanıyoruz
+export { UserRole as PermissionLevel };
 
 // Kaynak türleri
 export enum ResourceType {
@@ -39,44 +32,44 @@ export enum ActionType {
 export interface Permission {
   resource: ResourceType;
   action: ActionType;
-  level: PermissionLevel;
+  level: UserRole;
 }
 
 // Tüm yetkilerin listesi
 export const PERMISSIONS: Permission[] = [
   // Tenant yetkileri
-  { resource: ResourceType.TENANT, action: ActionType.MANAGE, level: PermissionLevel.ADMIN },
-  { resource: ResourceType.TENANT, action: ActionType.READ, level: PermissionLevel.MANAGER },
+  { resource: ResourceType.TENANT, action: ActionType.MANAGE, level: UserRole.ADMIN },
+  { resource: ResourceType.TENANT, action: ActionType.READ, level: UserRole.MANAGER },
   
   // Öğrenci yetkileri
-  { resource: ResourceType.STUDENT, action: ActionType.CREATE, level: PermissionLevel.ADMIN },
-  { resource: ResourceType.STUDENT, action: ActionType.READ, level: PermissionLevel.TEACHER },
-  { resource: ResourceType.STUDENT, action: ActionType.UPDATE, level: PermissionLevel.MANAGER },
-  { resource: ResourceType.STUDENT, action: ActionType.DELETE, level: PermissionLevel.ADMIN },
+  { resource: ResourceType.STUDENT, action: ActionType.CREATE, level: UserRole.ADMIN },
+  { resource: ResourceType.STUDENT, action: ActionType.READ, level: UserRole.TEACHER },
+  { resource: ResourceType.STUDENT, action: ActionType.UPDATE, level: UserRole.MANAGER },
+  { resource: ResourceType.STUDENT, action: ActionType.DELETE, level: UserRole.ADMIN },
   
   // Öğretmen yetkileri
-  { resource: ResourceType.TEACHER, action: ActionType.CREATE, level: PermissionLevel.ADMIN },
-  { resource: ResourceType.TEACHER, action: ActionType.READ, level: PermissionLevel.MANAGER },
-  { resource: ResourceType.TEACHER, action: ActionType.UPDATE, level: PermissionLevel.ADMIN },
-  { resource: ResourceType.TEACHER, action: ActionType.DELETE, level: PermissionLevel.ADMIN },
+  { resource: ResourceType.TEACHER, action: ActionType.CREATE, level: UserRole.ADMIN },
+  { resource: ResourceType.TEACHER, action: ActionType.READ, level: UserRole.MANAGER },
+  { resource: ResourceType.TEACHER, action: ActionType.UPDATE, level: UserRole.ADMIN },
+  { resource: ResourceType.TEACHER, action: ActionType.DELETE, level: UserRole.ADMIN },
   
   // Kullanıcı yetkileri
-  { resource: ResourceType.USER, action: ActionType.CREATE, level: PermissionLevel.ADMIN },
-  { resource: ResourceType.USER, action: ActionType.READ, level: PermissionLevel.MANAGER },
-  { resource: ResourceType.USER, action: ActionType.UPDATE, level: PermissionLevel.ADMIN },
-  { resource: ResourceType.USER, action: ActionType.DELETE, level: PermissionLevel.ADMIN },
+  { resource: ResourceType.USER, action: ActionType.CREATE, level: UserRole.ADMIN },
+  { resource: ResourceType.USER, action: ActionType.READ, level: UserRole.MANAGER },
+  { resource: ResourceType.USER, action: ActionType.UPDATE, level: UserRole.ADMIN },
+  { resource: ResourceType.USER, action: ActionType.DELETE, level: UserRole.ADMIN },
   
   // Sınıf yetkileri
-  { resource: ResourceType.CLASS, action: ActionType.CREATE, level: PermissionLevel.MANAGER },
-  { resource: ResourceType.CLASS, action: ActionType.READ, level: PermissionLevel.TEACHER },
-  { resource: ResourceType.CLASS, action: ActionType.UPDATE, level: PermissionLevel.MANAGER },
-  { resource: ResourceType.CLASS, action: ActionType.DELETE, level: PermissionLevel.ADMIN },
+  { resource: ResourceType.CLASS, action: ActionType.CREATE, level: UserRole.MANAGER },
+  { resource: ResourceType.CLASS, action: ActionType.READ, level: UserRole.TEACHER },
+  { resource: ResourceType.CLASS, action: ActionType.UPDATE, level: UserRole.MANAGER },
+  { resource: ResourceType.CLASS, action: ActionType.DELETE, level: UserRole.ADMIN },
   
   // Dışa aktarma yetkileri
-  { resource: ResourceType.STUDENT, action: ActionType.EXPORT, level: PermissionLevel.MANAGER },
-  { resource: ResourceType.TEACHER, action: ActionType.EXPORT, level: PermissionLevel.MANAGER },
-  { resource: ResourceType.GRADE, action: ActionType.EXPORT, level: PermissionLevel.MANAGER },
-  { resource: ResourceType.TENANT, action: ActionType.EXPORT, level: PermissionLevel.ADMIN }
+  { resource: ResourceType.STUDENT, action: ActionType.EXPORT, level: UserRole.MANAGER },
+  { resource: ResourceType.TEACHER, action: ActionType.EXPORT, level: UserRole.MANAGER },
+  { resource: ResourceType.GRADE, action: ActionType.EXPORT, level: UserRole.MANAGER },
+  { resource: ResourceType.TENANT, action: ActionType.EXPORT, level: UserRole.ADMIN }
 ];
 
 /**
@@ -94,7 +87,7 @@ export function hasPermission(
   if (!user) return false;
   
   // Süper admin her zaman tüm yetkilere sahiptir
-  if (user.role === PermissionLevel.ADMIN) return true;
+  if (user.role === UserRole.ADMIN) return true;
   
   // İzin verilen en düşük yetki seviyesini bul
   const permission = PERMISSIONS.find(p => 
@@ -105,15 +98,15 @@ export function hasPermission(
   
   // Yetki seviyelerinin hiyerarşisi
   const levels = [
-    PermissionLevel.GUEST,
-    PermissionLevel.STUDENT,
-    PermissionLevel.PARENT,
-    PermissionLevel.TEACHER,
-    PermissionLevel.MANAGER,
-    PermissionLevel.ADMIN
+    UserRole.GUEST,
+    UserRole.STUDENT,
+    UserRole.PARENT,
+    UserRole.TEACHER,
+    UserRole.MANAGER,
+    UserRole.ADMIN
   ];
   
-  const userLevelIndex = levels.indexOf(user.role as PermissionLevel);
+  const userLevelIndex = levels.indexOf(user.role);
   const requiredLevelIndex = levels.indexOf(permission.level);
   
   // Kullanıcının yetki seviyesi, gereken seviyeden yüksek veya eşitse izin ver
@@ -163,7 +156,7 @@ export async function validateTenantAccess(
       // userId'den user nesnesini getir
       // Bu örnekte sadece kullanıcı ID'si kontrol ediliyor
       // Gerçek uygulamada veritabanından kullanıcı bilgisi çekilebilir
-      user = { id: userOrParams.userId, role: 'admin' }; // Basitleştirilmiş örnek
+      user = { id: userOrParams.userId, role: UserRole.ADMIN }; // Basitleştirilmiş örnek
     } else {
       // Supabase user nesnesi
       user = userOrParams;
@@ -175,13 +168,13 @@ export async function validateTenantAccess(
   if (!user) return false;
   
   // Admin her tenant'a erişebilir
-  if (user.role === PermissionLevel.ADMIN) return true;
+  if (user.role === UserRole.ADMIN) return true;
   
   // Kullanıcı bu tenant'a atanmış mı kontrol et
   if (user.tenantId === tenantId) return true;
   
   // Yönetici rolü veya üstü olan kişilere çoklu tenant erişimi izni verilebilir
-  if (user.role === PermissionLevel.MANAGER && user.allowedTenants?.includes(tenantId)) {
+  if (user.role === UserRole.MANAGER && user.allowedTenants?.includes(tenantId)) {
     return true;
   }
   
