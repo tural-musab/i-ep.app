@@ -37,6 +37,7 @@ function SifreYenileForm() {
   useEffect(() => {
     // URL parametrelerinden error ve tenant ID'sini al
     const tenant = searchParams.get('tenant');
+    const tenant_id = searchParams.get('tenant_id');
     const errorParam = searchParams.get('error');
     const errorCode = searchParams.get('error_code');
     const errorDescription = searchParams.get('error_description');
@@ -49,12 +50,17 @@ function SifreYenileForm() {
       return;
     }
 
+    // Tenant bilgisini al (eski veya yeni formattan)
     if (tenant) {
       setTenantId(tenant);
+    } else if (tenant_id) {
+      setTenantId(tenant_id);
     }
 
     // URL hash kısmını kontrol et - Supabase token'ı burada bekliyor olabilir
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
     const hashErrorParam = hashParams.get('error');
     const hashErrorCode = hashParams.get('error_code');
     const hashErrorDescription = hashParams.get('error_description');
@@ -63,6 +69,24 @@ function SifreYenileForm() {
     if (hashErrorParam) {
       console.error('Hash hata parametreleri:', { hashErrorParam, hashErrorCode, hashErrorDescription });
       setError(hashErrorDescription ? decodeURIComponent(hashErrorDescription.replace(/\+/g, ' ')) : 'Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı');
+      return;
+    }
+
+    // Eğer hash'te access token varsa, supabase'e ekleyelim
+    if (accessToken) {
+      console.log('Access token bulundu, oturum tanımlanıyor');
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken || ''
+      }).then(({ data, error }) => {
+        if (error) {
+          console.error('Oturum tanımlama hatası:', error);
+          setError('Oturum tanımlanamadı: ' + error.message);
+        } else {
+          console.log('Oturum başarıyla tanımlandı:', data);
+          setIsSessionValid(true);
+        }
+      });
       return;
     }
 
