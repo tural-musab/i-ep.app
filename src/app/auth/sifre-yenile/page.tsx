@@ -32,26 +32,61 @@ function SifreYenileForm() {
   const [error, setError] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [tenantId, setTenantId] = useState<string | null>(null);
+  const [isSessionValid, setIsSessionValid] = useState(false);
 
   useEffect(() => {
-    // URL parametrelerinden tenant ID'sini al
+    // URL parametrelerinden tenant ID'sini ve code'u al
     const tenant = searchParams.get('tenant');
+    const code = searchParams.get('code');
+
     if (tenant) {
       setTenantId(tenant);
     }
 
-    // URL'deki hash'te şifre sıfırlama token'ı var mı kontrol et
-    const handlePasswordReset = async () => {
-      // Hash'i kontrol et (Supabase otomatik olarak URL hash'teki token'ı işleyecek)
-      const { data, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error('Oturum kontrolü hatası:', error);
-        setError('Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı');
-      }
-    };
+    // Eğer code parametresi varsa, şifre sıfırlama işlemini başlat
+    if (code) {
+      const verifyPasswordReset = async () => {
+        setIsLoading(true);
+        try {
+          // Doğrudan code parametresini kullanarak OTP doğrulama yapıyoruz
+          const { data, error } = await supabase.auth.verifyOtp({
+            token_hash: code,
+            type: 'recovery'
+          });
+          
+          if (error) {
+            console.error('Şifre sıfırlama doğrulama hatası:', error);
+            setError('Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı. Lütfen yeni bir şifre sıfırlama talebi oluşturun.');
+            setIsLoading(false);
+          } else {
+            console.log('Şifre sıfırlama doğrulaması başarılı:', data);
+            // Token doğrulandı, şimdi kullanıcı yeni şifre belirleyebilir
+            setIsSessionValid(true);
+            setIsLoading(false);
+          }
+        } catch (err) {
+          console.error('Şifre sıfırlama hatası:', err);
+          setError('Şifre sıfırlama işlemi sırasında bir hata oluştu');
+          setIsLoading(false);
+        }
+      };
 
-    handlePasswordReset();
+      verifyPasswordReset();
+    } else {
+      // Code parametresi yoksa, oturum kontrolü yap
+      const checkSession = async () => {
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error || !data.session) {
+          console.error('Oturum kontrolü hatası:', error);
+          setError('Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı. Lütfen yeni bir şifre sıfırlama talebi oluşturun.');
+        } else {
+          setIsSessionValid(true);
+        }
+      };
+
+      checkSession();
+    }
   }, [searchParams, supabase]);
   
   // Şifre güçlülük kontrolü
@@ -81,6 +116,11 @@ function SifreYenileForm() {
       return;
     }
     
+    if (!isSessionValid) {
+      setError('Geçerli bir oturum bulunamadı. Lütfen şifre sıfırlama bağlantısını tekrar kullanın veya yeni bir şifre sıfırlama talebi oluşturun.');
+      return;
+    }
+    
     try {
       setIsLoading(true);
       setError('');
@@ -92,7 +132,7 @@ function SifreYenileForm() {
       
       if (updateError) {
         console.error('Şifre güncelleme hatası:', updateError);
-        setError('Şifre güncellenirken bir hata oluştu');
+        setError('Şifre güncellenirken bir hata oluştu: ' + updateError.message);
         setIsLoading(false);
         return;
       }
