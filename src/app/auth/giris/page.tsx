@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useAuth } from '@/lib/auth/auth-context';
 import { getTenantId } from '@/lib/tenant/tenant-utils';
+import { toast } from '@/components/ui/use-toast';
 
 /**
  * Giriş Sayfası
@@ -14,7 +15,7 @@ import { getTenantId } from '@/lib/tenant/tenant-utils';
  */
 export default function GirisPage() {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const { signIn, isLoading: authLoading } = useAuth();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,61 +44,35 @@ export default function GirisPage() {
         return;
       }
       
-      // Supabase Auth ile giriş yap
-      const { data, error: loginError } = await supabase.auth.signInWithPassword({
-        email,
-        password
+      // AuthContext üzerinden giriş yap
+      const { success, error: loginError } = await signIn(email, password);
+      
+      if (!success) {
+        console.error('Giriş hatası:', loginError);
+        setError(loginError || 'E-posta veya şifre hatalı');
+        setIsLoading(false);
+        return;
+      }
+      
+      // Başarılı giriş bildirimi
+      toast({
+        title: "Giriş Başarılı",
+        description: "Hoş geldiniz! Yönlendiriliyorsunuz...",
+        variant: "success",
       });
       
-      if (loginError) {
-        console.error('Giriş hatası:', loginError);
-        setError('E-posta veya şifre hatalı');
-        setIsLoading(false);
-        return;
-      }
-      
-      if (!data.user) {
-        setError('Kullanıcı bilgileri alınamadı');
-        setIsLoading(false);
-        return;
-      }
-      
-      // Tenant ID'yi local storage'a kaydet
-      localStorage.setItem('tenant-id', tenantId);
-      
-      // Kullanıcı bilgilerini tamamla
-      const { data: userData, error: userError } = await supabase
-        .from(`tenant_${tenantId}.users`)
-        .select('role, status')
-        .eq('auth_id', data.user.id)
-        .single();
-      
-      if (userError) {
-        console.error('Kullanıcı bilgileri hatası:', userError);
-        setError('Kullanıcı profili bulunamadı');
-        
-        // Oturumu kapat
-        await supabase.auth.signOut();
-        
-        setIsLoading(false);
-        return;
-      }
-      
-      // Kullanıcı durumunu kontrol et
-      if (userData.status === 'suspended') {
-        setError('Hesabınız askıya alınmış durumda. Lütfen yönetici ile iletişime geçin.');
-        await supabase.auth.signOut();
-        setIsLoading(false);
-        return;
-      }
-      
-      // Başarılı giriş
-      const redirectPath = userData.role === 'admin' ? '/admin/dashboard' : '/dashboard';
-      router.push(redirectPath);
+      // Ana sayfaya yönlendir
+      router.push('/dashboard');
       
     } catch (err: any) {
       console.error('Giriş hatası:', err);
       setError(err.message || 'Giriş sırasında bir hata oluştu');
+      
+      toast({
+        title: "Giriş Başarısız",
+        description: err.message || 'Giriş sırasında bir hata oluştu',
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -152,7 +127,7 @@ export default function GirisPage() {
                 placeholder="E-posta adresi"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || authLoading}
               />
             </div>
             <div>
@@ -167,7 +142,7 @@ export default function GirisPage() {
                 placeholder="Şifre"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
+                disabled={isLoading || authLoading}
               />
             </div>
           </div>
@@ -196,9 +171,9 @@ export default function GirisPage() {
             <button
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              disabled={isLoading}
+              disabled={isLoading || authLoading}
             >
-              {isLoading ? (
+              {(isLoading || authLoading) ? (
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
