@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,6 +13,15 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
  * Referans: docs/supabase-setup.md - "Supabase Kimlik Doğrulama Ayarları"
  */
 export default function SifreYenilePage() {
+  return (
+    <Suspense fallback={<SifreYenileLoading />}>
+      <SifreYenileForm />
+    </Suspense>
+  );
+}
+
+// Şifre yenileme sayfasının içeriğini içeren bileşen
+function SifreYenileForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const supabase = createClientComponentClient();
@@ -239,6 +248,23 @@ export default function SifreYenilePage() {
             </div>
           </form>
         )}
+      </div>
+    </div>
+  );
+}
+
+// Yükleme durumu için fallback bileşeni
+function SifreYenileLoading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 text-center">
+        <div className="animate-pulse">
+          <div className="mx-auto h-32 w-32 bg-gray-200 rounded-full"></div>
+          <div className="mt-6 h-8 bg-gray-200 rounded w-3/4 mx-auto"></div>
+          <div className="mt-2 h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+          <div className="mt-8 h-10 bg-gray-200 rounded"></div>
+        </div>
+        <p className="text-sm text-gray-500">Yükleniyor...</p>
       </div>
     </div>
   );
