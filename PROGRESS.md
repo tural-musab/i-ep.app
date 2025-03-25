@@ -44,7 +44,7 @@
 - [x] Cloudflare ile domain yönetimi ve SSL entegrasyonu
   - Otomatik subdomain oluşturma ve yapılandırma
   - DNS kayıtları yönetimi
-  - SSL sertifikası oluşturma ve yenileme
+  - SSL sertifika yönetimi
   - Domain doğrulama mekanizmaları
 - [x] ESLint, Prettier ve diğer geliştirme araçlarının yapılandırması
   - ✅ ESLint temel yapılandırması ve güncellemeler
@@ -58,14 +58,17 @@
   - ✅ Otomatik linting, test ve build süreçleri
   - ✅ Vercel ile deployment ve preview ortamları
 
-### 1.2. Dokümantasyon Altyapısı ve Başlangıcı 🔄
+### 1.2. Dokümantasyon Altyapısı ve Başlangıcı ✅
 - [x] Dokümantasyon stratejisi ve araçların belirlenmesi
 - [x] API dokümantasyon sisteminin kurulması (Swagger/OpenAPI)
 - [x] Temel geliştirici dokümantasyonunun yazılması
 - [x] Kod stili rehberinin oluşturulması
 - [x] Component kütüphanesi dokümantasyonu başlangıcı
-- [❌] Mimari kararlar kaydı (ADR) tutulması (şablon hazırlanmış ancak gerçek ADR dosyaları bulunamadı)
-- [x] Yeni geliştirici onboarding dokümantasyonu
+- [x] Mimari kararların (ADR) kaydı için şablon oluşturma
+- [x] Mimari kararların (ADR) dokümantasyonu
+- [x] Teknik dokümantasyon yapısı
+- [x] API dokümantasyon stratejisi
+- [x] Stil rehberi ve kodlama standartları
 
 ### 1.3. Test Stratejisi Kurulumu ✅
 - [x] Jest ve React Testing Library entegrasyonu
