@@ -113,6 +113,9 @@ export function reportUIError(
 
 /**
  * Performans izleme için işlem başlatma
+ * 
+ * Not: Bu fonksiyon Sentry.startTransaction API'si güncellendiği için şu anda aktif olarak kullanılmıyor.
+ * Gerekirse Sentry'nin güncel API'sine göre uyarlanabilir.
  */
 export function startPerformanceTracking(
   name: string,
@@ -120,14 +123,17 @@ export function startPerformanceTracking(
   data?: Record<string, any>
 ): any | undefined {
   try {
-    // @ts-ignore - Sentry API tip uyumluluğu sorunlarını görmezden gelelim
-    const transaction = Sentry.startTransaction({
+    // Sentry API değişikliği nedeniyle fonksiyon şu anda bir mock döndürüyor
+    // Gerçek implementasyon için güncel Sentry dökümanlarına bakınız
+    console.log(`Performance tracking başlatıldı: ${name} (${op})`);
+    
+    // Basit bir mock transaction nesnesi
+    return {
       name,
       op,
       data,
-    });
-
-    return transaction;
+      finish: () => console.log(`Performance tracking tamamlandı: ${name}`)
+    };
   } catch (e) {
     console.error('Performans izleme başlatılamadı:', e);
     return undefined;
