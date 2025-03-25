@@ -75,9 +75,12 @@ export default function SuperAdminSetupPage() {
             auth_id: authData.id,
             email: email,
             role: 'super_admin',
-            tenant_id: 'tenant_i-ep.app',
-            status: 'active',
-            name: 'Süper Admin',
+            tenant_id: '11111111-1111-1111-1111-111111111111', // Varsayılan tenant ID
+            first_name: 'Süper',
+            last_name: 'Admin',
+            is_active: true,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           }
         ]);
       

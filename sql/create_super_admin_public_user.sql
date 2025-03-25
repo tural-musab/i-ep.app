@@ -1,7 +1,25 @@
 -- Süper admin kullanıcısını public.users tablosuna ekleyen SQL
 -- UUID'yi auth.users tablosundan alıyoruz
 
--- Önce kullanıcının zaten var olup olmadığını kontrol et
+-- Önce auth_id sütununu ekleyelim (eğer yoksa)
+DO $$
+BEGIN
+  -- Sütun var mı kontrol et
+  IF NOT EXISTS (
+    SELECT FROM information_schema.columns 
+    WHERE table_schema = 'public' 
+    AND table_name = 'users'
+    AND column_name = 'auth_id'
+  ) THEN
+    -- Sütun yoksa ekle
+    EXECUTE 'ALTER TABLE public.users ADD COLUMN auth_id UUID REFERENCES auth.users(id)';
+    RAISE NOTICE 'auth_id sütunu eklendi';
+  ELSE
+    RAISE NOTICE 'auth_id sütunu zaten mevcut';
+  END IF;
+END $$;
+
+-- Şimdi süper admin kullanıcısını ekleyelim
 DO $$
 DECLARE
   v_user_exists BOOLEAN;
@@ -19,17 +37,19 @@ BEGIN
       email,
       role,
       tenant_id,
-      status,
-      name,
+      first_name,
+      last_name,
+      is_active,
       created_at,
       updated_at
     ) VALUES (
       v_auth_user_id,
       'admin@i-ep.app',
       'super_admin',
-      'tenant_i-ep.app', -- Varsayılan tenant ID
-      'active',
-      'Süper Admin',
+      '11111111-1111-1111-1111-111111111111', -- Varsayılan tenant ID
+      'Süper',
+      'Admin',
+      TRUE,
       NOW(),
       NOW()
     );
