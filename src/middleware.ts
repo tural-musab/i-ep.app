@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { resolveTenantFromDomain, TenantInfo } from './lib/tenant/tenant-domain-resolver';
+import { logAccessDenied } from './lib/audit';
 
 /**
  * Tenant izolasyonu ve yönlendirme middleware
@@ -30,6 +31,10 @@ export async function middleware(request: NextRequest) {
       devResponse.headers.set('x-auth-user-id', session.user.id);
       devResponse.headers.set('x-auth-user-email', session.user.email || '');
       devResponse.headers.set('x-auth-user-role', session.user.app_metadata?.role || 'user');
+      
+      // Kullanıcının erişebileceği tenant'lar
+      const allowedTenants = session.user.user_metadata?.allowed_tenants || '[]';
+      devResponse.headers.set('x-auth-allowed-tenants', typeof allowedTenants === 'string' ? allowedTenants : JSON.stringify(allowedTenants));
     }
     
     return devResponse;
@@ -68,17 +73,122 @@ export async function middleware(request: NextRequest) {
     response.headers.set('x-auth-user-email', session.user.email || '');
     response.headers.set('x-auth-user-role', session.user.app_metadata?.role || 'user');
     
+    // Kullanıcının erişebileceği tenant'lar
+    const allowedTenants = session.user.user_metadata?.allowed_tenants || '[]';
+    response.headers.set('x-auth-allowed-tenants', typeof allowedTenants === 'string' ? allowedTenants : JSON.stringify(allowedTenants));
+    
+    // Tenant erişim kontrolü
+    const isSuperAdmin = session.user.app_metadata?.role === 'super_admin';
+    const allowedTenantsArray = typeof allowedTenants === 'string' 
+      ? JSON.parse(allowedTenants) 
+      : (Array.isArray(allowedTenants) ? allowedTenants : []);
+    
+    // Super admin'ler tüm tenant'lara erişebilir
+    // Normal kullanıcılar sadece izin verilen tenant'lara erişebilir
+    const canAccessTenant = isSuperAdmin || 
+      session.user.user_metadata?.tenant_id === tenantInfo.id ||
+      allowedTenantsArray.includes(tenantInfo.id);
+    
+    // Kullanıcının bu tenant'a erişim yetkisi yoksa ve koruma altındaki bir sayfaya erişmeye çalışıyorsa
+    if (!canAccessTenant && isProtectedPath(pathname)) {
+      console.warn(`Kullanıcının tenant erişim yetkisi yok: ${session.user.email} -> ${tenantInfo.id}`);
+      
+      // Erişim reddedildi logunu kaydet
+      try {
+        await logAccessDenied(
+          session.user.id,
+          tenantInfo.id,
+          'public',
+          'tenant_access',
+          'GET',
+          'tenant_access_denied',
+          {
+            path: pathname,
+            email: session.user.email,
+            requested_tenant: tenantInfo.id,
+            allowed_tenants: allowedTenantsArray,
+            user_tenant: session.user.user_metadata?.tenant_id,
+            role: session.user.app_metadata?.role || 'user',
+            ip: request.headers.get('x-forwarded-for') || 'unknown'
+          }
+        ).catch(e => console.error('Middleware erişim reddi log hatası:', e));
+      } catch (error) {
+        console.error('Erişim reddi log hatası:', error);
+      }
+      
+      return NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
+    }
+    
     // Tenant bilgisini kullanıcı metadatasına ekle/güncelle
-    if (!session.user.user_metadata.tenant_id || session.user.user_metadata.tenant_id !== tenantInfo.id) {
+    const updateUserMetadata = async () => {
+      // Son erişilen tenant'ları tut (maksimum 5)
+      let lastAccessedTenants = session.user.user_metadata?.last_accessed_tenants || [];
+      if (typeof lastAccessedTenants === 'string') {
+        try {
+          lastAccessedTenants = JSON.parse(lastAccessedTenants);
+        } catch (e) {
+          lastAccessedTenants = [];
+        }
+      }
+      
+      if (!Array.isArray(lastAccessedTenants)) {
+        lastAccessedTenants = [];
+      }
+      
+      // Şu anki tenant'ı listeye ekle (eğer zaten yoksa)
+      if (!lastAccessedTenants.includes(tenantInfo.id)) {
+        lastAccessedTenants.unshift(tenantInfo.id);
+        // Maksimum 5 tenant tut
+        if (lastAccessedTenants.length > 5) {
+          lastAccessedTenants = lastAccessedTenants.slice(0, 5);
+        }
+      } else {
+        // Zaten listede varsa, en başa taşı
+        lastAccessedTenants = [
+          tenantInfo.id,
+          ...lastAccessedTenants.filter((id: string) => id !== tenantInfo.id)
+        ];
+      }
+      
       // Kullanıcı metadatasını güncelle
       await supabase.auth.updateUser({
         data: { 
           tenant_id: tenantInfo.id,
           tenant_name: tenantInfo.name,
-          last_tenant_access: new Date().toISOString() 
+          last_tenant_access: new Date().toISOString(),
+          last_accessed_tenants: lastAccessedTenants
         }
       });
+    };
+    
+    // Tenant değişmişse, kullanıcı metadatasını güncelle
+    if (canAccessTenant && (!session.user.user_metadata?.tenant_id || session.user.user_metadata?.tenant_id !== tenantInfo.id)) {
+      updateUserMetadata().catch(err => {
+        console.error('Kullanıcı metadata güncelleme hatası:', err);
+      });
     }
+  } else if (isProtectedPath(pathname)) {
+    // Oturum yoksa ve korumalı bir sayfaya erişmeye çalışıyorsa, giriş sayfasına yönlendir
+    try {
+      await logAccessDenied(
+        'anonymous',
+        tenantInfo?.id || 'unknown',
+        'public',
+        'tenant_access',
+        'GET',
+        'unauthenticated_access',
+        {
+          path: pathname,
+          ip: request.headers.get('x-forwarded-for') || 'unknown'
+        }
+      ).catch(e => console.error('Middleware erişim reddi log hatası:', e));
+    } catch (error) {
+      console.error('Anonim erişim reddi log hatası:', error);
+    }
+    
+    const loginUrl = new URL('/auth/giris', request.url);
+    loginUrl.searchParams.set('callbackUrl', request.url);
+    return NextResponse.redirect(loginUrl);
   }
   
   return response;
@@ -121,7 +231,26 @@ function isPublicPath(pathname: string): boolean {
     pathname.startsWith('/api/auth') ||
     pathname.startsWith('/favicon.ico') ||
     pathname.startsWith('/static') ||
-    pathname.startsWith('/images')
+    pathname.startsWith('/images') ||
+    pathname === '/auth/giris' ||
+    pathname === '/auth/sifremi-unuttum' ||
+    pathname === '/auth/sifre-yenile' ||
+    pathname === '/auth/yetkisiz'
+  );
+}
+
+/**
+ * Korumalı path kontrolü
+ */
+function isProtectedPath(pathname: string): boolean {
+  return (
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/profil') ||
+    pathname.startsWith('/ogrenci') ||
+    pathname.startsWith('/ogretmen') ||
+    pathname.startsWith('/rapor') ||
+    pathname.startsWith('/ayarlar')
   );
 }
 

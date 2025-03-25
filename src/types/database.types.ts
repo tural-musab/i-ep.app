@@ -222,15 +222,58 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
+      get_user_role: {
+        Args: Record<string, never>
+        Returns: string
+      }
+      is_super_admin: {
+        Args: Record<string, never>
+        Returns: boolean
+      }
+      is_tenant_admin: {
+        Args: {
+          tenant_id: string
+        }
+        Returns: boolean
+      }
+      get_user_tenant_id: {
+        Args: Record<string, never>
+        Returns: string | null
+      }
+      teacher_has_class: {
+        Args: {
+          teacher_id: string
+          class_id: string
+          schema_name?: string
+        }
+        Returns: boolean
+      }
+      current_teacher_has_class_access: {
+        Args: {
+          class_id: string
+        }
+        Returns: boolean
+      }
+      teacher_has_student: {
+        Args: {
+          teacher_id: string
+          student_id: string
+          schema_name?: string
+        }
+        Returns: boolean
+      }
+      current_teacher_has_student_access: {
+        Args: {
+          student_id: string
+        }
+        Returns: boolean
+      }
       execute_raw_query: {
         Args: {
           query_text: string
+          params?: unknown[]
         }
-        Returns: Json
-      }
-      tenant_isolation_policy: {
-        Args: Record<PropertyKey, never>
-        Returns: string
+        Returns: unknown
       }
     }
     Enums: {
@@ -671,6 +714,16 @@ export interface Database {
     }
     Enums: {
       [_ in never]: never
+    }
+  }
+  management: {
+    Functions: {
+      get_tenant_schema: {
+        Args: {
+          tenant_id: string
+        }
+        Returns: string
+      }
     }
   }
 } 

@@ -2,6 +2,7 @@
  * Kullanıcı rolleri enum
  */
 export enum UserRole {
+  SUPER_ADMIN = 'super_admin',
   ADMIN = 'admin',
   MANAGER = 'manager',
   TEACHER = 'teacher',
@@ -26,6 +27,10 @@ export interface UserProfile {
   country?: string;
   postalCode?: string;
   metadata?: Record<string, any>;
+  // Çoklu tenant desteği için ek alanlar
+  primaryTenantId?: string;
+  tenantRoles?: Record<string, UserRole>;
+  lastAccessedTenants?: string[];
 }
 
 /**
@@ -42,7 +47,10 @@ export interface User {
   createdAt: Date;
   updatedAt: Date;
   lastLogin?: Date;
-  allowedTenants?: string[];
+  // Tenant-aware özellikler
+  allowedTenants: string[];
+  isSuperAdmin?: boolean;
+  isTenantSwitchEnabled?: boolean;
 }
 
 /**
@@ -52,6 +60,8 @@ export interface Session {
   user: User;
   expires: Date;
   accessToken: string;
+  // Tenant-specific bilgiler
+  tenantId?: string;
 }
 
 /**
@@ -62,6 +72,7 @@ export interface AuthResult {
   user?: User;
   session?: Session;
   error?: string;
+  tenantId?: string;
 }
 
 /**
@@ -73,6 +84,7 @@ export interface CreateUserInput {
   role: UserRole;
   tenantId: string;
   fullName: string;
+  allowedTenants?: string[];
 }
 
 /**
@@ -81,9 +93,20 @@ export interface CreateUserInput {
 export interface ProviderOptions {
   redirectTo?: string;
   scopes?: string[];
+  tenantId?: string;
 }
 
 /**
  * Yetkilendirme sağlayıcı tipi
  */
-export type Provider = 'email' | 'google' | 'facebook' | 'microsoft' | 'apple'; 
+export type Provider = 'email' | 'google' | 'facebook' | 'microsoft' | 'apple';
+
+/**
+ * Tenant değiştirme isteği
+ */
+export interface TenantSwitchRequest {
+  userId: string;
+  currentTenantId: string;
+  targetTenantId: string;
+  reason?: string;
+} 

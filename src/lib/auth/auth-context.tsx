@@ -5,6 +5,8 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import { User, UserRole, Session } from '@/types/auth';
 import { ResourceType, ActionType, hasPermission } from './permissions';
+import { extractTenantFromSubdomain } from '../tenant/tenant-utils';
+import { Tenant } from '@/types/tenant';
 
 // Auth Context tip tanımı
 interface AuthContextType {
@@ -13,12 +15,16 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   currentTenantId: string | null;
+  currentTenant: Tenant | null;
   
   // Auth işlemleri
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  signOut: () => Promise<void>;
+  signOut: (options?: { redirect?: boolean }) => Promise<void>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   updateUser: (userData: Partial<User>) => Promise<void>;
+  
+  // Tenant işlemleri
+  switchTenant: (tenantId: string) => Promise<boolean>;
   
   // Yetki kontrolleri
   hasPermission: (resource: ResourceType, action: ActionType) => boolean;
@@ -36,11 +42,13 @@ const defaultContextValue: AuthContextType = {
   isLoading: true,
   isAuthenticated: false,
   currentTenantId: null,
+  currentTenant: null,
   
   signIn: async () => ({ success: false, error: 'Auth context has not been initialized' }),
   signOut: async () => {},
   resetPassword: async () => ({ success: false, error: 'Auth context has not been initialized' }),
   updateUser: async () => {},
+  switchTenant: async () => false,
   
   hasPermission: () => false,
   isTenantUser: () => false,
@@ -66,10 +74,58 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [currentTenantId, setCurrentTenantId] = useState<string | null>(null);
+  const [currentTenant, setCurrentTenant] = useState<Tenant | null>(null);
   
   const supabase = createClientComponentClient();
   const router = useRouter();
   
+  // Tenant belirleme fonksiyonu
+  const determineTenantId = (): string | null => {
+    let tenantId: string | null = null;
+    
+    // 1. URL'den tenant belirleme
+    if (typeof window !== 'undefined') {
+      const subdomain = extractTenantFromSubdomain(window.location.hostname);
+      if (subdomain) {
+        tenantId = `tenant_${subdomain}`;
+      }
+    }
+    
+    // 2. Local storage kontrolü
+    if (!tenantId && typeof window !== 'undefined') {
+      tenantId = localStorage.getItem('tenant-id');
+    }
+    
+    return tenantId;
+  };
+  
+  // Tenant bilgilerini al
+  const fetchTenantDetails = async (tenantId: string) => {
+    try {
+      // Tenant ID'den gerçek tenant ID'yi çıkar (tenant_ prefix'ini kaldır)
+      const rawTenantId = tenantId.startsWith('tenant_') 
+        ? tenantId.substring(7) 
+        : tenantId;
+      
+      // Tenant bilgilerini getir
+      const { data, error } = await supabase
+        .from('tenants')
+        .select('*')
+        .eq('id', rawTenantId)
+        .single();
+      
+      if (error || !data) {
+        console.error('Tenant bilgileri alınamadı:', error);
+        return null;
+      }
+      
+      return data as Tenant;
+    } catch (err) {
+      console.error('Tenant bilgisi çekme hatası:', err);
+      return null;
+    }
+  };
+
   // Kullanıcı oturum durumunu izleme
   useEffect(() => {
     const checkUser = async () => {
@@ -96,19 +152,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
         
         const { user: authUser } = sessionData.session;
         
-        // Tenant ID'yi al (önce user_metadata'dan, sonra localStorage'dan)
+        // Tenant ID'yi al (önce user_metadata'dan, sonra dinamik belirleme)
         let tenantId = authUser.user_metadata?.tenant_id as string || '';
         
         if (!tenantId) {
-          tenantId = localStorage.getItem('tenant-id') || '';
+          tenantId = determineTenantId() || '';
+        }
+        
+        if (!tenantId) {
+          console.error('Tenant ID bulunamadı, oturum devam edemez');
+          setUser(null);
+          setSession(null);
+          setIsLoading(false);
+          return;
         }
         
         setCurrentTenantId(tenantId);
         
+        // Tenant bilgilerini al
+        const tenantDetails = await fetchTenantDetails(tenantId);
+        setCurrentTenant(tenantDetails);
+        
         // Kullanıcı profil bilgilerini al
         if (tenantId && authUser.id) {
+          // Tenant prefix'ini kaldır
+          const schemaName = tenantId.startsWith('tenant_') ? tenantId : `tenant_${tenantId}`;
+          
           const { data: userData, error: userError } = await supabase
-            .from(`tenant_${tenantId}.users`)
+            .from(`${schemaName}.users`)
             .select('*')
             .eq('auth_id', authUser.id)
             .single();
@@ -132,6 +203,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
               createdAt: new Date(userData.created_at || authUser.created_at),
               updatedAt: new Date(userData.updated_at || authUser.updated_at),
               lastLogin: authUser.last_sign_in_at ? new Date(authUser.last_sign_in_at) : undefined,
+              // İzin verilen tenant'lar listesi
+              allowedTenants: authUser.user_metadata?.allowed_tenants as string[] || [],
             };
             
             setUser(appUser);
@@ -174,7 +247,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const signIn = async (email: string, password: string) => {
     try {
       // Tenant ID kontrolü
-      if (!currentTenantId) {
+      const tenantId = determineTenantId();
+      if (!tenantId) {
         return { success: false, error: 'Tenant bilgisi eksik' };
       }
       
@@ -193,12 +267,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
       
       // Tenant ID'yi localStorage'a kaydet
-      localStorage.setItem('tenant-id', currentTenantId);
+      localStorage.setItem('tenant-id', tenantId);
       
       // Kullanıcı metadata'sını güncelle
       await supabase.auth.updateUser({
         data: { 
-          tenant_id: currentTenantId,
+          tenant_id: tenantId,
           last_login: new Date().toISOString()
         }
       });
@@ -211,13 +285,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
   
   // Çıkış işlemi
-  const signOut = async () => {
+  const signOut = async (options: { redirect?: boolean } = { redirect: true }) => {
     try {
       await supabase.auth.signOut();
       setUser(null);
       setSession(null);
       localStorage.removeItem('tenant-id');
-      router.push('/');
+      
+      if (options.redirect) {
+        router.push('/');
+      }
     } catch (err) {
       console.error('Çıkış işlemi hatası:', err);
     }
@@ -246,10 +323,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!user || !currentTenantId) return;
     
     try {
+      // Tenant prefix'ini kaldır
+      const schemaName = currentTenantId.startsWith('tenant_') ? currentTenantId : `tenant_${currentTenantId}`;
+      
       // Profil bilgilerini güncelle
       if (userData.profile) {
         const { error: profileError } = await supabase
-          .from(`tenant_${currentTenantId}.users`)
+          .from(`${schemaName}.users`)
           .update({
             name: userData.profile.fullName,
             avatar_url: userData.profile.avatar,
@@ -274,6 +354,59 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setUser(prevUser => prevUser ? { ...prevUser, ...userData } : null);
     } catch (err) {
       console.error('Kullanıcı güncelleme hatası:', err);
+    }
+  };
+  
+  // Tenant değiştirme
+  const switchTenant = async (tenantId: string): Promise<boolean> => {
+    try {
+      if (!user) return false;
+      
+      // Kullanıcının bu tenant'a erişimi var mı kontrol et
+      if (!isTenantUser(tenantId)) {
+        console.error('Kullanıcının bu tenant\'a erişim yetkisi yok:', tenantId);
+        return false;
+      }
+      
+      // Şu anki kullanıcının metadata'sını güncelle
+      await supabase.auth.updateUser({
+        data: { 
+          tenant_id: tenantId,
+          current_tenant: tenantId
+        }
+      });
+      
+      // localStorage'da tenant bilgisini güncelle
+      localStorage.setItem('tenant-id', tenantId);
+      
+      // Yeni tenant bilgilerini al
+      const tenantDetails = await fetchTenantDetails(tenantId);
+      if (tenantDetails) {
+        setCurrentTenant(tenantDetails);
+        setCurrentTenantId(tenantId);
+        
+        // Kullanıcı nesnesini güncelle
+        setUser(prevUser => prevUser ? { ...prevUser, tenantId } : null);
+        
+        // Oturum nesnesini güncelle
+        setSession(prevSession => {
+          if (!prevSession) return null;
+          return {
+            ...prevSession,
+            user: {
+              ...prevSession.user,
+              tenantId
+            }
+          };
+        });
+        
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Tenant değiştirme hatası:', error);
+      return false;
     }
   };
   
@@ -314,11 +447,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading,
     isAuthenticated: !!user,
     currentTenantId,
+    currentTenant,
     
     signIn,
     signOut,
     resetPassword,
     updateUser,
+    switchTenant,
     
     hasPermission: checkPermission,
     isTenantUser,

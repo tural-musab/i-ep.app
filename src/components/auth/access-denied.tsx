@@ -1,62 +1,63 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { ShieldAlert, Home, ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useAuth } from "@/lib/auth/auth-context";
+import { Shield, AlertTriangle } from "lucide-react";
 
 interface AccessDeniedProps {
   title?: string;
   message?: string;
-  showHomeButton?: boolean;
+  showLoginButton?: boolean;
   showBackButton?: boolean;
-  homeHref?: string;
 }
 
+/**
+ * Erişim reddedildiğinde gösterilecek bileşen
+ */
 export function AccessDenied({
-  title = 'Erişim Reddedildi',
-  message = 'Bu sayfayı görüntülemek için gerekli izinlere sahip değilsiniz.',
-  showHomeButton = true,
-  showBackButton = true,
-  homeHref = '/'
+  title = "Erişim Reddedildi",
+  message = "Bu sayfaya erişim yetkiniz bulunmamaktadır.",
+  showLoginButton = true,
+  showBackButton = true
 }: AccessDeniedProps) {
-  const router = useRouter();
-  
+  const { user } = useAuth();
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] p-6 text-center">
-      <ShieldAlert className="w-16 h-16 text-red-500 mb-4" />
-      
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">
-        {title}
-      </h1>
-      
-      <p className="text-gray-600 max-w-md mb-8">
-        {message}
-      </p>
-      
-      <div className="flex flex-wrap gap-4 justify-center">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+      <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
+        <div className="bg-red-100 p-3 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+          <Shield className="h-8 w-8 text-red-600" />
+        </div>
+        
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{title}</h2>
+        <p className="text-gray-600 mb-6">{message}</p>
+        
+        {!user && showLoginButton && (
+          <Button asChild className="w-full mb-3">
+            <Link href="/auth/giris">Giriş Yap</Link>
+          </Button>
+        )}
+        
         {showBackButton && (
-          <Button
-            variant="outline"
-            onClick={() => router.back()}
-            className="flex items-center gap-2"
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={() => window.history.back()}
           >
-            <ArrowLeft className="w-4 h-4" />
             Geri Dön
           </Button>
         )}
         
-        {showHomeButton && (
-          <Button
-            asChild
-            className="flex items-center gap-2"
-          >
-            <Link href={homeHref}>
-              <Home className="w-4 h-4" />
-              Ana Sayfa
-            </Link>
-          </Button>
+        {user && (
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <div className="flex items-center text-sm text-amber-600 bg-amber-50 p-3 rounded">
+              <AlertTriangle className="w-5 h-5 mr-2" />
+              <p>
+                <span className="font-medium">Not:</span> Bu sayfaya erişim için gerekli yetkiye sahip değilsiniz.
+              </p>
+            </div>
+          </div>
         )}
       </div>
     </div>

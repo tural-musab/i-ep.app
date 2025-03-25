@@ -1,4 +1,5 @@
 import { User, UserRole } from '@/types/auth';
+import { createServerSupabaseClient } from '../supabase/server';
 
 // Yetki seviyeleri - UserRole'ü yeniden kullanıyoruz
 export { UserRole as PermissionLevel };
@@ -145,39 +146,53 @@ export async function validateTenantAccess(
   tenantIdParam?: string
 ): Promise<boolean> {
   // Parametre formatını belirle
-  let user: any = null;
+  let userId: string = '';
   let tenantId: string = '';
   
   if (typeof userOrParams === 'object' && userOrParams !== null) {
     if ('userId' in userOrParams && 'tenantId' in userOrParams) {
       // Yeni format: { userId, tenantId }
+      userId = userOrParams.userId;
       tenantId = userOrParams.tenantId;
-      
-      // userId'den user nesnesini getir
-      // Bu örnekte sadece kullanıcı ID'si kontrol ediliyor
-      // Gerçek uygulamada veritabanından kullanıcı bilgisi çekilebilir
-      user = { id: userOrParams.userId, role: UserRole.ADMIN }; // Basitleştirilmiş örnek
     } else {
       // Supabase user nesnesi
-      user = userOrParams;
+      userId = userOrParams.id;
       tenantId = tenantIdParam || '';
     }
   }
   
-  // Kullanıcı yoksa erişim reddet
-  if (!user) return false;
+  // Kullanıcı veya tenant ID yoksa erişim reddet
+  if (!userId || !tenantId) return false;
   
-  // Admin her tenant'a erişebilir
-  if (user.role === UserRole.ADMIN) return true;
-  
-  // Kullanıcı bu tenant'a atanmış mı kontrol et
-  if (user.tenantId === tenantId) return true;
-  
-  // Yönetici rolü veya üstü olan kişilere çoklu tenant erişimi izni verilebilir
-  if (user.role === UserRole.MANAGER && user.allowedTenants?.includes(tenantId)) {
-    return true;
+  try {
+    // Supabase istemcisini oluştur
+    const supabase = createServerSupabaseClient();
+    
+    // RLS fonksiyonunu kullanarak tenant_admin kontrolü yap
+    const { data: isTenantAdmin, error: tenantAdminError } = await supabase.rpc('is_tenant_admin', {
+      tenant_id: tenantId
+    });
+    
+    if (tenantAdminError) {
+      console.error('Tenant erişim kontrolü hatası:', tenantAdminError);
+      return false;
+    }
+    
+    // Super admin kontrolü
+    const { data: isSuperAdmin, error: superAdminError } = await supabase.rpc('is_super_admin');
+    
+    if (superAdminError) {
+      console.error('Super admin kontrolü hatası:', superAdminError);
+    } else if (isSuperAdmin) {
+      // Kullanıcı süper admin ise her tenant'a erişebilir
+      return true;
+    }
+    
+    // Tenant admin kontrolünün sonucunu döndür
+    return !!isTenantAdmin;
+    
+  } catch (error) {
+    console.error('Tenant erişim doğrulama hatası:', error);
+    return false;
   }
-  
-  // Erişim reddedildi
-  return false;
 } 

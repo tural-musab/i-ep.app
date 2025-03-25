@@ -32,11 +32,12 @@ export function toKebabCase(str: string): string {
 /**
  * Tarih formatlamak için yardımcı fonksiyon
  */
-export function formatDate(date: Date): string {
-  return date.toLocaleDateString('tr-TR', {
-    day: 'numeric',
-    month: 'long',
+export function formatDate(date: Date | string, locale: string = 'tr-TR'): string {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return dateObj.toLocaleDateString(locale, {
     year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 }
 
@@ -55,9 +56,9 @@ export function truncate(str: string, length: number): string {
  * @param maxLength Maksimum uzunluk (varsayılan: 100)
  * @returns Kısaltılmış metin
  */
-export function truncateText(text: string, maxLength: number = 100): string {
+export function truncateText(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength) + "...";
+  return text.substring(0, maxLength) + '...';
 }
 
 /**
@@ -134,4 +135,67 @@ export function slugify(text: string): string {
     .replace(/[^\w\s-]/g, "") // Alfanümerik olmayan karakterleri kaldır
     .replace(/[\s_-]+/g, "-") // Boşluk, alt çizgi ve tire karakterlerini tek bir tire ile değiştir
     .replace(/^-+|-+$/g, ""); // Baştaki ve sondaki tireleri kaldır
+}
+
+/**
+ * Değerin belirli bir aralıkta olup olmadığını kontrol eder
+ */
+export function isInRange(value: number, min: number, max: number): boolean {
+  return value >= min && value <= max;
+}
+
+/**
+ * Para birimini formatlar
+ */
+export function formatCurrency(
+  amount: number,
+  currency: string = 'TRY',
+  locale: string = 'tr-TR'
+): string {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency,
+  }).format(amount);
+}
+
+/**
+ * Rastgele bir UUID oluşturur
+ */
+export function generateUUID(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+/**
+ * Obje içerisindeki null ve undefined değerleri temizler
+ */
+export function cleanObject<T extends Record<string, any>>(obj: T): Partial<T> {
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    if (value !== null && value !== undefined) {
+      acc[key as keyof T] = value;
+    }
+    return acc;
+  }, {} as Partial<T>);
+}
+
+/**
+ * URL'den sorgu parametrelerini alır
+ */
+export function getQueryParams<T extends Record<string, string>>(url: string): T {
+  const params = new URLSearchParams(url.split('?')[1]);
+  return Object.fromEntries(params.entries()) as T;
+}
+
+/**
+ * URL'e sorgu parametrelerini ekler
+ */
+export function addQueryParams(url: string, params: Record<string, string>): string {
+  const urlObj = new URL(url, window.location.origin);
+  Object.entries(params).forEach(([key, value]) => {
+    urlObj.searchParams.set(key, value);
+  });
+  return urlObj.toString();
 } 

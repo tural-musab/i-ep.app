@@ -400,3 +400,53 @@ Bazen yerel geliştirme yaparken gerçek (uzaktaki) backend servislerine bağlan
 ---
 
 Iqra Eğitim Portalı - Türkiye'nin eğitim geleceği için
+
+## Denetim Mekanizması (Audit)
+
+Sistem, kapsamlı bir denetim mekanizması içermektedir. Bu mekanizma şunları sağlar:
+
+### 1. Veritabanı Seviyesinde Denetim
+- `audit.audit_logs` tablosu, veritabanındaki INSERT, UPDATE, DELETE işlemlerini otomatik olarak kayıt altına alır
+- `log_activity` tetikleyici fonksiyonu ile tüm değişiklikler eski ve yeni veri ile birlikte kaydedilir
+
+### 2. Erişim Reddi Kayıtları
+- `audit.access_denied_logs` tablosu, erişim reddedilme durumlarını kayıt altına alır
+- Middleware seviyesinde tenant erişim redleri
+- RLS politikaları tarafından engellenen erişimler
+- Fonksiyon seviyesinde erişim reddi durumları
+
+### 3. Uygulama Seviyesinde Denetim
+- Auth modülü içerisinde tüm giriş denemeleri (başarılı/başarısız) kaydedilir
+- Tenant erişim kontrolleri middleware seviyesinde denetlenir ve loglanır
+- Öğretmen-sınıf, öğretmen-öğrenci erişimleri RLS fonksiyonları ile kontrol edilir
+
+### Denetim Kayıtlarına Erişim
+Denetim kayıtlarına yönetici panelinden erişilebilir. Süper admin ve tenant admin kullanıcıları kendi tenant'larına ait kayıtları görüntüleyebilir.
+
+## Güvenlik
+
+Sistem, Row Level Security (RLS) politikaları ile güvenlik sağlar:
+
+1. Tenant izolasyonu - Her kullanıcı sadece kendi tenant'ının verilerine erişebilir
+2. Rol bazlı erişim - Kullanıcılar rollerine göre belirli verilere erişebilir
+3. Öğretmen erişimi - Öğretmenler sadece kendi sınıflarının ve öğrencilerinin verilerine erişebilir
+
+## Çok Kiracılı Mimari
+
+Platform, çok kiracılı (multi-tenant) bir mimari kullanmaktadır. Her müşteri kendi izole edilmiş ortamında çalışır.
+
+- Subdomain tabanlı tenant ayrımı (`tenant-name.i-ep.app`)
+- Özel domain desteği 
+- Tenant bazlı veri izolasyonu (RLS ile)
+- Tenant bazlı özelleştirmeler
+
+## Çevre Değişkenleri
+
+Projenin çalışması için gerekli olan çevre değişkenleri:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXTAUTH_SECRET=your-nextauth-secret
+NEXTAUTH_URL=http://localhost:3000
+```

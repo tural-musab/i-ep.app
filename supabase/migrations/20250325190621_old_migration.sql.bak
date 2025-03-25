@@ -1,0 +1,116 @@
+-- Eksik RLS Fonksiyonlarını Manuel Olarak Ekleme
+-- Bu betik, eksik kalan önemli RLS fonksiyonlarını manüel olarak ekler
+
+-- Tenant şema adını döndüren yardımcı fonksiyon
+CREATE OR REPLACE FUNCTION management.get_tenant_schema(tenant_id uuid)
+RETURNS text AS $$
+BEGIN
+  RETURN 'tenant_' || tenant_id::text;
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Mevcut giriş yapmış öğretmenin belirli bir sınıfa erişim kontrolü
+CREATE OR REPLACE FUNCTION public.current_teacher_has_class_access(class_id uuid)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN (
+    SELECT teacher_has_class(auth.uid(), class_id)
+  );
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Öğretmenin öğrenciye erişimini kontrol eden fonksiyon
+CREATE OR REPLACE FUNCTION public.teacher_has_student(teacher_id uuid, student_id uuid, schema_name text DEFAULT NULL)
+RETURNS BOOLEAN AS $$
+DECLARE
+  result boolean;
+  actual_schema text;
+BEGIN
+  -- Şema belirtilmemişse kullanıcının tenant şemasını al
+  IF schema_name IS NULL THEN
+    SELECT 'tenant_' || tenant_id INTO actual_schema
+    FROM public.users WHERE id = auth.uid();
+  ELSE
+    actual_schema := schema_name;
+  END IF;
+  
+  IF actual_schema IS NULL THEN
+    RETURN FALSE;
+  END IF;
+  
+  -- Öğretmenin öğrencinin olduğu herhangi bir sınıfta ders verip vermediğini kontrol et
+  BEGIN
+    EXECUTE format('
+      SELECT EXISTS (
+        SELECT 1 
+        FROM %I.class_students cs
+        JOIN %I.class_teachers ct ON cs.class_id = ct.class_id
+        WHERE ct.teacher_id = $1 
+        AND cs.student_id = $2
+      )', actual_schema, actual_schema)
+    INTO result
+    USING teacher_id, student_id;
+    
+    RETURN COALESCE(result, FALSE);
+  EXCEPTION
+    WHEN OTHERS THEN
+      RETURN FALSE;
+  END;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Mevcut giriş yapmış öğretmenin belirli bir öğrenciye erişim kontrolü
+CREATE OR REPLACE FUNCTION public.current_teacher_has_student_access(student_id uuid)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN (
+    SELECT teacher_has_student(auth.uid(), student_id)
+  );
+EXCEPTION
+  WHEN OTHERS THEN
+    RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- RLS Test şeması için temel tablolar
+DO $$
+BEGIN
+  -- Eğer şema yoksa zaten oluşturulmuş demektir
+  IF EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = 'rls_test') THEN
+    -- Test kullanıcıları tablosu
+    CREATE TABLE IF NOT EXISTS rls_test.users (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      email text NOT NULL,
+      tenant_id uuid NOT NULL,
+      role text NOT NULL,
+      created_at timestamptz DEFAULT now()
+    );
+
+    -- Test sınıflar tablosu
+    CREATE TABLE IF NOT EXISTS rls_test.classes (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      tenant_id uuid NOT NULL,
+      name text NOT NULL,
+      created_at timestamptz DEFAULT now()
+    );
+
+    -- Tüm test tablolarına RLS'i aktifleştir
+    ALTER TABLE rls_test.users ENABLE ROW LEVEL SECURITY;
+    ALTER TABLE rls_test.classes ENABLE ROW LEVEL SECURITY;
+    
+    -- Superadmin için test politikaları
+    CREATE POLICY IF NOT EXISTS super_admin_users_policy ON rls_test.users
+      USING (is_super_admin())
+      WITH CHECK (is_super_admin());
+
+    CREATE POLICY IF NOT EXISTS super_admin_classes_policy ON rls_test.classes
+      USING (is_super_admin())
+      WITH CHECK (is_super_admin());
+  END IF;
+END $$;

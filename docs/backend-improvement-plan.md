@@ -20,29 +20,36 @@ Her iyileştirme aşaması tamamlandığında, PROGRESS.md dosyasındaki ilgili 
 ## Aşama 1: Temel Backend Yapılandırması (1-2 Hafta)
 > *İlgili PROGRESS.md bölümleri: 2.1 Kimlik Doğrulama ve Güvenlik, 1.4 Veritabanı ve Çok Kiracılı Backend*
 
-### 1.1 RLS Politikaları Genişletilmesi
-- [ ] Tüm tenant şemalarındaki tablolar için RLS politikalarını standardize etme
-- [ ] Rol bazlı erişim kontrollerini detaylandırma (öğretmen, öğrenci, veli rolleri)
-- [ ] Cross-tenant erişim engellerini güçlendirme
-- [ ] Özel durum kontrolü için fonksiyonlar oluşturma (örn: öğretmenin yalnızca kendi sınıflarına erişimi)
-- [ ] RLS politikalarının audit/denetim mekanizmasını oluşturma
-- [ ] Test senaryoları oluşturma ve güvenlik testleri yapma
+### 1.1 RLS Politikaları Genişletilmesi ✅
+
+- [x] Tenant şemaları için RLS politikaları standardizasyonu
+- [x] Temel rol tabanlı erişim kontrollerinin tanımlanması
+  - [x] Super Admin erişim kontrolü
+  - [x] Tenant Admin erişim kontrolü
+  - [x] Öğretmen erişim kontrolü
+  - [x] Öğrenci erişim kontrolü
+  - [x] Veli erişim kontrolü
+- [x] Tenant'lar arası erişim engellerinin oluşturulması
+- [x] Özel durum kontrolleri için fonksiyonların geliştirilmesi
+  - [x] Öğretmenlerin sadece kendi sınıflarına erişimi
+  - [x] Öğrencilerin sadece kendi notlarına erişimi
+  - [x] Velilerin sadece kendi çocuklarının verilerine erişimi
+- [x] RLS politikaları için denetim mekanizması oluşturulması
+- [x] Kapsamlı güvenlik test senaryolarının oluşturulması
 
 ### 1.2 Tenant-Aware Kimlik Doğrulama
-- [ ] Supabase Auth Hooks kullanarak JWT token içeriğini tenant bilgileriyle genişletme
-- [ ] `auth.users` tablosuna tenant_id ilişkisi ekleme
-- [ ] Auth trigger fonksiyonlarını güncelleme
-- [ ] Kullanıcı kayıt/giriş süreçlerini tenant farkındalıklı hale getirme
-- [ ] Multi-tenant authentication middleware güncelleme
-- [ ] Super admin ve tenant admin rolleri için özel kimlik doğrulama akışları
 
-### 1.3 Veritabanı Şema İyileştirmeleri
-- [ ] İlişkisel model kontrolü ve iyileştirmesi
-- [ ] Veri tipleri ve kısıtlamaların doğruluğunu kontrol etme
-- [ ] Tutarlı isimlendirme standardizasyonu
-- [ ] Eksik indekslerin belirlenmesi ve eklenmesi
-- [ ] Foreign key constraintlerinin kontrolü ve güncellenmesi
-- [ ] Check constraintleri ekleme ve NULL/NOT NULL kontrolü
+- [ ] Supabase Auth entegrasyonunun tenant sistemine uyarlanması
+- [ ] Tenant belirleme mekanizmasının oluşturulması
+- [ ] Multi-tenant oturum yönetiminin geliştirilmesi
+- [ ] Kullanıcı davet sistemi oluşturulması
+
+### 1.3 API Endpoint Yapılandırması
+
+- [ ] RESTful API endpoint'lerinin tanımlanması
+- [ ] RLS politikalarına uygun API erişim kontrollerinin yapılandırılması
+- [ ] API belgelendirme sistemi kurulumu
+- [ ] API sürüm yönetiminin planlanması
 
 ## Aşama 2: Performans ve İzleme (1-2 Hafta)
 > *İlgili PROGRESS.md bölümleri: 5.4 Performans Optimizasyonu ve Ölçeklendirme, Teknik Borçlar ve İyileştirmeler*
