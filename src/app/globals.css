@@ -95,7 +95,7 @@ body {
  
 @layer base {
   * {
-    @apply border-border;
+    /* Border özelliği kaldırıldı */
   }
   body {
     @apply bg-background text-foreground;
