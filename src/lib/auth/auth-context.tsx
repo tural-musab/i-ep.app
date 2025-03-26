@@ -18,7 +18,7 @@ interface AuthContextType {
   currentTenant: Tenant | null;
   
   // Auth işlemleri
-  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string; user?: User }>;
   signOut: (options?: { redirect?: boolean }) => Promise<void>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   updateUser: (userData: Partial<User>) => Promise<void>;
@@ -276,6 +276,78 @@ export function AuthProvider({ children }: AuthProviderProps) {
           last_login: new Date().toISOString()
         }
       });
+      
+      // Super admin kontrolü
+      const isSuperAdmin = data.user.app_metadata?.role === 'super_admin';
+      
+      // Eğer super admin ise, hemen yönlendirme için kullanıcı nesnesini döndür
+      if (isSuperAdmin) {
+        const appUser: User = {
+          id: data.user.id,
+          email: data.user.email || '',
+          role: 'super_admin' as UserRole, // app_metadata'dan rolü al
+          tenantId: tenantId,
+          isActive: true,
+          profile: {
+            userId: data.user.id,
+            fullName: data.user.user_metadata?.full_name || '',
+            avatar: data.user.user_metadata?.avatar_url || undefined,
+          },
+          emailVerified: data.user.email_confirmed_at ? new Date(data.user.email_confirmed_at) : undefined,
+          createdAt: new Date(data.user.created_at || Date.now()),
+          updatedAt: new Date(data.user.updated_at || Date.now()),
+          lastLogin: data.user.last_sign_in_at ? new Date(data.user.last_sign_in_at) : undefined,
+          allowedTenants: data.user.user_metadata?.allowed_tenants as string[] || [],
+        };
+        
+        // State güncelle
+        setUser(appUser);
+        
+        return { success: true, user: appUser };
+      }
+      
+      // Profil bilgilerini al (super admin değilse)
+      if (tenantId && data.user.id) {
+        // Tenant prefix'ini kaldır
+        const schemaName = tenantId.startsWith('tenant_') ? tenantId : `tenant_${tenantId}`;
+        
+        try {
+          const { data: userData, error: userError } = await supabase
+            .from(`${schemaName}.users`)
+            .select('*')
+            .eq('auth_id', data.user.id)
+            .single();
+          
+          if (!userError && userData) {
+            // User nesnesini oluştur
+            const appUser: User = {
+              id: data.user.id,
+              email: data.user.email || '',
+              role: (userData.role || data.user.user_metadata?.role || 'guest') as UserRole,
+              tenantId: tenantId,
+              isActive: userData.status === 'active',
+              profile: {
+                userId: data.user.id,
+                fullName: userData.name || data.user.user_metadata?.name || '',
+                avatar: userData.avatar_url,
+              },
+              emailVerified: data.user.email_confirmed_at ? new Date(data.user.email_confirmed_at) : undefined,
+              createdAt: new Date(userData.created_at || data.user.created_at),
+              updatedAt: new Date(userData.updated_at || data.user.updated_at),
+              lastLogin: data.user.last_sign_in_at ? new Date(data.user.last_sign_in_at) : undefined,
+              // İzin verilen tenant'lar listesi
+              allowedTenants: data.user.user_metadata?.allowed_tenants as string[] || [],
+            };
+            
+            // State güncelle
+            setUser(appUser);
+            
+            return { success: true, user: appUser };
+          }
+        } catch (e) {
+          console.error('Kullanıcı bilgileri alınırken hata:', e);
+        }
+      }
       
       return { success: true };
     } catch (err: any) {

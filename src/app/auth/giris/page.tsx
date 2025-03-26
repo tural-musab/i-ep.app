@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth/auth-context';
 import { getTenantId } from '@/lib/tenant/tenant-utils';
 import { toast } from '@/components/ui/use-toast';
+import { navigateBasedOnRole } from '@/utils/navigate-based-on-role';
 
 /**
  * Giriş Sayfası
@@ -45,7 +46,7 @@ export default function GirisPage() {
       }
       
       // AuthContext üzerinden giriş yap
-      const { success, error: loginError } = await signIn(email, password);
+      const { success, error: loginError, user } = await signIn(email, password);
       
       if (!success) {
         console.error('Giriş hatası:', loginError);
@@ -61,8 +62,13 @@ export default function GirisPage() {
         variant: "success",
       });
       
-      // Ana sayfaya yönlendir
-      router.push('/dashboard');
+      // Kullanıcı rolüne göre yönlendirme yap
+      if (user && user.role) {
+        navigateBasedOnRole(user.role, router);
+      } else {
+        // Kullanıcı bilgisi yok ise varsayılan olarak dashboard'a yönlendir
+        router.push('/dashboard');
+      }
       
     } catch (err: any) {
       console.error('Giriş hatası:', err);
