@@ -88,8 +88,8 @@ export default function SuperAdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Süper Admin Dashboard</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-3xl font-bold tracking-tight text-black dark:text-white">Süper Admin Dashboard</h1>
+        <p className="text-gray-600 dark:text-gray-300">
           Sistem geneli metrikler ve istatistikler
         </p>
       </div>
@@ -132,10 +132,10 @@ export default function SuperAdminDashboardPage() {
       </div>
       
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardHeader>
-            <CardTitle>Depolama Kullanımı</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-gray-900 dark:text-white">Depolama Kullanımı</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-300">
               Toplam depolama alanı kullanımı ve dağılımı
             </CardDescription>
           </CardHeader>
@@ -146,8 +146,8 @@ export default function SuperAdminDashboardPage() {
               <div className="flex items-center gap-4">
                 <Server className="h-14 w-14 text-primary" />
                 <div>
-                  <div className="text-3xl font-bold">{stats.storageUsage} MB</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.storageUsage} MB</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
                     10 TB limiti içinde
                   </div>
                 </div>
@@ -156,10 +156,10 @@ export default function SuperAdminDashboardPage() {
           </CardContent>
         </Card>
         
-        <Card>
+        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardHeader>
-            <CardTitle>Veritabanı Durumu</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-gray-900 dark:text-white">Veritabanı Durumu</CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-300">
               Veritabanı boyutu ve performans metrikleri
             </CardDescription>
           </CardHeader>
@@ -170,8 +170,8 @@ export default function SuperAdminDashboardPage() {
               <div className="flex items-center gap-4">
                 <Layers className="h-14 w-14 text-primary" />
                 <div>
-                  <div className="text-3xl font-bold">{stats.databaseSize} MB</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.databaseSize} MB</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
                     Tüm tenantlar ve tablolar dahil
                   </div>
                 </div>

@@ -86,10 +86,17 @@ export default function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
 
   useEffect(() => {
     console.log("Super admin layout sayfası yüklendi!");
+    // Dark mode'u manuel olarak uygula
+    document.documentElement.classList.add('dark');
+    
+    // Component unmount olduğunda dark mode'u kaldır
+    return () => {
+      document.documentElement.classList.remove('dark');
+    };
   }, []);
 
   const SuperAdminLayoutContent = () => (
-    <div className="flex h-screen overflow-hidden bg-gray-100">
+    <div className="flex h-screen overflow-hidden bg-gray-800 text-gray-100">
       {/* Mobil sidebar açma/kapatma */}
       <div className="lg:hidden fixed inset-0 z-40 flex">
         <div

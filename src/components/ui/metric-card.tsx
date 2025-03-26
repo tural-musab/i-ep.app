@@ -7,9 +7,9 @@ import { cva } from 'class-variance-authority';
 const trendVariants = cva('flex items-center text-xs font-medium', {
   variants: {
     trend: {
-      positive: 'text-emerald-600',
-      negative: 'text-rose-600',
-      neutral: 'text-gray-500',
+      positive: 'text-emerald-600 dark:text-emerald-400',
+      negative: 'text-rose-600 dark:text-rose-400',
+      neutral: 'text-gray-500 dark:text-gray-400',
     },
   },
   defaultVariants: {
@@ -53,13 +53,13 @@ export function MetricCard({
       : ArrowDown;
   
   return (
-    <Card className={cn("overflow-hidden", className)}>
+    <Card className={cn("overflow-hidden bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700", className)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">
+        <CardTitle className="text-sm font-medium text-gray-900 dark:text-white">
           {title}
         </CardTitle>
         {icon && (
-          <div className="h-4 w-4 text-muted-foreground">
+          <div className="h-4 w-4 text-gray-500 dark:text-gray-400">
             {icon}
           </div>
         )}
@@ -72,7 +72,7 @@ export function MetricCard({
           </div>
         ) : (
           <>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {value}
             </div>
             {(trend !== undefined || description) && (
@@ -81,11 +81,11 @@ export function MetricCard({
                   <p className={trendVariants({ trend: trendType })}>
                     <TrendIcon className="mr-1 h-3 w-3" />
                     {Math.abs(trend)}%
-                    {trendLabel && <span className="ml-1 text-gray-500">{trendLabel}</span>}
+                    {trendLabel && <span className="ml-1 text-gray-500 dark:text-gray-400">{trendLabel}</span>}
                   </p>
                 )}
                 {description && !trend && (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-gray-600 dark:text-gray-300">
                     {description}
                   </p>
                 )}
@@ -102,15 +102,15 @@ export function MetricCardSkeleton({ count = 1 }: { count?: number }) {
   return (
     <>
       {Array.from({ length: count }).map((_, i) => (
-        <Card key={i} className="overflow-hidden">
+        <Card key={i} className="overflow-hidden bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <div className="h-5 w-24 animate-pulse rounded bg-muted"></div>
-            <div className="h-4 w-4 animate-pulse rounded-full bg-muted"></div>
+            <div className="h-5 w-24 animate-pulse rounded bg-muted dark:bg-gray-700"></div>
+            <div className="h-4 w-4 animate-pulse rounded-full bg-muted dark:bg-gray-700"></div>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <div className="h-8 w-28 animate-pulse rounded bg-muted"></div>
-              <div className="h-4 w-20 animate-pulse rounded bg-muted"></div>
+              <div className="h-8 w-28 animate-pulse rounded bg-muted dark:bg-gray-700"></div>
+              <div className="h-4 w-20 animate-pulse rounded bg-muted dark:bg-gray-700"></div>
             </div>
           </CardContent>
         </Card>
