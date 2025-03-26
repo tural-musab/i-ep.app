@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -83,6 +83,10 @@ export default function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
   const { user, signOut } = useAuth();
+
+  useEffect(() => {
+    console.log("Super admin layout sayfası yüklendi!");
+  }, []);
 
   const SuperAdminLayoutContent = () => (
     <div className="flex h-screen overflow-hidden bg-gray-100">

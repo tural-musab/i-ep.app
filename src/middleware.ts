@@ -22,6 +22,26 @@ export async function middleware(request: NextRequest) {
   // Auth durumunu headerda tut
   const response = NextResponse.next();
   
+  // Super-admin sayfaları için özel kontrol
+  if (pathname.startsWith('/super-admin')) {
+    if (!session) {
+      // Oturum yoksa giriş sayfasına yönlendir
+      const loginUrl = new URL('/auth/giris', request.url);
+      loginUrl.searchParams.set('callbackUrl', request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+    
+    // Kullanıcı super_admin rolünde mi kontrol et
+    const isSuperAdmin = session.user.app_metadata?.role === 'super_admin';
+    if (!isSuperAdmin) {
+      console.warn(`Super admin erişim yetkisi yok: ${session.user.email}`);
+      return NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
+    }
+    
+    // Super admin erişimi onaylandı, devam et
+    return NextResponse.next();
+  }
+  
   // Localhost kontrolü - geliştirme ortamında sadece header'ları ayarla
   if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
     const devResponse = await addTenantHeadersInDevelopment(request);
@@ -229,6 +249,7 @@ function isPublicPath(pathname: string): boolean {
   return (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/api/super-admin') ||
     pathname.startsWith('/favicon.ico') ||
     pathname.startsWith('/static') ||
     pathname.startsWith('/images') ||
@@ -246,6 +267,7 @@ function isProtectedPath(pathname: string): boolean {
   return (
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/admin') ||
+    pathname.startsWith('/super-admin') ||
     pathname.startsWith('/profil') ||
     pathname.startsWith('/ogrenci') ||
     pathname.startsWith('/ogretmen') ||
