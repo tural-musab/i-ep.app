@@ -1,0 +1,24 @@
+{
+  "name": "i-ep-cli",
+  "version": "0.1.0",
+  "description": "İ-EP.APP çok kiracılı (multi-tenant) platform yönetim aracı",
+  "main": "index.js",
+  "bin": {
+    "i-ep": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.33.1",
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0",
+    "dotenv": "^16.3.1",
+    "inquirer": "^8.2.5",
+    "ora": "^5.4.1",
+    "uuid": "^9.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 
