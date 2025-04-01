@@ -2,6 +2,8 @@
 
 Bu doküman, İ-EP.APP'ın çok kiracılı (multi-tenant) mimarisini test etmek için gereken adımları, stratejileri ve test senaryolarını açıklamaktadır.
 
+![Veri İzolasyon Stratejileri](../assets/images/data-isolation.md)
+
 ## Multi-tenant Test Stratejisi
 
 İ-EP.APP'ın multi-tenant yapısını test ederken, aşağıdaki temel alanlara odaklanılmalıdır:

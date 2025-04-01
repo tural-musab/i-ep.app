@@ -101,6 +101,8 @@ Bu doküman, İ-EP.APP (Iqra Eğitim Portalı) projesinin mimari yapısını, te
 
 İ-EP.APP, hibrit multi-tenant izolasyon yaklaşımını benimsemiştir.
 
+![Multi-tenant Mimarisi](../assets/images/multi-tenant-architecture.md)
+
 ### Tenant Tanımlama ve Erişim
 
 Her tenant (kiracı) şunlara sahiptir:
