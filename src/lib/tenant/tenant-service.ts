@@ -3,6 +3,10 @@ import { DomainService } from '../domain/domain-service';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getTenantSupabaseClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
+import { v4 as uuidv4 } from 'uuid';
+
+// TenantSettings tipini import et
+import type { TenantSettings } from '@/types/tenant';
 
 /**
  * Supabase bağlantısı oluştur
@@ -15,14 +19,14 @@ function createSupabaseClient() {
 }
 
 /**
- * Yeni tenant (okul) oluştur
+ * Yeni tenant (okul) oluştur - Overload 1: Detaylı parametreler ile
  * @param name Okul adı
  * @param subdomain Subdomain
  * @param adminEmail Yönetici e-posta adresi
  * @param planType Plan türü
  * @returns Oluşturulan tenant
  */
-export async function createTenant(
+export async function createTenantWithDetails(
   name: string,
   subdomain: string,
   adminEmail: string,
@@ -38,7 +42,7 @@ export async function createTenant(
       settings: {
         allowParentRegistration: true,
         allowTeacherRegistration: true,
-        languagePreference: 'tr',
+        languagePreference: 'tr' as 'tr' | 'en',
         timeZone: 'Europe/Istanbul',
       },
       is_active: true,
@@ -68,12 +72,17 @@ export async function createTenant(
   // 4. İlk admin kullanıcısını oluştur
   const tenantClient = getTenantSupabaseClient(tenantId);
   
+  // users tablosunda full_name yerine first_name ve last_name kullanılıyor
   const { error: userError } = await tenantClient
     .from('users')
     .insert({
+      id: uuidv4(),
       email: adminEmail,
-      full_name: 'Sistem Yöneticisi',
+      first_name: 'Sistem',
+      last_name: 'Yöneticisi',
       role: 'admin',
+      tenant_id: tenantId,
+      is_active: true,
     });
 
   if (userError) {
@@ -87,9 +96,56 @@ export async function createTenant(
     subdomain,
     planType,
     createdAt: new Date(tenantData.created_at),
-    settings: tenantData.settings as TenantSettings,
+    settings: {
+      allowParentRegistration: tenantData.settings.allowParentRegistration,
+      allowTeacherRegistration: tenantData.settings.allowTeacherRegistration,
+      languagePreference: tenantData.settings.languagePreference as 'tr' | 'en',
+      timeZone: tenantData.settings.timeZone,
+      primaryColor: tenantData.settings.primaryColor,
+      secondaryColor: tenantData.settings.secondaryColor,
+    } as TenantSettings,
     isActive: tenantData.is_active,
   };
+}
+
+/**
+ * Yeni tenant oluştur - Overload 2: Obje parametresi ile
+ * @param tenantData Tenant verileri
+ * @returns Oluşturulan tenant veya null
+ */
+export async function createTenant(tenantData: Omit<Tenant, 'id' | 'createdAt'>): Promise<Tenant | null> {
+  try {
+    // Gerçek uygulamada Supabase'e kayıt
+    const { data, error } = await supabaseAdmin
+      .from('tenants')
+      .insert({
+        name: tenantData.name,
+        subdomain: tenantData.subdomain,
+        plan_type: tenantData.planType,
+        settings: tenantData.settings,
+        is_active: tenantData.isActive
+      })
+      .select()
+      .single();
+    
+    if (error || !data) {
+      console.error('Tenant oluşturma hatası:', error);
+      return null;
+    }
+    
+    return {
+      id: data.id,
+      name: data.name,
+      subdomain: data.subdomain,
+      planType: data.plan_type,
+      createdAt: new Date(data.created_at),
+      settings: data.settings,
+      isActive: data.is_active
+    };
+  } catch (error) {
+    console.error('Tenant oluşturma hatası:', error);
+    return null;
+  }
 }
 
 /**
@@ -273,110 +329,96 @@ export async function recordTenantUsageMetric(
 }
 
 /**
- * Tenant güncelle
+ * Tenant güncelle - Tek bir fonksiyon olarak
  * @param tenantId Tenant ID
- * @param data Güncellenecek veriler
- * @returns İşlem başarısı
+ * @param tenantData Güncellenecek veriler
+ * @returns İşlem başarısı veya güncellenmiş tenant
  */
 export async function updateTenant(
   tenantId: string,
-  data: Partial<Omit<Tenant, 'id' | 'createdAt'>>
-): Promise<boolean> {
+  tenantData: Partial<Omit<Tenant, 'id' | 'createdAt'>>
+): Promise<Tenant | null> {
   try {
     // Subdomain değişiyorsa formatını kontrol et
-    if (data.subdomain) {
-      data.subdomain = data.subdomain.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
+    if (tenantData.subdomain) {
+      tenantData.subdomain = tenantData.subdomain.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
       
       // Veritabanında aynı subdomain ile başka tenant var mı kontrol et
-      /*
-      const { data: existingTenant, error: checkError } = await supabaseAdmin
+      const { data: existingTenant } = await supabaseAdmin
         .from('tenants')
         .select('id')
-        .eq('subdomain', data.subdomain)
+        .eq('subdomain', tenantData.subdomain)
         .neq('id', tenantId)
         .single();
       
       if (existingTenant) {
-        throw new Error(`Bu subdomain zaten kullanılıyor: ${data.subdomain}`);
+        throw new Error(`Bu subdomain zaten kullanılıyor: ${tenantData.subdomain}`);
       }
-      */
     }
     
     // Veritabanında tenant'ı güncelle
-    /*
-    const { error } = await supabaseAdmin
+    const updateData: any = {};
+    if (tenantData.name !== undefined) updateData.name = tenantData.name;
+    if (tenantData.subdomain !== undefined) updateData.subdomain = tenantData.subdomain;
+    if (tenantData.planType !== undefined) updateData.plan_type = tenantData.planType;
+    if (tenantData.settings !== undefined) updateData.settings = tenantData.settings;
+    if (tenantData.isActive !== undefined) updateData.is_active = tenantData.isActive;
+
+    const { data, error } = await supabaseAdmin
       .from('tenants')
-      .update({
-        name: data.name,
-        subdomain: data.subdomain,
-        plan_type: data.planType,
-        settings: data.settings,
-        is_active: data.isActive
-      })
-      .eq('id', tenantId);
+      .update(updateData)
+      .eq('id', tenantId)
+      .select()
+      .single();
     
-    if (error) {
-      throw new Error(`Tenant güncelleme hatası: ${error.message}`);
+    if (error || !data) {
+      throw new Error(`Tenant güncelleme hatası: ${error?.message}`);
     }
-    */
     
     // Subdomain değişiyorsa, domain servisini güncelle
-    if (data.subdomain && process.env.ENABLE_DOMAIN_MANAGEMENT === 'true') {
+    if (tenantData.subdomain && process.env.ENABLE_DOMAIN_MANAGEMENT === 'true') {
       // Eski subdomain'i al
-      /*
-      const { data: oldTenant, error: fetchError } = await supabaseAdmin
+      const { data: oldTenant } = await supabaseAdmin
         .from('tenants')
         .select('subdomain')
         .eq('id', tenantId)
         .single();
       
-      if (fetchError || !oldTenant) {
-        throw new Error(`Tenant bilgisi alınamadı: ${fetchError?.message}`);
-      }
-      */
-      const oldSubdomain = 'old-subdomain'; // Gerçek uygulamada veritabanından alınacak
+      const oldSubdomain = oldTenant?.subdomain;
       
       // Eski subdomain ile yeni subdomain farklıysa
-      if (oldSubdomain !== data.subdomain) {
+      if (oldSubdomain && oldSubdomain !== tenantData.subdomain) {
         const domainService = new DomainService();
         
-        // Eski domain kaydını sil (domainId burada bilinmediği için önce veritabanından alınmalı)
-        // Demo için burada doğrudan CloudflareDomainManager'daki removeSubdomain fonksiyonu değil,
-        // DomainService'teki removeDomain fonksiyonu kullanılmalıdır
-        
-        // Eski subdomain için domain ID'yi al ve sil
-        // Gerçek uygulamada bu kod, subdomain'e karşılık gelen domain kaydını bulup ID'sini alacak
-        const oldDomainId = 'old-domain-id';
-        await domainService.removeDomain(oldDomainId);
+        // Eski domain kaydını sil
+        const { data: oldDomainData } = await supabaseAdmin
+          .from('tenant_domains')
+          .select('id')
+          .eq('tenant_id', tenantId)
+          .eq('domain', `${oldSubdomain}.i-ep.app`)
+          .single();
+          
+        if (oldDomainData?.id) {
+          await domainService.deleteDomain(oldDomainData.id);
+        }
         
         // Yeni subdomain oluştur
-        const newTenant: Tenant = {
-          id: tenantId,
-          name: 'Tenant Name', // Bu demo için, gerçek uygulamada veritabanından alınacak
-          subdomain: data.subdomain,
-          planType: 'free', // Bu demo için, gerçek uygulamada veritabanından alınacak
-          createdAt: new Date(),
-          settings: {
-            allowParentRegistration: true,
-            allowTeacherRegistration: true,
-            languagePreference: 'tr',
-            timeZone: 'Europe/Istanbul'
-          },
-          isActive: true
-        };
-        
-        const subdomainCreated = await domainService.createSubdomain(newTenant);
-        
-        if (!subdomainCreated) {
-          console.error(`Tenant için yeni subdomain oluşturulamadı: ${tenantId}`);
-        }
+        await domainService.createSubdomain(tenantId, tenantData.subdomain);
       }
     }
     
-    return true;
+    return {
+      id: data.id,
+      name: data.name,
+      subdomain: data.subdomain,
+      planType: data.plan_type,
+      createdAt: new Date(data.created_at),
+      settings: data.settings,
+      isActive: data.is_active
+    };
   } catch (error) {
     console.error('Tenant güncelleme hatası:', error);
-    return false;
+    return null;
   }
 }
 
@@ -432,102 +474,4 @@ export async function getAllTenants(): Promise<Tenant[]> {
   }
 }
 
-/**
- * Yeni tenant oluştur
- */
-export async function createTenant(tenantData: Omit<Tenant, 'id' | 'createdAt'>): Promise<Tenant | null> {
-  try {
-    // Gerçek uygulamada Supabase'e kayıt
-    // const supabase = createSupabaseClient();
-    // const { data, error } = await supabase
-    //   .from('tenants')
-    //   .insert({
-    //     name: tenantData.name,
-    //     subdomain: tenantData.subdomain,
-    //     plan_type: tenantData.planType,
-    //     settings: tenantData.settings,
-    //     is_active: tenantData.isActive
-    //   })
-    //   .single();
-    
-    // if (error || !data) {
-    //   console.error('Tenant oluşturma hatası:', error);
-    //   return null;
-    // }
-    
-    // return {
-    //   id: data.id,
-    //   name: data.name,
-    //   subdomain: data.subdomain,
-    //   planType: data.plan_type,
-    //   createdAt: new Date(data.created_at),
-    //   settings: data.settings,
-    //   isActive: data.is_active
-    // };
-    
-    // Demo yanıtı
-    return {
-      id: 'new-tenant-id',
-      name: tenantData.name,
-      subdomain: tenantData.subdomain,
-      planType: tenantData.planType,
-      createdAt: new Date(),
-      settings: tenantData.settings,
-      isActive: tenantData.isActive
-    };
-  } catch (error) {
-    console.error('Tenant oluşturma hatası:', error);
-    return null;
-  }
-}
-
-/**
- * Tenant bilgilerini güncelle
- */
-export async function updateTenant(tenantId: string, tenantData: Partial<Tenant>): Promise<Tenant | null> {
-  try {
-    // Demo yanıtı
-    if (tenantId === 'demo-tenant-id') {
-      return {
-        id: 'demo-tenant-id',
-        name: tenantData.name || 'Demo Okul',
-        subdomain: 'demo',
-        planType: tenantData.planType || 'premium',
-        createdAt: new Date(),
-        settings: tenantData.settings || {
-          allowParentRegistration: true,
-          allowTeacherRegistration: true,
-          languagePreference: 'tr',
-          timeZone: 'Europe/Istanbul',
-          primaryColor: '#4a86e8',
-          secondaryColor: '#ff9900'
-        },
-        isActive: tenantData.isActive !== undefined ? tenantData.isActive : true
-      };
-    }
-    
-    // Gerçek uygulamada Supabase'e güncelleme
-    // const updateData: any = {};
-    // if (tenantData.name) updateData.name = tenantData.name;
-    // if (tenantData.planType) updateData.plan_type = tenantData.planType;
-    // if (tenantData.settings) updateData.settings = tenantData.settings;
-    // if (tenantData.isActive !== undefined) updateData.is_active = tenantData.isActive;
-    
-    // const supabase = createSupabaseClient();
-    // const { data, error } = await supabase
-    //   .from('tenants')
-    //   .update(updateData)
-    //   .eq('id', tenantId)
-    //   .single();
-    
-    // if (error || !data) {
-    //   console.error('Tenant güncelleme hatası:', error);
-    //   return null;
-    // }
-    
-    return null; // Demo dışında henüz tenant desteklenmiyor
-  } catch (error) {
-    console.error('Tenant güncelleme hatası:', error);
-    return null;
-  }
-} 
+ 

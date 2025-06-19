@@ -27,14 +27,43 @@ export async function getTenantByDomain(domain: string): Promise<Tenant | null> 
         .eq('domain', domain)
         .single();
         
-      if (customDomainError || !customDomainData) {
+      if (customDomainError || !customDomainData || !customDomainData.tenants) {
         return null;
       }
       
-      return customDomainData.tenants;
+      // Database'den gelen veriyi Tenant tipine dönüştür
+      const tenantData = customDomainData.tenants as any;
+      return {
+        id: tenantData.id,
+        name: tenantData.name,
+        subdomain: tenantData.subdomain,
+        planType: tenantData.plan_type as 'free' | 'standard' | 'premium',
+        createdAt: new Date(tenantData.created_at),
+        settings: tenantData.settings || {
+          allowParentRegistration: true,
+          allowTeacherRegistration: true,
+          languagePreference: 'tr',
+          timeZone: 'Europe/Istanbul'
+        },
+        isActive: tenantData.is_active
+      };
     }
     
-    return data;
+    // Database'den gelen veriyi Tenant tipine dönüştür
+    return {
+      id: data.id,
+      name: data.name,
+      subdomain: data.subdomain,
+      planType: data.plan_type as 'free' | 'standard' | 'premium',
+      createdAt: new Date(data.created_at),
+      settings: data.settings || {
+        allowParentRegistration: true,
+        allowTeacherRegistration: true,
+        languagePreference: 'tr',
+        timeZone: 'Europe/Istanbul'
+      },
+      isActive: data.is_active
+    };
   } catch (error) {
     console.error('getTenantByDomain error:', error);
     return null;

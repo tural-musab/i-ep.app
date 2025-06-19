@@ -514,6 +514,9 @@
 - Supabase RLS politikalarının gözden geçirilmesi ve iyileştirilmesi (ADR-0002, ADR-0003)
 - Tenant-aware kimlik doğrulama sisteminin tamamlanması
 - Veritabanı şema iyileştirmeleri ve indeksleme
+- ✅ Onboarding sistemi: Çok adımlı kayıt süreci ve tenant oluşturma akışı tamamlandı
+
+### Orta Vadeli İyileştirmeler (Ay 3-6)
 
 ## Mevcut Proje Yapısı
 
@@ -637,5 +640,6 @@ Super Admin panelinin detaylı geliştirme aşamaları, milestoneları ve görev
 - Supabase RLS politikalarının gözden geçirilmesi ve iyileştirilmesi (ADR-0002, ADR-0003)
 - Tenant-aware kimlik doğrulama sisteminin tamamlanması
 - Veritabanı şema iyileştirmeleri ve indeksleme
+- ✅ Onboarding sistemi: Çok adımlı kayıt süreci ve tenant oluşturma akışı tamamlandı
 
 ### Orta Vadeli İyileştirmeler (Ay 3-6)

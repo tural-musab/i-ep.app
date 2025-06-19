@@ -1,5 +1,18 @@
 import { getTenantByDomain } from '@/lib/tenant/tenant-utils';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { 
+  Users, 
+  UserCheck, 
+  BookOpen, 
+  ClipboardList, 
+  MessageSquare, 
+  BarChart3,
+  Home,
+  Settings,
+  CalendarCheck,
+  FileText
+} from 'lucide-react';
 
 export default async function TenantLayout({
   children,
@@ -18,19 +31,113 @@ export default async function TenantLayout({
   if (!tenant) {
     notFound();
   }
+
+  const navigationItems = [
+    {
+      title: 'Ana Sayfa',
+      href: `/${params.tenant}`,
+      icon: Home,
+    },
+    {
+      title: 'Öğrenciler',
+      href: `/${params.tenant}/ogrenciler`,
+      icon: Users,
+    },
+    {
+      title: 'Öğretmenler',
+      href: `/${params.tenant}/ogretmenler`,
+      icon: UserCheck,
+    },
+    {
+      title: 'Sınıflar',
+      href: `/${params.tenant}/siniflar`,
+      icon: BookOpen,
+    },
+    {
+      title: 'Notlar',
+      href: `/${params.tenant}/notlar`,
+      icon: ClipboardList,
+    },
+    {
+      title: 'Yoklama',
+      href: `/${params.tenant}/yoklama`,
+      icon: CalendarCheck,
+    },
+    {
+      title: 'Ödevler',
+      href: `/${params.tenant}/odevler`,
+      icon: FileText,
+    },
+    {
+      title: 'İletişim',
+      href: `/${params.tenant}/iletisim`,
+      icon: MessageSquare,
+    },
+    {
+      title: 'Raporlar',
+      href: `/${params.tenant}/raporlar`,
+      icon: BarChart3,
+    },
+    {
+      title: 'Ayarlar',
+      href: `/${params.tenant}/ayarlar`,
+      icon: Settings,
+    },
+  ];
   
   return (
-    <div className="tenant-layout">
-      {/* Tenant-specific header, sidebar vb. burada olabilir */}
-      <header className="bg-primary p-4 text-white">
-        <h1>{tenant.name}</h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center space-x-4">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-semibold text-sm">
+                {tenant.name.charAt(0)}
+              </span>
+            </div>
+            <div>
+              <h1 className="text-xl font-semibold text-gray-900">{tenant.name}</h1>
+              <p className="text-sm text-gray-500">Eğitim Yönetim Sistemi</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <button className="p-2 text-gray-400 hover:text-gray-600">
+              <Settings className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
       </header>
-      
-      <main>{children}</main>
-      
-      <footer className="p-4 text-center text-sm text-gray-500">
-        &copy; {new Date().getFullYear()} Iqra Eğitim Portalı
-      </footer>
+
+      <div className="flex">
+        {/* Sidebar */}
+        <aside className="w-64 bg-white shadow-sm min-h-screen">
+          <nav className="p-4">
+            <ul className="space-y-2">
+              {navigationItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        </aside>
+
+        {/* Main Content */}
+        <main className="flex-1 min-h-screen bg-gray-50">
+          {children}
+        </main>
+      </div>
     </div>
   );
 } 

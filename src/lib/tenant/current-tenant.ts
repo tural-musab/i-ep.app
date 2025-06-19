@@ -15,7 +15,7 @@ import { createServerSupabaseClient } from '../supabase/server';
  */
 export async function getCurrentTenant(): Promise<TenantInfo | null> {
   try {
-    const headersList = headers();
+    const headersList = await headers();
     
     // Header'lardan tenant bilgilerini al
     const tenantId = headersList.get('x-tenant-id');

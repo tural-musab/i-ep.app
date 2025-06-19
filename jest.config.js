@@ -25,6 +25,7 @@ const customJestConfig = {
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
     '<rootDir>/cypress/',
+    '<rootDir>/e2e/', // Playwright testlerini exclude et
   ],
   
   // Modül adı eşlemeleri
@@ -39,6 +40,12 @@ const customJestConfig = {
   
   // Test ortamını hazırlama
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  
+  // Node globals polyfill
+  globals: {
+    TextEncoder: require('util').TextEncoder,
+    TextDecoder: require('util').TextDecoder,
+  },
   
   // Coverage yapılandırması
   collectCoverageFrom: [

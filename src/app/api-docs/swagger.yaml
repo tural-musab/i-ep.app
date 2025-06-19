@@ -1,0 +1,619 @@
+openapi: 3.0.0
+info:
+  title: İ-EP.APP API
+  description: İ-EP.APP platformu için API dokümantasyonu. Bu API, çok kiracılı (multi-tenant) bir eğitim yönetim sistemi için tasarlanmıştır.
+  version: 1.0.0
+  contact:
+    name: İ-EP.APP Destek
+    email: destek@i-ep.app
+    url: https://i-ep.app/destek
+
+servers:
+  - url: https://{tenant-subdomain}.i-ep.app/api
+    description: Ana API sunucusu (tenant-specific)
+    variables:
+      tenant-subdomain:
+        default: demo
+        description: Tenant subdomaini
+  - url: https://{tenant-custom-domain}/api
+    description: Özel domain API sunucusu
+    variables:
+      tenant-custom-domain:
+        default: okul.example.com
+        description: Tenant özel domaini
+
+tags:
+  - name: Auth
+    description: Kimlik doğrulama işlemleri
+  - name: Tenant
+    description: Tenant yönetimi
+  - name: Users
+    description: Kullanıcı yönetimi
+  - name: Students
+    description: Öğrenci yönetimi
+  - name: Classes
+    description: Sınıf yönetimi
+  - name: Domains
+    description: Domain yönetimi
+
+paths:
+  /auth/login:
+    post:
+      summary: Kullanıcı Girişi
+      description: E-posta ve şifre ile kimlik doğrulama yapar.
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: kullanici@test-okul-1.com
+                password:
+                  type: string
+                  format: password
+                  example: guclu-sifre-123
+      responses:
+        '200':
+          description: Başarılı giriş
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Geçersiz kimlik bilgileri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  
+  /auth/register:
+    post:
+      summary: Kullanıcı Kaydı
+      description: Yeni bir kullanıcı oluşturur.
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - name
+                - role
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: yeni.kullanici@test-okul-1.com
+                password:
+                  type: string
+                  format: password
+                  example: guclu-sifre-123
+                name:
+                  type: string
+                  example: Yeni Kullanıcı
+                role:
+                  type: string
+                  enum: [admin, teacher, student, parent]
+                  example: teacher
+      responses:
+        '200':
+          description: Kullanıcı başarıyla oluşturuldu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    $ref: '#/components/schemas/User'
+        '409':
+          description: E-posta adresi zaten kullanımda
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tenant:
+    get:
+      summary: Tenant Bilgilerini Alma
+      description: Mevcut tenant'ın bilgilerini getirir.
+      tags:
+        - Tenant
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Tenant bilgileri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /tenant/config:
+    patch:
+      summary: Tenant Yapılandırmasını Güncelleme
+      description: Tenant yapılandırmasını günceller.
+      tags:
+        - Tenant
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                config:
+                  type: object
+                  properties:
+                    theme:
+                      type: object
+                      properties:
+                        primaryColor:
+                          type: string
+                          example: "#2e7d32"
+                        secondaryColor:
+                          type: string
+                          example: "#43a047"
+      responses:
+        '200':
+          description: Tenant yapılandırması güncellendi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  tenant:
+                    $ref: '#/components/schemas/Tenant'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users:
+    get:
+      summary: Kullanıcı Listesi
+      description: Tenant'a ait kullanıcıların listesini getirir.
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Sayfa numarası
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Sayfa başına öğe sayısı
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+        - name: role
+          in: query
+          description: Rol filtresi
+          schema:
+            type: string
+            enum: [admin, teacher, student, parent]
+        - name: search
+          in: query
+          description: İsim veya e-posta araması
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Kullanıcı listesi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserSummary'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/{userId}:
+    get:
+      summary: Kullanıcı Detayı
+      description: Belirli bir kullanıcının detay bilgilerini getirir.
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: Kullanıcı ID'si
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Kullanıcı detayları
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      summary: Kullanıcı Güncelleme
+      description: Belirli bir kullanıcının bilgilerini günceller.
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: Kullanıcı ID'si
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Güncellenmiş Öğretmen Adı
+                phoneNumber:
+                  type: string
+                  example: "+90 555 111 2222"
+      responses:
+        '200':
+          description: Kullanıcı güncellendi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Kullanıcı Silme
+      description: Belirli bir kullanıcıyı siler.
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: Kullanıcı ID'si
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Kullanıcı silindi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Kullanıcı başarıyla silindi.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /health:
+    get:
+      summary: Sistem Durumu
+      description: API ve bağlı servislerin durumunu kontrol eder.
+      tags:
+        - System
+      responses:
+        '200':
+          description: Sistem durumu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [healthy, degraded, unhealthy]
+                    example: healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2023-08-27T16:30:00Z"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  services:
+                    type: object
+                    properties:
+                      database:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            enum: [healthy, degraded, unhealthy]
+                            example: healthy
+                          responseTime:
+                            type: integer
+                            example: 15
+                      redis:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            enum: [healthy, degraded, unhealthy]
+                            example: healthy
+                          responseTime:
+                            type: integer
+                            example: 5
+                      storage:
+                        type: object
+                        properties:
+                          status:
+                            type: string
+                            enum: [healthy, degraded, unhealthy]
+                            example: healthy
+                          responseTime:
+                            type: integer
+                            example: 45
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        email:
+          type: string
+          format: email
+          example: kullanici@test-okul-1.com
+        name:
+          type: string
+          example: Test Kullanıcı
+        role:
+          type: string
+          enum: [admin, teacher, student, parent]
+          example: admin
+        tenantId:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174999
+        
+    UserSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        email:
+          type: string
+          format: email
+          example: admin@test-okul-1.com
+        name:
+          type: string
+          example: Admin Kullanıcı
+        role:
+          type: string
+          enum: [admin, teacher, student, parent]
+          example: admin
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-15T10:00:00Z"
+    
+    UserDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        email:
+          type: string
+          format: email
+          example: admin@test-okul-1.com
+        name:
+          type: string
+          example: Admin Kullanıcı
+        role:
+          type: string
+          enum: [admin, teacher, student, parent]
+          example: admin
+        phoneNumber:
+          type: string
+          example: "+90 555 123 4567"
+        profilePicture:
+          type: string
+          format: uri
+          example: https://storage.example.com/profiles/user-123.jpg
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-01-15T10:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2023-03-20T16:45:00Z"
+        lastLogin:
+          type: string
+          format: date-time
+          example: "2023-04-15T09:30:00Z"
+        permissions:
+          type: array
+          items:
+            type: string
+          example: ["user.create", "user.update", "user.delete"]
+    
+    Tenant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174999
+        name:
+          type: string
+          example: Test Okul 1
+        subdomain:
+          type: string
+          example: test-okul-1
+        customDomain:
+          type: string
+          example: okul.example.com
+        status:
+          type: string
+          enum: [active, inactive, trial]
+          example: active
+        createdAt:
+          type: string
+          format: date-time
+          example: "2023-10-15T14:30:00Z"
+        features:
+          type: array
+          items:
+            type: string
+          example: ["student_management", "teacher_management", "class_management"]
+        config:
+          type: object
+          properties:
+            theme:
+              type: object
+              properties:
+                primaryColor:
+                  type: string
+                  example: "#1a237e"
+                secondaryColor:
+                  type: string
+                  example: "#0288d1"
+                logo:
+                  type: string
+                  format: uri
+                  example: https://storage.example.com/logos/test-okul-1-logo.png
+                  
+    PaginationMeta:
+      type: object
+      properties:
+        total:
+          type: integer
+          example: 25
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        totalPages:
+          type: integer
+          example: 3
+          
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: "VALIDATION_ERROR"
+            message:
+              type: string
+              example: "Veri doğrulama hatası"
+            details:
+              type: object
+              example: {}
+              
+  responses:
+    Unauthorized:
+      description: Yetkisiz erişim
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "UNAUTHORIZED"
+                  message:
+                    type: string
+                    example: "Bu işlemi gerçekleştirmek için yetkiniz yok."
+                    
+    NotFound:
+      description: Kaynak bulunamadı
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: object
+                properties:
+                  code:
+                    type: string
+                    example: "RESOURCE_NOT_FOUND"
+                  message:
+                    type: string
+                    example: "İstenen kaynak bulunamadı."
+                    
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT 

@@ -2,9 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { getTenantId } from '@/lib/tenant/tenant-utils';
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout';
+import { StatCard } from '@/components/dashboard/stat-card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Users,
+  BookOpen,
+  Calendar,
+  TrendingUp,
+  GraduationCap,
+  FileText,
+  Bell,
+  Activity,
+} from 'lucide-react';
 
 /**
  * Dashboard Sayfası
@@ -21,21 +34,17 @@ export default function DashboardPage() {
   const [error, setError] = useState('');
   
   useEffect(() => {
-    // Kullanıcının giriş yapıp yapmadığını kontrol et
     const checkAuth = async () => {
       try {
         setIsLoading(true);
         
-        // Mevcut oturumu al
         const { data: sessionData } = await supabase.auth.getSession();
         
         if (!sessionData.session) {
-          // Kullanıcı giriş yapmamış, giriş sayfasına yönlendir
           router.push('/auth/giris');
           return;
         }
         
-        // Kullanıcı bilgilerini al
         const { data: userData } = await supabase.auth.getUser();
         
         if (!userData.user) {
@@ -46,29 +55,17 @@ export default function DashboardPage() {
         
         setUser(userData.user);
         
-        // Tenant ID'yi al
-        const tenantId = await getTenantId();
-        if (!tenantId) {
-          setError('Tenant bilgisi alınamadı');
-          setIsLoading(false);
-          return;
-        }
+        // Demo mode için varsayılan kullanıcı detayları
+        const demoUserDetails = {
+          id: userData.user.id,
+          email: userData.user.email,
+          name: 'Demo Kullanıcı',
+          role: 'admin',
+          auth_id: userData.user.id,
+          is_active: true,
+        };
         
-        // Kullanıcı detaylarını al
-        const { data: userDetailsData, error: userDetailsError } = await supabase
-          .from(`tenant_${tenantId}.users`)
-          .select('*')
-          .eq('auth_id', userData.user.id)
-          .single();
-        
-        if (userDetailsError) {
-          console.error('Kullanıcı detayları hatası:', userDetailsError);
-          setError('Kullanıcı profili bulunamadı');
-          setIsLoading(false);
-          return;
-        }
-        
-        setUserDetails(userDetailsData);
+        setUserDetails(demoUserDetails);
         
       } catch (err: any) {
         console.error('Dashboard yükleme hatası:', err);
@@ -92,180 +89,202 @@ export default function DashboardPage() {
   
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
-        <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin"></div>
-        <p className="mt-4 text-gray-700">Yükleniyor...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="space-y-4">
+          <div className="w-16 h-16 border-t-4 border-blue-500 border-solid rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-700">Yükleniyor...</p>
+        </div>
       </div>
     );
   }
   
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-        <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full text-center">
-          <svg className="mx-auto h-12 w-12 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <h2 className="mt-2 text-xl font-semibold text-gray-900">Hata</h2>
-          <p className="mt-2 text-gray-600">{error}</p>
-          <button
-            onClick={() => router.push('/auth/giris')}
-            className="mt-4 w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Giriş Sayfasına Dön
-          </button>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <Card className="max-w-md w-full">
+          <CardHeader>
+            <CardTitle className="text-red-600">Hata</CardTitle>
+            <CardDescription>{error}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <button
+              onClick={() => router.push('/auth/giris')}
+              className="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
+              Giriş Sayfasına Dön
+            </button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
   
+  // Demo veriler
+  const stats = {
+    admin: [
+      { title: 'Toplam Öğrenci', value: '1,234', icon: GraduationCap, trend: { value: 12, isPositive: true } },
+      { title: 'Toplam Öğretmen', value: '56', icon: Users, trend: { value: 5, isPositive: true } },
+      { title: 'Aktif Dersler', value: '89', icon: BookOpen, trend: { value: 8, isPositive: true } },
+      { title: 'Bu Ayki Etkinlik', value: '24', icon: Calendar, trend: { value: 3, isPositive: false } },
+    ],
+    teacher: [
+      { title: 'Öğrencilerim', value: '145', icon: GraduationCap },
+      { title: 'Derslerim', value: '12', icon: BookOpen },
+      { title: 'Bekleyen Ödevler', value: '8', icon: FileText },
+      { title: 'Bu Haftaki Dersler', value: '18', icon: Calendar },
+    ],
+    student: [
+      { title: 'Derslerim', value: '8', icon: BookOpen },
+      { title: 'Ödevlerim', value: '5', icon: FileText },
+      { title: 'Ortalamam', value: '85.4', icon: TrendingUp },
+      { title: 'Devamsızlık', value: '2 gün', icon: Calendar },
+    ],
+  };
+  
+  const userRole = userDetails?.role || 'student';
+  const currentStats = stats[userRole as keyof typeof stats] || stats.student;
+  
   return (
-    <div className="min-h-screen bg-gray-100">
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex">
-              <div className="flex-shrink-0 flex items-center">
-                <Image 
-                  src="/logo.webp" 
-                  alt="Iqra Eğitim Portalı" 
-                  width={120} 
-                  height={120}
-                  className="h-16 w-auto"
-                />
-                <span className="ml-2 text-lg font-semibold text-gray-900">Iqra Eğitim Portalı</span>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <div className="ml-3 relative">
-                <div className="flex items-center">
-                  <span className="mr-2 text-sm text-gray-700">
-                    {userDetails?.name || user?.email}
-                  </span>
-                  <button
-                    onClick={handleLogout}
-                    className="px-3 py-1 text-sm text-white bg-blue-600 rounded hover:bg-blue-700"
-                  >
-                    Çıkış
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+    <DashboardLayout
+      user={{
+        name: userDetails?.name,
+        email: user?.email || '',
+        role: userDetails?.role || 'student',
+      }}
+    >
+      <div className="space-y-6">
+        {/* Karşılama Mesajı */}
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">
+            Hoş geldiniz, {userDetails?.name || 'Kullanıcı'}!
+          </h2>
+          <p className="text-muted-foreground">
+            İşte bugünkü özet bilgileriniz
+          </p>
         </div>
-      </nav>
-      
-      <div className="py-10">
-        <header>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold leading-tight text-gray-900">
-              Hoş Geldiniz, {userDetails?.name || user?.email}
-            </h1>
-          </div>
-        </header>
-        <main>
-          <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div className="px-4 py-6 sm:px-0">
-              <div className="border-4 border-dashed border-gray-200 rounded-lg p-4 h-96">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 bg-blue-500 rounded-md p-3">
-                          <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                          </svg>
-                        </div>
-                        <div className="ml-5 w-0 flex-1">
-                          <dl>
-                            <dt className="text-sm font-medium text-gray-500 truncate">
-                              Bekleyen Görevler
-                            </dt>
-                            <dd>
-                              <div className="text-lg font-medium text-gray-900">
-                                0
-                              </div>
-                            </dd>
-                          </dl>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 px-5 py-3">
-                      <div className="text-sm">
-                        <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                          Tümünü görüntüle
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
-                          <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                        </div>
-                        <div className="ml-5 w-0 flex-1">
-                          <dl>
-                            <dt className="text-sm font-medium text-gray-500 truncate">
-                              Gelecek Etkinlikler
-                            </dt>
-                            <dd>
-                              <div className="text-lg font-medium text-gray-900">
-                                0
-                              </div>
-                            </dd>
-                          </dl>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 px-5 py-3">
-                      <div className="text-sm">
-                        <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                          Takvimi görüntüle
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 bg-purple-500 rounded-md p-3">
-                          <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                          </svg>
-                        </div>
-                        <div className="ml-5 w-0 flex-1">
-                          <dl>
-                            <dt className="text-sm font-medium text-gray-500 truncate">
-                              Yeni Bildirimler
-                            </dt>
-                            <dd>
-                              <div className="text-lg font-medium text-gray-900">
-                                0
-                              </div>
-                            </dd>
-                          </dl>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 px-5 py-3">
-                      <div className="text-sm">
-                        <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                          Tümünü görüntüle
-                        </a>
-                      </div>
-                    </div>
-                  </div>
+        
+        {/* İstatistik Kartları */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {currentStats.map((stat, index) => (
+            <StatCard
+              key={index}
+              title={stat.title}
+              value={stat.value}
+              icon={stat.icon}
+              trend={'trend' in stat ? stat.trend : undefined}
+            />
+          ))}
+        </div>
+        
+        {/* Ana İçerik Alanı */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          {/* Aktivite Grafiği */}
+          <Card className="col-span-4">
+            <CardHeader>
+              <CardTitle>Haftalık Aktivite</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] flex items-center justify-center border-2 border-dashed border-gray-200 rounded-lg">
+                <div className="text-center">
+                  <Activity className="mx-auto h-12 w-12 text-gray-400" />
+                  <p className="mt-2 text-sm text-gray-500">
+                    Grafik alanı (Chart.js veya Recharts eklenecek)
+                  </p>
                 </div>
               </div>
-            </div>
-          </div>
-        </main>
+            </CardContent>
+          </Card>
+          
+          {/* Son Aktiviteler */}
+          <Card className="col-span-3">
+            <CardHeader>
+              <CardTitle>Son Aktiviteler</CardTitle>
+              <CardDescription>
+                Sistemdeki son hareketler
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="flex items-center">
+                    <div className="ml-4 space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        Örnek aktivite {i}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {i} saat önce
+                      </p>
+                    </div>
+                    <div className="ml-auto font-medium">
+                      <Bell className="h-4 w-4 text-gray-400" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Hızlı Erişim Kartları */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>Yaklaşan Etkinlikler</CardTitle>
+              <CardDescription>Bu haftaki programınız</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm">Matematik Sınavı</span>
+                  <span className="text-sm text-muted-foreground">Yarın</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm">Veli Toplantısı</span>
+                  <span className="text-sm text-muted-foreground">Cuma</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Duyurular</CardTitle>
+              <CardDescription>Son duyurular</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="text-sm">
+                  <p className="font-medium">Yeni dönem kayıtları başladı</p>
+                  <p className="text-xs text-muted-foreground">2 gün önce</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Hızlı İşlemler</CardTitle>
+              <CardDescription>Sık kullanılan işlemler</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-2">
+                <button className="p-2 text-sm border rounded hover:bg-gray-50">
+                  Yeni Ödev
+                </button>
+                <button className="p-2 text-sm border rounded hover:bg-gray-50">
+                  Not Girişi
+                </button>
+                <button className="p-2 text-sm border rounded hover:bg-gray-50">
+                  Mesaj Gönder
+                </button>
+                <button className="p-2 text-sm border rounded hover:bg-gray-50">
+                  Rapor Al
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 } 

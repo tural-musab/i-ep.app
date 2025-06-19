@@ -4,7 +4,7 @@
  * Referans: docs/architecture/domain-management.md, docs/architecture/domain-management-guide.md
  */
 
-import { env } from "@/env.mjs";
+import { env } from "@/env";
 
 const CLOUDFLARE_API_BASE = "https://api.cloudflare.com/client/v4";
 

@@ -15,6 +15,26 @@ const nextConfig = {
   images: {
     domains: ['i-ep.app'],
   },
+  // API dokümantasyonu için yönlendirmeler
+  async redirects() {
+    return [
+      {
+        source: '/api-docs',
+        destination: '/swagger.html',
+        permanent: false,
+      },
+      {
+        source: '/api-docs/index.html',
+        destination: '/swagger.html',
+        permanent: false,
+      },
+      {
+        source: '/docs/api',
+        destination: '/swagger.html',
+        permanent: false,
+      }
+    ];
+  },
 };
 
 // Sentry yapılandırması

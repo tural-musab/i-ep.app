@@ -25,25 +25,34 @@ export default async function TenantHomePage({
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">Öğrenciler</h2>
           <p className="text-gray-600">Öğrenci kayıtları ve bilgilerini yönetin.</p>
-          <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          <a 
+            href={`/${params.tenant}/ogrenciler`}
+            className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
             Öğrencilere Git
-          </button>
+          </a>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold mb-4">Öğretmenler</h2>
           <p className="text-gray-600">Öğretmen kadrosu ve ders programlarını yönetin.</p>
-          <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+          <a 
+            href={`/${params.tenant}/ogretmenler`}
+            className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
             Öğretmenlere Git
-          </button>
+          </a>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Dersler</h2>
-          <p className="text-gray-600">Ders programları ve müfredatı yönetin.</p>
-          <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            Derslere Git
-          </button>
+          <h2 className="text-xl font-semibold mb-4">Sınıflar</h2>
+          <p className="text-gray-600">Sınıf organizasyonu ve ders programlarını yönetin.</p>
+          <a 
+            href={`/${params.tenant}/siniflar`}
+            className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            Sınıflara Git
+          </a>
         </div>
       </div>
       

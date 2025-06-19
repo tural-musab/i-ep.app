@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exportTenantTable, exportFullTenant, exportUserDataForGDPR, ExportOptions } from '@/lib/export/tenant-export';
+import { exportTenantTable, exportFullTenant, exportUserDataForGDPR, ExportOptions, ExportFormat, ExportResult } from '@/lib/export/tenant-export';
 import { getTenantId } from '@/lib/tenant/tenant-utils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/auth-options';
@@ -28,7 +28,7 @@ import { authOptions } from '@/lib/auth/auth-options';
  *                 description: Dışa aktarma türü
  *               format:
  *                 type: string
- *                 enum: ['json', 'csv', 'excel', 'sql']
+ *                 enum: ['json', 'csv', 'excel']
  *                 description: Dışa aktarma formatı
  *               tableName:
  *                 type: string
@@ -36,9 +36,15 @@ import { authOptions } from '@/lib/auth/auth-options';
  *               userId:
  *                 type: string
  *                 description: Dışa aktarılacak kullanıcı ID (exportType=user ise zorunlu)
- *               includeMetadata:
+ *               includeRelations:
  *                 type: boolean
- *                 description: Meta verilerin dahil edilip edilmeyeceği
+ *                 description: İlişkili verilerin dahil edilip edilmeyeceği
+ *               anonymizePersonalData:
+ *                 type: boolean
+ *                 description: Kişisel verilerin anonimleştirilip anonimleştirilmeyeceği
+ *               maxRecords:
+ *                 type: number
+ *                 description: Maksimum kayıt sayısı
  *     responses:
  *       200:
  *         description: Dışa aktarma başarılı
@@ -81,8 +87,8 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // Tenant ID al
-    const tenantId = getTenantId();
+    // Tenant ID al - getTenantId async fonksiyon
+    const tenantId = await getTenantId(request);
     if (!tenantId) {
       return NextResponse.json(
         { error: 'Tenant ID bulunamadı' },
@@ -97,12 +103,9 @@ export async function POST(request: NextRequest) {
       format, 
       tableName, 
       userId,
-      includeMetadata,
-      filterCondition,
-      sortBy,
-      sortDirection,
-      limit,
-      includeDeletedRecords
+      includeRelations,
+      anonymizePersonalData,
+      maxRecords
     } = body;
     
     // Zorunlu alanların kontrolü
@@ -114,9 +117,10 @@ export async function POST(request: NextRequest) {
     }
     
     // Format geçerliliği kontrolü
-    if (!['json', 'csv', 'excel', 'sql'].includes(format)) {
+    const validFormats: ExportFormat[] = ['json', 'csv', 'excel'];
+    if (!validFormats.includes(format)) {
       return NextResponse.json(
-        { error: 'Desteklenmeyen format. Desteklenen formatlar: json, csv, excel, sql' },
+        { error: 'Desteklenmeyen format. Desteklenen formatlar: json, csv, excel' },
         { status: 400 }
       );
     }
@@ -138,16 +142,13 @@ export async function POST(request: NextRequest) {
     
     // Export ayarlarını hazırla
     const exportOptions: ExportOptions = {
-      format: format as any,
-      includeMetadata,
-      filterCondition,
-      sortBy,
-      sortDirection: sortDirection as any,
-      limit,
-      includeDeletedRecords
+      format: format as ExportFormat,
+      includeRelations,
+      anonymizePersonalData,
+      maxRecords
     };
     
-    let result;
+    let result: ExportResult;
     
     // Export tipine göre ilgili fonksiyonu çağır
     switch (exportType) {
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
         break;
         
       case 'user':
-        result = await exportUserDataForGDPR(tenantId, userId, exportOptions);
+        result = await exportUserDataForGDPR(userId, tenantId, format as ExportFormat);
         break;
         
       default:
@@ -179,15 +180,17 @@ export async function POST(request: NextRequest) {
     }
     
     // Dışa aktarma formatına göre yanıt döndür
+    const filename = `export_${result.tenantId}_${result.tables?.join('_') || 'data'}_${new Date().toISOString().split('T')[0]}.${format}`;
+    
     switch (format) {
       case 'json':
       case 'csv':
         // JSON veya CSV doğrudan indirilebilir veri döndür
         const headers = new Headers();
-        headers.append('Content-Disposition', `attachment; filename=${result.filename}`);
+        headers.append('Content-Disposition', `attachment; filename=${filename}`);
         headers.append('Content-Type', format === 'json' ? 'application/json' : 'text/csv');
         
-        return new NextResponse(result.data, {
+        return new NextResponse(JSON.stringify(result.data), {
           status: 200,
           headers
         });
@@ -195,25 +198,22 @@ export async function POST(request: NextRequest) {
       case 'excel':
         // Excel için binary veri döndür
         const excelHeaders = new Headers();
-        excelHeaders.append('Content-Disposition', `attachment; filename=${result.filename}`);
+        excelHeaders.append('Content-Disposition', `attachment; filename=${filename}`);
         excelHeaders.append('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         
-        return new NextResponse(result.data, {
+        return new NextResponse(JSON.stringify(result.data), {
           status: 200,
           headers: excelHeaders
         });
         
-      case 'sql':
-        // SQL dosyası genellikle server tarafında oluşturulur, indirme bağlantısı döndür
+      default:
         return NextResponse.json({
           success: true,
-          message: 'SQL yedeklemesi server tarafında oluşturuldu',
-          filename: result.filename,
-          downloadLink: `/api/download/backup/${result.filename}`
+          filename: filename,
+          format: result.format,
+          recordCount: result.recordCount,
+          downloadLink: `/api/download/export/${filename}`
         });
-        
-      default:
-        return NextResponse.json(result);
     }
     
   } catch (error: any) {

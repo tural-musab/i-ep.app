@@ -34,7 +34,7 @@ export default function HomePage() {
                 Giriş
               </Link>
               <Link 
-                href="/auth/kayit"
+                href="/onboarding"
                 className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
               >
                 Kayıt Ol
@@ -59,7 +59,7 @@ export default function HomePage() {
               <div className="mt-8 flex justify-center">
                 <div className="inline-flex rounded-md shadow">
                   <Link
-                    href="/auth/kayit"
+                    href="/onboarding"
                     className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
                   >
                     Hemen Başlayın
@@ -211,10 +211,18 @@ export default function HomePage() {
             <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
               <div className="inline-flex rounded-md shadow">
                 <Link
-                  href="/auth/kayit"
+                  href="/onboarding"
                   className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50"
                 >
                   Hemen Başlayın
+                </Link>
+              </div>
+              <div className="ml-3 inline-flex rounded-md shadow">
+                <Link
+                  href="/auth/demo"
+                  className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700"
+                >
+                  Demo Hesapla Deneyin
                 </Link>
               </div>
               <div className="ml-3 inline-flex rounded-md shadow">

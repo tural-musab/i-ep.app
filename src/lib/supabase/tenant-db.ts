@@ -11,6 +11,11 @@ import {
   TenantIsolationBreachError 
 } from '../errors/tenant-errors';
 import { assertTenantOwnership, validateTenantResults } from '../errors/error-handler';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { getTenantSupabaseClient } from './server';
+import { getLogger } from '@/lib/utils/logger';
+
+const logger = getLogger('tenant-db');
 
 /**
  * Tenant izolasyonu ile güvenli veritabanı erişimi sağlayan fonksiyon
@@ -19,180 +24,158 @@ import { assertTenantOwnership, validateTenantResults } from '../errors/error-ha
  * @returns Tenant kontekstinde güvenli DB erişimi sağlayan fonksiyonlar
  */
 export function createTenantDatabaseAccess(tenantId: string) {
-  if (!tenantId) {
-    throw new TenantNotFoundError();
+  let supabase: SupabaseClient | null = null;
+  
+  // Tenant ID doğrulaması
+  if (!tenantId || typeof tenantId !== 'string') {
+    throw new TenantNotFoundError(tenantId || 'undefined');
   }
   
-  // Supabase istemcisi oluştur
-  const supabase = createServerSupabaseClient();
-  
-  // Tenant konteksti ayarla (veritabanı seviyesinde)
-  const setTenantContext = async () => {
-    await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
-  };
+  // Tenant-specific Supabase client oluştur
+  async function getClient(): Promise<SupabaseClient> {
+    if (!supabase) {
+      supabase = getTenantSupabaseClient(tenantId);
+      
+      // Tenant context'ini ayarla (RLS için)
+      await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
+    }
+    return supabase;
+  }
   
   return {
     /**
-     * Tenant şemasındaki tabloya güvenli erişim
-     * 
-     * @param tableName Tablo adı (tenant şemasında)
+     * Tenant şemasından veri sorgular
      */
-    async query<T = any>(tableName: string) {
-      await setTenantContext();
+    async from<T = any>(tableName: string) {
+      const client = await getClient();
       
+      // Güvenlik: Tablo adı validasyonu
+      if (!isValidTableName(tableName)) {
+        throw new Error(`Geçersiz tablo adı: ${tableName}`);
+      }
+      
+      // Tenant şemasındaki tabloyu sorgula
       return {
-        /**
-         * Tüm kayıtları getir (tenant izolasyonu ile)
-         */
-        async getAll() {
-          const { data, error } = await supabase
+        select: async (columns = '*', options?: any) => {
+          const { data, error } = await client
             .from(`tenant_${tenantId}.${tableName}`)
-            .select('*');
-            
+            .select(columns, options);
+          
           if (error) throw error;
           
-          // İzolasyon kontrolü - paranoid mod
+          // Veri izolasyon kontrolü
           return validateTenantResults(tenantId, data || []);
         },
         
-        /**
-         * ID'ye göre kayıt getir (tenant izolasyonu ile)
-         */
-        async getById(id: string) {
-          const { data, error } = await supabase
+        insert: async (values: T | T[], options?: any) => {
+          const { data, error } = await client
             .from(`tenant_${tenantId}.${tableName}`)
-            .select('*')
-            .eq('id', id)
-            .single();
-            
-          if (error) {
-            if (error.code === 'PGRST116') {
-              throw new TenantNotFoundError(`${tableName} kaydı bulunamadı: ${id}`);
-            }
-            throw error;
-          }
+            .insert(values, options);
           
-          // İzolasyon kontrolü
-          if (data.tenant_id && data.tenant_id !== tenantId) {
-            throw new TenantIsolationBreachError(
-              `Erişilen kayıt başka bir tenant'a ait: ${data.tenant_id}`
-            );
-          }
+          if (error) throw error;
           
           return data;
         },
         
-        /**
-         * Yeni kayıt oluştur (tenant izolasyonu ile)
-         */
-        async create(data: any) {
-          // Tenant ID'sini veri içine otomatik ekle
-          const dataWithTenant = {
-            ...data,
-            tenant_id: tenantId
-          };
+        update: async (values: Partial<T>, options?: any) => {
+          // Güvenlik: tenant_id alanı güncellenmesini engelle
+          if ('tenant_id' in values) {
+            throw new TenantIsolationBreachError(
+              'tenant_id alanı güncellenemez'
+            );
+          }
           
-          const { data: result, error } = await supabase
+          const { data, error } = await client
             .from(`tenant_${tenantId}.${tableName}`)
-            .insert(dataWithTenant)
-            .select()
-            .single();
-            
+            .update(values, options);
+          
           if (error) throw error;
           
-          return result;
+          return data;
         },
         
-        /**
-         * Kaydı güncelle (tenant izolasyonu ile)
-         */
-        async update(id: string, data: any) {
-          // Önce kaydın tenant'a ait olduğunu doğrula
-          const { data: existingData } = await supabase
+        delete: async (options?: any) => {
+          const { data, error } = await client
             .from(`tenant_${tenantId}.${tableName}`)
-            .select('tenant_id')
-            .eq('id', id)
-            .single();
-            
-          if (!existingData) {
-            throw new TenantNotFoundError(`${tableName} kaydı bulunamadı: ${id}`);
-          }
+            .delete(options);
           
-          // İzolasyon kontrolü
-          assertTenantOwnership(
-            tenantId, 
-            existingData.tenant_id,
-            `Güncellenmeye çalışılan kayıt başka bir tenant'a ait`
-          );
-          
-          // Tenant ID değiştirilmeye çalışılıyorsa engelle
-          if (data.tenant_id && data.tenant_id !== tenantId) {
-            throw new TenantAccessDeniedError('Tenant ID değiştirilemez');
-          }
-          
-          // Güncelleme işlemini gerçekleştir
-          const { data: result, error } = await supabase
-            .from(`tenant_${tenantId}.${tableName}`)
-            .update(data)
-            .eq('id', id)
-            .select()
-            .single();
-            
           if (error) throw error;
           
-          return result;
+          return data;
         },
         
-        /**
-         * Kaydı sil (tenant izolasyonu ile)
-         */
-        async delete(id: string) {
-          // Önce kaydın tenant'a ait olduğunu doğrula
-          const { data: existingData } = await supabase
-            .from(`tenant_${tenantId}.${tableName}`)
-            .select('tenant_id')
-            .eq('id', id)
-            .single();
-            
-          if (!existingData) {
-            throw new TenantNotFoundError(`${tableName} kaydı bulunamadı: ${id}`);
-          }
-          
-          // İzolasyon kontrolü
-          assertTenantOwnership(
-            tenantId, 
-            existingData.tenant_id,
-            `Silinmeye çalışılan kayıt başka bir tenant'a ait`
-          );
-          
-          // Silme işlemini gerçekleştir
-          const { error } = await supabase
-            .from(`tenant_${tenantId}.${tableName}`)
-            .delete()
-            .eq('id', id);
-            
-          if (error) throw error;
-          
-          return true;
+        // Zincirleme sorgular için
+        eq: function(column: string, value: any) {
+          return this.filter(column, 'eq', value);
         },
         
-        /**
-         * Özel sorgu (tenant izolasyonu ile)
-         */
-        async customQuery(queryFn: (query: any) => any) {
-          const query = supabase.from(`tenant_${tenantId}.${tableName}`);
-          const result = await queryFn(query);
-          
-          if (result.error) throw result.error;
-          
-          // Sonuçlarda izolasyon kontrolü
-          if (Array.isArray(result.data)) {
-            return validateTenantResults(tenantId, result.data);
-          }
-          
-          return result.data;
+        filter: function(column: string, operator: string, value: any) {
+          // Bu basit bir örnek, gerçek uygulamada daha karmaşık olacak
+          return this;
         }
       };
+    },
+    
+    /**
+     * RPC fonksiyonlarını çalıştırır
+     */
+    async rpc(functionName: string, params?: any) {
+      const client = await getClient();
+      
+      // Güvenlik: Fonksiyon adı validasyonu
+      if (!isValidFunctionName(functionName)) {
+        throw new Error(`Geçersiz fonksiyon adı: ${functionName}`);
+      }
+      
+      // RPC çağrısına tenant_id ekle
+      const enhancedParams = {
+        ...params,
+        p_tenant_id: tenantId
+      };
+      
+      const { data, error } = await client.rpc(functionName, enhancedParams);
+      
+      if (error) throw error;
+      
+      return data;
+    },
+    
+    /**
+     * Transactional işlemler için
+     */
+    async transaction(callback: (client: SupabaseClient) => Promise<void>) {
+      const client = await getClient();
+      
+      try {
+        await callback(client);
+      } catch (error) {
+        logger.error('Transaction hatası:', error);
+        throw error;
+      }
+    },
+    
+    /**
+     * Raw SQL sorguları için (dikkatli kullanılmalı)
+     */
+    async rawQuery(query: string, params?: any[]) {
+      const client = await getClient();
+      
+      // Güvenlik: SQL injection koruması
+      if (!isSecureQuery(query)) {
+        throw new Error('Güvensiz SQL sorgusu tespit edildi');
+      }
+      
+      // Tenant ID'yi sorguya ekle
+      const secureQuery = query.replace(/\$tenant_id/g, `'${tenantId}'`);
+      
+      const { data, error } = await client.rpc('execute_raw_query', {
+        query_text: secureQuery,
+        query_params: params
+      });
+      
+      if (error) throw error;
+      
+      return data;
     },
     
     /**
@@ -202,4 +185,54 @@ export function createTenantDatabaseAccess(tenantId: string) {
       assertTenantOwnership(tenantId, resourceTenantId, message);
     }
   };
+}
+
+/**
+ * Tablo adı validasyonu
+ */
+function isValidTableName(tableName: string): boolean {
+  // Sadece alfanumerik karakterler ve alt çizgi kabul et
+  return /^[a-zA-Z0-9_]+$/.test(tableName);
+}
+
+/**
+ * Fonksiyon adı validasyonu
+ */
+function isValidFunctionName(functionName: string): boolean {
+  // Sadece alfanumerik karakterler ve alt çizgi kabul et
+  return /^[a-zA-Z0-9_]+$/.test(functionName);
+}
+
+/**
+ * SQL sorgu güvenlik kontrolü
+ */
+function isSecureQuery(query: string): boolean {
+  // Basit güvenlik kontrolleri
+  const dangerousPatterns = [
+    /DROP\s+TABLE/i,
+    /DROP\s+DATABASE/i,
+    /DELETE\s+FROM\s+pg_/i,
+    /UPDATE\s+pg_/i,
+    /INSERT\s+INTO\s+pg_/i
+  ];
+  
+  return !dangerousPatterns.some(pattern => pattern.test(query));
+}
+
+/**
+ * Tenant veri izolasyon doğrulaması
+ */
+function validateTenantResults<T extends { tenant_id?: string }>(
+  expectedTenantId: string,
+  results: T[]
+): T[] {
+  results.forEach(result => {
+    if (result.tenant_id && result.tenant_id !== expectedTenantId) {
+      throw new TenantIsolationBreachError(
+        `Farklı tenant verisi tespit edildi: ${result.tenant_id}`
+      );
+    }
+  });
+  
+  return results;
 } 

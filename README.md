@@ -27,8 +27,9 @@ Türkiye'deki her okul için kolay erişilebilir, kullanıcı dostu ve ekonomik 
 - Premium planlar için özel domain desteği
 - Tenant bazlı veri izolasyonu
 - Merkezi yönetim paneli
+- Çok adımlı onboarding süreci ile kolay tenant oluşturma
 
-### 👥 Kullanıcı Rolleri
+### �� Kullanıcı Rolleri
 - **Yönetici**: Okul yönetimi, kullanıcı ve yapılandırma işlemleri
 - **Öğretmen**: Ders, ödev, not ve devamsızlık yönetimi
 - **Öğrenci**: Ders programı, ödevler, notlar, duyurular

@@ -122,14 +122,14 @@ export default function GirisPage() {
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email-address" className="sr-only">E-posta adresi</label>
+              <label htmlFor="email-address" className="form-label">E-posta adresi</label>
               <input
                 id="email-address"
                 name="email"
                 type="email"
                 autoComplete="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="form-input"
                 placeholder="E-posta adresi"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -137,14 +137,14 @@ export default function GirisPage() {
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">Şifre</label>
+              <label htmlFor="password" className="form-label">Şifre</label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 autoComplete="current-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                className="form-input"
                 placeholder="Şifre"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}

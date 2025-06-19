@@ -1,32 +1,23 @@
 // Jest DOM'u içe aktarma
 import '@testing-library/jest-dom';
 
-// MSW (Mock Service Worker) kurulumu
-import { afterAll, afterEach, beforeAll } from 'jest';
-import { setupServer } from 'msw/node';
-
-// Mock sunucuyu oluştur
-export const server = setupServer();
-
-// Test ortamını hazırla
-beforeAll(() => {
-  // Mock sunucuyu başlat
-  server.listen({ onUnhandledRequest: 'warn' });
-});
-
-// Her testten sonra işleyicileri sıfırla
-afterEach(() => {
-  server.resetHandlers();
-});
-
-// Tüm testler tamamlandıktan sonra sunucuyu kapat
-afterAll(() => {
-  server.close();
-});
+// TextEncoder/TextDecoder polyfill - Node.js'te eksik olabilir
+if (typeof TextEncoder === 'undefined') {
+  const { TextEncoder, TextDecoder } = require('util');
+  global.TextEncoder = TextEncoder;
+  global.TextDecoder = TextDecoder;
+}
 
 // Global ortam değişkenlerini ayarla
 process.env = {
   ...process.env,
   NEXT_PUBLIC_DOMAIN: 'i-ep.app',
   NODE_ENV: 'test',
+  NEXT_PUBLIC_APP_NAME: 'i-ep.app',
+  NEXT_PUBLIC_APP_URL: 'http://localhost:3000',
+  NEXT_PUBLIC_SUPABASE_URL: 'http://localhost:54321',
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
+  NEXTAUTH_URL: 'http://localhost:3000',
+  NEXTAUTH_SECRET: 'test-secret-key-for-testing-purposes-only-32chars',
+  SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
 }; 
