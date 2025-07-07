@@ -6,8 +6,8 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Swagger UI bileşeni için gerekli olan transpile seçeneği
-  // transpilePackages: ['swagger-ui-react'],
+  // Swagger UI ve testlerde sorun çıkaran ESM paketleri için transpile seçeneği
+  transpilePackages: ['swagger-ui-react', '@supabase/realtime-js', '@supabase/supabase-js', 'msw'],
   // Vercel'de dağıtım sorunları nedeniyle standalone modunu devre dışı bırakıyoruz
   // output: 'standalone',
   serverExternalPackages: [],

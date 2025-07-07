@@ -1,3 +1,12 @@
+import 'whatwg-fetch';
+global.BroadcastChannel = jest.fn(() => ({
+  postMessage: jest.fn(),
+  close: jest.fn(),
+  onmessage: jest.fn(),
+  addEventListener: jest.fn(),
+  removeEventListener: jest.fn(),
+}));
+
 // Jest DOM'u içe aktarma
 import '@testing-library/jest-dom';
 

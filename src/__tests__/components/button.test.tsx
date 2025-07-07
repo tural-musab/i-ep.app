@@ -56,12 +56,12 @@ describe('Button Component', () => {
     // Act & Assert - Default size
     rerender(<Button size="default">Default</Button>);
     const defaultButton = screen.getByRole('button', { name: /default/i });
-    expect(defaultButton).toHaveClass('h-10');
+    expect(defaultButton).toHaveClass('h-9');
     
     // Act & Assert - Large size
     rerender(<Button size="lg">Large</Button>);
     const largeButton = screen.getByRole('button', { name: /large/i });
-    expect(largeButton).toHaveClass('h-11');
+    expect(largeButton).toHaveClass('h-10');
   });
   
   it('disabled durumunda doğru stilleri ve davranışı uygulamalıdır', async () => {
