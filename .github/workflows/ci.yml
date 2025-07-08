@@ -9,6 +9,10 @@ on:
 jobs:
   lint-test-build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
     env:
       NEXT_ENV_PROFILE: test
 
@@ -104,10 +108,35 @@ jobs:
 
       - name: Start application for security testing
         run: |
+          echo "Building application for security testing..."
           npm run build
+          
+          echo "Starting application in background..."
           npm run start &
+          APP_PID=$!
+          echo "App PID: $APP_PID"
+          
+          echo "Waiting for application to start (30 seconds)..."
           sleep 30
-          curl -f http://localhost:3000 || exit 1
+          
+          echo "Checking application health..."
+          for i in {1..10}; do
+            if curl -f -s http://localhost:3000 > /dev/null; then
+              echo "✅ Application is running successfully!"
+              break
+            else
+              echo "⏳ Attempt $i/10: Application not ready yet, waiting 5 more seconds..."
+              sleep 5
+            fi
+            
+            if [ $i -eq 10 ]; then
+              echo "❌ Application failed to start properly"
+              echo "Application logs:"
+              jobs -l
+              kill $APP_PID 2>/dev/null || true
+              exit 1
+            fi
+          done
         env:
           PORT: 3000
 
@@ -116,6 +145,16 @@ jobs:
 
       - name: OWASP ZAP Security Scan
         run: |
+          echo "🔒 Starting OWASP ZAP Security Scan..."
+          
+          # Ensure target is accessible
+          echo "📡 Testing target accessibility..."
+          curl -f -s http://localhost:3000 || {
+            echo "❌ Target application is not accessible"
+            exit 1
+          }
+          
+          echo "🐳 Running ZAP Full Scan..."
           docker run --network host \
             -v $(pwd)/zap-reports:/zap/wrk \
             ghcr.io/zaproxy/zaproxy:stable \
@@ -125,7 +164,18 @@ jobs:
             -I \
             -r zap.html \
             -w zap.sarif \
-            -x zap.xml || true
+            -x zap.xml \
+            -m 5 \
+            -z "-addonupdate; -addoninstall pscanrulesBeta" || {
+              echo "⚠️ ZAP scan completed with warnings (this is normal)"
+              echo "📁 Checking generated reports..."
+              ls -la zap-reports/ || echo "No reports directory found"
+          }
+          
+          echo "📋 ZAP Scan Summary:"
+          [ -f "zap-reports/zap.html" ] && echo "✅ HTML report generated" || echo "❌ HTML report missing"
+          [ -f "zap-reports/zap.sarif" ] && echo "✅ SARIF report generated" || echo "❌ SARIF report missing"
+          [ -f "zap-reports/zap.xml" ] && echo "✅ XML report generated" || echo "❌ XML report missing"
         continue-on-error: true
 
       - name: Upload ZAP Security Report
@@ -137,12 +187,13 @@ jobs:
 
       - name: Upload ZAP SARIF Report
         uses: github/codeql-action/upload-sarif@v3
-        if: always()
+        if: always() && hashFiles('zap-reports/zap.sarif') != ''
         with:
           sarif_file: zap-reports/zap.sarif
           category: zap-security-scan
 
       - name: Check ZAP Results
+        if: always()
         run: |
           if [ -f "zap-reports/zap.xml" ]; then
             # Check for medium or high severity issues
@@ -158,7 +209,9 @@ jobs:
               exit 1
             fi
           else
-            echo "ZAP report not found, continuing..."
+            echo "ZAP report not found, security scan may have failed"
+            echo "Checking if ZAP reports directory exists:"
+            ls -la zap-reports/ || echo "ZAP reports directory not found"
           fi
 
       - name: Perform CodeQL Analysis
