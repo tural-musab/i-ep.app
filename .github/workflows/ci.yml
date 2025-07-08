@@ -36,6 +36,12 @@ jobs:
       - name: Spell check documentation
         run: npm run docs:spellcheck
 
+      - name: RLS Policy Tests
+        run: npm run test:rls
+        
+      - name: Security Integration Tests
+        run: npm run test:security
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:

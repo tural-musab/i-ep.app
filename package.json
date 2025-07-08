@@ -31,7 +31,10 @@
     "docs:dev": "cd docs-site && npm run start",
     "docs:build": "cd docs-site && npm run build",
     "docs:check-links": "cd docs-site && npm run build 2>&1 | grep -i 'broken' && exit 1 || echo 'No broken links found'",
-    "docs:spellcheck": "cspell 'docs-site/docs/**/*.md'"
+    "docs:spellcheck": "cspell 'docs-site/docs/**/*.md'",
+    "test:rls": "jest --testPathPattern=tenant-isolation --verbose",
+    "test:security": "jest --testPathPattern=security --verbose",
+    "test:integration": "jest --testPathPattern=integration --runInBand --verbose"
   },
   "dependencies": {
     "@auth/supabase-adapter": "^1.8.0",
