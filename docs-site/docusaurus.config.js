@@ -32,7 +32,9 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/tural-musab/i-ep.app/tree/main/docs-site/',
+          editUrl: 'https://github.com/tural-musab/i-ep.app/tree/main/docs-site/docs/',
+          showLastUpdateTime: true,
+          showLastUpdateAuthor: true,
         },
         blog: false,
         theme: {
@@ -151,26 +153,7 @@ const config = {
     mermaid: true,
   },
   
-  plugins: [
-    [
-      require.resolve('@docusaurus/plugin-content-docs'),
-      {
-        id: 'architecture',
-        path: 'docs/architecture',
-        routeBasePath: 'architecture',
-        sidebarPath: require.resolve('./sidebarsArchitecture.js'),
-      },
-    ],
-    [
-      require.resolve('@docusaurus/plugin-content-docs'),
-      {
-        id: 'api',
-        path: 'docs/api',
-        routeBasePath: 'api',
-        sidebarPath: require.resolve('./sidebarsApi.js'),
-      },
-    ],
-  ],
+  plugins: [],
 };
 
 module.exports = config; 

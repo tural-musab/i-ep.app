@@ -18,6 +18,9 @@ const customJestConfig = {
     '<rootDir>/cypress/',
     '<rootDir>/e2e/',
   ],
+  transformIgnorePatterns: [
+    'node_modules/(?!(isows|@supabase|ws|@t3-oss)/)',
+  ],
   moduleNameMapper: {
     '\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
     '\.(css|scss)$': '<rootDir>/__mocks__/styleMock.js',
@@ -36,6 +39,14 @@ const customJestConfig = {
     '!src/types/**/*',
     '!**/node_modules/**', 
   ],
+  coverageThreshold: {
+    global: {
+      branches: 60,
+      functions: 60,
+      lines: 60,
+      statements: 60,
+    },
+  },
 };
 
 module.exports = createJestConfig(customJestConfig);
