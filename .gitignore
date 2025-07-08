@@ -57,3 +57,9 @@ next-env.d.ts
 # Logs
 logs
 *.log
+
+# Security scan reports
+/zap-reports
+*.sarif
+codeql-report.sarif
+security-report/

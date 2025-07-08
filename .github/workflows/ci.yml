@@ -101,6 +101,65 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Start application for security testing
+        run: |
+          npm run build
+          npm run start &
+          sleep 30
+          curl -f http://localhost:3000 || exit 1
+        env:
+          PORT: 3000
+
+      - name: Create ZAP reports directory
+        run: mkdir -p ./zap-reports
+
+      - name: OWASP ZAP Security Scan
+        run: |
+          docker run --network host \
+            -v $(pwd)/zap-reports:/zap/wrk \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-full-scan.py \
+            -t http://localhost:3000 \
+            -j \
+            -I \
+            -r zap.html \
+            -w zap.sarif \
+            -x zap.xml || true
+        continue-on-error: true
+
+      - name: Upload ZAP Security Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-security-report
+          path: zap-reports/
+
+      - name: Upload ZAP SARIF Report
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: zap-reports/zap.sarif
+          category: zap-security-scan
+
+      - name: Check ZAP Results
+        run: |
+          if [ -f "zap-reports/zap.xml" ]; then
+            # Check for medium or high severity issues
+            high_count=$(grep -c 'riskdesc="High"' zap-reports/zap.xml || echo "0")
+            medium_count=$(grep -c 'riskdesc="Medium"' zap-reports/zap.xml || echo "0")
+            
+            echo "ZAP Scan Results:"
+            echo "High severity issues: $high_count"
+            echo "Medium severity issues: $medium_count"
+            
+            if [ "$high_count" -gt "0" ] || [ "$medium_count" -gt "5" ]; then
+              echo "Security scan failed: Too many medium/high severity issues found"
+              exit 1
+            fi
+          else
+            echo "ZAP report not found, continuing..."
+          fi
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:

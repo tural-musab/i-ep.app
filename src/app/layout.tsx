@@ -4,6 +4,7 @@ import AnalyticsClient from "../components/AnalyticsClient";
 import SpeedInsightsClient from "../components/SpeedInsightsClient";
 import { AuthProvider } from "@/lib/auth/auth-context";
 import { Toaster } from "@/components/ui/toaster";
+import { CookieConsentBanner } from "@/components/gdpr/cookie-consent-banner";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,6 +25,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
           <Toaster />
+          <CookieConsentBanner />
         </AuthProvider>
         <AnalyticsClient />
         <SpeedInsightsClient />

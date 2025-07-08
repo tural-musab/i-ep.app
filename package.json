@@ -34,7 +34,9 @@
     "docs:spellcheck": "cspell 'docs-site/docs/**/*.md'",
     "test:rls": "jest --testPathPattern=tenant-isolation --verbose",
     "test:security": "jest --testPathPattern=security --verbose",
-    "test:integration": "jest --testPathPattern=integration --runInBand --verbose"
+    "test:integration": "jest --testPathPattern=integration --runInBand --verbose",
+    "zap:scan": "docker run --network host -v ./zap-reports:/zap/wrk ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://localhost:3000 -j -I -r zap.html -w zap.sarif",
+    "test:security:full": "npm run zap:scan && jest --testPathPattern=security"
   },
   "dependencies": {
     "@auth/supabase-adapter": "^1.8.0",
@@ -87,7 +89,6 @@
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "ua-parser-js": "^1.0.35",
-    "uuid": "^11.1.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
@@ -125,6 +126,7 @@
     "ts-jest": "^29.4.0",
     "tw-animate-css": "^1.3.0",
     "typescript": "^5",
+    "uuid": "^11.1.0",
     "whatwg-fetch": "^3.6.20"
   }
 }
