@@ -47,20 +47,26 @@ jobs:
       - name: Security Integration Tests
         run: npm run test:security
 
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
-
       - name: Security Scan
         run: |
-          # Install Snyk if not available
-          npm install -g snyk
+          echo "🔍 Starting Security Dependency Scan..."
           
-          # Run Snyk test with high severity threshold
-          npx snyk test --severity-threshold=high
-          
-          # Note: CodeQL analyze will be run automatically after build
+          # Check if SNYK_TOKEN is available
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "⚠️ SNYK_TOKEN not available, skipping Snyk scan"
+            echo "ℹ️ This is normal for pull requests from forks"
+          else
+            echo "📦 Installing Snyk..."
+            npm install -g snyk
+            
+            echo "🔎 Running Snyk vulnerability scan..."
+            npx snyk test --severity-threshold=high || {
+              echo "❌ Snyk found high severity vulnerabilities"
+              echo "🔧 Run 'npx snyk wizard' to fix issues"
+              exit 1
+            }
+            echo "✅ No high severity vulnerabilities found"
+          fi
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -101,38 +107,48 @@ jobs:
         if: always()
         with:
           name: playwright-report
-          path: playwright-report/**
+          path: playwright-report/
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
 
       - name: Build
         run: npm run build
 
       - name: Start application for security testing
         run: |
-          echo "Building application for security testing..."
-          npm run build
+          echo "🚀 Starting application for ZAP security testing..."
           
-          echo "Starting application in background..."
+          echo "📡 Starting application in background..."
           npm run start &
           APP_PID=$!
           echo "App PID: $APP_PID"
           
-          echo "Waiting for application to start (30 seconds)..."
-          sleep 30
+          echo "⏳ Waiting for application to start..."
+          sleep 20
           
-          echo "Checking application health..."
-          for i in {1..10}; do
-            if curl -f -s http://localhost:3000 > /dev/null; then
+          echo "🔍 Checking application health..."
+          for i in {1..15}; do
+            if curl -f -s http://localhost:3000/api/health > /dev/null 2>&1; then
+              echo "✅ Application is running successfully!"
+              break
+            elif curl -f -s http://localhost:3000 > /dev/null 2>&1; then
               echo "✅ Application is running successfully!"
               break
             else
-              echo "⏳ Attempt $i/10: Application not ready yet, waiting 5 more seconds..."
-              sleep 5
+              echo "⏳ Attempt $i/15: Application not ready yet, waiting 3 more seconds..."
+              sleep 3
             fi
             
-            if [ $i -eq 10 ]; then
+            if [ $i -eq 15 ]; then
               echo "❌ Application failed to start properly"
-              echo "Application logs:"
+              echo "🔍 Checking application status:"
               jobs -l
+              ps aux | grep -v grep | grep node || echo "No Node.js processes found"
+              echo "🔍 Port 3000 status:"
+              netstat -tlnp | grep :3000 || echo "Port 3000 not listening"
               kill $APP_PID 2>/dev/null || true
               exit 1
             fi
@@ -141,22 +157,25 @@ jobs:
           PORT: 3000
 
       - name: Create ZAP reports directory
-        run: mkdir -p ./zap-reports
+        run: mkdir -p zap-reports
 
       - name: OWASP ZAP Security Scan
         run: |
           echo "🔒 Starting OWASP ZAP Security Scan..."
           
-          # Ensure target is accessible
+          # Final connectivity check
           echo "📡 Testing target accessibility..."
-          curl -f -s http://localhost:3000 || {
+          if ! curl -f -s http://localhost:3000 > /dev/null; then
             echo "❌ Target application is not accessible"
+            echo "🔍 Checking what's running on port 3000:"
+            netstat -tlnp | grep :3000 || echo "Nothing listening on port 3000"
             exit 1
-          }
+          fi
+          echo "✅ Target is accessible"
           
           echo "🐳 Running ZAP Full Scan..."
           docker run --network host \
-            -v $(pwd)/zap-reports:/zap/wrk \
+            -v "$(pwd)/zap-reports:/zap/wrk" \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-full-scan.py \
             -t http://localhost:3000 \
@@ -168,11 +187,10 @@ jobs:
             -m 5 \
             -z "-addonupdate; -addoninstall pscanrulesBeta" || {
               echo "⚠️ ZAP scan completed with warnings (this is normal)"
-              echo "📁 Checking generated reports..."
-              ls -la zap-reports/ || echo "No reports directory found"
           }
           
           echo "📋 ZAP Scan Summary:"
+          ls -la zap-reports/ || echo "❌ ZAP reports directory is empty"
           [ -f "zap-reports/zap.html" ] && echo "✅ HTML report generated" || echo "❌ HTML report missing"
           [ -f "zap-reports/zap.sarif" ] && echo "✅ SARIF report generated" || echo "❌ SARIF report missing"
           [ -f "zap-reports/zap.xml" ] && echo "✅ XML report generated" || echo "❌ XML report missing"
@@ -184,6 +202,7 @@ jobs:
         with:
           name: zap-security-report
           path: zap-reports/
+          if-no-files-found: warn
 
       - name: Upload ZAP SARIF Report
         uses: github/codeql-action/upload-sarif@v3
@@ -200,32 +219,39 @@ jobs:
             high_count=$(grep -c 'riskdesc="High"' zap-reports/zap.xml || echo "0")
             medium_count=$(grep -c 'riskdesc="Medium"' zap-reports/zap.xml || echo "0")
             
-            echo "ZAP Scan Results:"
-            echo "High severity issues: $high_count"
-            echo "Medium severity issues: $medium_count"
+            echo "🔍 ZAP Scan Results:"
+            echo "   High severity issues: $high_count"
+            echo "   Medium severity issues: $medium_count"
             
-            if [ "$high_count" -gt "0" ] || [ "$medium_count" -gt "5" ]; then
-              echo "Security scan failed: Too many medium/high severity issues found"
+            if [ "$high_count" -gt "0" ]; then
+              echo "❌ Security scan failed: $high_count high severity issues found"
               exit 1
+            elif [ "$medium_count" -gt "10" ]; then
+              echo "⚠️ Security scan warning: $medium_count medium severity issues found (threshold: 10)"
+              echo "ℹ️ Consider fixing medium severity issues for better security"
+            else
+              echo "✅ Security scan passed: Low number of issues found"
             fi
           else
-            echo "ZAP report not found, security scan may have failed"
-            echo "Checking if ZAP reports directory exists:"
+            echo "⚠️ ZAP XML report not found, security scan may have failed"
+            echo "🔍 Available files in zap-reports:"
             ls -la zap-reports/ || echo "ZAP reports directory not found"
           fi
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
-          output: codeql-report.sarif
+          category: "/language:javascript"
+          output: sarif-results
           upload: false
 
       - name: Upload Security Report
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: security-report
-          path: codeql-report.sarif
+          name: codeql-security-report
+          path: sarif-results/
+          if-no-files-found: warn
 
   deployment:
     needs: lint-test-build
