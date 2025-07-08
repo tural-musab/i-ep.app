@@ -198,6 +198,8 @@ Detaylı geliştirici dokümantasyonu aşağıdaki dosyalarda bulunabilir:
 - [Veri İzolasyon Stratejisi](docs/architecture/data-isolation.md)
 - [Teknoloji Yığını](docs/architecture/tech-stack.md)
 
+<!-- CI Test Trigger: Updated on 2024-12-20 -->
+
 ### Operasyonel Dokümantasyon
 - [Yedekleme ve Geri Yükleme](docs/deployment/backup-restore.md)
 - [Felaketten Kurtarma Planı](docs/deployment/disaster-recovery.md)
