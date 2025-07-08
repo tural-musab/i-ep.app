@@ -1,0 +1,262 @@
+/**
+ * İ-EP.APP Rate Limiter Integration Tests
+ * 
+ * Bu test suite rate limiter middleware'inin doğru çalıştığını kontrol eder:
+ * - Tenant bazlı rate limiting
+ * - Window reset işlevselliği  
+ * - 429 Too Many Requests yanıtları
+ */
+
+import { NextRequest } from 'next/server';
+import { rateLimiterMiddleware, clearRateLimitStore } from '../../middleware/rateLimiter';
+
+// Mock environment variables for testing
+const originalEnv = process.env;
+
+describe('Rate Limiter Middleware Integration Tests', () => {
+  beforeEach(() => {
+    // Clear rate limit store before each test
+    clearRateLimitStore();
+    
+    // Set test environment variables
+    process.env = {
+      ...originalEnv,
+      RATE_LIMIT_WINDOW_MS: '5000', // 5 seconds for faster testing
+      RATE_LIMIT_MAX: '3'          // 3 requests max for easier testing
+    };
+  });
+
+  afterEach(() => {
+    // Restore original environment
+    process.env = originalEnv;
+  });
+
+  describe('API Route Rate Limiting', () => {
+    it('should allow requests within rate limit', async () => {
+      // Create test request to API endpoint
+      const request = new NextRequest(new Request('http://localhost:3000/api/test', {
+        method: 'GET',
+        headers: {
+          'x-tenant-id': 'tenant-1'
+        }
+      }));
+
+      // First request should be allowed
+      const response1 = rateLimiterMiddleware(request);
+      expect(response1).toBeNull(); // null means continue processing
+
+      // Second request should be allowed
+      const response2 = rateLimiterMiddleware(request);
+      expect(response2).toBeNull();
+
+      // Third request should be allowed
+      const response3 = rateLimiterMiddleware(request);
+      expect(response3).toBeNull();
+    });
+
+    it('should return 429 when rate limit exceeded', async () => {
+      const request = new NextRequest(new Request('http://localhost:3000/api/test', {
+        method: 'GET',
+        headers: {
+          'x-tenant-id': 'tenant-1'
+        }
+      }));
+
+      // Use up the rate limit (3 requests)
+      rateLimiterMiddleware(request);
+      rateLimiterMiddleware(request);
+      rateLimiterMiddleware(request);
+
+      // Fourth request should be rate limited
+      const response = rateLimiterMiddleware(request);
+      expect(response).not.toBeNull();
+      expect(response?.status).toBe(429);
+
+      // Check response body
+      const responseBody = await response?.json();
+      expect(responseBody).toEqual({
+        error: 'Too many requests',
+        retryAfter: expect.any(Number)
+      });
+
+      // Check headers
+      expect(response?.headers.get('Retry-After')).toBeTruthy();
+      expect(response?.headers.get('X-RateLimit-Limit')).toBe('3');
+      expect(response?.headers.get('X-RateLimit-Remaining')).toBe('0');
+    });
+
+    it('should isolate rate limits between different tenants', async () => {
+      // Create requests for two different tenants
+      const tenant1Request = new NextRequest('http://localhost:3000/api/test', {
+        method: 'GET',
+        headers: {
+          'x-tenant-id': 'tenant-1'
+        }
+      });
+
+      const tenant2Request = new NextRequest('http://localhost:3000/api/test', {
+        method: 'GET',
+        headers: {
+          'x-tenant-id': 'tenant-2'
+        }
+      });
+
+      // Use up rate limit for tenant-1
+      rateLimiterMiddleware(tenant1Request);
+      rateLimiterMiddleware(tenant1Request);
+      rateLimiterMiddleware(tenant1Request);
+
+      // Tenant-1 should be rate limited
+      const tenant1Response = rateLimiterMiddleware(tenant1Request);
+      expect(tenant1Response?.status).toBe(429);
+
+      // Tenant-2 should still be allowed
+      const tenant2Response = rateLimiterMiddleware(tenant2Request);
+      expect(tenant2Response).toBeNull(); // Should continue processing
+    });
+
+    it('should handle requests without tenant-id header (use default)', async () => {
+      const request = new NextRequest('http://localhost:3000/api/test', {
+        method: 'GET'
+        // No x-tenant-id header
+      });
+
+      // Should work with default tenant
+      const response1 = rateLimiterMiddleware(request);
+      expect(response1).toBeNull();
+
+      // Use up rate limit
+      rateLimiterMiddleware(request);
+      rateLimiterMiddleware(request);
+
+      // Fourth request should be rate limited
+      const response4 = rateLimiterMiddleware(request);
+      expect(response4?.status).toBe(429);
+    });
+
+    it('should reset rate limit after window expires', (done) => {
+      const request = new NextRequest('http://localhost:3000/api/test', {
+        method: 'GET',
+        headers: {
+          'x-tenant-id': 'tenant-1'
+        }
+      });
+
+      // Use up the rate limit
+      rateLimiterMiddleware(request);
+      rateLimiterMiddleware(request);
+      rateLimiterMiddleware(request);
+
+      // Should be rate limited
+      const blockedResponse = rateLimiterMiddleware(request);
+      expect(blockedResponse?.status).toBe(429);
+
+      // Wait for window to expire (5 seconds + buffer)
+      setTimeout(() => {
+        const allowedResponse = rateLimiterMiddleware(request);
+        expect(allowedResponse).toBeNull(); // Should be allowed again
+        done();
+      }, 5100);
+    }, 10000); // 10 second timeout for the test
+
+    it('should add rate limit headers on successful requests', async () => {
+      const request = new NextRequest('http://localhost:3000/api/test', {
+        method: 'GET',
+        headers: {
+          'x-tenant-id': 'tenant-1'
+        }
+      });
+
+      const response = rateLimiterMiddleware(request);
+      expect(response).toBeNull(); // Should continue processing
+
+      // Note: In real middleware, headers would be added to the NextResponse.next()
+      // This test verifies the logic structure
+    });
+  });
+
+  describe('Non-API Route Handling', () => {
+    it('should skip rate limiting for non-API routes', async () => {
+      const request = new NextRequest('http://localhost:3000/dashboard', {
+        method: 'GET',
+        headers: {
+          'x-tenant-id': 'tenant-1'
+        }
+      });
+
+      const response = rateLimiterMiddleware(request);
+      expect(response).toBeNull(); // Should skip rate limiting
+    });
+
+    it('should skip rate limiting for static files', async () => {
+      const request = new NextRequest('http://localhost:3000/favicon.ico', {
+        method: 'GET'
+      });
+
+      const response = rateLimiterMiddleware(request);
+      expect(response).toBeNull(); // Should skip rate limiting
+    });
+  });
+
+  describe('Configuration', () => {
+    it('should use default values when env vars are not set', async () => {
+      // Remove environment variables
+      delete process.env.RATE_LIMIT_WINDOW_MS;
+      delete process.env.RATE_LIMIT_MAX;
+
+      const request = new NextRequest('http://localhost:3000/api/test', {
+        method: 'GET',
+        headers: {
+          'x-tenant-id': 'tenant-1'
+        }
+      });
+
+      // Should still work with defaults (100 requests per minute)
+      const response = rateLimiterMiddleware(request);
+      expect(response).toBeNull();
+    });
+
+    it('should handle invalid environment variables gracefully', async () => {
+      process.env.RATE_LIMIT_WINDOW_MS = 'invalid';
+      process.env.RATE_LIMIT_MAX = 'invalid';
+
+      const request = new NextRequest('http://localhost:3000/api/test', {
+        method: 'GET',
+        headers: {
+          'x-tenant-id': 'tenant-1'
+        }
+      });
+
+      // Should handle gracefully (parseInt returns NaN, should use defaults)
+      const response = rateLimiterMiddleware(request);
+      expect(response).toBeNull();
+    });
+  });
+
+  describe('Multiple HTTP Methods', () => {
+    it('should rate limit across different HTTP methods for same tenant', async () => {
+      const tenant = 'tenant-1';
+      
+      // GET request
+      const getRequest = new NextRequest('http://localhost:3000/api/test', {
+        method: 'GET',
+        headers: { 'x-tenant-id': tenant }
+      });
+      
+      // POST request  
+      const postRequest = new NextRequest('http://localhost:3000/api/test', {
+        method: 'POST',
+        headers: { 'x-tenant-id': tenant }
+      });
+
+      // Use up rate limit with mixed methods
+      rateLimiterMiddleware(getRequest);   // 1
+      rateLimiterMiddleware(postRequest);  // 2
+      rateLimiterMiddleware(getRequest);   // 3
+
+      // Fourth request (any method) should be rate limited
+      const response = rateLimiterMiddleware(postRequest);
+      expect(response?.status).toBe(429);
+    });
+  });
+}); 

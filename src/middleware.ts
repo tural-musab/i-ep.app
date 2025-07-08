@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
-import { resolveTenantFromDomain, TenantInfo } from './lib/tenant/tenant-domain-resolver';
+import { resolveTenantFromDomain } from './lib/tenant/tenant-domain-resolver';
 import { logAccessDenied } from './lib/audit';
 import { createRequestLogger } from './middleware/logger';
+import { rateLimiterMiddleware } from './middleware/rateLimiter';
 
 /**
  * Tenant izolasyonu ve yönlendirme middleware
  * Referans: docs/architecture/multi-tenant-strategy.md, URL Tabanlı Tenant Ayrımı
  */
 export async function middleware(request: NextRequest) {
+  // Rate limiting kontrolü - tüm işlemlerden önce
+  const rateLimitResponse = rateLimiterMiddleware(request);
+  if (rateLimitResponse) {
+    return rateLimitResponse; // 429 response döndür
+  }
+  
   // Request logging başlat
   const requestLogger = createRequestLogger(request);
   
@@ -154,7 +161,7 @@ export async function middleware(request: NextRequest) {
       if (typeof lastAccessedTenants === 'string') {
         try {
           lastAccessedTenants = JSON.parse(lastAccessedTenants);
-        } catch (e) {
+        } catch {
           lastAccessedTenants = [];
         }
       }

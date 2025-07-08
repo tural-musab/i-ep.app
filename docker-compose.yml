@@ -1,0 +1,215 @@
+# =============================================================================
+# İ-EP.APP (Iqra Eğitim Portalı) Docker Compose
+# =============================================================================
+# Local development environment setup
+# Includes: Next.js App, PostgreSQL, Redis, Adminer (DB GUI)
+
+version: '3.8'
+
+services:
+  # =============================================================================
+  # İ-EP.APP Next.js Application
+  # =============================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder  # Use builder stage for development
+    container_name: i-ep-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_APP_NAME=İ-EP.APP
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - NEXT_PUBLIC_DOMAIN=i-ep.app
+      - NEXT_PUBLIC_SUPABASE_URL=http://localhost:54321
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOuoJeaVgMSE5a-4dA7fJjnKhLiVHqJJXg0U
+      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/i_ep_app
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=development-secret-key-min-32-characters
+      - UPSTASH_REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=debug
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - i-ep-network
+
+  # =============================================================================
+  # PostgreSQL Database
+  # =============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: i-ep-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=i_ep_app
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=tr_TR.UTF-8 --lc-ctype=tr_TR.UTF-8
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    networks:
+      - i-ep-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # =============================================================================
+  # Redis Cache
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: i-ep-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass redis_password
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - i-ep-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # =============================================================================
+  # Supabase Local (Alternative to cloud Supabase)
+  # =============================================================================
+  supabase:
+    image: supabase/supabase:latest
+    container_name: i-ep-supabase
+    ports:
+      - "54321:8000"  # Supabase Studio
+      - "54322:5432"  # PostgreSQL
+    environment:
+      - SUPABASE_URL=http://localhost:54321
+      - SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOuoJeaVgMSE5a-4dA7fJjnKhLiVHqJJXg0U
+      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+    volumes:
+      - supabase_data:/var/lib/supabase
+    restart: unless-stopped
+    networks:
+      - i-ep-network
+    profiles:
+      - supabase  # Optional service - run with: docker-compose --profile supabase up
+
+  # =============================================================================
+  # Adminer (Database GUI)
+  # =============================================================================
+  adminer:
+    image: adminer:latest
+    container_name: i-ep-adminer
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - i-ep-network
+    profiles:
+      - tools  # Optional service - run with: docker-compose --profile tools up
+
+  # =============================================================================
+  # Redis Commander (Redis GUI)
+  # =============================================================================
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: i-ep-redis-commander
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:redis_password
+    depends_on:
+      - redis
+    restart: unless-stopped
+    networks:
+      - i-ep-network
+    profiles:
+      - tools  # Optional service - run with: docker-compose --profile tools up
+
+  # =============================================================================
+  # Mailhog (Email Testing)
+  # =============================================================================
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: i-ep-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    restart: unless-stopped
+    networks:
+      - i-ep-network
+    profiles:
+      - tools  # Optional service - run with: docker-compose --profile tools up
+
+# =============================================================================
+# Docker Volumes
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  supabase_data:
+    driver: local
+
+# =============================================================================
+# Docker Networks
+# =============================================================================
+networks:
+  i-ep-network:
+    driver: bridge
+
+# =============================================================================
+# Docker Compose Usage Instructions:
+# =============================================================================
+#
+# Start basic development environment:
+# docker-compose up -d
+#
+# Start with all tools (Adminer, Redis Commander, Mailhog):
+# docker-compose --profile tools up -d
+#
+# Start with Supabase local:
+# docker-compose --profile supabase up -d
+#
+# Start everything:
+# docker-compose --profile tools --profile supabase up -d
+#
+# Stop all services:
+# docker-compose down
+#
+# Stop and remove volumes (WARNING: This will delete all data):
+# docker-compose down -v
+#
+# View logs:
+# docker-compose logs -f app
+#
+# Rebuild and restart:
+# docker-compose up --build -d
+#
+# Access services:
+# - İ-EP.APP: http://localhost:3000
+# - Adminer (DB GUI): http://localhost:8080
+# - Redis Commander: http://localhost:8081
+# - Mailhog (Email): http://localhost:8025
+# - Supabase Studio: http://localhost:54321
+#
+# ============================================================================= 

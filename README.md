@@ -86,6 +86,8 @@ Türkiye'deki her okul için kolay erişilebilir, kullanıcı dostu ve ekonomik 
 
 ### Kurulum
 
+#### Seçenek 1: Geleneksel Kurulum
+
 1. Repoyu klonlayın:
    ```bash
    git clone https://github.com/tural-musab/i-ep.app.git
@@ -118,6 +120,40 @@ Türkiye'deki her okul için kolay erişilebilir, kullanıcı dostu ve ekonomik 
    ```
    http://localhost:3000
    ```
+
+#### Seçenek 2: Docker ile Hızlı Kurulum (30 saniye)
+
+Docker ile tüm sistemi (uygulama + PostgreSQL + Redis) tek komutla başlatabilirsiniz:
+
+```bash
+# Repoyu klonlayın
+git clone https://github.com/tural-musab/i-ep.app.git
+cd i-ep.app
+
+# Docker Compose ile tüm servisleri başlatın
+docker-compose up -d
+
+# Uygulamaya erişin: http://localhost:3000
+```
+
+**Docker Servisleri:**
+- İ-EP.APP: http://localhost:3000
+- PostgreSQL: localhost:5432
+- Redis: localhost:6379
+- Adminer (DB GUI): http://localhost:8080 (profile: tools ile)
+- Redis Commander: http://localhost:8081 (profile: tools ile)
+
+**Ek Araçlar ile Başlatma:**
+```bash
+# Tüm geliştirme araçları ile başlat
+docker-compose --profile tools up -d
+
+# Yerel Supabase ile başlat
+docker-compose --profile supabase up -d
+
+# Her şeyi birlikte başlat
+docker-compose --profile tools --profile supabase up -d
+```
 
 ### İlk Tenant Oluşturma
 
