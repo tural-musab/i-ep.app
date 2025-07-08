@@ -33,8 +33,9 @@ jobs:
       - name: Check broken links in docs
         run: npm run docs:check-links
 
-      - name: Spell check documentation
-        run: npm run docs:spellcheck
+      # TODO: Add Turkish dictionary for docs spell check
+      # - name: Spell check documentation
+      #   run: npm run docs:spellcheck
 
       - name: RLS Policy Tests
         run: npm run test:rls
