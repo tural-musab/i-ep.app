@@ -6,8 +6,8 @@ import { AccessDenied } from '@/components/auth/access-denied';
 import { useAuth } from '@/lib/auth/auth-context';
 import { CalendarDays, BookOpen, Clock, User } from 'lucide-react';
 
-export default function StudentPage() {
-  const { user, currentTenantId } = useAuth();
+export default function OgrenciPage() {
+  const { user } = useAuth();
   
   // Öğrenci sayfasının içeriği
   const StudentPageContent = () => (

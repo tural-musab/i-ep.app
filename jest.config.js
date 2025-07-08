@@ -1,43 +1,20 @@
 const nextJest = require('next/jest');
 
 const createJestConfig = nextJest({
+  // Provide the path to your Next.js app to load next.config.js and .env files
   dir: './',
 });
 
 /** @type {import('jest').Config} */
 const customJestConfig = {
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  testEnvironment: 'jsdom',
-  testMatch: [
-    '**/__tests__/**/*.[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
-  ],
-  testPathIgnorePatterns: [
-    '<rootDir>/node_modules/',
-    '<rootDir>/.next/',
-    '<rootDir>/cypress/',
-    '<rootDir>/e2e/',
-  ],
-  transformIgnorePatterns: [
-    'node_modules/(?!(isows|@supabase|ws|@t3-oss)/)',
-  ],
-  moduleNameMapper: {
-    '\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/__mocks__/fileMock.js',
-    '\.(css|scss)$': '<rootDir>/__mocks__/styleMock.js',
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '^msw/node$': '<rootDir>/node_modules/msw/lib/node/index.js',
-  },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  globals: {
-    TextEncoder: require('util').TextEncoder,
-    TextDecoder: require('util').TextDecoder,
-  },
+  testEnvironment: 'jest-environment-jsdom',
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
+    '!src/**/__tests__/**',
+    '!src/**/*.test.{js,jsx,ts,tsx}',
     '!src/**/*.stories.{js,jsx,ts,tsx}',
-    '!src/types/**/*',
-    '!**/node_modules/**', 
   ],
   coverageThreshold: {
     global: {
@@ -49,4 +26,5 @@ const customJestConfig = {
   },
 };
 
+// createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
 module.exports = createJestConfig(customJestConfig);

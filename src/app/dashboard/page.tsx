@@ -2,13 +2,8 @@ import { redirect } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth/auth-options'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 
-interface Props {
-  searchParams: { tenant?: string }
-}
-
-export default async function Dashboard({ searchParams }: Props) {
+export default async function Dashboard() {
   const session = await getServerSession(authOptions)
   
   if (!session) {
@@ -28,13 +23,6 @@ export default async function Dashboard({ searchParams }: Props) {
     { id: 2, type: 'grade', message: 'Fen bilgisi sınavı notlandırıldı', time: '4 saat önce' },
     { id: 3, type: 'attendance', message: 'Günlük yoklama tamamlandı', time: '6 saat önce' }
   ]
-
-  // Handle data based on tenant
-  const tenantData: Record<string, unknown> = {
-    tenant: searchParams.tenant || 'default',
-    stats,
-    activities: recentActivities
-  }
   
   return (
     <div className="container mx-auto p-6">
