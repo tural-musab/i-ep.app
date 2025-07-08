@@ -3,10 +3,14 @@
 import React from 'react';
 import { AdminGuard } from '@/components/auth/role-guard';
 import { AccessDenied } from '@/components/auth/access-denied';
-import { useAuth } from '@/lib/auth/auth-context';
+import { useSession } from 'next-auth/react';
 
 export default function AdminPage() {
-  const { user, isLoading } = useAuth();
+  const { data: session, status } = useSession()
+  
+  if (status === 'loading') {
+    return <div>Yükleniyor...</div>
+  }
   
   // Admin sayfasının içeriği
   const AdminPageContent = () => (
@@ -19,17 +23,17 @@ export default function AdminPage() {
       <div className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold mb-4">Kullanıcı Bilgileri</h2>
         
-        {user && (
+        {session?.user && (
           <div className="space-y-2">
-            <p><span className="font-medium">Kullanıcı ID:</span> {user.id}</p>
-            <p><span className="font-medium">E-posta:</span> {user.email}</p>
-            <p><span className="font-medium">Ad Soyad:</span> {user.profile?.fullName || 'Belirtilmemiş'}</p>
-            <p><span className="font-medium">Rol:</span> {user.role}</p>
-            <p><span className="font-medium">Tenant ID:</span> {user.tenantId || 'Sistem Yöneticisi'}</p>
+            <p><span className="font-medium">Kullanıcı ID:</span> {session.user.id}</p>
+            <p><span className="font-medium">E-posta:</span> {session.user.email}</p>
+            <p><span className="font-medium">Ad Soyad:</span> {session.user.profile?.fullName || 'Belirtilmemiş'}</p>
+            <p><span className="font-medium">Rol:</span> {session.user.role}</p>
+            <p><span className="font-medium">Tenant ID:</span> {session.user.tenantId || 'Sistem Yöneticisi'}</p>
             <p>
               <span className="font-medium">Hesap durumu:</span> 
-              <span className={user.isActive ? 'text-green-600 ml-1' : 'text-red-600 ml-1'}>
-                {user.isActive ? 'Aktif' : 'Pasif'}
+              <span className={session.user.isActive ? 'text-green-600 ml-1' : 'text-red-600 ml-1'}>
+                {session.user.isActive ? 'Aktif' : 'Pasif'}
               </span>
             </p>
           </div>

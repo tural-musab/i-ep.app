@@ -104,8 +104,8 @@ describe('Logger Tests', () => {
 });
 
 describe('Request Logger Middleware', () => {
-  let mockReq: any;
-  let mockRes: any;
+  let mockReq: Record<string, unknown>;
+  let mockRes: Record<string, unknown>;
 
   beforeEach(() => {
     // Mock NextRequest

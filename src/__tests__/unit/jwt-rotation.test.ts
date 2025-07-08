@@ -248,7 +248,7 @@ describe('JWT Secret Rotation', () => {
       
       // Generate multiple secrets and ensure they're all unique
       for (let i = 0; i < 10; i++) {
-        const secret = (manager as any).generateSecret();
+        const secret = (manager as Record<string, unknown>).generateSecret() as string;
         expect(secret).toHaveLength(128);
         expect(secret).toMatch(/^[a-f0-9]{128}$/); // Hex format
         expect(secrets.has(secret)).toBe(false);
