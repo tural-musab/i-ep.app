@@ -127,9 +127,9 @@ if [[ -f "job.log" ]]; then
   JEST_SECURITY_PASS=$(grep -c "PASS.*security" job.log 2>/dev/null || echo "0")
   JEST_SECURITY_FAIL=$(grep -c "FAIL.*security" job.log 2>/dev/null || echo "0")
   
-  if [[ $JEST_SECURITY_FAIL -eq 0 && $JEST_SECURITY_PASS -gt 0 ]]; then
+  if [[ "$JEST_SECURITY_FAIL" -eq 0 && "$JEST_SECURITY_PASS" -gt 0 ]]; then
     echo "✅ Jest security tests passed: $JEST_SECURITY_PASS test suites"
-  elif [[ $JEST_SECURITY_FAIL -gt 0 ]]; then
+  elif [[ "$JEST_SECURITY_FAIL" -gt 0 ]]; then
     echo "❌ Jest security tests failed: $JEST_SECURITY_FAIL test suites"
     echo "🔍 Security test failures:"
     grep -A 5 "FAIL.*security" job.log 2>/dev/null || echo "No detailed failure info found"
