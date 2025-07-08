@@ -1,4 +1,5 @@
-import 'whatwg-fetch';
+require('whatwg-fetch');
+
 global.BroadcastChannel = jest.fn(() => ({
   postMessage: jest.fn(),
   close: jest.fn(),
@@ -7,8 +8,10 @@ global.BroadcastChannel = jest.fn(() => ({
   removeEventListener: jest.fn(),
 }));
 
-// Jest DOM'u içe aktarma
-import '@testing-library/jest-dom';
+// Jest DOM'u içe aktarma - component testleri için
+if (process.env.JEST_WORKER_ID === undefined || global.jsdom !== undefined) {
+  require('@testing-library/jest-dom');
+}
 
 // setImmediate polyfill for Pino
 global.setImmediate = global.setImmediate || ((fn, ...args) => global.setTimeout(fn, 0, ...args));

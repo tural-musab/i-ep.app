@@ -9,6 +9,12 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom',
+  
+  // Use node environment for API and security tests
+  testEnvironmentOptions: {
+    customExportConditions: ['node', 'jest-environment-jsdom'],
+  },
+  
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
     '!src/**/*.d.ts',
