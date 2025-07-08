@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { TenantError, TenantNotFoundError, TenantAccessDeniedError } from './tenant-errors';
+import logger from '@/lib/logger';
 
 interface ErrorResponseOptions {
   logError?: boolean;
@@ -23,7 +24,7 @@ export function handleApiError(
   const { logError, includeDetails } = options;
   
   if (logError) {
-    console.error('API hatası:', error);
+    logger.error({ err: error }, 'API hatası');
   }
   
   // TenantError türündeki hataları işle

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import packageJson from '../../../../package.json';
+import logger from '@/lib/logger';
 
 /**
  * GET /api/health
@@ -22,7 +23,7 @@ export async function GET() {
       }
     });
   } catch (error) {
-    console.error('Health check hatası:', error);
+    logger.error({ err: error }, 'Health check hatası');
     
     return NextResponse.json(
       {

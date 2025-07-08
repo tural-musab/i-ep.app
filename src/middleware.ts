@@ -2,12 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { resolveTenantFromDomain, TenantInfo } from './lib/tenant/tenant-domain-resolver';
 import { logAccessDenied } from './lib/audit';
+import { createRequestLogger } from './middleware/logger';
 
 /**
  * Tenant izolasyonu ve yönlendirme middleware
  * Referans: docs/architecture/multi-tenant-strategy.md, URL Tabanlı Tenant Ayrımı
  */
 export async function middleware(request: NextRequest) {
+  // Request logging başlat
+  const requestLogger = createRequestLogger(request);
+  
   const pathname = request.nextUrl.pathname;
   const hostname = request.headers.get('host') || '';
   
@@ -28,14 +32,18 @@ export async function middleware(request: NextRequest) {
       // Oturum yoksa giriş sayfasına yönlendir
       const loginUrl = new URL('/auth/giris', request.url);
       loginUrl.searchParams.set('callbackUrl', request.url);
-      return NextResponse.redirect(loginUrl);
+      const response = NextResponse.redirect(loginUrl);
+      requestLogger.finish(response);
+      return response;
     }
     
     // Kullanıcı super_admin rolünde mi kontrol et
     const isSuperAdmin = session.user.app_metadata?.role === 'super_admin';
     if (!isSuperAdmin) {
       console.warn(`Super admin erişim yetkisi yok: ${session.user.email}`);
-      return NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
+      const response = NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
+      requestLogger.finish(response);
+      return response;
     }
     
     // Super admin erişimi onaylandı, devam et

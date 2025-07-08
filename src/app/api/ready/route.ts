@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase/client';
+import logger from '@/lib/logger';
 
 /**
  * GET /api/ready
@@ -18,7 +19,7 @@ export async function GET() {
       .single();
 
     if (error) {
-      console.error('Database bağlantı hatası:', error);
+      logger.error({ err: error }, 'Database bağlantı hatası');
       
       return NextResponse.json(
         {
@@ -36,7 +37,7 @@ export async function GET() {
       dbConnection: true
     });
   } catch (error) {
-    console.error('Ready check hatası:', error);
+    logger.error({ err: error }, 'Ready check hatası');
     
     return NextResponse.json(
       {

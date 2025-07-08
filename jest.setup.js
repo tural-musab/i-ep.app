@@ -10,6 +10,9 @@ global.BroadcastChannel = jest.fn(() => ({
 // Jest DOM'u içe aktarma
 import '@testing-library/jest-dom';
 
+// setImmediate polyfill for Pino
+global.setImmediate = global.setImmediate || ((fn, ...args) => global.setTimeout(fn, 0, ...args));
+
 // TextEncoder/TextDecoder polyfill - Node.js'te eksik olabilir
 if (typeof TextEncoder === 'undefined') {
   const { TextEncoder, TextDecoder } = require('util');
