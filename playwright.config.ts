@@ -25,8 +25,8 @@ export default defineConfig({
   
   // Reporter ayarları
   reporter: [
-    ['html', { open: 'never' }],
-    ['list']
+    ['list'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }]
   ],
   
   // Test dosyalarını ayıklamak için glob kalıpları
