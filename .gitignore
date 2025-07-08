@@ -63,3 +63,8 @@ logs
 *.sarif
 codeql-report.sarif
 security-report/
+
+# CI health check outputs
+job.log
+zap.zip
+zap-report/
