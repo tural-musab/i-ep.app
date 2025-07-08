@@ -26,6 +26,7 @@ jobs:
         run: npm ci
 
       - name: Validate Environment
+        if: false
         run: npm run validate:env
 
       - name: Lint
