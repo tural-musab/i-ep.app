@@ -92,6 +92,8 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.0",
+    "@babel/preset-env": "^7.28.0",
     "@eslint/eslintrc": "^3",
     "@jest/globals": "^29.7.0",
     "@playwright/test": "^1.41.2",
@@ -107,6 +109,8 @@
     "@types/redis": "^4.0.10",
     "@types/supertest": "^6.0.3",
     "@types/uuid": "^10.0.0",
+    "abort-controller": "^3.0.0",
+    "babel-jest": "^30.0.4",
     "broadcast-channel": "^7.1.0",
     "cspell": "^9.1.3",
     "eslint": "^9",
