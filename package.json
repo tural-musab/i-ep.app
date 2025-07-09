@@ -32,7 +32,7 @@
     "docs:build": "cd docs-site && npm run build",
     "docs:check-links": "cd docs-site && npm run build 2>&1 | grep -i 'broken' && exit 1 || echo 'No broken links found'",
     "docs:spellcheck": "cspell 'docs-site/docs/**/*.md'",
-    "test:rls": "jest --testPathPattern=tenant-isolation --verbose",
+    "test:rls": "jest --testPathPattern=rls-bypass --verbose",
     "test:security": "jest --testPathPattern=security --verbose",
     "test:integration": "jest --testPathPattern=integration --runInBand --verbose",
     "zap:scan": "docker run --network host -v ./zap-reports:/zap/wrk ghcr.io/zaproxy/zaproxy:stable zap-full-scan.py -t http://localhost:3000 -j -I -r zap.html -w zap.sarif",
