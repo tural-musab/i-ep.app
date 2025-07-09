@@ -1,14 +1,17 @@
-import { createClient, RedisClientType } from 'redis';
+import { Redis } from '@upstash/redis';
 import { reportRedisError } from '@/utils/error-reporting';
 
-// Redis Cloud bağlantısı
-export const redis: RedisClientType = createClient({
-  url: process.env.UPSTASH_REDIS_URL || '',
+// Upstash Redis bağlantısı (REST API)
+export const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL || '',
+  token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
 });
 
-// Redis bağlantısını otomatik olarak aç
-redis.connect().catch((err: Error) => {
-  console.error('Redis bağlantısı hatası:', err);
+// Redis bağlantısını test et (ping)
+redis.ping().then(() => {
+  console.log('✅ Redis bağlantısı başarılı (Upstash REST API)');
+}).catch((err: Error) => {
+  console.error('❌ Redis bağlantı hatası:', err);
   reportRedisError(err, 'connect');
 });
 
@@ -29,7 +32,7 @@ export async function getCachedValue<T>(
   try {
     const cacheKey = createCacheKey(tenantId, key);
     const cachedData = await redis.get(cacheKey);
-    return cachedData ? JSON.parse(cachedData) : null;
+    return cachedData ? JSON.parse(cachedData as string) : null;
   } catch (error) {
     console.error('Önbellekten veri alınırken hata oluştu:', error);
     reportRedisError(error, 'get', key, tenantId);
@@ -49,7 +52,7 @@ export async function setCachedValue<T>(
   try {
     const cacheKey = createCacheKey(tenantId, key);
     await redis.set(cacheKey, JSON.stringify(value), {
-      EX: expirySeconds
+      ex: expirySeconds
     });
   } catch (error) {
     console.error('Önbelleğe veri kaydedilirken hata oluştu:', error);
@@ -85,7 +88,7 @@ export async function clearCachePattern(
     const keys = await redis.keys(cachePattern);
     
     if (keys && keys.length > 0) {
-      await redis.del(keys);
+      await redis.del(...keys);
     }
   } catch (error) {
     console.error('Önbellek temizlenirken hata oluştu:', error);
@@ -102,7 +105,7 @@ export async function clearTenantCache(tenantId: string): Promise<void> {
     const keys = await redis.keys(cachePattern);
     
     if (keys && keys.length > 0) {
-      await redis.del(keys);
+      await redis.del(...keys);
     }
   } catch (error) {
     console.error(`${tenantId} için önbellek temizlenirken hata oluştu:`, error);
