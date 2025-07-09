@@ -12,19 +12,22 @@ test.describe('Anasayfa Testleri', () => {
   });
 
   test('Anasayfa ana bileşenlerini kontrol et', async ({ page }) => {
-    // Navigasyon menüsünün görünür olduğunu kontrol et
-    await expect(page.locator('nav')).toBeVisible();
+    // Header'ın görünür olduğunu kontrol et (nav yerine header)
+    await expect(page.locator('header')).toBeVisible();
     
-    // Logo görünür mü?
-    await expect(page.locator('img[alt="Iqra Eğitim Portalı Logo"]')).toBeVisible();
+    // Header içindeki logo görünür mü? (spesifik seçici - footer logosu ile karışmasın)
+    await expect(page.locator('header img[alt="Iqra Eğitim Portalı"]')).toBeVisible();
     
-    // Giriş butonu mevcut mu?
-    await expect(page.getByRole('link', { name: /giriş/i })).toBeVisible();
+    // Header'daki giriş butonu mevcut mu? (spesifik seçici)
+    await expect(page.locator('header').getByRole('link', { name: 'Giriş' })).toBeVisible();
   });
 
   test('Giriş sayfasına yönlendirme', async ({ page }) => {
-    // Giriş butonuna tıkla
-    await page.getByRole('link', { name: /giriş/i }).click();
+    // Header'daki ilk giriş butonuna tıkla
+    await page.locator('header').getByRole('link', { name: 'Giriş' }).click();
+    
+    // URL değişimini bekle (modern API)
+    await page.waitForURL(/.*giris/);
     
     // Giriş sayfasına yönlendirildi mi?
     await expect(page).toHaveURL(/.*giris/);
