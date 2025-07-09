@@ -4,6 +4,39 @@ set -euo pipefail
 # Automated CI Health-Check & Fix
 # Analyzes GitHub Actions workflow results and ZAP security reports
 
+# Dependency kontrolü ve kurulumu
+echo "🔧 Checking dependencies..."
+
+command -v jq >/dev/null 2>&1 || {
+  echo "📦 Installing jq..."
+  if command -v apt-get >/dev/null 2>&1; then
+    sudo apt-get update && sudo apt-get install -y jq
+  elif command -v yum >/dev/null 2>&1; then
+    sudo yum install -y jq
+  elif command -v brew >/dev/null 2>&1; then
+    brew install jq
+  else
+    echo "❌ Error: Cannot install jq. Please install it manually."
+    exit 1
+  fi
+}
+
+command -v unzip >/dev/null 2>&1 || {
+  echo "📦 Installing unzip..."
+  if command -v apt-get >/dev/null 2>&1; then
+    sudo apt-get update && sudo apt-get install -y unzip
+  elif command -v yum >/dev/null 2>&1; then
+    sudo yum install -y unzip
+  elif command -v brew >/dev/null 2>&1; then
+    brew install unzip
+  else
+    echo "❌ Error: Cannot install unzip. Please install it manually."
+    exit 1
+  fi
+}
+
+echo "✅ Dependencies checked"
+
 # 1) Temel değişkenler
 REPO="tural-musab/i-ep.app"
 API="https://api.github.com/repos/$REPO"
@@ -12,6 +45,13 @@ API="https://api.github.com/repos/$REPO"
 if [[ -z "${GITHUB_TOKEN:-}" ]]; then
   echo "❌ Error: GITHUB_TOKEN environment variable is required"
   echo "Usage: GITHUB_TOKEN=<your_github_token> ./scripts/ci-health-check.sh"
+  echo ""
+  echo "💡 In GitHub Actions, add this to your workflow:"
+  echo "   env:"
+  echo "     GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}"
+  echo ""
+  echo "💡 For local usage:"
+  echo "   export GITHUB_TOKEN=<your_personal_access_token>"
   exit 1
 fi
 
