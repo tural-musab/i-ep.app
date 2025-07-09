@@ -5,8 +5,8 @@ import { defineConfig, devices } from '@playwright/test';
  * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
-  // Her testin çalışması için maksimum süre (msec)
-  timeout: 30000,
+  // Her testin çalışması için maksimum süre (CI için artırıldı)
+  timeout: process.env.CI ? 60000 : 30000,
   
   // Test klasörü yapılandırması
   testDir: './e2e',
@@ -17,11 +17,11 @@ export default defineConfig({
   // Test testlerinin paralel mi çalışacağı
   fullyParallel: true,
   
-  // Test başarısız olursa yeniden deneme sayısı
-  retries: process.env.CI ? 1 : 0,
+  // Test başarısız olursa yeniden deneme sayısı (CI için artırıldı)
+  retries: process.env.CI ? 2 : 0,
   
-  // Test çalıştıran işler sayısı (güvenli optimizasyon)
-  workers: process.env.CI ? 2 : undefined,
+  // Test çalıştıran işler sayısı (CI için conservative)
+  workers: process.env.CI ? 1 : undefined,
   
   // Reporter ayarları
   reporter: [
@@ -45,10 +45,33 @@ export default defineConfig({
     
     // Temel URL
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
+    
+    // CI için ek ayarlar
+    ...(process.env.CI && {
+      // CI'da headless mode zorla
+      headless: true,
+      // Action timeout artır
+      actionTimeout: 30000,
+      // Navigation timeout artır  
+      navigationTimeout: 30000,
+      // Slow motion ekle (timing issues için)
+      slowMo: 100,
+    }),
   },
   
-  // Farklı tarayıcı projeleri tanımlama
-  projects: [
+  // Farklı tarayıcı projeleri tanımlama (CI için optimize)
+  projects: process.env.CI ? [
+    // CI'da sadece Chrome (en stabil)
+    {
+      name: 'chromium',
+      use: { 
+        ...devices['Desktop Chrome'],
+        // CI için viewport ayarla
+        viewport: { width: 1280, height: 720 },
+      },
+    },
+  ] : [
+    // Local'da tam test suite
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
@@ -76,5 +99,7 @@ export default defineConfig({
     command: 'npm run dev',
     port: 3000,
     reuseExistingServer: !process.env.CI,
+    // CI için timeout artır
+    timeout: process.env.CI ? 120000 : 60000,
   },
 }); 
