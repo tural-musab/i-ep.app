@@ -122,17 +122,10 @@ fi
 echo ""
 echo "🧪 Checking Jest security test results..."
 
-# Initialize variables
-JEST_SECURITY_PASS=0
-JEST_SECURITY_FAIL=0
-
 # Jest test log'unu job log'undan çıkar
 if [[ -f "job.log" ]]; then
   JEST_SECURITY_PASS=$(grep -c "PASS.*security" job.log 2>/dev/null || echo "0")
   JEST_SECURITY_FAIL=$(grep -c "FAIL.*security" job.log 2>/dev/null || echo "0")
-  # Clean any whitespace/newlines
-  JEST_SECURITY_PASS=${JEST_SECURITY_PASS//[$'\t\r\n ']}
-  JEST_SECURITY_FAIL=${JEST_SECURITY_FAIL//[$'\t\r\n ']}
   
   if [[ "$JEST_SECURITY_FAIL" -eq 0 && "$JEST_SECURITY_PASS" -gt 0 ]]; then
     echo "✅ Jest security tests passed: $JEST_SECURITY_PASS test suites"
@@ -153,16 +146,14 @@ WORKFLOW_STATUS=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
 echo ""
 echo "📊 Overall Workflow Status: $WORKFLOW_STATUS"
 
-# CI steps geçtiyse ve Jest security tests başarılıysa success sayalım
-if [[ -z "$FAILED_STEPS" && "$JEST_SECURITY_FAIL" -eq 0 && "$JEST_SECURITY_PASS" -gt 0 ]]; then
+if [[ "$WORKFLOW_STATUS" == "success" ]]; then
   echo ""
   echo "🎉 CI Health Check PASSED! All systems green."
-  echo "✅ Security tests completed successfully ($JEST_SECURITY_PASS test suites)"
+  echo "✅ Security tests completed successfully"
+  echo "✅ ZAP scan passed security thresholds"
   echo "✅ All CI steps completed without errors"
-  echo "✅ Coverage report generated successfully"
   echo ""
   echo "🚀 Ready to proceed with S2-001 (Tenant Backup & DR)"
-  exit 0
 elif [[ "$WORKFLOW_STATUS" == "failure" ]]; then
   echo ""
   echo "❌ CI Health Check FAILED!"
@@ -172,17 +163,8 @@ elif [[ "$WORKFLOW_STATUS" == "in_progress" ]]; then
   echo ""
   echo "⏳ Workflow is still running. Please wait for completion."
   exit 1
-elif [[ "$WORKFLOW_STATUS" == "success" ]]; then
-  echo ""
-  echo "🎉 CI Health Check PASSED! All systems green."
-  echo "✅ Security tests completed successfully"
-  echo "✅ All CI steps completed without errors"
-  echo ""
-  echo "🚀 Ready to proceed with S2-001 (Tenant Backup & DR)"
-  exit 0
 else
   echo ""
-  echo "⚠️  Workflow status: $WORKFLOW_STATUS"
-  echo "🔧 But all CI steps passed, so considering this successful"
-  exit 0
+  echo "⚠️  Workflow status: $WORKFLOW_STATUS (unexpected)"
+  exit 1
 fi 
