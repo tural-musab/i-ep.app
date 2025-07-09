@@ -109,10 +109,10 @@ export async function GET(
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: { tenantId: string } }
+  { params }: { params: Promise<{ tenantId: string }> }
 ) {
   try {
-    const tenantId = params.tenantId;
+    const { tenantId } = await params;
     const requestBody = await request.json();
     
     // İstek parametrelerini al

@@ -20,10 +20,10 @@ const domainService = new DomainService();
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { domainId: string } }
+  { params }: { params: Promise<{ domainId: string }> }
 ) {
   try {
-    const domainId = params.domainId;
+    const { domainId } = await params;
     
     // Supabase istemcisi oluştur
     const supabase = createRouteHandlerClient<Database>({ cookies });

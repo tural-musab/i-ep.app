@@ -19,9 +19,9 @@ export default async function TenantLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { tenant: string };
+  params: Promise<{ tenant: string }>;
 }) {
-  const subdomain = params.tenant;
+  const { tenant: subdomain } = await params;
   const domain = `${subdomain}.i-ep.app`;
   
   // Tenant bilgisini al
@@ -35,52 +35,52 @@ export default async function TenantLayout({
   const navigationItems = [
     {
       title: 'Ana Sayfa',
-      href: `/${params.tenant}`,
+      href: `/${subdomain}`,
       icon: Home,
     },
     {
       title: 'Öğrenciler',
-      href: `/${params.tenant}/ogrenciler`,
+      href: `/${subdomain}/ogrenciler`,
       icon: Users,
     },
     {
       title: 'Öğretmenler',
-      href: `/${params.tenant}/ogretmenler`,
+      href: `/${subdomain}/ogretmenler`,
       icon: UserCheck,
     },
     {
       title: 'Sınıflar',
-      href: `/${params.tenant}/siniflar`,
+      href: `/${subdomain}/siniflar`,
       icon: BookOpen,
     },
     {
       title: 'Notlar',
-      href: `/${params.tenant}/notlar`,
+      href: `/${subdomain}/notlar`,
       icon: ClipboardList,
     },
     {
       title: 'Yoklama',
-      href: `/${params.tenant}/yoklama`,
+      href: `/${subdomain}/yoklama`,
       icon: CalendarCheck,
     },
     {
       title: 'Ödevler',
-      href: `/${params.tenant}/odevler`,
+      href: `/${subdomain}/odevler`,
       icon: FileText,
     },
     {
       title: 'İletişim',
-      href: `/${params.tenant}/iletisim`,
+      href: `/${subdomain}/iletisim`,
       icon: MessageSquare,
     },
     {
       title: 'Raporlar',
-      href: `/${params.tenant}/raporlar`,
+      href: `/${subdomain}/raporlar`,
       icon: BarChart3,
     },
     {
       title: 'Ayarlar',
-      href: `/${params.tenant}/ayarlar`,
+      href: `/${subdomain}/ayarlar`,
       icon: Settings,
     },
   ];

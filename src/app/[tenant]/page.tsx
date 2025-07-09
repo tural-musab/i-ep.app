@@ -4,9 +4,9 @@ import { notFound } from 'next/navigation';
 export default async function TenantHomePage({
   params,
 }: {
-  params: { tenant: string };
+  params: Promise<{ tenant: string }>;
 }) {
-  const subdomain = params.tenant;
+  const { tenant: subdomain } = await params;
   const domain = `${subdomain}.i-ep.app`;
   
   // Tenant bilgisini al
@@ -26,7 +26,7 @@ export default async function TenantHomePage({
           <h2 className="text-xl font-semibold mb-4">Öğrenciler</h2>
           <p className="text-gray-600">Öğrenci kayıtları ve bilgilerini yönetin.</p>
           <a 
-            href={`/${params.tenant}/ogrenciler`}
+            href={`/${subdomain}/ogrenciler`}
             className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
             Öğrencilere Git
@@ -37,7 +37,7 @@ export default async function TenantHomePage({
           <h2 className="text-xl font-semibold mb-4">Öğretmenler</h2>
           <p className="text-gray-600">Öğretmen kadrosu ve ders programlarını yönetin.</p>
           <a 
-            href={`/${params.tenant}/ogretmenler`}
+            href={`/${subdomain}/ogretmenler`}
             className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
             Öğretmenlere Git
@@ -48,7 +48,7 @@ export default async function TenantHomePage({
           <h2 className="text-xl font-semibold mb-4">Sınıflar</h2>
           <p className="text-gray-600">Sınıf organizasyonu ve ders programlarını yönetin.</p>
           <a 
-            href={`/${params.tenant}/siniflar`}
+            href={`/${subdomain}/siniflar`}
             className="mt-4 inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
           >
             Sınıflara Git

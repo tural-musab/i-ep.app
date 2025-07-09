@@ -210,9 +210,9 @@ async function verifyRequest(
  */
 export async function GET(
   req: NextRequest,
-  { params }: { params: { entity: string } }
+  { params }: { params: Promise<{ entity: string }> }
 ) {
-  const entity = params.entity;
+  const { entity } = await params;
   const url = new URL(req.url);
   
   // İzolasyon kontrolü
@@ -353,9 +353,9 @@ export async function GET(
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { entity: string } }
+  { params }: { params: Promise<{ entity: string }> }
 ) {
-  const entity = params.entity;
+  const { entity } = await params;
   
   // İzolasyon kontrolü
   const { tenantId, entityTable, userId, error } = await verifyRequest(req, entity, 'create');
@@ -543,9 +543,9 @@ export async function PATCH(
  */
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { entity: string } }
+  { params }: { params: Promise<{ entity: string }> }
 ) {
-  const entity = params.entity;
+  const { entity } = await params;
   
   // İzolasyon kontrolü
   const { tenantId, entityTable, userId, error } = await verifyRequest(req, entity, 'delete');

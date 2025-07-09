@@ -20,10 +20,10 @@ const domainService = new DomainService();
  */
 export async function POST(
   req: NextRequest,
-  { params }: { params: { domainId: string } }
+  { params }: { params: Promise<{ domainId: string }> }
 ) {
   try {
-    const domainId = params.domainId;
+    const { domainId } = await params;
     
     if (!domainId) {
       return NextResponse.json(
