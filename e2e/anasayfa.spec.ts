@@ -11,8 +11,7 @@ test.describe('Anasayfa Testleri', () => {
     await expect(page).toHaveTitle(/Iqra Eğitim Portalı/);
   });
 
-  // CI debug için diğer testleri geçici olarak devre dışı bırakıyoruz
-  test.skip('Anasayfa ana bileşenlerini kontrol et', async ({ page }) => {
+  test('Anasayfa ana bileşenlerini kontrol et', async ({ page }) => {
     // Header'ın görünür olduğunu kontrol et (nav yerine header)
     await expect(page.locator('header')).toBeVisible();
     
@@ -23,7 +22,7 @@ test.describe('Anasayfa Testleri', () => {
     await expect(page.locator('header').getByRole('link', { name: 'Giriş' })).toBeVisible();
   });
 
-  test.skip('Giriş sayfasına yönlendirme', async ({ page }) => {
+  test('Giriş sayfasına yönlendirme', async ({ page }) => {
     // Header'daki ilk giriş butonuna tıkla
     await page.locator('header').getByRole('link', { name: 'Giriş' }).click();
     
