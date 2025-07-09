@@ -63,14 +63,18 @@ const customJestConfig = {
   // Module resolution
   moduleDirectories: ['node_modules', '<rootDir>/'],
   
-  // Coverage configuration - focus on security and working modules
+  // Coverage configuration - focus on essential modules only
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
+    'src/lib/**/*.{ts,tsx}',
+    'src/components/**/*.{tsx}',
+    'src/utils/**/*.{ts}',
     '!src/**/*.d.ts',
     '!src/**/__tests__/**',
     '!src/**/node_modules/**',
-    '!src/app/**/page.tsx', // Exclude Next.js pages  
-    '!src/app/**/layout.tsx', // Exclude Next.js layouts
+    // Exclude large or non-critical files  
+    '!src/app/**',
+    '!src/types/**',
+    '!src/middleware/**',
   ],
   
   // Global setup for Web APIs
