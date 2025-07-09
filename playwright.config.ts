@@ -18,10 +18,10 @@ export default defineConfig({
   fullyParallel: true,
   
   // Test başarısız olursa yeniden deneme sayısı
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
   
-  // Test çalıştıran işler sayısı
-  workers: process.env.CI ? 1 : undefined,
+  // Test çalıştıran işler sayısı (CI için optimize edildi)
+  workers: process.env.CI ? 2 : undefined,
   
   // Reporter ayarları
   reporter: [
@@ -47,8 +47,19 @@ export default defineConfig({
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
   },
   
-  // Farklı tarayıcı projeleri tanımlama
-  projects: [
+  // Farklı tarayıcı projeleri tanımlama (CI için optimize edildi)
+  projects: process.env.CI ? [
+    // CI'da sadece Chrome ve Firefox (hızlı test için)
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+  ] : [
+    // Local'da tam test suite
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
