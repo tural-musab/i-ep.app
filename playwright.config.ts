@@ -20,7 +20,7 @@ export default defineConfig({
   // Test başarısız olursa yeniden deneme sayısı
   retries: process.env.CI ? 1 : 0,
   
-  // Test çalıştıran işler sayısı (CI için optimize edildi)
+  // Test çalıştıran işler sayısı (güvenli optimizasyon)
   workers: process.env.CI ? 2 : undefined,
   
   // Reporter ayarları
@@ -47,19 +47,8 @@ export default defineConfig({
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
   },
   
-  // Farklı tarayıcı projeleri tanımlama (CI için optimize edildi)
-  projects: process.env.CI ? [
-    // CI'da sadece Chrome ve Firefox (hızlı test için)
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-  ] : [
-    // Local'da tam test suite
+  // Farklı tarayıcı projeleri tanımlama
+  projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
