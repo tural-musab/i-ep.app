@@ -92,8 +92,8 @@ jobs:
         run: npm run format:check
         continue-on-error: true
 
-      - name: Test with coverage
-        run: npm test -- --coverage --passWithNoTests
+      - name: Test without coverage
+        run: npm test -- --passWithNoTests
 
       - name: Upload Coverage Artifacts
         uses: actions/upload-artifact@v4

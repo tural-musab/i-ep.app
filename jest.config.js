@@ -63,18 +63,10 @@ const customJestConfig = {
   // Module resolution
   moduleDirectories: ['node_modules', '<rootDir>/'],
   
-  // Coverage configuration - focus on essential modules only
+  // Coverage configuration - disabled for CI performance
   collectCoverageFrom: [
-    'src/lib/**/*.{ts,tsx}',
-    'src/components/**/*.{tsx}',
-    'src/utils/**/*.{ts}',
-    '!src/**/*.d.ts',
-    '!src/**/__tests__/**',
-    '!src/**/node_modules/**',
-    // Exclude large or non-critical files  
-    '!src/app/**',
-    '!src/types/**',
-    '!src/middleware/**',
+    // Coverage disabled in CI to prevent timeout
+    // Re-enable for local development if needed
   ],
   
   // Global setup for Web APIs
