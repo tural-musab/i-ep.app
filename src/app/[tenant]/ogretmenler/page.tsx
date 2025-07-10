@@ -60,7 +60,7 @@ const teacherColumns = [
   {
     accessorKey: 'department',
     header: 'Bölüm',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => {
       const department = row.getValue('department');
       return <Badge variant="secondary">{department}</Badge>;
     },
@@ -68,8 +68,8 @@ const teacherColumns = [
   {
     accessorKey: 'subjects',
     header: 'Dersler',
-    cell: ({ row }: any) => {
-      const subjects = row.getValue('subjects') as string[];
+    cell: ({ row }: { row: { getValue: (key: string) => string[] } }) => {
+      const subjects = row.getValue('subjects');
       return (
         <div className="flex flex-wrap gap-1">
           {subjects.slice(0, 2).map((subject: string, index: number) => (
@@ -93,7 +93,7 @@ const teacherColumns = [
   {
     accessorKey: 'status',
     header: 'Durum',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => {
       const status = row.getValue('status');
       const statusConfig = {
         active: { label: 'Aktif', variant: 'default' as const },
@@ -208,7 +208,7 @@ export default function TeachersPage() {
     if (currentTenantId) {
       loadTeachers();
     }
-  }, [currentTenantId]);
+  }, [currentTenantId, mockTeachers]);
 
   const filteredTeachers = teachers.filter(teacher => {
     const matchesSearch = 
@@ -408,7 +408,7 @@ export default function TeachersPage() {
     {
       id: 'actions',
       header: 'İşlemler',
-      cell: ({ row }: any) => {
+      cell: ({ row }: { row: { original: Teacher } }) => {
         const teacher = row.original;
         return (
           <div className="flex space-x-2">

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { TenantDomain } from '@/lib/domain/types';
 
 // Bu sayfada kullanılacak form state tipi
@@ -9,6 +8,15 @@ interface DomainFormState {
   domain: string;
   loading: boolean;
   error: string | null;
+}
+
+// Domain doğrulama detayları tipi
+interface VerificationDetails {
+  ssl?: {
+    method: string;
+    type: string;
+  };
+  verification_errors?: string[];
 }
 
 export default function DomainsAdminPage() {
@@ -26,9 +34,9 @@ export default function DomainsAdminPage() {
   
   // Modal durumu
   const [showVerificationModal, setShowVerificationModal] = useState<boolean>(false);
-  const [verificationDetails, setVerificationDetails] = useState<any>(null);
+  const [verificationDetails, setVerificationDetails] = useState<VerificationDetails | null>(null);
   
-  const router = useRouter();
+  // const router = useRouter(); // TODO: router kullanılacak
   
   // Domainleri getir
   const fetchDomains = async () => {
@@ -349,7 +357,7 @@ export default function DomainsAdminPage() {
             
             <p className="mb-4">
               DNS ayarlarınızı yaptıktan sonra, doğrulama tamamlanana kadar birkaç dakika bekleyin.
-              Daha sonra "Doğrula" butonunu kullanarak durumu kontrol edebilirsiniz.
+              Daha sonra &quot;Doğrula&quot; butonunu kullanarak durumu kontrol edebilirsiniz.
             </p>
             
             <div className="flex justify-end">

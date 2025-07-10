@@ -28,12 +28,9 @@ import {
   Edit, 
   Trash2, 
   BookOpen, 
-  Calendar,
-  Clock,
   CheckCircle,
   AlertCircle,
   FileText,
-  Users,
   Download,
   Upload
 } from 'lucide-react';

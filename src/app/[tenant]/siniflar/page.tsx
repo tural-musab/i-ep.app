@@ -52,7 +52,7 @@ const classColumns = [
   {
     accessorKey: 'name',
     header: 'Sınıf Adı',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => {
       const className = row.getValue('name');
       return <span className="font-medium">{className}</span>;
     },
@@ -60,7 +60,7 @@ const classColumns = [
   {
     accessorKey: 'grade',
     header: 'Seviye',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { getValue: (key: string) => number } }) => {
       const grade = row.getValue('grade');
       return <Badge variant="outline">{grade}. Sınıf</Badge>;
     },
@@ -68,7 +68,7 @@ const classColumns = [
   {
     accessorKey: 'currentEnrollment',
     header: 'Öğrenci Sayısı',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { getValue: (key: string) => number; original: Class } }) => {
       const current = row.getValue('currentEnrollment');
       const capacity = row.original.capacity;
       return (
@@ -87,7 +87,7 @@ const classColumns = [
   {
     accessorKey: 'mainTeacherName',
     header: 'Sınıf Öğretmeni',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { getValue: (key: string) => string | undefined } }) => {
       const teacher = row.getValue('mainTeacherName');
       return teacher ? (
         <span>{teacher}</span>
@@ -99,7 +99,7 @@ const classColumns = [
   {
     accessorKey: 'classroom',
     header: 'Derslik',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { getValue: (key: string) => string | undefined } }) => {
       const classroom = row.getValue('classroom');
       return classroom ? (
         <Badge variant="secondary">{classroom}</Badge>
@@ -111,7 +111,7 @@ const classColumns = [
   {
     accessorKey: 'status',
     header: 'Durum',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => {
       const status = row.getValue('status');
       const statusConfig = {
         active: { label: 'Aktif', variant: 'default' as const },
@@ -231,7 +231,7 @@ export default function ClassesPage() {
     if (currentTenantId) {
       loadClasses();
     }
-  }, [currentTenantId]);
+  }, [currentTenantId, mockClasses]);
 
   const filteredClasses = classes.filter(classItem => {
     const matchesSearch = 
@@ -380,7 +380,7 @@ export default function ClassesPage() {
     {
       id: 'actions',
       header: 'İşlemler',
-      cell: ({ row }: any) => {
+      cell: ({ row }: { row: { original: Class } }) => {
         const classItem = row.original;
         return (
           <div className="flex space-x-2">

@@ -22,21 +22,14 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Checkbox } from '@/components/ui/checkbox';
 import { 
-  Plus, 
   Search, 
-  Edit, 
   Trash2, 
   Send,
   MessageSquare, 
   Bell,
-  Users,
-  Mail,
-  Phone,
   Megaphone,
   Eye,
-  Clock,
   CheckCircle
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';

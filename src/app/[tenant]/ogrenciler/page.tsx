@@ -97,6 +97,7 @@ export default function StudentsPage() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
 
   // Mock data - gerçek uygulamada API'den gelecek
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const mockStudents: Student[] = [
     {
       id: '1',
