@@ -216,10 +216,10 @@ export async function POST(request: NextRequest) {
         });
     }
     
-  } catch (error: any) {
+  } catch (error) {
     console.error('Export API hatası:', error);
     return NextResponse.json(
-      { error: error.message || 'İşlem sırasında bir hata oluştu' },
+      { error: error instanceof Error ? error.message : 'İşlem sırasında bir hata oluştu' },
       { status: 500 }
     );
   }

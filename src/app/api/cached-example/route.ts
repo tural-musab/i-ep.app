@@ -1,6 +1,13 @@
 import { getCachedValue, setCachedValue } from '@/lib/cache/redis';
 import { NextRequest, NextResponse } from 'next/server';
 
+// Cached example data type
+interface CachedExampleData {
+  message: string;
+  timestamp: string;
+  randomValue: string;
+}
+
 /**
  * GET /api/cached-example
  * 
@@ -14,7 +21,7 @@ export async function GET(request: NextRequest) {
   
   try {
     // Önbellekte değer var mı kontrol et
-    let value = await getCachedValue<Record<string, any>>(tenantId, key);
+    let value = await getCachedValue<CachedExampleData>(tenantId, key);
     let fromCache = true;
     
     // Eğer değer yoksa, oluştur ve önbelleğe kaydet
@@ -29,7 +36,7 @@ export async function GET(request: NextRequest) {
       // 30 saniye TTL ile önbelleğe kaydet
       await setCachedValue(tenantId, key, value, 30);
     }
-    
+
     return NextResponse.json({
       data: value,
       meta: {

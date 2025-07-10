@@ -68,7 +68,7 @@ export async function GET() {
     }
     
     // Kullanıcının erişim izni olan tenant'ları al
-    let accessibleTenants: any[] = [];
+    let accessibleTenants: Array<{ id: string; name: string; subdomain: string }> = [];
     
     if (isSuperAdmin) {
       // Super admin tüm active tenant'lara erişebilir
@@ -84,7 +84,7 @@ export async function GET() {
       if (typeof allowedTenants === 'string') {
         try {
           allowedTenants = JSON.parse(allowedTenants);
-        } catch (e) {
+        } catch {
           allowedTenants = [];
         }
       }
@@ -117,7 +117,7 @@ export async function GET() {
     if (typeof lastAccessedTenants === 'string') {
       try {
         lastAccessedTenants = JSON.parse(lastAccessedTenants);
-      } catch (e) {
+      } catch {
         lastAccessedTenants = [];
       }
     }
@@ -143,11 +143,11 @@ export async function GET() {
       warnings: tenantWarnings,
       isSuperAdmin
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Tenant bilgileri alınırken hata:', error);
     
     return NextResponse.json(
-      { error: 'Tenant bilgileri alınırken bir hata oluştu', details: error.message },
+      { error: 'Tenant bilgileri alınırken bir hata oluştu', details: error instanceof Error ? error.message : 'Bilinmeyen hata' },
       { status: 500 }
     );
   }

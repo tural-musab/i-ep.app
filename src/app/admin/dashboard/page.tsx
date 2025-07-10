@@ -5,6 +5,25 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { getTenantId } from '@/lib/tenant/tenant-utils';
+import { User } from '@supabase/auth-helpers-nextjs';
+
+// User details tipi
+interface UserDetails {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  auth_id: string;
+}
+
+// Tenant details tipi  
+interface TenantDetails {
+  id: string;
+  name: string;
+  subdomain: string;
+  plan_type: string;
+  is_active: boolean;
+}
 
 /**
  * Admin Dashboard Sayfası
@@ -15,9 +34,9 @@ export default function AdminDashboardPage() {
   const router = useRouter();
   const supabase = createClientComponentClient();
   
-  const [user, setUser] = useState<any>(null);
-  const [userDetails, setUserDetails] = useState<any>(null);
-  const [tenantDetails, setTenantDetails] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [tenantDetails, setTenantDetails] = useState<TenantDetails | null>(null);
   const [userStats, setUserStats] = useState({
     totalUsers: 0,
     totalTeachers: 0,
@@ -111,7 +130,7 @@ export default function AdminDashboardPage() {
           });
         }
         
-      } catch (err: any) {
+      } catch (err) {
         console.error('Admin dashboard yükleme hatası:', err);
         setError('Sayfa yüklenirken bir hata oluştu');
       } finally {

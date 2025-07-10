@@ -184,7 +184,7 @@ describe('Rate Limiter Middleware Integration Tests', () => {
     it('should clear rate limit store', async () => {
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
       
-      const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1') as any;
+      const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1');
       
       // Make some requests
       rateLimiterMiddleware(request);
@@ -206,7 +206,7 @@ describe('Rate Limiter Middleware Integration Tests', () => {
     it('should track rate limit status correctly', async () => {
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
       
-      const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1') as any;
+      const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1');
       
       // Initial status should be null
       expect(getRateLimitStatus('tenant-1')).toBeNull();

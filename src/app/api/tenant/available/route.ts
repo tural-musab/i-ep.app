@@ -3,6 +3,26 @@ import { cookies } from 'next/headers';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { Database } from '@/types/database.types';
 
+// Tenant tipi
+interface TenantData {
+  id: string;
+  name: string;
+  subdomain: string;
+  plan_type: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+// Last accessed tenant tipi
+interface LastAccessedTenant {
+  id: string;
+  name: string;
+  subdomain: string;
+  planType: string;
+  isActive: boolean;
+  primaryDomain?: string;
+}
+
 /**
  * Kullanıcının erişebileceği tüm tenant'ları listeleyen API
  * 
@@ -29,7 +49,7 @@ export async function GET() {
     const isSuperAdmin = user.app_metadata?.role === 'super_admin';
     
     // Kullanıcının erişim izni olan tenant'ları al
-    let accessibleTenants: any[] = [];
+    let accessibleTenants: TenantData[] = [];
     
     if (isSuperAdmin) {
       // Super admin tüm active tenant'lara erişebilir
@@ -54,7 +74,7 @@ export async function GET() {
       if (typeof allowedTenants === 'string') {
         try {
           allowedTenants = JSON.parse(allowedTenants);
-        } catch (e) {
+        } catch {
           allowedTenants = [];
         }
       }
@@ -98,7 +118,7 @@ export async function GET() {
     if (typeof lastAccessedTenants === 'string') {
       try {
         lastAccessedTenants = JSON.parse(lastAccessedTenants);
-      } catch (e) {
+      } catch {
         lastAccessedTenants = [];
       }
     }
@@ -108,7 +128,7 @@ export async function GET() {
     }
     
     // Son erişilen tenant'ların detaylarını getir
-    const lastAccessedDetails: any[] = [];
+    const lastAccessedDetails: LastAccessedTenant[] = [];
     
     if (lastAccessedTenants.length > 0) {
       const { data: lastAccessed } = await supabase
@@ -138,7 +158,7 @@ export async function GET() {
     const currentTenantId = user.user_metadata?.tenant_id || user.user_metadata?.current_tenant;
     
     // Tüm erişilebilir tenant'ların primary domain'lerini al
-    let primaryDomains: Record<string, string> = {};
+    const primaryDomains: Record<string, string> = {};
     
     if (accessibleTenants.length > 0) {
       const tenantIds = accessibleTenants.map(t => t.id);
@@ -191,11 +211,11 @@ export async function GET() {
       currentTenantId,
       isSuperAdmin
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('Erişilebilir tenant listesi alınırken hata:', error);
     
     return NextResponse.json(
-      { error: 'Tenant listesi alınırken bir hata oluştu', details: error.message },
+      { error: 'Tenant listesi alınırken bir hata oluştu', details: error instanceof Error ? error.message : 'Bilinmeyen hata' },
       { status: 500 }
     );
   }

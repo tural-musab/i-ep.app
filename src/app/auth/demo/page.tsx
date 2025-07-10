@@ -90,7 +90,7 @@ export default function DemoPage() {
         router.push(`/dashboard?demo=true&role=${selectedRole}`);
       }, 1500);
       
-    } catch (err: any) {
+    } catch (err) {
       console.error('Demo giriş hatası:', err);
       setError('Demo hesabı oluşturulurken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
     } finally {
