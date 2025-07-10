@@ -1,7 +1,7 @@
 -- Sınıf tablosu
 CREATE TABLE IF NOT EXISTS public.classes (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    tenant_id UUID NOT NULL REFERENCES auth.tenants(id) ON DELETE CASCADE,
+    tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
     grade_level INTEGER NOT NULL,
     capacity INTEGER NOT NULL DEFAULT 30,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.class_students (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     class_id UUID NOT NULL REFERENCES public.classes(id) ON DELETE CASCADE,
     student_id UUID NOT NULL REFERENCES public.students(id) ON DELETE CASCADE,
-    tenant_id UUID NOT NULL REFERENCES auth.tenants(id) ON DELETE CASCADE,
+    tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
     enrollment_date DATE NOT NULL DEFAULT CURRENT_DATE,
     status VARCHAR(20) NOT NULL DEFAULT 'active', -- active, inactive, transferred
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS public.class_teachers (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     class_id UUID NOT NULL REFERENCES public.classes(id) ON DELETE CASCADE,
     teacher_id UUID NOT NULL REFERENCES public.teachers(id) ON DELETE CASCADE,
-    tenant_id UUID NOT NULL REFERENCES auth.tenants(id) ON DELETE CASCADE,
+    tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
     role VARCHAR(50) NOT NULL DEFAULT 'subject_teacher', -- homeroom_teacher, subject_teacher
     subject VARCHAR(100), -- Sadece branş öğretmenleri için
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -44,43 +44,43 @@ ALTER TABLE public.class_teachers ENABLE ROW LEVEL SECURITY;
 
 -- Tenant bazlı okuma politikaları
 CREATE POLICY tenant_isolation_select_classes ON public.classes
-    FOR SELECT USING (tenant_id = auth.tenant_id());
+    FOR SELECT USING (tenant_id = auth.uid());
 
 CREATE POLICY tenant_isolation_select_class_students ON public.class_students
-    FOR SELECT USING (tenant_id = auth.tenant_id());
+    FOR SELECT USING (tenant_id = auth.uid());
 
 CREATE POLICY tenant_isolation_select_class_teachers ON public.class_teachers
-    FOR SELECT USING (tenant_id = auth.tenant_id());
+    FOR SELECT USING (tenant_id = auth.uid());
 
 -- Tenant bazlı yazma politikaları
 CREATE POLICY tenant_isolation_insert_classes ON public.classes
-    FOR INSERT WITH CHECK (tenant_id = auth.tenant_id());
+    FOR INSERT WITH CHECK (tenant_id = auth.uid());
 
 CREATE POLICY tenant_isolation_insert_class_students ON public.class_students
-    FOR INSERT WITH CHECK (tenant_id = auth.tenant_id());
+    FOR INSERT WITH CHECK (tenant_id = auth.uid());
 
 CREATE POLICY tenant_isolation_insert_class_teachers ON public.class_teachers
-    FOR INSERT WITH CHECK (tenant_id = auth.tenant_id());
+    FOR INSERT WITH CHECK (tenant_id = auth.uid());
 
 -- Tenant bazlı güncelleme politikaları
 CREATE POLICY tenant_isolation_update_classes ON public.classes
-    FOR UPDATE USING (tenant_id = auth.tenant_id());
+    FOR UPDATE USING (tenant_id = auth.uid());
 
 CREATE POLICY tenant_isolation_update_class_students ON public.class_students
-    FOR UPDATE USING (tenant_id = auth.tenant_id());
+    FOR UPDATE USING (tenant_id = auth.uid());
 
 CREATE POLICY tenant_isolation_update_class_teachers ON public.class_teachers
-    FOR UPDATE USING (tenant_id = auth.tenant_id());
+    FOR UPDATE USING (tenant_id = auth.uid());
 
 -- Tenant bazlı silme politikaları
 CREATE POLICY tenant_isolation_delete_classes ON public.classes
-    FOR DELETE USING (tenant_id = auth.tenant_id());
+    FOR DELETE USING (tenant_id = auth.uid());
 
 CREATE POLICY tenant_isolation_delete_class_students ON public.class_students
-    FOR DELETE USING (tenant_id = auth.tenant_id());
+    FOR DELETE USING (tenant_id = auth.uid());
 
 CREATE POLICY tenant_isolation_delete_class_teachers ON public.class_teachers
-    FOR DELETE USING (tenant_id = auth.tenant_id());
+    FOR DELETE USING (tenant_id = auth.uid());
 
 -- Indexes
 CREATE INDEX idx_classes_tenant ON public.classes(tenant_id);
