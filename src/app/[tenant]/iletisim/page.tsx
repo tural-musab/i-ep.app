@@ -248,8 +248,9 @@ export default function CommunicationPage() {
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [isMessageDialogOpen, setIsMessageDialogOpen] = useState(false);
   const [isAnnouncementDialogOpen, setIsAnnouncementDialogOpen] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
-  const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
+  // TODO: Bu state'ler düzenleme özelliği için kullanılacak
+  // const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  // const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
 
   // Mock data
   const mockMessages: Message[] = [
@@ -425,7 +426,6 @@ export default function CommunicationPage() {
         <label className="block text-sm font-medium mb-1">Konu</label>
         <Input 
           placeholder="Mesaj konusu"
-          defaultValue={selectedMessage?.subject}
         />
       </div>
 
@@ -434,7 +434,6 @@ export default function CommunicationPage() {
         <Textarea 
           placeholder="Mesajınızı yazın..."
           rows={6}
-          defaultValue={selectedMessage?.content}
         />
       </div>
 

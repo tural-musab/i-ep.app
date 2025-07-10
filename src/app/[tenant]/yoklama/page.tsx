@@ -31,8 +31,7 @@ import {
   AlertTriangle,
   Search,
   Plus,
-  Download,
-  Filter
+  Download
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 

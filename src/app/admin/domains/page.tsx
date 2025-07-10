@@ -13,9 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DomainTable } from "@/components/admin/domain/DomainTable";
 import { AddDomainDialog } from "@/components/admin/domain/AddDomainDialog";
-import { DomainService } from "@/lib/domain/domain-service";
 import { DomainRecord, VerificationDetails } from "@/lib/domain/domain-service";
-import { TenantDomainError } from "@/lib/errors/tenant-errors";
+// TODO: DomainService ve TenantDomainError gelecekte kullanılacak
 
 interface DomainTab {
   id: string;
@@ -30,7 +29,8 @@ export default function DomainsPage() {
   const [loading, setLoading] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
-  const [verificationDetails, setVerificationDetails] = useState<VerificationDetails | null>(null);
+  // TODO: Doğrulama detayları için modal eklenecek
+  // const [verificationDetails, setVerificationDetails] = useState<VerificationDetails | null>(null);
 
   // Domain tabs
   const tabs: DomainTab[] = [
