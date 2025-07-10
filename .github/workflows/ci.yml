@@ -86,11 +86,11 @@ jobs:
 
       - name: Lint
         run: npm run lint
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Format check
         run: npm run format:check
-        continue-on-error: true
+        continue-on-error: false
 
       - name: Test without coverage
         run: npm test -- --passWithNoTests
