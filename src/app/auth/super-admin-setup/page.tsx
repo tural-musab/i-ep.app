@@ -19,7 +19,7 @@ export default function SuperAdminSetupPage() {
     
     try {
       // Süper admin rolünü RPC ile ata
-      const { data, error } = await supabase.rpc('set_super_admin_role', {
+      const { error } = await supabase.rpc('set_super_admin_role', {
         p_email: email
       });
       
@@ -71,7 +71,7 @@ export default function SuperAdminSetupPage() {
       const uuid = crypto.randomUUID();
       
       // Public users tablosuna kullanıcı ekle
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('users')
         .insert([
           {

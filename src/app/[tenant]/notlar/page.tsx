@@ -361,7 +361,7 @@ export default function GradesPage() {
     if (currentTenantId) {
       loadGrades();
     }
-  }, [currentTenantId]);
+  }, [currentTenantId, mockGrades, mockSummaries]);
 
   const filteredGrades = grades.filter(grade => {
     const matchesSearch = 

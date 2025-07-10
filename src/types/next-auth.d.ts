@@ -1,36 +1,16 @@
-import { DefaultSession } from "next-auth";
-import { JWT } from "next-auth/jwt";
+import NextAuth from 'next-auth';
+import { User } from './auth';
 
-declare module "next-auth" {
-  /**
-   * NextAuth oturum nesnesini genişlet
-   * Bu, session.user'a özel alanlar ekler
-   */
+declare module 'next-auth' {
   interface Session {
-    user: {
-      id: string;
-      role: string;
-      tenantId: string;
-    } & DefaultSession["user"];
+    user: User;
   }
 
-  /**
-   * Oturum açan kullanıcı nesnesini genişlet
-   */
-  interface User {
-    id: string;
-    role?: string;
-    tenantId?: string;
-  }
+  interface User extends User {}
 }
 
-declare module "next-auth/jwt" {
-  /**
-   * JWT içine eklenen alanlar
-   */
+declare module 'next-auth/jwt' {
   interface JWT {
-    id: string;
-    role?: string;
-    tenantId?: string;
+    user: User;
   }
 } 

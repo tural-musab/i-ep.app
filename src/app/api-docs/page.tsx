@@ -1,16 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function ApiDocsPage() {
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
   const handleRedirect = () => {
     // HTML sayfasına yönlendir
     window.location.href = '/api-docs/index.html';

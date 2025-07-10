@@ -6,14 +6,14 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DomainTable } from "@/components/admin/domain/DomainTable";
 import { AddDomainDialog } from "@/components/admin/domain/AddDomainDialog";
-import { DomainRecord, VerificationDetails } from "@/lib/domain/domain-service";
+import { DomainRecord } from "@/lib/domain/domain-service";
 // TODO: DomainService ve TenantDomainError gelecekte kullanılacak
 
 interface DomainTab {
@@ -42,7 +42,7 @@ export default function DomainsPage() {
   ];
 
   // Domain listesini getir
-  const fetchDomains = async () => {
+  const fetchDomains = useCallback(async () => {
     setLoading(true);
     try {
       const response = await fetch("/api/domains");
@@ -67,7 +67,7 @@ export default function DomainsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [toast]);
 
   // Domain silme işlemi
   const handleDeleteDomain = async (domainId: string) => {
@@ -115,7 +115,7 @@ export default function DomainsPage() {
             description: "Domain başarıyla doğrulandı",
           });
         } else {
-          setVerificationDetails(result.data);
+          // setVerificationDetails(result.data); // This line was removed
           toast({
             title: "Doğrulama Devam Ediyor",
             description: result.data.message || "Doğrulama işlemi devam ediyor",
@@ -204,7 +204,7 @@ export default function DomainsPage() {
   // İlk yüklemede domain listesini getir
   useEffect(() => {
     fetchDomains();
-  }, []);
+  }, [fetchDomains]);
 
   return (
     <div className="container mx-auto py-6">

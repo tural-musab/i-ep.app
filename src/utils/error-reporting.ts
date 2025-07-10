@@ -10,7 +10,7 @@ import * as Sentry from '@sentry/nextjs';
  */
 export function reportError(
   error: unknown,
-  context: Record<string, any> = {},
+  context: Record<string, unknown> = {},
   tags: Record<string, string> = {},
   level: Sentry.SeverityLevel = 'error'
 ): void {
@@ -25,7 +25,7 @@ export function reportError(
   if (error instanceof Error) {
     // Mevcut kullanıcı bilgisini ayarla (varsa)
     if (context.userId) {
-      Sentry.setUser({ id: context.userId });
+      Sentry.setUser({ id: String(context.userId) });
     }
 
     // Etiketleri ayarla
@@ -64,7 +64,7 @@ export function reportApiError(
     endpoint: string;
     method: string;
     statusCode?: number;
-    requestData?: any;
+    requestData?: unknown;
   },
   userId?: string
 ): void {
@@ -92,7 +92,7 @@ export function reportUIError(
   uiInfo: {
     component: string;
     action: string;
-    additionalData?: any;
+    additionalData?: unknown;
   },
   userId?: string
 ): void {
@@ -120,8 +120,8 @@ export function reportUIError(
 export function startPerformanceTracking(
   name: string,
   op: string,
-  data?: Record<string, any>
-): any | undefined {
+  data?: Record<string, unknown>
+): { name: string; op: string; data?: Record<string, unknown>; finish: () => void } | undefined {
   try {
     // Sentry API değişikliği nedeniyle fonksiyon şu anda bir mock döndürüyor
     // Gerçek implementasyon için güncel Sentry dökümanlarına bakınız
@@ -170,7 +170,7 @@ export function reportTenantError(
   error: unknown,
   tenantId: string,
   operation: string,
-  additionalData?: any
+  additionalData?: unknown
 ): void {
   reportError(
     error,

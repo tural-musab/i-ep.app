@@ -152,7 +152,7 @@ export default function OnboardingGuidePage() {
             <h4 className="text-sm font-medium text-blue-800">Subdomain Önerisi</h4>
             <p className="text-sm text-blue-700 mt-1">
               Subdomain için okul adınızın kısaltılmış veya kolayca hatırlanabilir bir versiyonunu kullanmanızı öneririz. 
-              Okul adınız "Cumhuriyet Anadolu Lisesi" ise, "cumhuriyet-lisesi" veya "cal" gibi bir subdomain tercih edebilirsiniz.
+              Okul adınız &quot;Cumhuriyet Anadolu Lisesi&quot; ise, &quot;cumhuriyet-lisesi&quot; veya &quot;cal&quot; gibi bir subdomain tercih edebilirsiniz.
             </p>
           </div>
           

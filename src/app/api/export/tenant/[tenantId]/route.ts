@@ -6,9 +6,7 @@
  * yeteneği sunar.
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { exportTenantTable, exportFullTenant, exportQueryResults, ExportFormat } from "@/lib/export/tenant-export";
-import { createTenantSupabaseClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from 'next/server';
 import { validateTenantAccess } from "@/lib/auth/permissions";
 import { getLogger } from "@/lib/utils/logger";
 

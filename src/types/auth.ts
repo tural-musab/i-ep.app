@@ -26,7 +26,7 @@ export interface UserProfile {
   city?: string;
   country?: string;
   postalCode?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   // Çoklu tenant desteği için ek alanlar
   primaryTenantId?: string;
   tenantRoles?: Record<string, UserRole>;
@@ -109,4 +109,17 @@ export interface TenantSwitchRequest {
   currentTenantId: string;
   targetTenantId: string;
   reason?: string;
+}
+
+export interface AuthState {
+  user: User | null;
+  isLoading: boolean;
+  error: string | null;
+  signIn: (email: string, password: string) => Promise<{ 
+    success: boolean; 
+    error?: string; 
+    user?: User 
+  }>;
+  signOut: () => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<boolean>;
 } 

@@ -6,16 +6,26 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ExternalLink, Loader2 } from "lucide-react";
-import { DomainVerification } from "@/components/admin/domain/DomainVerification";
-import { SSLStatus } from "@/components/admin/domain/SSLStatus";
-import { DomainRecord } from "@/lib/domain/domain-service";
-import Link from "next/link";
+import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from '@/components/ui/use-toast';
+import { ArrowLeft, ExternalLink, Loader2 } from 'lucide-react';
+import { DomainVerification } from '@/components/admin/domain/domain-verification';
+import { SSLStatus } from '@/components/admin/domain/ssl-status';
+
+interface Domain {
+  id: string;
+  domain: string;
+  type: 'subdomain' | 'custom';
+  is_verified: boolean;
+  is_primary: boolean;
+  tenant_id: string;
+  created_at: string;
+  verified_at?: string;
+}
 
 interface DomainDetailPageProps {
   params: {
@@ -25,20 +35,19 @@ interface DomainDetailPageProps {
 
 export default function DomainDetailPage({ params }: DomainDetailPageProps) {
   const { domainId } = params;
-  const { toast } = useToast();
-  const [domain, setDomain] = useState<DomainRecord | null>(null);
+  const [domain, setDomain] = useState<Domain | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Domain bilgilerini getir
-  const fetchDomainDetails = async () => {
+  const fetchDomainDetails = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
       const response = await fetch(`/api/domains/${domainId}`);
       const result = await response.json();
-      
+
       if (result.success) {
         setDomain(result.data);
       } else {
@@ -60,12 +69,12 @@ export default function DomainDetailPage({ params }: DomainDetailPageProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [domainId]);
 
   // Sayfa yüklendiğinde domain bilgilerini getir
   useEffect(() => {
     fetchDomainDetails();
-  }, [domainId]);
+  }, [fetchDomainDetails]);
   
   // Doğrulama tamamlandığında
   const handleVerificationCompleted = () => {
@@ -77,7 +86,7 @@ export default function DomainDetailPage({ params }: DomainDetailPageProps) {
   };
   
   // Doğrulama hatası
-  const handleVerificationError = (error: any) => {
+  const handleVerificationError = (error: Error) => {
     toast({
       title: "Doğrulama Hatası",
       description: error.message || "Domain doğrulanırken bir hata oluştu",

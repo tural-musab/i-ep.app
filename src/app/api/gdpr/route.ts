@@ -162,7 +162,6 @@ export async function GET(request: NextRequest) {
     
     // Kullanıcı kendisi için mi istek yapıyor yoksa admin mi?
     const isAdmin = user.app_metadata?.role === 'admin' || user.app_metadata?.role === 'superadmin';
-    const isSelfRequest = userId && user.id === userId;
     
     // Sorgu oluştur
     let query = supabaseAdmin

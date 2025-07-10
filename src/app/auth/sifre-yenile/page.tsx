@@ -218,9 +218,10 @@ function SifreYenileForm() {
         router.push('/auth/giris');
       }, 3000);
       
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Şifre yenileme hatası:', err);
-      setError(err.message || 'Şifre yenileme sırasında bir hata oluştu');
+      const errorMessage = err instanceof Error ? err.message : 'Şifre yenileme sırasında bir hata oluştu';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

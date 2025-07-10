@@ -97,7 +97,7 @@ export async function POST(request: Request) {
     if (typeof lastAccessedTenants === 'string') {
       try {
         lastAccessedTenants = JSON.parse(lastAccessedTenants);
-      } catch (e) {
+      } catch {
         lastAccessedTenants = [];
       }
     }
@@ -150,11 +150,12 @@ export async function POST(request: Request) {
         primaryDomain: primaryDomain
       }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Tenant değiştirme hatası:', error);
     
+    const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
     return NextResponse.json(
-      { error: 'Tenant değiştirme işlemi sırasında bir hata oluştu', details: error.message },
+      { error: 'Tenant değiştirme işlemi sırasında bir hata oluştu', details: errorMessage },
       { status: 500 }
     );
   }

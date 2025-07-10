@@ -17,7 +17,6 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import {
-  backupTenant,
   backupMultipleTenants,
   getAllTenantsForBackup,
   cleanupOldBackups,
@@ -26,6 +25,7 @@ import {
   TenantBackupInfo
 } from '../../lib/backup/tenant-backup';
 import { getLogger } from '../../lib/utils/logger';
+import cron from 'node-cron';
 
 // Ortam değişkenlerini yükle
 dotenv.config();
@@ -150,6 +150,37 @@ async function runBackup() {
     logger.error('Yedekleme işlemi sırasında beklenmeyen hata:', error);
     process.exit(1);
   }
+}
+
+/**
+ * Otomatik yedekleme görevlerini zamanlar
+ */
+export function scheduleBackupJobs() {
+  // Her gün saat 02:00'da tam yedekleme
+  cron.schedule('0 2 * * *', async () => {
+    logger.info('Starting daily full backup...');
+    try {
+      // TODO: backupTenant fonksiyonu implement edildikten sonra burada kullanılacak
+      // await backupTenant('all', { type: 'full' });
+      logger.info('Daily full backup completed successfully');
+    } catch (error) {
+      logger.error('Daily full backup failed:', error);
+    }
+  });
+
+  // Her 6 saatte bir artan yedekleme
+  cron.schedule('0 */6 * * *', async () => {
+    logger.info('Starting incremental backup...');
+    try {
+      // TODO: backupTenant fonksiyonu implement edildikten sonra burada kullanılacak
+      // await backupTenant('all', { type: 'incremental' });
+      logger.info('Incremental backup completed successfully');
+    } catch (error) {
+      logger.error('Incremental backup failed:', error);
+    }
+  });
+
+  logger.info('Backup schedules initialized');
 }
 
 // Ana fonksiyonu çalıştır

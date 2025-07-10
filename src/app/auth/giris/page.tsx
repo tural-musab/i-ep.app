@@ -70,13 +70,14 @@ export default function GirisPage() {
         router.push('/dashboard');
       }
       
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Giriş hatası:', err);
-      setError(err.message || 'Giriş sırasında bir hata oluştu');
+      const errorMessage = err instanceof Error ? err.message : 'Giriş sırasında bir hata oluştu';
+      setError(errorMessage);
       
       toast({
         title: "Giriş Başarısız",
-        description: err.message || 'Giriş sırasında bir hata oluştu',
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

@@ -11,7 +11,7 @@ import { AuditLogService, AuditLogType } from '@/lib/audit/audit-log';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { getTenantId } from '@/lib/tenant/tenant-utils';
-import { TenantError, TenantIsolationError } from '@/lib/errors/tenant-errors';
+import { TenantError } from '@/lib/errors/tenant-errors';
 
 // İzin verilen entity'ler
 const ALLOWED_ENTITIES = [
@@ -216,7 +216,7 @@ export async function GET(
   const url = new URL(req.url);
   
   // İzolasyon kontrolü
-  const { tenantId, entityTable, userId, error } = await verifyRequest(req, entity, 'read');
+  const { tenantId, entityTable, error } = await verifyRequest(req, entity, 'read');
   if (error) return error;
   
   try {
@@ -548,7 +548,7 @@ export async function DELETE(
   const { entity } = await params;
   
   // İzolasyon kontrolü
-  const { tenantId, entityTable, userId, error } = await verifyRequest(req, entity, 'delete');
+  const { tenantId, entityTable, error } = await verifyRequest(req, entity, 'delete');
   if (error) return error;
   
   try {
@@ -591,7 +591,7 @@ export async function DELETE(
     });
     
     // Silme işlemini gerçekleştir
-    const { data: deletedData, error: deleteError } = await deleteQuery.select();
+    const { error: deleteError } = await deleteQuery.select();
     
     if (deleteError) {
       console.error(`${entity} silme hatası:`, deleteError);

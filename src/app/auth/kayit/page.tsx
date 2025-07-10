@@ -112,9 +112,10 @@ export default function KayitPage() {
         router.push('/auth/giris');
       }, 3000);
       
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Kayıt hatası:', err);
-      setError(err.message || 'Kayıt sırasında bir hata oluştu');
+      const errorMessage = err instanceof Error ? err.message : 'Kayıt sırasında bir hata oluştu';
+      setError(errorMessage);
     } finally {
       setIsLoading(false);
     }

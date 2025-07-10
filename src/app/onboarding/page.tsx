@@ -27,7 +27,7 @@ export default function OnboardingPortal() {
   });
   
   // Form verisini güncelle
-  const updateFormData = (key: string, value: any) => {
+  const updateFormData = (key: string, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       [key]: value

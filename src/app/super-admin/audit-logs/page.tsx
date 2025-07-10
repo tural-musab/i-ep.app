@@ -17,8 +17,8 @@ type AuditLog = {
   action: string;
   entity_type: string;
   entity_id: string;
-  old_data: any;
-  new_data: any;
+  old_data: Record<string, unknown> | null;
+  new_data: Record<string, unknown> | null;
   ip_address: string;
   user_agent: string;
   created_at: string;
@@ -41,6 +41,19 @@ type AccessDeniedLog = {
   user_email?: string;
 };
 
+// Table cell props için interface
+interface TableCellProps {
+  row: {
+    original: AuditLog;
+  };
+}
+
+interface AccessDeniedTableCellProps {
+  row: {
+    original: AccessDeniedLog;
+  };
+}
+
 export default function AuditLogsPage() {
   const [activeTab, setActiveTab] = useState('activity');
   const [activityLogs, setActivityLogs] = useState<AuditLog[]>([]);
@@ -53,7 +66,7 @@ export default function AuditLogsPage() {
     {
       accessorKey: 'created_at',
       header: 'Tarih',
-      cell: ({ row }: any) => (
+      cell: ({ row }: TableCellProps) => (
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-muted-foreground" />
           {format(new Date(row.original.created_at), 'dd MMM yyyy HH:mm:ss', { locale: tr })}
@@ -63,7 +76,7 @@ export default function AuditLogsPage() {
     {
       accessorKey: 'action',
       header: 'İşlem',
-      cell: ({ row }: any) => {
+      cell: ({ row }: TableCellProps) => {
         const action = row.original.action;
         let color = 'bg-blue-50 text-blue-700 border-blue-200';
         
@@ -85,7 +98,7 @@ export default function AuditLogsPage() {
     {
       accessorKey: 'entity_type',
       header: 'Varlık Tipi',
-      cell: ({ row }: any) => (
+      cell: ({ row }: TableCellProps) => (
         <div className="flex items-center gap-2">
           <Database className="h-4 w-4 text-muted-foreground" />
           {row.original.entity_type}
@@ -95,19 +108,19 @@ export default function AuditLogsPage() {
     {
       accessorKey: 'entity_id',
       header: 'Varlık ID',
-      cell: ({ row }: any) => (
+      cell: ({ row }: TableCellProps) => (
         <span className="font-mono text-xs">{row.original.entity_id}</span>
       ),
     },
     {
       accessorKey: 'tenant_name',
       header: 'Tenant',
-      cell: ({ row }: any) => row.original.tenant_name || '-',
+      cell: ({ row }: TableCellProps) => row.original.tenant_name || '-',
     },
     {
       accessorKey: 'user_email',
       header: 'Kullanıcı',
-      cell: ({ row }: any) => (
+      cell: ({ row }: TableCellProps) => (
         <div className="flex items-center gap-2">
           <User className="h-4 w-4 text-muted-foreground" />
           {row.original.user_email || 'Bilinmeyen kullanıcı'}
@@ -117,7 +130,7 @@ export default function AuditLogsPage() {
     {
       accessorKey: 'ip_address',
       header: 'IP Adresi',
-      cell: ({ row }: any) => row.original.ip_address || '-',
+      cell: ({ row }: TableCellProps) => row.original.ip_address || '-',
     },
   ];
 
@@ -126,7 +139,7 @@ export default function AuditLogsPage() {
     {
       accessorKey: 'timestamp',
       header: 'Tarih',
-      cell: ({ row }: any) => (
+      cell: ({ row }: AccessDeniedTableCellProps) => (
         <div className="flex items-center gap-2">
           <Clock className="h-4 w-4 text-muted-foreground" />
           {format(new Date(row.original.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: tr })}
@@ -136,7 +149,7 @@ export default function AuditLogsPage() {
     {
       accessorKey: 'command',
       header: 'Komut',
-      cell: ({ row }: any) => (
+      cell: ({ row }: AccessDeniedTableCellProps) => (
         <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
           {row.original.command}
         </Badge>
@@ -145,7 +158,7 @@ export default function AuditLogsPage() {
     {
       accessorKey: 'table_name',
       header: 'Tablo',
-      cell: ({ row }: any) => (
+      cell: ({ row }: AccessDeniedTableCellProps) => (
         <div className="flex items-center gap-2">
           <Database className="h-4 w-4 text-muted-foreground" />
           {row.original.schema_name}.{row.original.table_name}
@@ -155,12 +168,12 @@ export default function AuditLogsPage() {
     {
       accessorKey: 'tenant_name',
       header: 'Tenant',
-      cell: ({ row }: any) => row.original.tenant_name || '-',
+      cell: ({ row }: AccessDeniedTableCellProps) => row.original.tenant_name || '-',
     },
     {
       accessorKey: 'user_email',
       header: 'Kullanıcı',
-      cell: ({ row }: any) => (
+      cell: ({ row }: AccessDeniedTableCellProps) => (
         <div className="flex items-center gap-2">
           <User className="h-4 w-4 text-muted-foreground" />
           {row.original.user_email || 'Bilinmeyen kullanıcı'}
@@ -170,7 +183,7 @@ export default function AuditLogsPage() {
     {
       accessorKey: 'error_message',
       header: 'Hata Mesajı',
-      cell: ({ row }: any) => (
+      cell: ({ row }: AccessDeniedTableCellProps) => (
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-red-500" />
           <span className="truncate max-w-[250px]" title={row.original.error_message}>
@@ -182,7 +195,7 @@ export default function AuditLogsPage() {
     {
       accessorKey: 'ip_address',
       header: 'IP Adresi',
-      cell: ({ row }: any) => row.original.ip_address || '-',
+      cell: ({ row }: AccessDeniedTableCellProps) => row.original.ip_address || '-',
     },
   ];
 

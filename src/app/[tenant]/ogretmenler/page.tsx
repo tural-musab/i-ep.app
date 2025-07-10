@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -117,8 +117,8 @@ export default function TeachersPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
 
-  // Mock data - gerçek uygulamada API'den gelecek
-  const mockTeachers: Teacher[] = [
+  // Mock data'yı useMemo ile optimize et
+  const mockTeachers = useMemo(() => [
     {
       id: '1',
       employeeNumber: 'T2024001',
@@ -188,7 +188,7 @@ export default function TeachersPage() {
       status: 'active',
       tenantId: currentTenantId || 'demo-school',
     },
-  ];
+  ], []);
 
   useEffect(() => {
     const loadTeachers = async () => {

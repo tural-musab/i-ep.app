@@ -4,12 +4,10 @@
  * Referans: docs/api-endpoints.md
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import { DomainService } from "@/lib/domain/domain-service";
+import { NextRequest, NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { DomainService } from '@/lib/domain/domain-service';
 import { Database } from "@/types/database.types";
-import { TenantDomainError } from "@/lib/errors/tenant-errors";
 
 // Domain servisi örneği oluştur
 const domainService = new DomainService();
@@ -26,7 +24,7 @@ export async function GET(
     const { domainId } = await params;
     
     // Supabase istemcisi oluştur
-    const supabase = createRouteHandlerClient<Database>({ cookies });
+    const supabase = createServerSupabaseClient<Database>();
     
     // Kullanıcı oturum bilgisini al
     const {

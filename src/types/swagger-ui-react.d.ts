@@ -2,14 +2,14 @@ declare module 'swagger-ui-react' {
   import * as React from 'react';
 
   interface SwaggerUIProps {
-    spec?: object;
+    spec?: Record<string, unknown>;
     url?: string;
     docExpansion?: 'list' | 'full' | 'none';
     defaultModelsExpandDepth?: number;
-    requestInterceptor?: (req: any) => any;
-    responseInterceptor?: (res: any) => any;
+    requestInterceptor?: (req: Request) => Request;
+    responseInterceptor?: (res: Response) => Response;
     onComplete?: () => void;
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   const SwaggerUI: React.FC<SwaggerUIProps>;

@@ -352,7 +352,7 @@ export default function AssignmentsPage() {
     if (currentTenantId) {
       loadAssignments();
     }
-  }, [currentTenantId]);
+  }, [currentTenantId, mockAssignments, mockSubmissions]);
 
   const filteredAssignments = assignments.filter(assignment => {
     const matchesSearch = 

@@ -8,11 +8,12 @@
  */
 
 import { clearRateLimitStore, getRateLimitStatus } from '../../middleware/rateLimiter';
+import { NextRequest } from 'next/server';
 
-// Mock environment variables for testing
+// Mock environment variables to preserve original ones
 const originalEnv = process.env;
 
-// Mock NextRequest for testing rate limiter logic
+// Mock tip tanımları
 interface MockNextRequest {
   nextUrl: {
     pathname: string;
@@ -22,6 +23,7 @@ interface MockNextRequest {
   };
 }
 
+// Mock NextRequest factory function
 function mockNextRequest(url: string, tenantId?: string): MockNextRequest {
   return {
     nextUrl: {
@@ -58,7 +60,7 @@ describe('Rate Limiter Middleware Integration Tests', () => {
     it('should track requests per tenant correctly', async () => {
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
       
-      const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1') as any;
+      const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1') as unknown as NextRequest;
 
       // First 3 requests should be allowed
       expect(rateLimiterMiddleware(request)).toBeNull();

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { DataTable } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, Eye, Edit2, AlertCircle, CheckCircle, Lock, UserPlus } from 'lucide-react';
+import { Eye, Edit2, AlertCircle, CheckCircle, Lock, UserPlus } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { format } from 'date-fns';

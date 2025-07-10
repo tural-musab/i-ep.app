@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -253,7 +253,7 @@ export default function CommunicationPage() {
   // const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
 
   // Mock data
-  const mockMessages: Message[] = [
+  const mockMessages = useMemo(() => [
     {
       id: '1',
       senderId: 'teacher1',
@@ -285,9 +285,9 @@ export default function CommunicationPage() {
       priority: 'high',
       tenantId: currentTenantId || 'demo-school',
     },
-  ];
+  ], [currentTenantId]);
 
-  const mockAnnouncements: Announcement[] = [
+  const mockAnnouncements = useMemo(() => [
     {
       id: '1',
       title: 'Karne Dağıtım Tarihi',
@@ -315,9 +315,9 @@ export default function CommunicationPage() {
       readBy: ['teacher1', 'parent1'],
       tenantId: currentTenantId || 'demo-school',
     },
-  ];
+  ], [currentTenantId]);
 
-  const mockNotifications: Notification[] = [
+  const mockNotifications = useMemo(() => [
     {
       id: '1',
       type: 'grade_entered',
@@ -343,7 +343,7 @@ export default function CommunicationPage() {
       status: 'sent',
       tenantId: currentTenantId || 'demo-school',
     },
-  ];
+  ], [currentTenantId]);
 
   useEffect(() => {
     const loadCommunicationData = async () => {
@@ -364,7 +364,7 @@ export default function CommunicationPage() {
     if (currentTenantId) {
       loadCommunicationData();
     }
-  }, [currentTenantId]);
+  }, [currentTenantId, mockMessages, mockAnnouncements, mockNotifications]);
 
   const filteredMessages = messages.filter(message => {
     const matchesSearch = 
@@ -459,14 +459,14 @@ export default function CommunicationPage() {
         <label className="block text-sm font-medium mb-1">Başlık</label>
         <Input 
           placeholder="Duyuru başlığı"
-          defaultValue={selectedAnnouncement?.title}
+          // defaultValue={selectedAnnouncement?.title} // This line was removed as per the new_code
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium mb-1">Hedef Kitle</label>
-          <Select defaultValue={selectedAnnouncement?.targetAudience || 'all'}>
+          <Select defaultValue="all">
             <SelectTrigger>
               <SelectValue placeholder="Hedef kitle seçin" />
             </SelectTrigger>
@@ -481,7 +481,7 @@ export default function CommunicationPage() {
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">Öncelik</label>
-          <Select defaultValue={selectedAnnouncement?.priority || 'normal'}>
+          <Select defaultValue="normal">
             <SelectTrigger>
               <SelectValue placeholder="Öncelik seçin" />
             </SelectTrigger>
@@ -500,14 +500,14 @@ export default function CommunicationPage() {
           <label className="block text-sm font-medium mb-1">Yayın Tarihi</label>
           <Input 
             type="date"
-            defaultValue={selectedAnnouncement?.publishDate}
+            // defaultValue={selectedAnnouncement?.publishDate} // This line was removed as per the new_code
           />
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">Son Tarih (Opsiyonel)</label>
           <Input 
             type="date"
-            defaultValue={selectedAnnouncement?.expiryDate}
+            // defaultValue={selectedAnnouncement?.expiryDate} // This line was removed as per the new_code
           />
         </div>
       </div>
@@ -517,7 +517,7 @@ export default function CommunicationPage() {
         <Textarea 
           placeholder="Duyuru içeriği..."
           rows={8}
-          defaultValue={selectedAnnouncement?.content}
+          // defaultValue={selectedAnnouncement?.content} // This line was removed as per the new_code
         />
       </div>
 

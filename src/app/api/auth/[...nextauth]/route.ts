@@ -183,7 +183,7 @@ export const authOptions: AuthOptions = {
     })
   ],
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       // İlk giriş yapıldığında user bilgisini token'a ekle
       if (user) {
         token.user = user;
