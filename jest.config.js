@@ -8,7 +8,7 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 const customJestConfig = {
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js', '<rootDir>/src/__tests__/setup.ts'],
   testEnvironment: 'jsdom',
   
   // ES modules transformation support
@@ -28,6 +28,17 @@ const customJestConfig = {
     '^@/(.*)$': '<rootDir>/src/$1',
     // Handle ES modules that Jest cannot parse
     '^@t3-oss/env-nextjs$': '<rootDir>/src/__mocks__/env-mock.js',
+    // Mock Sentry for tests
+    '^@sentry/nextjs$': '<rootDir>/src/__mocks__/sentry.js',
+    // Mock NextAuth for tests
+    '^next-auth$': '<rootDir>/src/__mocks__/next-auth.js',
+    '^next-auth/(.*)$': '<rootDir>/src/__mocks__/next-auth.js',
+    // Mock NextAuth providers
+    '^next-auth/providers/credentials$': '<rootDir>/src/__mocks__/next-auth-providers.js',
+    // Mock auth route to prevent next-auth loading  
+    '^@/app/api/auth/\\[\\.\\.\\.nextauth\\]/route$': '<rootDir>/src/__mocks__/next-auth.js',
+    // Mock audit log to prevent auth imports
+    '^@/lib/audit/audit-log$': '<rootDir>/src/__mocks__/audit-log.js',
   },
   
   // Transform ignored node_modules

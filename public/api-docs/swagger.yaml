@@ -35,6 +35,10 @@ tags:
     description: Sınıf yönetimi
   - name: Domains
     description: Domain yönetimi
+  - name: Super Admin
+    description: Super admin işlemleri ve sistem yönetimi
+  - name: System Health
+    description: Sistem sağlığı izleme
 
 paths:
   /auth/login:
@@ -349,10 +353,410 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /super-admin/system-health:
+    get:
+      summary: Comprehensive System Health Report
+      description: Returns detailed health status of all system components (Database, Redis, SSL, etc.). Requires super admin access.
+      tags:
+        - Super Admin
+        - System Health
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: System health report
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/SystemHealthReport'
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-01-10T10:00:00.000Z"
+        '401':
+          description: Unauthorized - Super admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Health check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /super-admin/tenants:
+    get:
+      summary: List all tenants
+      description: Returns a list of all tenants with their status, metrics and configuration. Requires super admin access.
+      tags:
+        - Super Admin
+        - Tenants
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: status
+          in: query
+          description: Filter by tenant status
+          schema:
+            type: string
+            enum: [active, inactive, trial, suspended]
+        - name: search
+          in: query
+          description: Search by tenant name or subdomain
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Tenant list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TenantSummary'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-01-10T10:00:00.000Z"
+        '401':
+          description: Unauthorized - Super admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create new tenant
+      description: Creates a new tenant with subdomain and initial configuration. Requires super admin access.
+      tags:
+        - Super Admin
+        - Tenants
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - subdomain
+              properties:
+                name:
+                  type: string
+                  description: Tenant display name
+                  example: "Örnek Okul"
+                subdomain:
+                  type: string
+                  description: Tenant subdomain (unique)
+                  pattern: "^[a-z0-9][a-z0-9-]*[a-z0-9]$"
+                  example: "ornek-okul"
+                planType:
+                  type: string
+                  enum: [free, basic, premium, enterprise]
+                  default: "free"
+                  example: "basic"
+                adminEmail:
+                  type: string
+                  format: email
+                  description: Initial admin user email
+                  example: "admin@ornek-okul.com"
+                adminName:
+                  type: string
+                  description: Initial admin user name
+                  example: "Admin Kullanıcı"
+      responses:
+        '201':
+          description: Tenant created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/TenantDetail'
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-01-10T10:00:00.000Z"
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized - Super admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Subdomain already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /super-admin/domains:
+    get:
+      summary: List all domains
+      description: Returns a list of all domains across all tenants with SSL status and verification info. Requires super admin access.
+      tags:
+        - Super Admin
+        - Domains
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+        - name: type
+          in: query
+          description: Filter by domain type
+          schema:
+            type: string
+            enum: [subdomain, custom]
+        - name: status
+          in: query
+          description: Filter by verification status
+          schema:
+            type: string
+            enum: [verified, pending, failed]
+        - name: tenant_id
+          in: query
+          description: Filter by tenant ID
+          schema:
+            type: string
+            format: uuid
+        - name: search
+          in: query
+          description: Search by domain name
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Domain list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DomainSummary'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-01-10T10:00:00.000Z"
+        '401':
+          description: Unauthorized - Super admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Add new domain
+      description: Adds a custom domain to a tenant. Requires super admin access.
+      tags:
+        - Super Admin
+        - Domains
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tenant_id
+                - domain
+                - type
+              properties:
+                tenant_id:
+                  type: string
+                  format: uuid
+                  description: Target tenant ID
+                  example: "123e4567-e89b-12d3-a456-426614174000"
+                domain:
+                  type: string
+                  description: Domain name
+                  example: "okul.example.com"
+                type:
+                  type: string
+                  enum: [custom, subdomain]
+                  description: Domain type
+                  example: "custom"
+                is_primary:
+                  type: boolean
+                  description: Set as primary domain for tenant
+                  default: false
+                  example: false
+      responses:
+        '201':
+          description: Domain added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/DomainDetail'
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-01-10T10:00:00.000Z"
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized - Super admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Domain already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /super-admin/system-health/quick:
+    get:
+      summary: Quick System Health Check
+      description: Returns basic health status of critical components (Database, Redis). Optimized for frequent polling.
+      tags:
+        - Super Admin
+        - System Health
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Quick health status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        enum: [healthy, unhealthy]
+                        example: "healthy"
+                      timestamp:
+                        type: string
+                        format: date-time
+                        example: "2025-01-10T10:00:00.000Z"
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2025-01-10T10:00:00.000Z"
+        '401':
+          description: Unauthorized - Super admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Health check failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /health:
     get:
-      summary: Sistem Durumu
-      description: API ve bağlı servislerin durumunu kontrol eder.
+      summary: Basic API Health Check
+      description: Simple health check endpoint for load balancers and monitoring.
       tags:
         - System
       responses:
@@ -560,6 +964,370 @@ components:
         totalPages:
           type: integer
           example: 3
+
+    SystemHealthReport:
+      type: object
+      description: Comprehensive system health report including all monitored components
+      properties:
+        overall:
+          type: object
+          properties:
+            status:
+              type: string
+              enum: [healthy, degraded, down]
+              example: "healthy"
+            timestamp:
+              type: string
+              format: date-time
+              example: "2025-01-10T10:00:00.000Z"
+            uptime:
+              type: integer
+              description: System uptime in seconds
+              example: 3600
+            checks:
+              type: array
+              items:
+                $ref: '#/components/schemas/HealthCheck'
+            version:
+              type: string
+              example: "1.0.0"
+            environment:
+              type: string
+              example: "production"
+        database:
+          $ref: '#/components/schemas/DatabaseHealth'
+        redis:
+          $ref: '#/components/schemas/RedisHealth'
+        ssl:
+          type: array
+          items:
+            $ref: '#/components/schemas/SSLHealth'
+
+    HealthCheck:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "database"
+        status:
+          type: string
+          enum: [pass, warn, fail]
+          example: "pass"
+        message:
+          type: string
+          example: "Database connection healthy"
+        duration:
+          type: integer
+          description: Check duration in milliseconds
+          example: 50
+        timestamp:
+          type: string
+          format: date-time
+          example: "2025-01-10T10:00:00.000Z"
+
+    DatabaseHealth:
+      type: object
+      properties:
+        connection:
+          type: boolean
+          example: true
+        responseTime:
+          type: integer
+          description: Response time in milliseconds
+          example: 50
+        activeConnections:
+          type: integer
+          example: 5
+        maxConnections:
+          type: integer
+          example: 100
+        lastQuery:
+          type: string
+          example: "SELECT count FROM tenants LIMIT 1"
+
+    RedisHealth:
+      type: object
+      properties:
+        connection:
+          type: boolean
+          example: true
+        responseTime:
+          type: integer
+          description: Response time in milliseconds
+          example: 20
+        keyCount:
+          type: integer
+          example: 1250
+        memoryUsage:
+          type: object
+          properties:
+            used:
+              type: integer
+              description: Used memory in bytes
+              example: 1048576
+            max:
+              type: integer
+              description: Max memory in bytes
+              example: 67108864
+            percentage:
+              type: number
+              format: float
+              example: 1.56
+
+    SSLHealth:
+      type: object
+      properties:
+        domain:
+          type: string
+          example: "example.i-ep.app"
+        isValid:
+          type: boolean
+          example: true
+        expiresAt:
+          type: string
+          format: date-time
+          example: "2025-12-31T23:59:59.000Z"
+        daysUntilExpiry:
+          type: integer
+          example: 355
+        issuer:
+          type: string
+          example: "Let's Encrypt"
+        status:
+          type: string
+          enum: [valid, expiring, expired, invalid]
+          example: "valid"
+
+    TenantSummary:
+      type: object
+      description: Summary information about a tenant for listing purposes
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          example: "Örnek Okul"
+        subdomain:
+          type: string
+          example: "ornek-okul"
+        planType:
+          type: string
+          enum: [free, basic, premium, enterprise]
+          example: "basic"
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+          example: "active"
+        userCount:
+          type: integer
+          description: Number of users in this tenant
+          example: 45
+        domainCount:
+          type: integer
+          description: Number of domains configured for this tenant
+          example: 2
+        lastActivity:
+          type: string
+          format: date-time
+          nullable: true
+          description: Last user login in this tenant
+          example: "2025-01-09T14:30:00.000Z"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-12-01T10:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2025-01-05T16:20:00.000Z"
+
+    TenantDetail:
+      type: object
+      description: Detailed information about a tenant
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        name:
+          type: string
+          example: "Örnek Okul"
+        subdomain:
+          type: string
+          example: "ornek-okul"
+        planType:
+          type: string
+          enum: [free, basic, premium, enterprise]
+          example: "basic"
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+          example: "active"
+        defaultDomain:
+          type: string
+          example: "ornek-okul.i-ep.app"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-12-01T10:00:00.000Z"
+        settings:
+          type: object
+          properties:
+            theme:
+              type: object
+              properties:
+                primaryColor:
+                  type: string
+                  example: "#1976d2"
+                secondaryColor:
+                  type: string
+                  example: "#dc004e"
+            features:
+              type: array
+              items:
+                type: string
+              example: ["user_management", "basic_reporting"]
+            limits:
+              type: object
+              properties:
+                maxUsers:
+                  type: integer
+                  example: 200
+                maxStorage:
+                  type: integer
+                                     description: Storage limit in GB
+                   example: 10
+
+    DomainSummary:
+      type: object
+      description: Summary information about a domain
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        tenantId:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174999"
+        tenantName:
+          type: string
+          example: "Örnek Okul"
+        tenantSubdomain:
+          type: string
+          example: "ornek-okul"
+        domain:
+          type: string
+          example: "okul.example.com"
+        type:
+          type: string
+          enum: [subdomain, custom]
+          example: "custom"
+        isPrimary:
+          type: boolean
+          example: true
+        isVerified:
+          type: boolean
+          example: true
+        verificationStatus:
+          type: string
+          enum: [verified, pending, failed]
+          example: "verified"
+        verifiedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2024-12-15T10:00:00.000Z"
+        ssl:
+          type: object
+          properties:
+            isValid:
+              type: boolean
+              example: true
+            status:
+              type: string
+              enum: [valid, expiring, expired, invalid, unknown]
+              example: "valid"
+            daysUntilExpiry:
+              type: integer
+              nullable: true
+              example: 85
+            issuer:
+              type: string
+              nullable: true
+              example: "Let's Encrypt"
+            expiresAt:
+              type: string
+              format: date-time
+              nullable: true
+              example: "2025-04-15T23:59:59.000Z"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-12-01T10:00:00.000Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-12-15T16:20:00.000Z"
+
+    DomainDetail:
+      type: object
+      description: Detailed information about a domain
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+        tenant_id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174999"
+        domain:
+          type: string
+          example: "okul.example.com"
+        type:
+          type: string
+          enum: [subdomain, custom]
+          example: "custom"
+        is_primary:
+          type: boolean
+          example: true
+        is_verified:
+          type: boolean
+          example: true
+        verification_status:
+          type: string
+          enum: [verified, pending, failed]
+          example: "verified"
+        verified_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2024-12-15T10:00:00.000Z"
+        ssl_status:
+          type: string
+          enum: [valid, pending, invalid]
+          example: "valid"
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-12-01T10:00:00.000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-12-15T16:20:00.000Z"
+        tenant:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              example: "123e4567-e89b-12d3-a456-426614174999"
+            name:
+              type: string
+              example: "Örnek Okul"
           
     Error:
       type: object
