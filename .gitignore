@@ -4,10 +4,15 @@
 .env
 .env.local
 .env.*.local
+.env.development
 .env.development.local
+.env.test
 .env.test.local
+.env.production
 .env.production.local
+.env.staging
 .env.staging.local
+.env.vercel
 .env.local-remote
 
 # Vercel
@@ -68,3 +73,8 @@ security-report/
 job.log
 zap.zip
 zap-report/
+
+# Documentation archives
+docs-site.zip
+docs.zip
+*.zip
