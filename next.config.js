@@ -14,7 +14,14 @@ const nextConfig = {
   serverExternalPackages: [],
   // Resim optimizasyonu için alan adı yapılandırması
   images: {
-    domains: ['i-ep.app'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'i-ep.app',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
   // API dokümantasyonu için yönlendirmeler
   async redirects() {

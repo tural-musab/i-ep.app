@@ -3,7 +3,6 @@
 # Environment variables
 .env
 .env.local
-.env.*.local
 .env.development
 .env.development.local
 .env.test
@@ -14,6 +13,7 @@
 .env.staging.local
 .env.vercel
 .env.local-remote
+.env.local.backup
 
 # Vercel
 .vercel
@@ -54,6 +54,7 @@ next-env.d.ts
 .vscode
 *.swp
 *.swo
+.cursor/
 
 # Sentry
 .sentryclirc
@@ -78,3 +79,6 @@ zap-report/
 docs-site.zip
 docs.zip
 *.zip
+
+# Analysis reports
+supabase_analysis_report.md

@@ -46,12 +46,12 @@ services:
   # PostgreSQL Database
   # =============================================================================
   postgres:
-    image: postgres:15-alpine
+    image: supabase/postgres:15.1.0.117
     container_name: i-ep-postgres
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=i_ep_app
+      - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=tr_TR.UTF-8 --lc-ctype=tr_TR.UTF-8
@@ -88,25 +88,135 @@ services:
       retries: 5
 
   # =============================================================================
-  # Supabase Local (Alternative to cloud Supabase)
+  # Supabase Studio
   # =============================================================================
-  supabase:
-    image: supabase/supabase:latest
-    container_name: i-ep-supabase
+  studio:
+    image: supabase/studio:latest
+    container_name: i-ep-supabase-studio
     ports:
-      - "54321:8000"  # Supabase Studio
-      - "54322:5432"  # PostgreSQL
+      - "54326:3000"
     environment:
-      - SUPABASE_URL=http://localhost:54321
-      - SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOuoJeaVgMSE5a-4dA7fJjnKhLiVHqJJXg0U
-      - SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
-    volumes:
-      - supabase_data:/var/lib/supabase
-    restart: unless-stopped
+      STUDIO_PG_META_URL: http://meta:8080
+      POSTGRES_PASSWORD: postgres
+      DEFAULT_ORGANIZATION_NAME: İ-EP.APP
+      DEFAULT_PROJECT_NAME: İ-EP.APP Development
+      SUPABASE_URL: http://kong:8000
+      SUPABASE_PUBLIC_URL: http://localhost:54326
+      SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOuoJeaVgMSE5a-4dA7fJjnKhLiVHqJJXg0U
+      SUPABASE_SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+    depends_on:
+      - kong
+      - auth
+      - rest
+      - storage
+      - meta
     networks:
       - i-ep-network
     profiles:
-      - supabase  # Optional service - run with: docker-compose --profile supabase up
+      - supabase
+
+  # =============================================================================
+  # Supabase Services
+  # =============================================================================
+  kong:
+    image: kong:2.8.1
+    container_name: i-ep-supabase-kong
+    ports:
+      - "54325:8000"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl
+    volumes:
+      - ./supabase/kong.yml:/var/lib/kong/kong.yml
+    networks:
+      - i-ep-network
+    profiles:
+      - supabase
+
+  auth:
+    image: supabase/gotrue:v2.132.3
+    container_name: i-ep-supabase-auth
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_HOST: postgres
+      GOTRUE_DB_PORT: 5432
+      GOTRUE_DB_USER: postgres
+      GOTRUE_DB_PASSWORD: postgres
+      GOTRUE_DB_NAME: postgres
+      GOTRUE_JWT_SECRET: your-super-secret-jwt-token-with-at-least-32-characters-long
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_SITE_URL: http://localhost:54321
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+      GOTRUE_SMS_AUTOCONFIRM: "true"
+    depends_on:
+      - postgres
+    networks:
+      - i-ep-network
+    profiles:
+      - supabase
+
+  rest:
+    image: postgrest/postgrest:v11.2.0
+    container_name: i-ep-supabase-rest
+    environment:
+      PGRST_DB_URI: postgres://postgres:postgres@postgres:5432/postgres
+      PGRST_DB_SCHEMA: public,storage
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: your-super-secret-jwt-token-with-at-least-32-characters-long
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+    depends_on:
+      - postgres
+    networks:
+      - i-ep-network
+    profiles:
+      - supabase
+
+  storage:
+    image: supabase/storage-api:v0.40.4
+    container_name: i-ep-supabase-storage
+    environment:
+      ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOuoJeaVgMSE5a-4dA7fJjnKhLiVHqJJXg0U
+      SERVICE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
+      PROJECT_REF: default
+      POSTGREST_URL: http://rest:3000
+      PGRST_JWT_SECRET: your-super-secret-jwt-token-with-at-least-32-characters-long
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+      FILE_SIZE_LIMIT: 52428800
+      STORAGE_BACKEND: file
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: stub
+      REGION: stub
+    volumes:
+      - supabase_storage:/var/lib/storage
+    depends_on:
+      - rest
+      - postgres
+    networks:
+      - i-ep-network
+    profiles:
+      - supabase
+
+  meta:
+    image: supabase/postgres-meta:v0.68.0
+    container_name: i-ep-supabase-meta
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: postgres
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: postgres
+      PG_META_DB_USER: postgres
+      PG_META_DB_PASSWORD: postgres
+    depends_on:
+      - postgres
+    networks:
+      - i-ep-network
+    profiles:
+      - supabase
 
   # =============================================================================
   # Adminer (Database GUI)
@@ -168,6 +278,8 @@ volumes:
   redis_data:
     driver: local
   supabase_data:
+    driver: local
+  supabase_storage:
     driver: local
 
 # =============================================================================
