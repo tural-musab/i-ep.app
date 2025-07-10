@@ -1,22 +1,27 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import * as Sentry from "@sentry/nextjs";
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
-import { Database } from "@/types/database.types";
+import { z } from "zod";
 
-interface Teacher {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-}
+const classSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Sınıf adı en az 2 karakter olmalıdır")
+    .max(100, "Sınıf adı en fazla 100 karakter olabilir"),
+  grade_level: z
+    .number()
+    .min(1, "Sınıf seviyesi en az 1 olmalıdır")
+    .max(12, "Sınıf seviyesi en fazla 12 olabilir"),
+  capacity: z
+    .number()
+    .min(1, "Kapasite en az 1 olmalıdır")
+    .max(50, "Kapasite en fazla 50 olabilir"),
+  academic_year: z.string().regex(/^\d{4}-\d{4}$/, "Örnek format: 2023-2024"),
+  is_active: z.boolean().default(true),
+});
 
-interface ClassTeacher {
-  teacher: Teacher;
-  role: string;
-}
-
-export async function GET() {
+export async function GET(request: NextRequest) {
   return Sentry.startSpan(
     {
       op: "http.server",
@@ -24,63 +29,39 @@ export async function GET() {
     },
     async () => {
       try {
-        const supabase = createRouteHandlerClient<Database>({ cookies });
-
-        // Kullanıcının tenant_id'sini al
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (!user) {
-          return NextResponse.json(
-            { error: "Oturum açmanız gerekiyor" },
-            { status: 401 }
-          );
-        }
+        const supabase = createRouteHandlerClient({ cookies });
 
         const { data: classes, error } = await supabase
           .from("classes")
           .select(`
             *,
-            class_students (count),
-            class_teachers (
-              count,
-              role,
-              teacher:teachers (
-                id,
-                first_name,
-                last_name,
-                email
-              )
-            )
-          `)
-          .eq("tenant_id", user.id)
-          .order("name", { ascending: true });
+            homeroom_teacher:teachers!homeroom_teacher_id (
+              id,
+              first_name,
+              last_name,
+              email
+            ),
+            student_count:class_students (count),
+            teacher_count:class_teachers (count)
+          `);
 
         if (error) {
-          console.error("Error fetching classes:", error);
-          return NextResponse.json(
-            { error: "Sınıflar getirilirken bir hata oluştu" },
-            { status: 500 }
-          );
+          throw error;
         }
 
-        // Format response
+        // Format the counts
         const formattedClasses = classes.map((classItem) => ({
           ...classItem,
-          student_count: classItem.class_students?.[0]?.count || 0,
-          teacher_count: classItem.class_teachers?.[0]?.count || 0,
-          homeroom_teacher: classItem.class_teachers?.find(
-            (t: ClassTeacher) => t.teacher && t.role === "homeroom_teacher"
-          )?.teacher,
+          student_count: classItem.student_count?.[0]?.count || 0,
+          teacher_count: classItem.teacher_count?.[0]?.count || 0,
         }));
 
-        return NextResponse.json(formattedClasses);
+        return Response.json(formattedClasses);
       } catch (error) {
-        console.error("Error in GET /api/classes:", error);
+        console.error("Error fetching classes:", error);
         Sentry.captureException(error);
-        return NextResponse.json(
-          { error: "Beklenmeyen bir hata oluştu" },
+        return Response.json(
+          { error: "Sınıf listesi alınamadı" },
           { status: 500 }
         );
       }
@@ -96,58 +77,35 @@ export async function POST(request: NextRequest) {
     },
     async () => {
       try {
+        const supabase = createRouteHandlerClient({ cookies });
         const body = await request.json();
-        const { name, grade_level, capacity, academic_year } = body;
 
-        // Validasyon
-        if (!name || !grade_level || !academic_year) {
-          return NextResponse.json(
-            { error: "Gerekli alanlar eksik" },
-            { status: 400 }
-          );
-        }
-
-        const supabase = createRouteHandlerClient<Database>({ cookies });
-
-        // Kullanıcının tenant_id'sini al
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (!user) {
-          return NextResponse.json(
-            { error: "Oturum açmanız gerekiyor" },
-            { status: 401 }
-          );
-        }
+        const validatedData = classSchema.parse(body);
 
         const { data: newClass, error } = await supabase
           .from("classes")
-          .insert({
-            name,
-            grade_level,
-            capacity: capacity || 30, // Varsayılan kapasite
-            academic_year,
-            is_active: true,
-            tenant_id: user.id,
-          })
+          .insert([validatedData])
           .select()
           .single();
 
         if (error) {
-          console.error("Error creating class:", error);
-          return NextResponse.json(
-            { error: "Sınıf oluşturulurken bir hata oluştu" },
-            { status: 500 }
+          throw error;
+        }
+
+        return Response.json(newClass);
+      } catch (error) {
+        console.error("Error creating class:", error);
+        Sentry.captureException(error);
+
+        if (error instanceof z.ZodError) {
+          return Response.json(
+            { error: "Geçersiz sınıf bilgileri", details: error.errors },
+            { status: 400 }
           );
         }
 
-        return NextResponse.json(newClass, { status: 201 });
-      } catch (error) {
-        console.error("Error in POST /api/classes:", error);
-        Sentry.captureException(error);
-        return NextResponse.json(
-          { error: "Beklenmeyen bir hata oluştu" },
+        return Response.json(
+          { error: "Sınıf oluşturulamadı" },
           { status: 500 }
         );
       }
@@ -163,117 +121,44 @@ export async function PUT(request: NextRequest) {
     },
     async () => {
       try {
+        const supabase = createRouteHandlerClient({ cookies });
         const body = await request.json();
-        const { id, name, grade_level, capacity, academic_year, is_active } = body;
+        const { id, ...updateData } = body;
 
         if (!id) {
-          return NextResponse.json(
+          return Response.json(
             { error: "Sınıf ID'si gerekli" },
             { status: 400 }
           );
         }
 
-        const supabase = createRouteHandlerClient<Database>({ cookies });
-
-        // Kullanıcının tenant_id'sini al
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (!user) {
-          return NextResponse.json(
-            { error: "Oturum açmanız gerekiyor" },
-            { status: 401 }
-          );
-        }
+        const validatedData = classSchema.parse(updateData);
 
         const { data: updatedClass, error } = await supabase
           .from("classes")
-          .update({
-            name,
-            grade_level,
-            capacity,
-            academic_year,
-            is_active,
-          })
+          .update(validatedData)
           .eq("id", id)
-          .eq("tenant_id", user.id)
           .select()
           .single();
 
         if (error) {
-          console.error("Error updating class:", error);
-          return NextResponse.json(
-            { error: "Sınıf güncellenirken bir hata oluştu" },
-            { status: 500 }
-          );
+          throw error;
         }
 
-        return NextResponse.json(updatedClass);
+        return Response.json(updatedClass);
       } catch (error) {
-        console.error("Error in PUT /api/classes:", error);
+        console.error("Error updating class:", error);
         Sentry.captureException(error);
-        return NextResponse.json(
-          { error: "Beklenmeyen bir hata oluştu" },
-          { status: 500 }
-        );
-      }
-    }
-  );
-}
 
-export async function DELETE(request: NextRequest) {
-  return Sentry.startSpan(
-    {
-      op: "http.server",
-      name: "DELETE /api/classes",
-    },
-    async () => {
-      try {
-        const { searchParams } = new URL(request.url);
-        const id = searchParams.get("id");
-
-        if (!id) {
-          return NextResponse.json(
-            { error: "Sınıf ID'si gerekli" },
+        if (error instanceof z.ZodError) {
+          return Response.json(
+            { error: "Geçersiz sınıf bilgileri", details: error.errors },
             { status: 400 }
           );
         }
 
-        const supabase = createRouteHandlerClient<Database>({ cookies });
-
-        // Kullanıcının tenant_id'sini al
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (!user) {
-          return NextResponse.json(
-            { error: "Oturum açmanız gerekiyor" },
-            { status: 401 }
-          );
-        }
-
-        const { error } = await supabase
-          .from("classes")
-          .delete()
-          .eq("id", id)
-          .eq("tenant_id", user.id);
-
-        if (error) {
-          console.error("Error deleting class:", error);
-          return NextResponse.json(
-            { error: "Sınıf silinirken bir hata oluştu" },
-            { status: 500 }
-          );
-        }
-
-        return NextResponse.json({ message: "Sınıf başarıyla silindi" });
-      } catch (error) {
-        console.error("Error in DELETE /api/classes:", error);
-        Sentry.captureException(error);
-        return NextResponse.json(
-          { error: "Beklenmeyen bir hata oluştu" },
+        return Response.json(
+          { error: "Sınıf güncellenemedi" },
           { status: 500 }
         );
       }
