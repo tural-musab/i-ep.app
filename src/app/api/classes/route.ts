@@ -1,188 +1,282 @@
-import { NextRequest, NextResponse } from 'next/server'
-import * as Sentry from '@sentry/nextjs'
-import { getCurrentTenant } from '@/lib/tenant'
-import { supabaseServer } from '@/lib/supabase/server'
-import { ClassWithDetails, ClassInsert, ClassUpdate } from '@/types/class'
+import { NextRequest, NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import { Database } from "@/types/database.types";
 
-export async function GET(request: NextRequest) {
+interface Teacher {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
+interface ClassTeacher {
+  teacher: Teacher;
+  role: string;
+}
+
+export async function GET() {
   return Sentry.startSpan(
     {
-      op: 'http.server',
-      name: 'GET /api/classes',
+      op: "http.server",
+      name: "GET /api/classes",
     },
     async () => {
       try {
-        const tenant = await getCurrentTenant()
-        const searchParams = request.nextUrl.searchParams
-        const academicYear = searchParams.get('academic_year')
-        const isActive = searchParams.get('is_active')
-        const gradeLevel = searchParams.get('grade_level')
+        const supabase = createRouteHandlerClient<Database>({ cookies });
 
-        let query = supabaseServer
-          .from('classes')
+        // Kullanıcının tenant_id'sini al
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          return NextResponse.json(
+            { error: "Oturum açmanız gerekiyor" },
+            { status: 401 }
+          );
+        }
+
+        const { data: classes, error } = await supabase
+          .from("classes")
           .select(`
             *,
-            class_students (
-              count
-            ),
-            class_teachers!class_teachers_class_id_fkey (
+            class_students (count),
+            class_teachers (
               count,
               role,
               teacher:teachers (
                 id,
                 first_name,
-                last_name
+                last_name,
+                email
               )
             )
           `)
-          .eq('tenant_id', tenant.id)
-          .order('grade_level', { ascending: true })
-          .order('name', { ascending: true })
-
-        if (academicYear) {
-          query = query.eq('academic_year', academicYear)
-        }
-
-        if (isActive !== null) {
-          query = query.eq('is_active', isActive === 'true')
-        }
-
-        if (gradeLevel) {
-          query = query.eq('grade_level', parseInt(gradeLevel))
-        }
-
-        const { data: classes, error } = await query
+          .eq("tenant_id", user.id)
+          .order("name", { ascending: true });
 
         if (error) {
-          Sentry.captureException(error)
-          return NextResponse.json({ error: 'Sınıflar yüklenirken bir hata oluştu' }, { status: 500 })
+          console.error("Error fetching classes:", error);
+          return NextResponse.json(
+            { error: "Sınıflar getirilirken bir hata oluştu" },
+            { status: 500 }
+          );
         }
 
         // Format response
-        const formattedClasses = classes.map((classItem: ClassWithDetails) => ({
+        const formattedClasses = classes.map((classItem) => ({
           ...classItem,
           student_count: classItem.class_students?.[0]?.count || 0,
           teacher_count: classItem.class_teachers?.[0]?.count || 0,
           homeroom_teacher: classItem.class_teachers?.find(
-            (t) => t.teacher && t.role === 'homeroom_teacher'
+            (t: ClassTeacher) => t.teacher && t.role === "homeroom_teacher"
           )?.teacher,
-        }))
+        }));
 
-        return NextResponse.json(formattedClasses)
+        return NextResponse.json(formattedClasses);
       } catch (error) {
-        Sentry.captureException(error)
-        return NextResponse.json({ error: 'Bir hata oluştu' }, { status: 500 })
+        console.error("Error in GET /api/classes:", error);
+        Sentry.captureException(error);
+        return NextResponse.json(
+          { error: "Beklenmeyen bir hata oluştu" },
+          { status: 500 }
+        );
       }
     }
-  )
+  );
 }
 
 export async function POST(request: NextRequest) {
   return Sentry.startSpan(
     {
-      op: 'http.server',
-      name: 'POST /api/classes',
+      op: "http.server",
+      name: "POST /api/classes",
     },
     async () => {
       try {
-        const tenant = await getCurrentTenant()
-        const body = await request.json()
+        const body = await request.json();
+        const { name, grade_level, capacity, academic_year } = body;
 
-        const classData: ClassInsert = {
-          ...body,
-          tenant_id: tenant.id,
+        // Validasyon
+        if (!name || !grade_level || !academic_year) {
+          return NextResponse.json(
+            { error: "Gerekli alanlar eksik" },
+            { status: 400 }
+          );
         }
 
-        const { data: newClass, error } = await supabaseServer
-          .from('classes')
-          .insert(classData)
+        const supabase = createRouteHandlerClient<Database>({ cookies });
+
+        // Kullanıcının tenant_id'sini al
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          return NextResponse.json(
+            { error: "Oturum açmanız gerekiyor" },
+            { status: 401 }
+          );
+        }
+
+        const { data: newClass, error } = await supabase
+          .from("classes")
+          .insert({
+            name,
+            grade_level,
+            capacity: capacity || 30, // Varsayılan kapasite
+            academic_year,
+            is_active: true,
+            tenant_id: user.id,
+          })
           .select()
-          .single()
+          .single();
 
         if (error) {
-          Sentry.captureException(error)
-          return NextResponse.json({ error: 'Sınıf oluşturulurken bir hata oluştu' }, { status: 500 })
+          console.error("Error creating class:", error);
+          return NextResponse.json(
+            { error: "Sınıf oluşturulurken bir hata oluştu" },
+            { status: 500 }
+          );
         }
 
-        return NextResponse.json(newClass)
+        return NextResponse.json(newClass, { status: 201 });
       } catch (error) {
-        Sentry.captureException(error)
-        return NextResponse.json({ error: 'Bir hata oluştu' }, { status: 500 })
+        console.error("Error in POST /api/classes:", error);
+        Sentry.captureException(error);
+        return NextResponse.json(
+          { error: "Beklenmeyen bir hata oluştu" },
+          { status: 500 }
+        );
       }
     }
-  )
+  );
 }
 
 export async function PUT(request: NextRequest) {
   return Sentry.startSpan(
     {
-      op: 'http.server',
-      name: 'PUT /api/classes',
+      op: "http.server",
+      name: "PUT /api/classes",
     },
     async () => {
       try {
-        const tenant = await getCurrentTenant()
-        const body = await request.json()
-        const { id, ...updateData } = body
+        const body = await request.json();
+        const { id, name, grade_level, capacity, academic_year, is_active } = body;
 
-        const classData: ClassUpdate = {
-          ...updateData,
+        if (!id) {
+          return NextResponse.json(
+            { error: "Sınıf ID'si gerekli" },
+            { status: 400 }
+          );
         }
 
-        const { data: updatedClass, error } = await supabaseServer
-          .from('classes')
-          .update(classData)
-          .eq('id', id)
-          .eq('tenant_id', tenant.id)
+        const supabase = createRouteHandlerClient<Database>({ cookies });
+
+        // Kullanıcının tenant_id'sini al
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          return NextResponse.json(
+            { error: "Oturum açmanız gerekiyor" },
+            { status: 401 }
+          );
+        }
+
+        const { data: updatedClass, error } = await supabase
+          .from("classes")
+          .update({
+            name,
+            grade_level,
+            capacity,
+            academic_year,
+            is_active,
+          })
+          .eq("id", id)
+          .eq("tenant_id", user.id)
           .select()
-          .single()
+          .single();
 
         if (error) {
-          Sentry.captureException(error)
-          return NextResponse.json({ error: 'Sınıf güncellenirken bir hata oluştu' }, { status: 500 })
+          console.error("Error updating class:", error);
+          return NextResponse.json(
+            { error: "Sınıf güncellenirken bir hata oluştu" },
+            { status: 500 }
+          );
         }
 
-        return NextResponse.json(updatedClass)
+        return NextResponse.json(updatedClass);
       } catch (error) {
-        Sentry.captureException(error)
-        return NextResponse.json({ error: 'Bir hata oluştu' }, { status: 500 })
+        console.error("Error in PUT /api/classes:", error);
+        Sentry.captureException(error);
+        return NextResponse.json(
+          { error: "Beklenmeyen bir hata oluştu" },
+          { status: 500 }
+        );
       }
     }
-  )
+  );
 }
 
 export async function DELETE(request: NextRequest) {
   return Sentry.startSpan(
     {
-      op: 'http.server',
-      name: 'DELETE /api/classes',
+      op: "http.server",
+      name: "DELETE /api/classes",
     },
     async () => {
       try {
-        const tenant = await getCurrentTenant()
-        const { searchParams } = new URL(request.url)
-        const id = searchParams.get('id')
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get("id");
 
         if (!id) {
-          return NextResponse.json({ error: 'Sınıf ID\'si gerekli' }, { status: 400 })
+          return NextResponse.json(
+            { error: "Sınıf ID'si gerekli" },
+            { status: 400 }
+          );
         }
 
-        const { error } = await supabaseServer
-          .from('classes')
+        const supabase = createRouteHandlerClient<Database>({ cookies });
+
+        // Kullanıcının tenant_id'sini al
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          return NextResponse.json(
+            { error: "Oturum açmanız gerekiyor" },
+            { status: 401 }
+          );
+        }
+
+        const { error } = await supabase
+          .from("classes")
           .delete()
-          .eq('id', id)
-          .eq('tenant_id', tenant.id)
+          .eq("id", id)
+          .eq("tenant_id", user.id);
 
         if (error) {
-          Sentry.captureException(error)
-          return NextResponse.json({ error: 'Sınıf silinirken bir hata oluştu' }, { status: 500 })
+          console.error("Error deleting class:", error);
+          return NextResponse.json(
+            { error: "Sınıf silinirken bir hata oluştu" },
+            { status: 500 }
+          );
         }
 
-        return NextResponse.json({ success: true })
+        return NextResponse.json({ message: "Sınıf başarıyla silindi" });
       } catch (error) {
-        Sentry.captureException(error)
-        return NextResponse.json({ error: 'Bir hata oluştu' }, { status: 500 })
+        console.error("Error in DELETE /api/classes:", error);
+        Sentry.captureException(error);
+        return NextResponse.json(
+          { error: "Beklenmeyen bir hata oluştu" },
+          { status: 500 }
+        );
       }
     }
-  )
+  );
 } 

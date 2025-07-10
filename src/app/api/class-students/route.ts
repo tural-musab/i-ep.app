@@ -1,226 +1,298 @@
-import { NextRequest, NextResponse } from 'next/server'
-import * as Sentry from '@sentry/nextjs'
-import { getCurrentTenant } from '@/lib/tenant'
-import { supabaseServer } from '@/lib/supabase/server'
-import { ClassStudentInsert, ClassStudentUpdate, StudentStatus } from '@/types/class'
+import { NextRequest, NextResponse } from "next/server";
+import * as Sentry from "@sentry/nextjs";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
+import { cookies } from "next/headers";
+import { Database } from "@/types/database.types";
 
+// Bir sınıftaki öğrencileri listele
 export async function GET(request: NextRequest) {
   return Sentry.startSpan(
     {
-      op: 'http.server',
-      name: 'GET /api/class-students',
+      op: "http.server",
+      name: "GET /api/class-students",
     },
     async () => {
       try {
-        const tenant = await getCurrentTenant()
-        const searchParams = request.nextUrl.searchParams
-        const classId = searchParams.get('class_id')
-        const studentId = searchParams.get('student_id')
-        const status = searchParams.get('status') as StudentStatus | null
+        const { searchParams } = new URL(request.url);
+        const classId = searchParams.get("class_id");
 
-        let query = supabaseServer
-          .from('class_students')
+        if (!classId) {
+          return NextResponse.json(
+            { error: "Sınıf ID'si gerekli" },
+            { status: 400 }
+          );
+        }
+
+        const supabase = createRouteHandlerClient<Database>({ cookies });
+
+        // Önce sınıfın tenant_id'sini al
+        const { data: classData } = await supabase
+          .from("classes")
+          .select("tenant_id")
+          .eq("id", classId)
+          .single();
+
+        if (!classData) {
+          return NextResponse.json(
+            { error: "Sınıf bulunamadı" },
+            { status: 404 }
+          );
+        }
+
+        const { data: students, error } = await supabase
+          .from("class_students")
           .select(`
             *,
             student:students (
               id,
               first_name,
               last_name,
-              number
+              student_number
             )
           `)
-          .eq('tenant_id', tenant.id)
-
-        if (classId) {
-          query = query.eq('class_id', classId)
-        }
-
-        if (studentId) {
-          query = query.eq('student_id', studentId)
-        }
-
-        if (status) {
-          query = query.eq('status', status)
-        }
-
-        const { data: classStudents, error } = await query
+          .eq("class_id", classId)
+          .eq("tenant_id", classData.tenant_id)
+          .order("enrollment_date", { ascending: false });
 
         if (error) {
-          Sentry.captureException(error)
-          return NextResponse.json({ error: 'Sınıf öğrencileri yüklenirken bir hata oluştu' }, { status: 500 })
+          console.error("Error fetching class students:", error);
+          return NextResponse.json(
+            { error: "Sınıf öğrencileri getirilirken bir hata oluştu" },
+            { status: 500 }
+          );
         }
 
-        return NextResponse.json(classStudents)
+        return NextResponse.json(students);
       } catch (error) {
-        Sentry.captureException(error)
-        return NextResponse.json({ error: 'Bir hata oluştu' }, { status: 500 })
+        console.error("Error in GET /api/class-students:", error);
+        Sentry.captureException(error);
+        return NextResponse.json(
+          { error: "Beklenmeyen bir hata oluştu" },
+          { status: 500 }
+        );
       }
     }
-  )
+  );
 }
 
+// Öğrenciyi sınıfa ekle
 export async function POST(request: NextRequest) {
   return Sentry.startSpan(
     {
-      op: 'http.server',
-      name: 'POST /api/class-students',
+      op: "http.server",
+      name: "POST /api/class-students",
     },
     async () => {
       try {
-        const tenant = await getCurrentTenant()
-        const body = await request.json()
+        const body = await request.json();
+        const { class_id, student_id, status = "active" } = body;
 
-        // Sınıf kapasitesini kontrol et
-        const { data: classData, error: classError } = await supabaseServer
-          .from('classes')
-          .select(`
-            capacity,
-            class_students (count)
-          `)
-          .eq('id', body.class_id)
-          .eq('tenant_id', tenant.id)
-          .single()
-
-        if (classError) {
-          Sentry.captureException(classError)
-          return NextResponse.json({ error: 'Sınıf bilgisi alınırken bir hata oluştu' }, { status: 500 })
+        if (!class_id || !student_id) {
+          return NextResponse.json(
+            { error: "Sınıf ID ve Öğrenci ID gerekli" },
+            { status: 400 }
+          );
         }
 
-        const currentStudentCount = classData.class_students?.[0]?.count || 0
-        if (currentStudentCount >= classData.capacity) {
-          return NextResponse.json({ error: 'Sınıf kapasitesi dolu' }, { status: 400 })
+        const supabase = createRouteHandlerClient<Database>({ cookies });
+
+        // Önce sınıfın tenant_id'sini al
+        const { data: classData } = await supabase
+          .from("classes")
+          .select("tenant_id")
+          .eq("id", class_id)
+          .single();
+
+        if (!classData) {
+          return NextResponse.json(
+            { error: "Sınıf bulunamadı" },
+            { status: 404 }
+          );
         }
 
-        // Öğrencinin başka bir sınıfa kayıtlı olup olmadığını kontrol et
-        const { data: existingAssignment, error: existingError } = await supabaseServer
-          .from('class_students')
-          .select('id')
-          .eq('student_id', body.student_id)
-          .eq('tenant_id', tenant.id)
-          .eq('status', 'active')
-          .maybeSingle()
+        // Önce sınıfın kapasitesini ve mevcut öğrenci sayısını kontrol et
+        const { data: classInfo } = await supabase
+          .from("classes")
+          .select("capacity")
+          .eq("id", class_id)
+          .single();
 
-        if (existingError) {
-          Sentry.captureException(existingError)
-          return NextResponse.json({ error: 'Öğrenci bilgisi kontrol edilirken bir hata oluştu' }, { status: 500 })
+        const { count: currentStudentCount } = await supabase
+          .from("class_students")
+          .select("*", { count: "exact" })
+          .eq("class_id", class_id)
+          .eq("status", "active");
+
+        if (
+          classInfo &&
+          currentStudentCount !== null &&
+          currentStudentCount >= classInfo.capacity
+        ) {
+          return NextResponse.json(
+            { error: "Sınıf kapasitesi dolu" },
+            { status: 400 }
+          );
         }
 
-        if (existingAssignment) {
-          return NextResponse.json({ error: 'Öğrenci zaten başka bir sınıfa kayıtlı' }, { status: 400 })
-        }
-
-        const classStudentData: ClassStudentInsert = {
-          ...body,
-          tenant_id: tenant.id,
-          status: 'active',
-        }
-
-        const { data: newClassStudent, error } = await supabaseServer
-          .from('class_students')
-          .insert(classStudentData)
-          .select(`
-            *,
-            student:students (
-              id,
-              first_name,
-              last_name,
-              number
-            )
-          `)
-          .single()
+        // Öğrenciyi sınıfa ekle
+        const { data: assignment, error } = await supabase
+          .from("class_students")
+          .insert({
+            class_id,
+            student_id,
+            tenant_id: classData.tenant_id,
+            status,
+            enrollment_date: new Date().toISOString(),
+          })
+          .select()
+          .single();
 
         if (error) {
-          Sentry.captureException(error)
-          return NextResponse.json({ error: 'Öğrenci sınıfa eklenirken bir hata oluştu' }, { status: 500 })
+          console.error("Error assigning student to class:", error);
+          return NextResponse.json(
+            { error: "Öğrenci sınıfa eklenirken bir hata oluştu" },
+            { status: 500 }
+          );
         }
 
-        return NextResponse.json(newClassStudent)
+        return NextResponse.json(assignment, { status: 201 });
       } catch (error) {
-        Sentry.captureException(error)
-        return NextResponse.json({ error: 'Bir hata oluştu' }, { status: 500 })
+        console.error("Error in POST /api/class-students:", error);
+        Sentry.captureException(error);
+        return NextResponse.json(
+          { error: "Beklenmeyen bir hata oluştu" },
+          { status: 500 }
+        );
       }
     }
-  )
+  );
 }
 
+// Öğrencinin sınıf durumunu güncelle
 export async function PUT(request: NextRequest) {
   return Sentry.startSpan(
     {
-      op: 'http.server',
-      name: 'PUT /api/class-students',
+      op: "http.server",
+      name: "PUT /api/class-students",
     },
     async () => {
       try {
-        const tenant = await getCurrentTenant()
-        const body = await request.json()
-        const { id, ...updateData } = body
+        const body = await request.json();
+        const { class_id, student_id, status } = body;
 
-        const classStudentData: ClassStudentUpdate = {
-          ...updateData,
+        if (!class_id || !student_id || !status) {
+          return NextResponse.json(
+            { error: "Sınıf ID, Öğrenci ID ve durum gerekli" },
+            { status: 400 }
+          );
         }
 
-        const { data: updatedClassStudent, error } = await supabaseServer
-          .from('class_students')
-          .update(classStudentData)
-          .eq('id', id)
-          .eq('tenant_id', tenant.id)
-          .select(`
-            *,
-            student:students (
-              id,
-              first_name,
-              last_name,
-              number
-            )
-          `)
-          .single()
+        const supabase = createRouteHandlerClient<Database>({ cookies });
+
+        // Önce sınıfın tenant_id'sini al
+        const { data: classData } = await supabase
+          .from("classes")
+          .select("tenant_id")
+          .eq("id", class_id)
+          .single();
+
+        if (!classData) {
+          return NextResponse.json(
+            { error: "Sınıf bulunamadı" },
+            { status: 404 }
+          );
+        }
+
+        const { data: updatedAssignment, error } = await supabase
+          .from("class_students")
+          .update({ status })
+          .eq("class_id", class_id)
+          .eq("student_id", student_id)
+          .eq("tenant_id", classData.tenant_id)
+          .select()
+          .single();
 
         if (error) {
-          Sentry.captureException(error)
-          return NextResponse.json({ error: 'Öğrenci sınıf bilgisi güncellenirken bir hata oluştu' }, { status: 500 })
+          console.error("Error updating class student status:", error);
+          return NextResponse.json(
+            { error: "Öğrenci durumu güncellenirken bir hata oluştu" },
+            { status: 500 }
+          );
         }
 
-        return NextResponse.json(updatedClassStudent)
+        return NextResponse.json(updatedAssignment);
       } catch (error) {
-        Sentry.captureException(error)
-        return NextResponse.json({ error: 'Bir hata oluştu' }, { status: 500 })
+        console.error("Error in PUT /api/class-students:", error);
+        Sentry.captureException(error);
+        return NextResponse.json(
+          { error: "Beklenmeyen bir hata oluştu" },
+          { status: 500 }
+        );
       }
     }
-  )
+  );
 }
 
+// Öğrenciyi sınıftan çıkar
 export async function DELETE(request: NextRequest) {
   return Sentry.startSpan(
     {
-      op: 'http.server',
-      name: 'DELETE /api/class-students',
+      op: "http.server",
+      name: "DELETE /api/class-students",
     },
     async () => {
       try {
-        const tenant = await getCurrentTenant()
-        const { searchParams } = new URL(request.url)
-        const id = searchParams.get('id')
+        const { searchParams } = new URL(request.url);
+        const classId = searchParams.get("class_id");
+        const studentId = searchParams.get("student_id");
 
-        if (!id) {
-          return NextResponse.json({ error: 'Sınıf öğrenci ID\'si gerekli' }, { status: 400 })
+        if (!classId || !studentId) {
+          return NextResponse.json(
+            { error: "Sınıf ID ve Öğrenci ID gerekli" },
+            { status: 400 }
+          );
         }
 
-        const { error } = await supabaseServer
-          .from('class_students')
+        const supabase = createRouteHandlerClient<Database>({ cookies });
+
+        // Önce sınıfın tenant_id'sini al
+        const { data: classData } = await supabase
+          .from("classes")
+          .select("tenant_id")
+          .eq("id", classId)
+          .single();
+
+        if (!classData) {
+          return NextResponse.json(
+            { error: "Sınıf bulunamadı" },
+            { status: 404 }
+          );
+        }
+
+        const { error } = await supabase
+          .from("class_students")
           .delete()
-          .eq('id', id)
-          .eq('tenant_id', tenant.id)
+          .eq("class_id", classId)
+          .eq("student_id", studentId)
+          .eq("tenant_id", classData.tenant_id);
 
         if (error) {
-          Sentry.captureException(error)
-          return NextResponse.json({ error: 'Öğrenci sınıftan çıkarılırken bir hata oluştu' }, { status: 500 })
+          console.error("Error removing student from class:", error);
+          return NextResponse.json(
+            { error: "Öğrenci sınıftan çıkarılırken bir hata oluştu" },
+            { status: 500 }
+          );
         }
 
-        return NextResponse.json({ success: true })
+        return NextResponse.json({ message: "Öğrenci sınıftan çıkarıldı" });
       } catch (error) {
-        Sentry.captureException(error)
-        return NextResponse.json({ error: 'Bir hata oluştu' }, { status: 500 })
+        console.error("Error in DELETE /api/class-students:", error);
+        Sentry.captureException(error);
+        return NextResponse.json(
+          { error: "Beklenmeyen bir hata oluştu" },
+          { status: 500 }
+        );
       }
     }
-  )
+  );
 } 
