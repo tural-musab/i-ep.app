@@ -7,7 +7,7 @@ export default function DocsPage() {
       
       <p className="text-lg mb-8">
         Bu dokümantasyon, Iqra Eğitim Portalı SaaS projesini geliştirmek ve entegre etmek isteyen
-        geliştiriciler için hazırlanmıştır. Aşağıdaki bölümlerde projenin mimarisi, API'leri ve 
+        geliştiriciler için hazırlanmıştır. Aşağıdaki bölümlerde projenin mimarisi, API&apos;leri ve 
         kullanım rehberlerini bulabilirsiniz.
       </p>
       
@@ -15,7 +15,7 @@ export default function DocsPage() {
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-4">API Dokümantasyonu</h2>
           <p className="text-gray-600 mb-4">
-            REST API'lerinin tam dokümantasyonu, endpoint'ler, parametreler ve cevap formatları.
+            REST API&apos;lerinin tam dokümantasyonu, endpoint&apos;ler, parametreler ve cevap formatları.
           </p>
           <Link href="/docs/api" className="text-primary hover:underline">
             API Dokümanlarına Git →

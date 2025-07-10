@@ -101,7 +101,7 @@ export default function GirisPage() {
             Hesabınıza Giriş Yapın
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Iqra Eğitim Portalı'na hoş geldiniz
+            Iqra Eğitim Portalı&apos;na hoş geldiniz
           </p>
         </div>
         

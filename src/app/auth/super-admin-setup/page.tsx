@@ -193,7 +193,7 @@ export default function SuperAdminSetupPage() {
         
         <div className="bg-yellow-50 p-3 rounded-md text-sm text-yellow-800">
           <p className="font-semibold">Önemli:</p>
-          <p>Süper admin kurulumu için önce "1. Auth Kullanıcısına Rol Ata" butonuna, ardından "2. Public Kullanıcısı Oluştur" butonuna tıklayın.</p>
+          <p>Süper admin kurulumu için önce &quot;1. Auth Kullanıcısına Rol Ata&quot; butonuna, ardından &quot;2. Public Kullanıcısı Oluştur&quot; butonuna tıklayın.</p>
         </div>
         
         {message && (
@@ -218,7 +218,7 @@ export default function SuperAdminSetupPage() {
           </p>
           
           <ol className="list-decimal pl-5 space-y-2">
-            <li><strong>Auth Kullanıcısına Rol Atama:</strong> Kullanıcıya <code>raw_app_meta_data</code> içinde <code>role: "super_admin"</code> değerini atar.</li>
+            <li><strong>Auth Kullanıcısına Rol Atama:</strong> Kullanıcıya <code>raw_app_meta_data</code> içinde <code>role: &quot;super_admin&quot;</code> değerini atar.</li>
             <li><strong>Public Kullanıcısı Oluşturma:</strong> <code>public.users</code> tablosunda karşılık gelen bir kullanıcı kaydı oluşturur.</li>
           </ol>
           

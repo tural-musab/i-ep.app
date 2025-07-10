@@ -139,8 +139,8 @@ ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
             
             <h3>Tenant Simülasyonu</h3>
             <p>
-              Yerel geliştirme sırasında tenant'ları test etmek için, tarayıcınızda <code>http://localhost:3000/[tenant-subdomain]</code> URL'sini kullanabilirsiniz.
-              Örneğin, <code>http://localhost:3000/demo</code> "demo" tenant'ını simüle eder.
+                              Yerel geliştirme sırasında tenant&apos;ları test etmek için, tarayıcınızda <code>http://localhost:3000/[tenant-subdomain]</code> URL&apos;sini kullanabilirsiniz.
+              Örneğin, <code>http://localhost:3000/demo</code> &quot;demo&quot; tenant&apos;ını simüle eder.
             </p>
             
             <h3>API Routes</h3>

@@ -141,7 +141,7 @@ export default function DemoPage() {
           <div className="text-center mb-10">
             <h1 className="text-3xl font-extrabold text-gray-900">Demo Hesabı ile Deneyin</h1>
             <p className="mt-4 text-lg text-gray-500">
-              Kayıt olmadan Iqra Eğitim Portalı'nı keşfedin
+              Kayıt olmadan Iqra Eğitim Portalı&apos;nı keşfedin
             </p>
           </div>
           
@@ -202,7 +202,7 @@ export default function DemoPage() {
               <div className="bg-blue-50 p-4 rounded-md mt-6">
                 <h4 className="text-sm font-medium text-blue-800">Demo Hesap Bilgileri</h4>
                 <p className="text-sm text-blue-700">
-                  Demo hesap otomatik olarak "Demo Okul" tenant'ında oluşturulacaktır.
+                  Demo hesap otomatik olarak &quot;Demo Okul&quot; tenant&apos;ında oluşturulacaktır.
                   Tüm özellikler ve fonksiyonlar kullanılabilir olacak, ancak yapılan değişiklikler 24 saat sonra sıfırlanacaktır.
                 </p>
               </div>
