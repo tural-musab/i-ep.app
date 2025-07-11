@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 interface Student {
   id: string;
@@ -40,13 +41,17 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface AssignStudentFormProps {
   classId: string;
-  onSuccess: () => void;
+  onAssigned: () => void;
+  onCancel: () => void;
 }
 
-export function AssignStudentForm({ classId, onSuccess }: AssignStudentFormProps) {
-  const [students, setStudents] = useState<Student[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export function AssignStudentForm({ classId, onAssigned, onCancel }: AssignStudentFormProps) {
+  const [students, setStudents] = React.useState<Student[]>([]);
+  const [filteredStudents, setFilteredStudents] = React.useState<Student[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [error, setError] = React.useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -68,13 +73,12 @@ export function AssignStudentForm({ classId, onSuccess }: AssignStudentFormProps
           }
           const data = await response.json();
           setStudents(data);
+          setFilteredStudents(data);
+          setError(null);
         } catch (error) {
           console.error("Error fetching available students:", error);
           Sentry.captureException(error);
-          form.setError("root", {
-            type: "manual",
-            message: "Öğrenci listesi yüklenirken bir hata oluştu",
-          });
+          setError("Öğrenci listesi alınamadı");
         } finally {
           setIsLoading(false);
         }
@@ -91,6 +95,7 @@ export function AssignStudentForm({ classId, onSuccess }: AssignStudentFormProps
       async () => {
         try {
           setIsSubmitting(true);
+          setError(null);
 
           const response = await fetch(`/api/class-students/${classId}`, {
             method: "POST",
@@ -104,17 +109,14 @@ export function AssignStudentForm({ classId, onSuccess }: AssignStudentFormProps
 
           if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || "Bir hata oluştu");
+            throw new Error(error.message || "Öğrenci eklenemedi");
           }
 
-          onSuccess();
+          onAssigned();
         } catch (error) {
           console.error("Error assigning student:", error);
           Sentry.captureException(error);
-          form.setError("root", {
-            type: "manual",
-            message: "Öğrenci eklenirken bir hata oluştu",
-          });
+          setError("Öğrenci eklenemedi");
         } finally {
           setIsSubmitting(false);
         }
@@ -122,21 +124,45 @@ export function AssignStudentForm({ classId, onSuccess }: AssignStudentFormProps
     );
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetchAvailableStudents();
   }, [classId]);
+
+  React.useEffect(() => {
+    const filtered = students.filter((student: Student) => {
+      const fullName = `${student.first_name} ${student.last_name}`.toLowerCase();
+      const studentNumber = student.student_number.toLowerCase();
+      return (
+        fullName.includes(searchTerm.toLowerCase()) ||
+        studentNumber.includes(searchTerm.toLowerCase())
+      );
+    });
+    setFilteredStudents(filtered);
+  }, [searchTerm, students]);
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-48">
-        <div className="text-lg text-muted-foreground">Yükleniyor...</div>
+        <div className="text-lg text-muted-foreground">Öğrenciler yükleniyor...</div>
       </div>
     );
   }
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <Input
+          type="text"
+          placeholder="Öğrenci ara..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+          className="mb-4"
+        />
+
         <FormField
           control={form.control}
           name="student_id"
@@ -146,7 +172,7 @@ export function AssignStudentForm({ classId, onSuccess }: AssignStudentFormProps
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                disabled={students.length === 0}
+                disabled={filteredStudents.length === 0}
               >
                 <FormControl>
                   <SelectTrigger>
@@ -154,13 +180,13 @@ export function AssignStudentForm({ classId, onSuccess }: AssignStudentFormProps
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {students.map((student) => (
+                  {filteredStudents.map((student: Student) => (
                     <SelectItem key={student.id} value={student.id}>
                       {student.student_number} - {student.first_name}{" "}
                       {student.last_name}
                     </SelectItem>
                   ))}
-                  {students.length === 0 && (
+                  {filteredStudents.length === 0 && (
                     <SelectItem value="empty" disabled>
                       Eklenebilecek öğrenci yok
                     </SelectItem>
@@ -172,17 +198,27 @@ export function AssignStudentForm({ classId, onSuccess }: AssignStudentFormProps
           )}
         />
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isSubmitting || students.length === 0}
-        >
-          {isSubmitting ? "Ekleniyor..." : "Ekle"}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            className="flex-1"
+            disabled={isSubmitting || filteredStudents.length === 0}
+          >
+            {isSubmitting ? "Ekleniyor..." : "Ekle"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="flex-1"
+            onClick={onCancel}
+          >
+            İptal
+          </Button>
+        </div>
 
-        {form.formState.errors.root && (
+        {error && (
           <div className="text-sm text-destructive text-center">
-            {form.formState.errors.root.message}
+            {error}
           </div>
         )}
       </form>
