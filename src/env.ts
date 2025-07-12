@@ -42,6 +42,11 @@ export const env = createEnv({
     CLOUDFLARE_EMAIL: z.string().email().optional(),
     CLOUDFLARE_ACCOUNT_ID: z.string().optional(),
 
+    // Payment Gateway - İyzico
+    IYZICO_API_KEY: z.string().optional(),
+    IYZICO_SECRET_KEY: z.string().optional(),
+    IYZICO_BASE_URL: z.string().url().optional(),
+
     // Redis - optional
     UPSTASH_REDIS_URL: z.string().url().optional(),
     UPSTASH_REDIS_TOKEN: z.string().optional(),
@@ -96,6 +101,9 @@ export const env = createEnv({
     CLOUDFLARE_ZONE_ID: process.env.CLOUDFLARE_ZONE_ID,
     CLOUDFLARE_EMAIL: process.env.CLOUDFLARE_EMAIL,
     CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
+    IYZICO_API_KEY: process.env.IYZICO_API_KEY,
+    IYZICO_SECRET_KEY: process.env.IYZICO_SECRET_KEY,
+    IYZICO_BASE_URL: process.env.IYZICO_BASE_URL,
     UPSTASH_REDIS_URL: process.env.UPSTASH_REDIS_URL,
     UPSTASH_REDIS_TOKEN: process.env.UPSTASH_REDIS_TOKEN,
     NODE_ENV: process.env.NODE_ENV,
@@ -112,7 +120,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ADMIN_DOMAIN: process.env.NEXT_PUBLIC_ADMIN_DOMAIN,
     NEXT_PUBLIC_BASE_DOMAIN: process.env.NEXT_PUBLIC_BASE_DOMAIN,
   },
-  // Validation'ı atlayalım çünkü optional değerler için hatalı validation yapıyor
-  skipValidation: true,
+  // Environment validation enabled for security
+  skipValidation: process.env.NODE_ENV === 'test' || !process.env.NODE_ENV, // Skip in test or when NODE_ENV is not set
   emptyStringAsUndefined: true,
 }); 

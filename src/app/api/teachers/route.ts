@@ -223,7 +223,20 @@ export async function POST(request: NextRequest) {
             subjects: body.subjects || [],
             specialties: body.specialties || []
           }
-        } as any;
+        } as {
+          tenant_id: string;
+          email: string;
+          first_name: string;
+          last_name: string;
+          role: string;
+          is_active: boolean;
+          metadata: {
+            phone?: string;
+            address?: string;
+            subjects?: string[];
+            specialties?: string[];
+          };
+        };
 
         const { data: newTeacher, error: teacherError } = await supabase
           .from('users')

@@ -27,7 +27,7 @@ export default function OnboardingDocsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   
   // Doküman kategorileri
-  const docCategories: DocCategory[] = [
+  const docCategories: DocCategory[] = useMemo(() => [
     {
       id: 'getting-started',
       name: 'Başlangıç',
@@ -159,7 +159,7 @@ export default function OnboardingDocsPage() {
         }
       ]
     }
-  ];
+  ], []);
   
   // Arama sonuçlarını filtrele
   const filteredDocuments = useMemo(() => {

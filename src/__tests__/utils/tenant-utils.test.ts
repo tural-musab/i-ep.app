@@ -87,12 +87,17 @@ describe('Tenant Utilities', () => {
     it('geçersiz URL\'den null döndürmelidir', () => {
       // Arrange
       const url = 'invalid-url';
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       
       // Act
       const result = detectTenantFromUrl(url);
       
       // Assert
       expect(result).toBeNull();
+      expect(consoleSpy).toHaveBeenCalledWith('URL parse hatası:', expect.anything());
+      
+      // Cleanup
+      consoleSpy.mockRestore();
     });
   });
 }); 

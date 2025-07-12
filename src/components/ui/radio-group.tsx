@@ -1,4 +1,5 @@
 import * as React from "react"
+import { type JSX } from "react"
 import { cn } from "@/lib/utils"
 
 type RadioGroupContextValue = {
@@ -25,7 +26,7 @@ interface RadioGroupProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
-  ({ className, value, defaultValue, onValueChange, ...props }, ref) => {
+  ({ className, value, defaultValue, onValueChange, ...props }, ref): JSX.Element => {
     const [localValue, setLocalValue] = React.useState(defaultValue || "")
     
     const currentValue = value !== undefined ? value : localValue
@@ -58,7 +59,7 @@ interface RadioGroupItemProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const RadioGroupItem = React.forwardRef<HTMLDivElement, RadioGroupItemProps>(
-  ({ className, value, children, ...props }, ref) => {
+  ({ className, value, children, ...props }, ref): JSX.Element => {
     const { value: groupValue, onValueChange } = useRadioGroup()
     const checked = value === groupValue
 
@@ -91,4 +92,4 @@ const RadioGroupItem = React.forwardRef<HTMLDivElement, RadioGroupItemProps>(
 )
 RadioGroupItem.displayName = "RadioGroupItem"
 
-export { RadioGroup, RadioGroupItem } 
+export { RadioGroup, RadioGroupItem }

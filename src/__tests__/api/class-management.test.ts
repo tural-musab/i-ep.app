@@ -1,9 +1,7 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import { GET, POST, PUT, DELETE } from "@/app/api/classes/route";
-import { GET as getClassDetails, DELETE as deleteClass } from "@/app/api/classes/[id]/route";
-import { GET as getClassStudents, POST as assignStudent, DELETE as removeStudent } from "@/app/api/class-students/[classId]/route";
-import { GET as getClassTeachers, POST as assignTeacher, DELETE as removeTeacher } from "@/app/api/class-teachers/[classId]/route";
+import { GET, POST } from "@/app/api/classes/route";
+import { GET as getClassStudents, POST as assignStudent } from "@/app/api/class-students/[classId]/route";
+import { GET as getClassTeachers, POST as assignTeacher } from "@/app/api/class-teachers/[classId]/route";
 
 // Mock Supabase client
 jest.mock("@supabase/auth-helpers-nextjs", () => ({
@@ -22,7 +20,15 @@ jest.mock("@sentry/nextjs", () => ({
 }));
 
 describe("Class Management API", () => {
-  let mockSupabase: any;
+  let mockSupabase: {
+    from: jest.Mock;
+    select: jest.Mock;
+    insert: jest.Mock;
+    update: jest.Mock;
+    delete: jest.Mock;
+    eq: jest.Mock;
+    single: jest.Mock;
+  };
 
   beforeEach(() => {
     // Reset all mocks

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import type { FC } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -49,7 +50,11 @@ interface AssignTeacherFormProps {
   onCancel: () => void;
 }
 
-export function AssignTeacherForm({ classId, onSuccess, onCancel }: AssignTeacherFormProps) {
+export const AssignTeacherForm: FC<AssignTeacherFormProps> = ({
+  classId,
+  onSuccess,
+  onCancel,
+}) => {
   const [teachers, setTeachers] = React.useState<Teacher[]>([]);
   const [filteredTeachers, setFilteredTeachers] = React.useState<Teacher[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -61,7 +66,7 @@ export function AssignTeacherForm({ classId, onSuccess, onCancel }: AssignTeache
     resolver: zodResolver(formSchema),
   });
 
-  const fetchAvailableTeachers = async () => {
+  const fetchAvailableTeachers = React.useCallback(async () => {
     return Sentry.startSpan(
       {
         op: "http.client",
@@ -70,7 +75,7 @@ export function AssignTeacherForm({ classId, onSuccess, onCancel }: AssignTeache
       async () => {
         try {
           const response = await fetch(
-            `/api/teachers/available?classId=${classId}`
+            `/api/teachers?available=true&classId=${classId}`
           );
           if (!response.ok) {
             throw new Error("Öğretmen listesi alınamadı");
@@ -88,7 +93,23 @@ export function AssignTeacherForm({ classId, onSuccess, onCancel }: AssignTeache
         }
       }
     );
-  };
+  }, [classId]);
+
+  React.useEffect(() => {
+    fetchAvailableTeachers();
+  }, [fetchAvailableTeachers]);
+
+  React.useEffect(() => {
+    const filtered = teachers.filter((teacher: Teacher) => {
+      const fullName = `${teacher.first_name} ${teacher.last_name}`.toLowerCase();
+      const email = teacher.email.toLowerCase();
+      return (
+        fullName.includes(searchTerm.toLowerCase()) ||
+        email.includes(searchTerm.toLowerCase())
+      );
+    });
+    setFilteredTeachers(filtered);
+  }, [searchTerm, teachers]);
 
   const onSubmit = async (values: FormValues) => {
     return Sentry.startSpan(
@@ -129,26 +150,12 @@ export function AssignTeacherForm({ classId, onSuccess, onCancel }: AssignTeache
     );
   };
 
-  React.useEffect(() => {
-    fetchAvailableTeachers();
-  }, [classId]);
-
-  React.useEffect(() => {
-    const filtered = teachers.filter((teacher: Teacher) => {
-      const fullName = `${teacher.first_name} ${teacher.last_name}`.toLowerCase();
-      const email = teacher.email.toLowerCase();
-      return (
-        fullName.includes(searchTerm.toLowerCase()) ||
-        email.includes(searchTerm.toLowerCase())
-      );
-    });
-    setFilteredTeachers(filtered);
-  }, [searchTerm, teachers]);
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-48">
-        <div className="text-lg text-muted-foreground">Öğretmenler yükleniyor...</div>
+        <div className="text-lg text-muted-foreground">
+          Öğretmenler yükleniyor...
+        </div>
       </div>
     );
   }
@@ -158,7 +165,7 @@ export function AssignTeacherForm({ classId, onSuccess, onCancel }: AssignTeache
   };
 
   return (
-    <Form {...form}>
+    <Form>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Input
           type="text"
@@ -217,17 +224,13 @@ export function AssignTeacherForm({ classId, onSuccess, onCancel }: AssignTeache
                   <FormControl>
                     <RadioGroupItem value="subject" />
                   </FormControl>
-                  <FormLabel className="font-normal">
-                    Branş Öğretmeni
-                  </FormLabel>
+                  <FormLabel className="font-normal">Branş Öğretmeni</FormLabel>
                 </FormItem>
                 <FormItem className="flex items-center space-x-3 space-y-0">
                   <FormControl>
                     <RadioGroupItem value="homeroom" />
                   </FormControl>
-                  <FormLabel className="font-normal">
-                    Sınıf Öğretmeni
-                  </FormLabel>
+                  <FormLabel className="font-normal">Sınıf Öğretmeni</FormLabel>
                 </FormItem>
               </RadioGroup>
               <FormMessage />
@@ -254,11 +257,9 @@ export function AssignTeacherForm({ classId, onSuccess, onCancel }: AssignTeache
         </div>
 
         {error && (
-          <div className="text-sm text-destructive text-center">
-            {error}
-          </div>
+          <div className="text-sm text-destructive text-center">{error}</div>
         )}
       </form>
     </Form>
   );
-} 
+};

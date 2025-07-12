@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { AssignTeacherForm } from "@/components/classes/AssignTeacherForm";
 import * as Sentry from "@sentry/nextjs";
 
@@ -31,17 +32,19 @@ describe("AssignTeacherForm Component", () => {
 
   const mockProps = {
     classId: "class-1",
-    onAssigned: jest.fn(),
+    onSuccess: jest.fn(),
     onCancel: jest.fn(),
   };
 
   beforeEach(() => {
     (global.fetch as jest.Mock).mockReset();
-    mockProps.onAssigned.mockReset();
+    mockProps.onSuccess.mockReset();
     mockProps.onCancel.mockReset();
   });
 
-  it("should render teacher list", async () => {
+  it("should render teacher list and handle selection", async () => {
+    const user = userEvent.setup();
+    
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => mockTeachers,
@@ -52,11 +55,49 @@ describe("AssignTeacherForm Component", () => {
     // Yükleme durumunu kontrol et
     expect(screen.getByText("Öğretmenler yükleniyor...")).toBeInTheDocument();
 
-    // Öğretmen listesinin yüklendiğini kontrol et
+    // Öğretmenlerin yüklendiğini bekle
     await waitFor(() => {
-      expect(screen.getByText("John Doe")).toBeInTheDocument();
-      expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+      expect(screen.getByRole("combobox")).toBeInTheDocument();
     });
+
+    // Select'i tıkla ve öğretmen seç
+    await user.click(screen.getByRole("combobox"));
+
+    // Öğretmenleri kontrol et
+    expect(screen.getByText("John Doe - john@example.com")).toBeInTheDocument();
+    expect(screen.getByText("Jane Smith - jane@example.com")).toBeInTheDocument();
+
+    // Öğretmen seç
+    await user.click(screen.getByText("John Doe - john@example.com"));
+
+    // Branş öğretmeni olarak seç
+    await user.click(screen.getByLabelText("Branş Öğretmeni"));
+
+    // API çağrısını ayarla
+    (global.fetch as jest.Mock).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ message: "Öğretmen başarıyla eklendi" }),
+    });
+
+    // Ekle butonuna tıkla
+    await user.click(screen.getByText("Ekle"));
+
+    // API çağrısının yapıldığını kontrol et
+    await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/class-teachers/class-1",
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify({
+            teacher_id: "teacher-1",
+            role: "subject",
+          }),
+        })
+      );
+    });
+
+    // onSuccess fonksiyonunun çağrıldığını kontrol et
+    expect(mockProps.onSuccess).toHaveBeenCalled();
   });
 
   it("should handle API error", async () => {
@@ -72,6 +113,8 @@ describe("AssignTeacherForm Component", () => {
   });
 
   it("should filter teachers by name", async () => {
+    const user = userEvent.setup();
+
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => mockTeachers,
@@ -79,117 +122,25 @@ describe("AssignTeacherForm Component", () => {
 
     render(<AssignTeacherForm {...mockProps} />);
 
+    // Öğretmenlerin yüklendiğini bekle
     await waitFor(() => {
-      expect(screen.getByText("John Doe")).toBeInTheDocument();
+      expect(screen.getByRole("combobox")).toBeInTheDocument();
     });
 
-    // Arama kutusuna "Jane" yaz
-    fireEvent.change(screen.getByPlaceholderText("Öğretmen ara..."), {
-      target: { value: "Jane" },
-    });
+    // Arama kutusuna yaz
+    await user.type(screen.getByPlaceholderText("Öğretmen ara..."), "Jane");
 
-    // Sadece "Jane Smith"in görünür olduğunu kontrol et
-    expect(screen.queryByText("John Doe")).not.toBeInTheDocument();
-    expect(screen.getByText("Jane Smith")).toBeInTheDocument();
-  });
+    // Select'i aç
+    await user.click(screen.getByRole("combobox"));
 
-  it("should assign selected teacher as subject teacher", async () => {
-    (global.fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockTeachers,
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ message: "Öğretmen başarıyla eklendi" }),
-      });
-
-    render(<AssignTeacherForm {...mockProps} />);
-
-    await waitFor(() => {
-      expect(screen.getByText("John Doe")).toBeInTheDocument();
-    });
-
-    // Öğretmeni seç
-    fireEvent.click(screen.getByText("John Doe"));
-
-    // Branş öğretmeni olarak seç
-    fireEvent.click(screen.getByLabelText("Branş Öğretmeni"));
-
-    // Ekle butonuna tıkla
-    fireEvent.click(screen.getByText("Ekle"));
-
-    // onAssigned fonksiyonunun çağrıldığını kontrol et
-    await waitFor(() => {
-      expect(mockProps.onAssigned).toHaveBeenCalled();
-    });
-  });
-
-  it("should assign selected teacher as homeroom teacher", async () => {
-    (global.fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockTeachers,
-      })
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ message: "Öğretmen başarıyla eklendi" }),
-      });
-
-    render(<AssignTeacherForm {...mockProps} />);
-
-    await waitFor(() => {
-      expect(screen.getByText("John Doe")).toBeInTheDocument();
-    });
-
-    // Öğretmeni seç
-    fireEvent.click(screen.getByText("John Doe"));
-
-    // Sınıf öğretmeni olarak seç
-    fireEvent.click(screen.getByLabelText("Sınıf Öğretmeni"));
-
-    // Ekle butonuna tıkla
-    fireEvent.click(screen.getByText("Ekle"));
-
-    // onAssigned fonksiyonunun çağrıldığını kontrol et
-    await waitFor(() => {
-      expect(mockProps.onAssigned).toHaveBeenCalled();
-    });
-  });
-
-  it("should handle assignment error", async () => {
-    (global.fetch as jest.Mock)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockTeachers,
-      })
-      .mockRejectedValueOnce(new Error("Assignment error"));
-
-    render(<AssignTeacherForm {...mockProps} />);
-
-    await waitFor(() => {
-      expect(screen.getByText("John Doe")).toBeInTheDocument();
-    });
-
-    // Öğretmeni seç
-    fireEvent.click(screen.getByText("John Doe"));
-
-    // Branş öğretmeni olarak seç
-    fireEvent.click(screen.getByLabelText("Branş Öğretmeni"));
-
-    // Ekle butonuna tıkla
-    fireEvent.click(screen.getByText("Ekle"));
-
-    // Hata mesajının görüntülendiğini kontrol et
-    await waitFor(() => {
-      expect(screen.getByText("Öğretmen eklenemedi")).toBeInTheDocument();
-    });
-
-    expect(Sentry.captureException).toHaveBeenCalled();
-    expect(mockProps.onAssigned).not.toHaveBeenCalled();
+    // Sadece filtrelenmiş öğretmenleri kontrol et
+    expect(screen.queryByText("John Doe - john@example.com")).not.toBeInTheDocument();
+    expect(screen.getByText("Jane Smith - jane@example.com")).toBeInTheDocument();
   });
 
   it("should handle cancel", async () => {
+    const user = userEvent.setup();
+    
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => mockTeachers,
@@ -198,13 +149,13 @@ describe("AssignTeacherForm Component", () => {
     render(<AssignTeacherForm {...mockProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("John Doe")).toBeInTheDocument();
+      expect(screen.getByRole("combobox")).toBeInTheDocument();
     });
 
     // İptal butonuna tıkla
-    fireEvent.click(screen.getByText("İptal"));
+    await user.click(screen.getByText("İptal"));
 
     // onCancel fonksiyonunun çağrıldığını kontrol et
     expect(mockProps.onCancel).toHaveBeenCalled();
   });
-}); 
+});

@@ -9,6 +9,19 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+
+interface DomainWithTenant {
+  id: string;
+  tenant_id: string;
+  domain: string;
+  type: string;
+  is_primary: boolean;
+  is_verified: boolean;
+  tenants: {
+    name: string;
+    subdomain: string;
+  };
+}
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { getLogger } from '@/lib/utils/logger';
 import { AuditLogService, AuditLogType } from '@/lib/audit/audit-log';
@@ -301,8 +314,8 @@ export async function GET(request: NextRequest) {
            return {
              id: domain.id,
              tenantId: domain.tenant_id,
-             tenantName: (domain.tenants as any).name,
-             tenantSubdomain: (domain.tenants as any).subdomain,
+             tenantName: (domain as DomainWithTenant).tenants.name,
+             tenantSubdomain: (domain as DomainWithTenant).tenants.subdomain,
             domain: domain.domain,
             type: domain.type,
             isPrimary: domain.is_primary,

@@ -13,8 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/use-toast';
 import { ArrowLeft, ExternalLink, Loader2 } from 'lucide-react';
-import { DomainVerification } from '@/components/admin/domain/domain-verification';
-import { SSLStatus } from '@/components/admin/domain/ssl-status';
+import { DomainVerification } from '@/components/admin/domain/DomainVerification';
+import { SSLStatus } from '@/components/admin/domain/SSLStatus';
 
 interface Domain {
   id: string;

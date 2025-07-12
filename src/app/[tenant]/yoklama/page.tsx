@@ -322,7 +322,7 @@ export default function AttendancePage() {
     if (currentTenantId) {
       loadAttendance();
     }
-  }, [currentTenantId]);
+  }, [currentTenantId, mockAttendanceRecords, mockAttendanceSummaries]);
 
   // Initialize daily attendance when class is selected
   useEffect(() => {
@@ -335,7 +335,7 @@ export default function AttendancePage() {
       }));
       setDailyAttendance(attendance);
     }
-  }, [selectedClass]);
+  }, [selectedClass, mockStudents]);
 
   const filteredRecords = attendanceRecords.filter(record => {
     const matchesSearch = 

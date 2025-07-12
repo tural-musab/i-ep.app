@@ -1,4 +1,5 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { AssignStudentForm } from "@/components/classes/AssignStudentForm";
 import * as Sentry from "@sentry/nextjs";
 
@@ -33,17 +34,19 @@ describe("AssignStudentForm Component", () => {
 
   const mockProps = {
     classId: "class-1",
-    onAssigned: jest.fn(),
+    onSuccess: jest.fn(),
     onCancel: jest.fn(),
   };
 
   beforeEach(() => {
     (global.fetch as jest.Mock).mockReset();
-    mockProps.onAssigned.mockReset();
+    mockProps.onSuccess.mockReset();
     mockProps.onCancel.mockReset();
   });
 
   it("should render student list", async () => {
+    const user = userEvent.setup();
+    
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => mockStudents,
@@ -56,9 +59,15 @@ describe("AssignStudentForm Component", () => {
 
     // Öğrenci listesinin yüklendiğini kontrol et
     await waitFor(() => {
-      expect(screen.getByText("Jane Smith")).toBeInTheDocument();
-      expect(screen.getByText("John Doe")).toBeInTheDocument();
+      expect(screen.queryByText("Öğrenciler yükleniyor...")).not.toBeInTheDocument();
     });
+
+    const select = screen.getByRole("combobox");
+    expect(select).toBeInTheDocument();
+
+    // Seçenekleri kontrol et
+    expect(screen.getByText("2023001 - Jane Smith")).toBeInTheDocument();
+    expect(screen.getByText("2023002 - John Doe")).toBeInTheDocument();
   });
 
   it("should handle API error", async () => {
@@ -74,6 +83,8 @@ describe("AssignStudentForm Component", () => {
   });
 
   it("should filter students by name", async () => {
+    const user = userEvent.setup();
+
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => mockStudents,
@@ -82,20 +93,25 @@ describe("AssignStudentForm Component", () => {
     render(<AssignStudentForm {...mockProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+      const select = screen.getByRole("combobox");
+      expect(select).toBeInTheDocument();
+      user.click(select);
     });
 
     // Arama kutusuna "John" yaz
-    fireEvent.change(screen.getByPlaceholderText("Öğrenci ara..."), {
-      target: { value: "John" },
-    });
+    await user.type(screen.getByPlaceholderText("Öğrenci ara..."), "John");
+
+    // Select'i aç
+    await user.click(screen.getByRole("combobox"));
 
     // Sadece "John Doe"nun görünür olduğunu kontrol et
-    expect(screen.queryByText("Jane Smith")).not.toBeInTheDocument();
-    expect(screen.getByText("John Doe")).toBeInTheDocument();
+    expect(screen.queryByText("2023001 - Jane Smith")).not.toBeInTheDocument();
+    expect(screen.getByText("2023002 - John Doe")).toBeInTheDocument();
   });
 
   it("should assign selected student", async () => {
+    const user = userEvent.setup();
+    
     (global.fetch as jest.Mock)
       .mockResolvedValueOnce({
         ok: true,
@@ -109,22 +125,26 @@ describe("AssignStudentForm Component", () => {
     render(<AssignStudentForm {...mockProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+      const select = screen.getByRole("combobox");
+      expect(select).toBeInTheDocument();
+      user.click(select);
     });
 
     // Öğrenciyi seç
-    fireEvent.click(screen.getByText("Jane Smith"));
-
+    await user.click(screen.getByText("2023001 - Jane Smith"));
+    
     // Ekle butonuna tıkla
-    fireEvent.click(screen.getByText("Ekle"));
+    await user.click(screen.getByText("Ekle"));
 
-    // onAssigned fonksiyonunun çağrıldığını kontrol et
+    // onSuccess fonksiyonunun çağrıldığını kontrol et
     await waitFor(() => {
-      expect(mockProps.onAssigned).toHaveBeenCalled();
+      expect(mockProps.onSuccess).toHaveBeenCalled();
     });
   });
 
   it("should handle assignment error", async () => {
+    const user = userEvent.setup();
+    
     (global.fetch as jest.Mock)
       .mockResolvedValueOnce({
         ok: true,
@@ -135,14 +155,16 @@ describe("AssignStudentForm Component", () => {
     render(<AssignStudentForm {...mockProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+      const select = screen.getByRole("combobox");
+      expect(select).toBeInTheDocument();
+      user.click(select);
     });
 
     // Öğrenciyi seç
-    fireEvent.click(screen.getByText("Jane Smith"));
+    await user.click(screen.getByText("2023001 - Jane Smith"));
 
     // Ekle butonuna tıkla
-    fireEvent.click(screen.getByText("Ekle"));
+    await user.click(screen.getByText("Ekle"));
 
     // Hata mesajının görüntülendiğini kontrol et
     await waitFor(() => {
@@ -150,10 +172,12 @@ describe("AssignStudentForm Component", () => {
     });
 
     expect(Sentry.captureException).toHaveBeenCalled();
-    expect(mockProps.onAssigned).not.toHaveBeenCalled();
+    expect(mockProps.onSuccess).not.toHaveBeenCalled();
   });
 
   it("should handle cancel", async () => {
+    const user = userEvent.setup();
+    
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => mockStudents,
@@ -162,13 +186,15 @@ describe("AssignStudentForm Component", () => {
     render(<AssignStudentForm {...mockProps} />);
 
     await waitFor(() => {
-      expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+      const select = screen.getByRole("combobox");
+      expect(select).toBeInTheDocument();
+      user.click(select);
     });
 
     // İptal butonuna tıkla
-    fireEvent.click(screen.getByText("İptal"));
+    await user.click(screen.getByText("İptal"));
 
     // onCancel fonksiyonunun çağrıldığını kontrol et
     expect(mockProps.onCancel).toHaveBeenCalled();
   });
-}); 
+});

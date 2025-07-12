@@ -169,3 +169,74 @@ Yerel geliştirme ortamınızı başarıyla kurduktan sonra, şunları yapabilir
 1. [Mimari Özet](./architecture-overview.md) dokümanını inceleyerek projenin yapısını anlayabilirsiniz
 2. [Kod Standartları](./code-standards.md) dokümanını okuyarak geliştirme standartlarını öğrenebilirsiniz
 3. [Multi-tenant Mimarisi Test Rehberi](../testing/multi-tenant-testing.md) ile tenant izolasyonu test süreçlerini anlayabilirsiniz 
+
+---
+
+## Notion MCP Nedir?
+Notion MCP, Notion’daki doküman, görev ve bilgileri doğrudan kod editörüne veya AI asistanına entegre eden bir araçtır. Böylece:
+- Notion’daki dokümanları editöründe arayabilir, okuyabilir ve kullanabilirsin.
+- Kod ile dokümantasyon arasında hızlı geçiş yapabilirsin.
+- Takım içi bilgi akışını hızlandırırsın.
+
+---
+
+## Kurulum Adımları
+
+### 1. Notion MCP Paketini Kur
+Terminalde projenin kök dizininde aşağıdaki komutu çalıştır:
+
+```sh
+<code_block_to_apply_changes_from>
+```
+
+> Bu komut, Notion MCP sunucusunu başlatır ve editörünle bağlantı kurmanı sağlar.
+
+---
+
+### 2. Notion API Entegrasyonu için Token Al
+- [Notion Developers](https://www.notion.so/my-integrations) sayfasına git.
+- Yeni bir “integration” oluştur ve “Internal Integration Token” al.
+- Bu token’ı bir yere kaydet.
+
+---
+
+### 3. Notion MCP’yi Editörüne Tanıt
+`.cursor/mcp.json` dosyasına aşağıdaki gibi bir blok ekle:
+
+```json
+{
+  "mcpServers": {
+    "notion-mcp": {
+      "type": "command",
+      "command": "npx @agentdeskai/notion-mcp@latest"
+    }
+  }
+}
+```
+> Eğer başka MCP sunucuların varsa, bu bloğu mevcut `"mcpServers"` objesine ekle.
+
+---
+
+### 4. Notion Token’ını Tanımla
+İlk çalıştırmada veya kurulum sırasında senden Notion API token’ını girmen istenebilir.  
+Eğer istenmezse, terminalde aşağıdaki gibi bir ortam değişkeniyle başlatabilirsin:
+
+```sh
+export NOTION_TOKEN="senin_notion_tokenin"
+npx @agentdeskai/notion-mcp@latest
+```
+
+---
+
+### 5. Editöründe MCP Sunucusunu Aktif Et
+- Cursor veya kullandığın editörde MCP sunucularını yenile.
+- “notion-mcp” sunucusunun bağlı olduğundan emin ol.
+
+---
+
+## Şimdi Kuruluma Başlıyorum
+
+Öncelikle Notion MCP sunucusunu başlatacağım. Eğer Notion API token’ını biliyorsan, bana iletebilir veya ilk çalıştırmada terminale girebilirsin.  
+Başlatmamı onaylıyor musun? Eğer token’ı bana iletmek istemiyorsan, ilk çalıştırmada kendin de girebilirsin.
+
+Onay verirsen hemen başlatıyorum! 

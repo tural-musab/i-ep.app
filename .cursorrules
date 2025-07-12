@@ -69,6 +69,80 @@ async function fetchUserData(userId) {
 }
 ```
 
+### Performance Monitoring Spans
+
+```javascript
+// Page Load Performance
+Sentry.startSpan(
+  {
+    op: "ui.load",
+    name: "Page Load Performance",
+  },
+  (span) => {
+    span.setAttribute("tenant_type", tenantType);
+    span.setAttribute("page_name", pageName);
+    span.setAttribute("load_time", loadTime);
+    span.setAttribute("tenant_plan", tenantPlan);
+  }
+);
+
+// Feature Usage Tracking
+Sentry.startSpan(
+  {
+    op: "feature.usage",
+    name: "Feature Usage",
+  },
+  (span) => {
+    span.setAttribute("feature_name", featureName);
+    span.setAttribute("tenant_plan", tenantPlan);
+    span.setAttribute("user_role", userRole);
+    span.setAttribute("usage_count", usageCount);
+  }
+);
+```
+
+## Error Handling
+
+### Tenant-Specific Error Handling
+
+```javascript
+try {
+  // tenant operations
+} catch (error) {
+  Sentry.withScope((scope) => {
+    scope.setTag("error_category", "tenant_operation");
+    scope.setTag("tenant_plan", tenantPlan);
+    scope.setTag("operation_type", operationType);
+    scope.setContext("tenant_info", {
+      id: tenantId,
+      plan: tenantPlan,
+      operation: operationType
+    });
+    Sentry.captureException(error);
+  });
+}
+```
+
+### API Error Handling
+
+```javascript
+try {
+  // API call
+} catch (error) {
+  Sentry.withScope((scope) => {
+    scope.setTag("error_category", "api_error");
+    scope.setTag("endpoint", endpoint);
+    scope.setTag("http_method", method);
+    scope.setContext("request_info", {
+      url: endpoint,
+      method: method,
+      headers: headers
+    });
+    Sentry.captureException(error);
+  });
+}
+```
+
 ## Logs
 
 Where logs are used, ensure Sentry is imported using `import * as Sentry from "@sentry/nextjs"`
@@ -88,7 +162,6 @@ import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
   dsn: "https://723ae992af5b929e62cbca67e13f1f95@o4508686736556032.ingest.de.sentry.io/4509633858764880",
-
   _experiments: {
     enableLogs: true,
   },
@@ -107,25 +180,54 @@ Sentry.init({
 });
 ```
 
-### Logger Examples
+### Structured Logging Examples
 
 `logger.fmt` is a template literal function that should be used to bring variables into the structured logs.
 
 ```javascript
-logger.trace("Starting database connection", { database: "users" });
-logger.debug(logger.fmt`Cache miss for user: ${userId}`);
-logger.info("Updated profile", { profileId: 345 });
+const { logger } = Sentry;
+
+// System Operations
+logger.trace("Starting database connection", { 
+  database: "users",
+  tenant_id: tenantId 
+});
+
+// Cache Operations
+logger.debug(logger.fmt`Cache miss for user: ${userId}`, {
+  cache_type: "redis",
+  tenant_id: tenantId
+});
+
+// Business Operations
+logger.info("Updated profile", { 
+  profileId: 345,
+  tenant_id: tenantId,
+  changes: profileChanges
+});
+
+// Warning Conditions
 logger.warn("Rate limit reached for endpoint", {
   endpoint: "/api/results/",
-  isEnterprise: false,
+  tenant_id: tenantId,
+  current_rate: currentRate,
+  limit: rateLimit
 });
+
+// Error Conditions
 logger.error("Failed to process payment", {
   orderId: "order_123",
   amount: 99.99,
+  tenant_id: tenantId,
+  error_code: errorCode
 });
+
+// Critical System Issues
 logger.fatal("Database connection pool exhausted", {
   database: "users",
+  tenant_id: tenantId,
   activeConnections: 100,
+  maxConnections: 150
 });
 ```
 
@@ -136,4 +238,9 @@ logger.fatal("Database connection pool exhausted", {
 - Use structured logging with meaningful attributes
 - Create spans for user interactions, API calls, and significant operations
 - Capture exceptions with appropriate context
-- Use the logger.fmt template function for dynamic log messages 
+- Use the logger.fmt template function for dynamic log messages
+- Include tenant context in all logs and spans
+- Follow the defined error categorization
+- Implement proper error boundaries with Sentry integration
+- Use performance monitoring for critical user journeys
+- Maintain consistent naming conventions for spans and logs 

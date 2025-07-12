@@ -41,11 +41,11 @@ type FormValues = z.infer<typeof formSchema>;
 
 interface AssignStudentFormProps {
   classId: string;
-  onAssigned: () => void;
+  onSuccess: () => void;
   onCancel: () => void;
 }
 
-export function AssignStudentForm({ classId, onAssigned, onCancel }: AssignStudentFormProps) {
+export function AssignStudentForm({ classId, onSuccess, onCancel }: AssignStudentFormProps) {
   const [students, setStudents] = React.useState<Student[]>([]);
   const [filteredStudents, setFilteredStudents] = React.useState<Student[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -66,7 +66,7 @@ export function AssignStudentForm({ classId, onAssigned, onCancel }: AssignStude
       async () => {
         try {
           const response = await fetch(
-            `/api/students/available?classId=${classId}`
+            `/api/students?available=true&classId=${classId}`
           );
           if (!response.ok) {
             throw new Error("Öğrenci listesi alınamadı");
@@ -112,7 +112,7 @@ export function AssignStudentForm({ classId, onAssigned, onCancel }: AssignStude
             throw new Error(error.message || "Öğrenci eklenemedi");
           }
 
-          onAssigned();
+          onSuccess();
         } catch (error) {
           console.error("Error assigning student:", error);
           Sentry.captureException(error);
@@ -224,4 +224,4 @@ export function AssignStudentForm({ classId, onAssigned, onCancel }: AssignStude
       </form>
     </Form>
   );
-} 
+}

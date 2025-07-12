@@ -1,82 +1,100 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom';
-import { Button } from '@/components/ui/button';
+import { render, screen, fireEvent } from '@testing-library/react';
+import Link from 'next/link';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { type VariantProps } from 'class-variance-authority';
 
 describe('Button Component', () => {
-  it('butonu doğru bir şekilde render etmelidir', () => {
-    // Arrange
-    render(<Button>Test Butonu</Button>);
-    
-    // Act & Assert
-    expect(screen.getByRole('button', { name: /test butonu/i })).toBeInTheDocument();
+  it('renders button with text', () => {
+    render(<Button>Click me</Button>);
+    expect(screen.getByText('Click me')).toBeInTheDocument();
   });
-  
-  it('onClick olayını işlemelidir', async () => {
-    // Arrange
+
+  it('handles click events', () => {
     const handleClick = jest.fn();
-    const user = userEvent.setup();
-    render(<Button onClick={handleClick}>Tıkla</Button>);
+    render(<Button onClick={handleClick}>Click me</Button>);
     
-    // Act
-    await user.click(screen.getByRole('button', { name: /tıkla/i }));
-    
-    // Assert
+    fireEvent.click(screen.getByText('Click me'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
-  
-  it('variant prop\'una göre doğru sınıfı uygulamalıdır', () => {
-    // Arrange
-    const { rerender } = render(<Button variant="default">Default</Button>);
+
+  it('applies default variant and size classes', () => {
+    render(<Button>Default Button</Button>);
+    const button = screen.getByText('Default Button');
     
-    // Act & Assert - Default variant
-    const defaultButton = screen.getByRole('button', { name: /default/i });
-    expect(defaultButton).toHaveClass('bg-primary');
-    
-    // Act & Assert - Secondary variant
-    rerender(<Button variant="secondary">Secondary</Button>);
-    const secondaryButton = screen.getByRole('button', { name: /secondary/i });
-    expect(secondaryButton).toHaveClass('bg-secondary');
-    
-    // Act & Assert - Destructive variant
-    rerender(<Button variant="destructive">Destructive</Button>);
-    const destructiveButton = screen.getByRole('button', { name: /destructive/i });
-    expect(destructiveButton).toHaveClass('bg-destructive');
+    expect(button).toHaveClass('bg-primary');
+    expect(button).toHaveClass('h-9');
   });
-  
-  it('size prop\'una göre doğru boyutu uygulamalıdır', () => {
-    // Arrange
-    const { rerender } = render(<Button size="sm">Small</Button>);
-    
-    // Act & Assert - Small size
-    const smallButton = screen.getByRole('button', { name: /small/i });
-    expect(smallButton).toHaveClass('rounded-md');
-    
-    // Act & Assert - Default size
-    rerender(<Button size="default">Default</Button>);
-    const defaultButton = screen.getByRole('button', { name: /default/i });
-    expect(defaultButton).toHaveClass('h-9');
-    
-    // Act & Assert - Large size
-    rerender(<Button size="lg">Large</Button>);
-    const largeButton = screen.getByRole('button', { name: /large/i });
-    expect(largeButton).toHaveClass('h-10');
+
+  describe('Variants', () => {
+    it.each([
+      ['default', 'bg-primary'],
+      ['destructive', 'bg-destructive'],
+      ['outline', 'border'],
+      ['secondary', 'bg-secondary'],
+      ['ghost', 'hover:bg-accent'],
+      ['link', 'text-primary'],
+    ])('renders %s variant with correct class', (variant, expectedClass) => {
+      render(<Button variant={variant as VariantProps<typeof buttonVariants>['variant']}>Button</Button>);
+      expect(screen.getByText('Button')).toHaveClass(expectedClass);
+    });
   });
-  
-  it('disabled durumunda doğru stilleri ve davranışı uygulamalıdır', async () => {
-    // Arrange
-    const handleClick = jest.fn();
-    const user = userEvent.setup();
-    render(<Button disabled onClick={handleClick}>Disabled</Button>);
+
+  describe('Sizes', () => {
+    it.each([
+      ['default', 'h-9'],
+      ['sm', 'h-8'],
+      ['lg', 'h-10'],
+      ['icon', 'size-9'],
+    ])('renders %s size with correct class', (size, expectedClass) => {
+      render(<Button size={size as VariantProps<typeof buttonVariants>['size']}>Button</Button>);
+      expect(screen.getByText('Button')).toHaveClass(expectedClass);
+    });
+  });
+
+  it('renders as child component when asChild is true', () => {
+    render(
+      <Button asChild>
+        <Link href="/test">Link Button</Link>
+      </Button>
+    );
     
-    // Act
-    const button = screen.getByRole('button', { name: /disabled/i });
-    await user.click(button);
+    const link = screen.getByRole('link');
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute('href', '/test');
+  });
+
+  it('is disabled when disabled prop is true', () => {
+    render(<Button disabled>Disabled Button</Button>);
+    const button = screen.getByText('Disabled Button');
     
-    // Assert
     expect(button).toBeDisabled();
     expect(button).toHaveClass('disabled:opacity-50');
-    expect(handleClick).not.toHaveBeenCalled();
   });
-}); 
+
+  it('applies custom className', () => {
+    render(<Button className="custom-class">Custom Button</Button>);
+    expect(screen.getByText('Custom Button')).toHaveClass('custom-class');
+  });
+
+  it('forwards additional props', () => {
+    render(<Button data-testid="test-button" type="submit">Submit</Button>);
+    const button = screen.getByTestId('test-button');
+    
+    expect(button).toHaveAttribute('type', 'submit');
+  });
+});
+
+describe('buttonVariants', () => {
+  it('generates correct classes for variant and size combinations', () => {
+    const classes = buttonVariants({ variant: 'outline', size: 'sm' });
+    expect(classes).toContain('border');
+    expect(classes).toContain('h-8');
+  });
+
+  it('uses default values when no props provided', () => {
+    const classes = buttonVariants();
+    expect(classes).toContain('bg-primary');
+    expect(classes).toContain('h-9');
+  });
+});

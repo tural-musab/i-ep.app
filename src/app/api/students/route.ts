@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth/auth-options';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getCurrentTenant } from '@/lib/tenant/current-tenant';
 import { logAuditEvent } from '@/lib/audit';
+import { User } from '@/types/auth';
 import * as Sentry from '@sentry/nextjs';
 
 // Create student data interface
@@ -170,7 +171,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Authorization check - only admin can create students
-        const userRole = (session.user as any).role;
+        const userRole = (session.user as User).role;
         if (!['admin'].includes(userRole)) {
           return NextResponse.json(
             { error: 'Insufficient permissions' },

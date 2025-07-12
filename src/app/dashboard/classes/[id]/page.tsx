@@ -65,7 +65,7 @@ export default function ClassDetailPage() {
 
   useEffect(() => {
     fetchClassDetails();
-  }, [classId]);
+  }, [classId, fetchClassDetails]);
 
   if (isLoading) {
     return (

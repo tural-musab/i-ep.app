@@ -145,12 +145,12 @@ ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
             
             <h3>API Routes</h3>
             <p>
-              API rotaları <code>/app/api</code> dizininde tanımlanır. Yeni bir API endpoint'i oluşturmak için:
+              API rotaları <code>/app/api</code> dizininde tanımlanır. Yeni bir API endpoint&apos;i oluşturmak için:
             </p>
             <ol>
               <li><code>/app/api/[endpoint-name]</code> klasörünü oluşturun</li>
               <li>Bu klasörde <code>route.ts</code> dosyası oluşturun</li>
-              <li>İlgili HTTP method'larını (GET, POST, vb.) tanımlayın</li>
+              <li>İlgili HTTP method&apos;larını (GET, POST, vb.) tanımlayın</li>
             </ol>
             
             <pre className="bg-gray-100 p-4 rounded overflow-x-auto">
@@ -175,7 +175,7 @@ export async function POST(request: Request) {
             </p>
             <ul>
               <li><code>/components/ui</code>: Temel UI bileşenleri (butonlar, kartlar vb.)</li>
-              <li><code>/components/tenant</code>: Tenant'a özgü bileşenler</li>
+              <li><code>/components/tenant</code>: Tenant&apos;a özgü bileşenler</li>
               <li><code>/components/layouts</code>: Layout bileşenleri</li>
               <li><code>/components/dashboard</code>: Dashboard bileşenleri</li>
             </ul>

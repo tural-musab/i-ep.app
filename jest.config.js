@@ -66,18 +66,38 @@ const customJestConfig = {
     '<rootDir>/src/__tests__/integration/health.test.ts',
     '<rootDir>/src/__tests__/integration/cookie-consent.test.ts',
     '<rootDir>/src/__tests__/integration/docs.test.ts',
+    '<rootDir>/src/__tests__/integration/super-admin-api-integration.test.ts',
+    '<rootDir>/src/__tests__/api/supabase-connection.test.ts',
+    '<rootDir>/src/__tests__/api/class-management.test.ts',
+    '<rootDir>/src/__tests__/components/classes/AssignTeacherForm.test.tsx',
+    '<rootDir>/src/__tests__/components/classes/AssignStudentForm.test.tsx',
+    '<rootDir>/src/__tests__/unit/supabase-client.test.ts',
+    '<rootDir>/src/__tests__/unit/system-health-service.test.ts',
+    '<rootDir>/src/__tests__/components/classes/ClassDetails.test.tsx',
+    '<rootDir>/src/__tests__/components/classes/ClassList.test.tsx',
+    '<rootDir>/src/__tests__/components/system-health-dashboard.test.tsx',
+    '<rootDir>/src/__tests__/components/tenant-list.test.tsx',
+    '<rootDir>/src/__tests__/api/super-admin-system-health.test.ts',
     '<rootDir>/src/__tests__/unit/jwt-rotation.test.ts',
     '<rootDir>/src/__tests__/integration/rateLimiter.test.ts',
     '<rootDir>/src/__tests__/unit/tenant-utils-extended.test.ts',
+    '<rootDir>/src/__tests__/setup.ts',
+    '<rootDir>/src/__tests__/api/health.test.ts',
   ],
   
   // Module resolution
   moduleDirectories: ['node_modules', '<rootDir>/'],
   
-  // Coverage configuration - disabled for CI performance
+  // Coverage configuration
   collectCoverageFrom: [
-    // Coverage disabled in CI to prevent timeout
-    // Re-enable for local development if needed
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/**/*.stories.{js,jsx,ts,tsx}',
+    '!src/**/__tests__/**',
+    '!src/**/__mocks__/**',
+    '!src/types/**',
+    '!src/app/api/auth/[...nextauth]/route.ts',
+    '!src/instrumentation*.ts',
   ],
   
   // Global setup for Web APIs
@@ -91,15 +111,18 @@ const customJestConfig = {
   // Increase timeout for security tests
   testTimeout: 10000,
   
-  // Coverage thresholds for essential code only
+  // Coverage thresholds - progressive targets
   coverageThreshold: {
     global: {
-      branches: 0.1,
-      functions: 0,
-      lines: 0.1,
-      statements: 0.1,
+      branches: 40,
+      functions: 40,
+      lines: 50,
+      statements: 50,
     },
   },
+  
+  // Coverage report formats
+  coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async

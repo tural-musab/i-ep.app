@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -231,7 +231,7 @@ export default function AssignmentsPage() {
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
 
   // Mock data
-  const mockAssignments: Assignment[] = [
+  const mockAssignments: Assignment[] = useMemo(() => [
     {
       id: '1',
       title: 'Fonksiyonlar Konusu Ödev 1',
@@ -286,9 +286,9 @@ export default function AssignmentsPage() {
       status: 'overdue',
       tenantId: currentTenantId || 'demo-school',
     },
-  ];
+  ], []);
 
-  const mockSubmissions: Submission[] = [
+  const mockSubmissions: Submission[] = useMemo(() => [
     {
       id: '1',
       assignmentId: '1',
@@ -332,7 +332,7 @@ export default function AssignmentsPage() {
       status: 'not_submitted',
       tenantId: currentTenantId || 'demo-school',
     },
-  ];
+  ], []);
 
   useEffect(() => {
     const loadAssignments = async () => {

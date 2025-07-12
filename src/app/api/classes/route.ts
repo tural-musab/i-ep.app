@@ -21,7 +21,7 @@ const classSchema = z.object({
   is_active: z.boolean().default(true),
 });
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   return Sentry.startSpan(
     {
       op: "http.server",

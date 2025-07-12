@@ -224,7 +224,7 @@ export default function OnboardingGuidePage() {
           <div className="bg-green-50 p-4 rounded-md">
             <h4 className="text-sm font-medium text-green-800">Kurulum Süreci</h4>
             <p className="text-sm text-green-700 mt-1">
-              "Kaydı Tamamla" butonuna tıkladığınızda, sistem otomatik olarak portalınızı hazırlamaya başlayacaktır. 
+              &quot;Kaydı Tamamla&quot; butonuna tıkladığınızda, sistem otomatik olarak portalınızı hazırlamaya başlayacaktır. 
               Bu işlem genellikle 1-2 dakika sürer. İşlem tamamlandığında, e-posta adresinize bir bildirim gönderilecektir.
             </p>
           </div>
@@ -245,7 +245,7 @@ export default function OnboardingGuidePage() {
           </div>
           
           <p className="text-gray-500 text-sm italic">
-            Kullanım Koşulları ve Gizlilik Politikası'nı kabul etmeden önce dikkatle okumanızı tavsiye ederiz. 
+            Kullanım Koşulları ve Gizlilik Politikası&apos;nı kabul etmeden önce dikkatle okumanızı tavsiye ederiz. 
             Kaydınızı tamamlayarak, bu koşulları kabul etmiş olacaksınız.
           </p>
         </div>

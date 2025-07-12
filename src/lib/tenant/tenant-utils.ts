@@ -129,6 +129,45 @@ export async function getTenantById(tenantId: string): Promise<Tenant | null> {
 }
 
 /**
+ * Request'ten mevcut tenant ID'sini al (sync)
+ * Payment API gibi endpoint'ler için
+ */
+export function getCurrentTenantId(req: NextRequest): string | null {
+  try {
+    // Cookie'den tenant ID al
+    const tenantIdCookie = req.cookies.get('tenant-id')?.value;
+    if (tenantIdCookie) {
+      return tenantIdCookie;
+    }
+    
+    // Subdomain cookie'sinden al
+    const subdomainCookie = req.cookies.get('subdomain')?.value;
+    if (subdomainCookie) {
+      if (subdomainCookie === 'demo') {
+        return 'tenant_demo_id';
+      } else {
+        return `tenant_${subdomainCookie}`;
+      }
+    }
+    
+    // Host header'ından subdomain çıkar
+    const hostname = req.headers.get('host') || '';
+    const subdomain = extractTenantFromSubdomain(hostname);
+    
+    if (subdomain === 'demo') {
+      return 'tenant_demo_id';
+    } else if (subdomain) {
+      return `tenant_${subdomain}`;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('getCurrentTenantId error:', error);
+    return null;
+  }
+}
+
+/**
  * Mevcut tenant ID'sini al. Client veya server tarafında çalışır.
  */
 export async function getTenantId(req?: NextRequest): Promise<string | null> {
