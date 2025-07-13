@@ -16,10 +16,10 @@ const { execSync } = require('child_process');
 const CONFIG = {
   // İzlenecek dosyalar
   watchFiles: [
-    'PROGRESS.md',
-    'SPRINT-PLANNING-2025.md', 
-    'PROJECT-STATUS-REPORT-*.md',
-    'DEVELOPMENT-ROADMAP-2025.md'
+    'docs-site/docs/PROGRESS.md',
+    'docs-site/docs/SPRINT-PLANNING-2025.md', 
+    'docs-site/docs/PROJECT-STATUS-REPORT-*.md',
+    'docs-site/docs/DEVELOPMENT-ROADMAP-2025.md'
   ],
   
   // Güncellenmesi gereken dosya
@@ -49,7 +49,7 @@ class DocumentationSyncService {
    */
   async readProgressStatus() {
     try {
-      const progressPath = path.join(process.cwd(), 'PROGRESS.md');
+      const progressPath = path.join(process.cwd(), 'docs-site/docs/PROGRESS.md');
       if (!fs.existsSync(progressPath)) return null;
 
       const content = fs.readFileSync(progressPath, 'utf8');
@@ -83,8 +83,8 @@ class DocumentationSyncService {
    */
   async readSprintStatus() {
     try {
-      const sprintPath = path.join(process.cwd(), 'SPRINT-PLANNING-2025.md');
-      if (!fs.existsExists(sprintPath)) return null;
+      const sprintPath = path.join(process.cwd(), 'docs-site/docs/SPRINT-PLANNING-2025.md');
+      if (!fs.existsSync(sprintPath)) return null;
 
       const content = fs.readFileSync(sprintPath, 'utf8');
       
