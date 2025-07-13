@@ -3,6 +3,7 @@
 
 import { SupabaseStorageProvider } from './providers/supabase.provider';
 import { CloudflareR2Provider } from './providers/cloudflare-r2.provider';
+import { StorageRepository } from './repository/storage-repository';
 import type { IStorageProvider, StorageProvider, UploadOptions, UploadResult, StorageFile } from '@/types/storage';
 
 // Storage configuration from environment

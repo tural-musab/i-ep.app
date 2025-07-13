@@ -381,7 +381,6 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER update_quota_on_file_change
     AFTER INSERT OR DELETE OR UPDATE OF size_bytes ON public.files
     FOR EACH ROW
-    WHEN (NEW.status = 'active' OR OLD.status = 'active')
     EXECUTE FUNCTION public.update_storage_quota();
 
 -- ==========================================

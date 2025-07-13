@@ -2,24 +2,17 @@
 // The config you add here will be used whenever the server handles a request.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import * as Sentry from '@sentry/nextjs';
+import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: 'https://723ae992af5b929e62cbca67e13f1f95@o4508686736556032.ingest.de.sentry.io/4509633858764880',
+  // DSN'i doğrudan yazmak yerine, ortam değişkeninden güvenli bir şekilde alıyoruz.
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
 
-  // Add integrations for better error tracking and logging
-  integrations: [
-    // Send console.log, console.error, and console.warn calls as logs to Sentry
-    Sentry.consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
-  ],
+  // Ortam etiketini Vercel'in sağladığı değişkenden otomatik olarak alıyoruz.
+  environment: process.env.VERCEL_ENV || "development",
 
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
-
-  // Enable experimental logging features
-  _experiments: {
-    enableLogs: true,
-  },
+  // Performans takibi için örnekleme oranı.
+  tracesSampleRate: 1.0,
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
