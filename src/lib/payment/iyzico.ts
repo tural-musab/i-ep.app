@@ -7,17 +7,24 @@
  */
 
 import Iyzipay from 'iyzipay';
+import { createHmac, timingSafeEqual } from 'crypto';
 import { env } from '@/env';
 import { getLogger } from '@/lib/utils/logger';
 
 const logger = getLogger('iyzico-payment');
 
 // İyzico client configuration
-const iyzipay = new Iyzipay({
-  apiKey: env.IYZICO_API_KEY || '',
-  secretKey: env.IYZICO_SECRET_KEY || '',
-  uri: env.IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com', // Sandbox URL for development
-});
+// Değişkeni önce let ile tanımla
+let iyzipay: Iyzipay; 
+
+// Sadece İyzico anahtarları varsa yeni bir instance oluştur.
+if (env.IYZICO_API_KEY && env.IYZICO_SECRET_KEY) {
+  iyzipay = new Iyzipay({
+    apiKey: env.IYZICO_API_KEY,
+    secretKey: env.IYZICO_SECRET_KEY,
+    uri: env.IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com',
+  });
+}
 
 // ==========================================
 // TYPE DEFINITIONS
@@ -121,6 +128,16 @@ export async function createPayment(
   paymentRequest: IyzicoPaymentRequest
 ): Promise<IyzicoPaymentResponse> {
   try {
+    // İyzico yapılandırılmış mı kontrol et
+    if (!iyzipay) {
+      logger.error('İyzico not configured - missing API keys');
+      return {
+        status: 'failure',
+        errorMessage: 'Payment service not configured. Please contact support.',
+        errorCode: 'IYZICO_NOT_CONFIGURED'
+      };
+    }
+
     logger.info('Creating İyzico payment', {
       tenantId: paymentRequest.tenantId,
       amount: paymentRequest.price,
@@ -263,6 +280,16 @@ export async function retrievePayment(
   conversationId?: string
 ): Promise<IyzicoPaymentResponse> {
   try {
+    // İyzico yapılandırılmış mı kontrol et
+    if (!iyzipay) {
+      logger.error('İyzico not configured - missing API keys');
+      return {
+        status: 'failure',
+        errorMessage: 'Payment service not configured. Please contact support.',
+        errorCode: 'IYZICO_NOT_CONFIGURED'
+      };
+    }
+
     logger.info('Retrieving İyzico payment', { paymentId, conversationId });
 
     const retrieveRequest = {
@@ -310,6 +337,16 @@ export async function refundPayment(
   refundRequest: IyzicoRefundRequest
 ): Promise<IyzicoPaymentResponse> {
   try {
+    // İyzico yapılandırılmış mı kontrol et
+    if (!iyzipay) {
+      logger.error('İyzico not configured - missing API keys');
+      return {
+        status: 'failure',
+        errorMessage: 'Payment service not configured. Please contact support.',
+        errorCode: 'IYZICO_NOT_CONFIGURED'
+      };
+    }
+
     logger.info('Processing İyzico refund', {
       paymentTransactionId: refundRequest.paymentTransactionId,
       amount: refundRequest.price,
@@ -325,8 +362,8 @@ export async function refundPayment(
       ip: refundRequest.ip,
     };
 
-    const refund = await new Promise<any>((resolve, reject) => {
-      iyzipay.refund.create(iyzicoRefundRequest, (err: any, result: any) => {
+    const refund = await new Promise<unknown>((resolve, reject) => {
+      iyzipay.refund.create(iyzicoRefundRequest, (err: unknown, result: unknown) => {
         if (err) {
           reject(err);
         } else {
@@ -440,13 +477,11 @@ export function verifyWebhookSignature(
   secretKey: string = env.IYZICO_SECRET_KEY || ''
 ): boolean {
   try {
-    const crypto = require('crypto');
-    const expectedSignature = crypto
-      .createHmac('sha256', secretKey)
+    const expectedSignature = createHmac('sha256', secretKey)
       .update(payload)
       .digest('hex');
     
-    return crypto.timingSafeEqual(
+    return timingSafeEqual(
       Buffer.from(signature),
       Buffer.from(expectedSignature)
     );
@@ -462,7 +497,7 @@ export function verifyWebhookSignature(
 // EXPORTS
 // ==========================================
 
-export default {
+const iyzicoService = {
   createPayment,
   retrievePayment,
   refundPayment,
@@ -473,3 +508,5 @@ export default {
   isIyzicoConfigured,
   verifyWebhookSignature,
 };
+
+export default iyzicoService;
