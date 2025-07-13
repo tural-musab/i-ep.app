@@ -295,7 +295,11 @@ function isProtectedPath(pathname: string): boolean {
  * Domain'in ana domain olup olmadığını kontrol eder
  */
 function isBaseDomain(hostname: string, baseDomain: string): boolean {
-  return hostname === baseDomain || hostname === `www.${baseDomain}`;
+  return hostname === baseDomain || 
+         hostname === `www.${baseDomain}` ||
+         hostname === `staging.${baseDomain}` ||
+         hostname === `test.${baseDomain}` ||
+         hostname === `dev.${baseDomain}`;
 }
 
 /**
