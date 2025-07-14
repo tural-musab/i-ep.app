@@ -1,0 +1,106 @@
+# Page snapshot
+
+```yaml
+- banner:
+  - img "Iqra Eğitim Portalı"
+  - text: Iqra Eğitim Portalı
+  - link "Giriş":
+    - /url: /auth/giris
+  - link "Kayıt Ol":
+    - /url: /onboarding
+- main:
+  - heading "Iqra Eğitim Portalı" [level=1]
+  - paragraph: Okul yönetimini kolaylaştıran modern, güvenli ve kullanıcı dostu platform
+  - link "Hemen Başlayın":
+    - /url: /onboarding
+  - link "Özellikleri Keşfedin":
+    - /url: "#ozellikler"
+  - heading "Özellikler" [level=2]
+  - paragraph: Her Şey Tek Platformda
+  - paragraph: Okulunuzu yönetmek için ihtiyacınız olan tüm araçlar tek bir platformda
+  - img
+  - heading "Kolay Yönetim" [level=3]
+  - paragraph: Öğrenci, öğretmen ve sınıf yönetimi kolayca yapılabilir. Kullanıcı dostu arayüz ile karmaşık süreçleri basitleştirin.
+  - img
+  - heading "Güvenlik" [level=3]
+  - paragraph: Verileriniz güvende. Modern şifreleme teknikleri ve güvenlik protokolleri ile verilerinizi koruyoruz.
+  - img
+  - heading "İletişim" [level=3]
+  - paragraph: Öğretmenler, öğrenciler ve veliler arasında hızlı ve kolay iletişim. Duyurular, mesajlar ve bildirimler ile herkes bilgilendirilir.
+  - img
+  - heading "Raporlar ve Analitikler" [level=3]
+  - paragraph: Öğrenci performansı, devamsızlık ve başarı istatistikleri ile veri odaklı kararlar alın. Detaylı raporlar ve analizler ile okulunuzu daha iyi yönetin.
+  - heading "Okulunuz için hazır mısınız?Hemen kayıt olun ve kullanmaya başlayın." [level=2]
+  - link "Hemen Başlayın":
+    - /url: /onboarding
+  - link "Demo Hesapla Deneyin":
+    - /url: /auth/demo
+  - link "Giriş Yapın":
+    - /url: /auth/giris
+- contentinfo:
+  - img "Iqra Eğitim Portalı"
+  - text: Iqra Eğitim Portalı
+  - paragraph: Okulunuzu yönetmek için modern, güvenli ve kullanıcı dostu platform.
+  - link "Facebook":
+    - /url: "#"
+  - link "Twitter":
+    - /url: "#"
+  - link "Instagram":
+    - /url: "#"
+  - heading "Çözümler" [level=3]
+  - list:
+    - listitem:
+      - link "Okul Yönetimi":
+        - /url: "#"
+    - listitem:
+      - link "Öğrenci Takibi":
+        - /url: "#"
+    - listitem:
+      - link "Veli İletişimi":
+        - /url: "#"
+    - listitem:
+      - link "Akademik Planlama":
+        - /url: "#"
+  - heading "Destek" [level=3]
+  - list:
+    - listitem:
+      - link "Fiyatlandırma":
+        - /url: "#"
+    - listitem:
+      - link "Dokümantasyon":
+        - /url: "#"
+    - listitem:
+      - link "Rehberler":
+        - /url: "#"
+    - listitem:
+      - link "SSS":
+        - /url: "#"
+  - heading "Şirket" [level=3]
+  - list:
+    - listitem:
+      - link "Hakkımızda":
+        - /url: "#"
+    - listitem:
+      - link "Blog":
+        - /url: "#"
+    - listitem:
+      - link "İşler":
+        - /url: "#"
+    - listitem:
+      - link "Ortaklar":
+        - /url: "#"
+  - heading "Yasal" [level=3]
+  - list:
+    - listitem:
+      - link "Gizlilik Politikası":
+        - /url: "#"
+    - listitem:
+      - link "Kullanım Şartları":
+        - /url: "#"
+    - listitem:
+      - link "KVKK":
+        - /url: "#"
+  - paragraph: © 2025 Iqra Eğitim Portalı. Tüm hakları saklıdır.
+- region "Notifications (F8)":
+  - list
+```

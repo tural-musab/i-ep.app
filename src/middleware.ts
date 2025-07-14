@@ -4,34 +4,104 @@ import { resolveTenantFromDomain } from './lib/tenant/tenant-domain-resolver';
 import { logAccessDenied } from './lib/audit';
 import { createRequestLogger } from './middleware/logger';
 import { rateLimiterMiddleware } from './middleware/rateLimiter';
+import { middlewareMonitor } from './lib/performance/middleware-monitor';
+import { generateRequestId } from './lib/utils/request-id';
+
+// Performance optimization: Tenant cache
+const tenantCache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+// Optimized tenant resolution with caching
+async function resolveTenantOptimized(hostname: string) {
+  const cacheKey = `tenant_${hostname}`;
+  const cached = tenantCache.get(cacheKey);
+  
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return { data: cached.data, fromCache: true };
+  }
+  
+  const tenantInfo = await resolveTenantFromDomain(hostname);
+  
+  // Cache the result
+  tenantCache.set(cacheKey, {
+    data: tenantInfo,
+    timestamp: Date.now()
+  });
+  
+  return { data: tenantInfo, fromCache: false };
+}
+
+// Pre-compiled protected paths for faster lookup
+const PROTECTED_PATHS = new Set([
+  '/dashboard',
+  '/admin', 
+  '/super-admin',
+  '/profile',
+  '/settings'
+]);
+
+// Optimized path checking
+function isProtectedPath(pathname: string): boolean {
+  return PROTECTED_PATHS.has(pathname) || 
+         pathname.startsWith('/dashboard/') ||
+         pathname.startsWith('/admin/') ||
+         pathname.startsWith('/super-admin/') ||
+         pathname.startsWith('/api/admin/') ||
+         pathname.startsWith('/api/super-admin/');
+}
 
 /**
  * Tenant izolasyonu ve yönlendirme middleware
  * Referans: docs/architecture/multi-tenant-strategy.md, URL Tabanlı Tenant Ayrımı
  */
 export async function middleware(request: NextRequest) {
+  // Performance monitoring başlat
+  const requestId = generateRequestId();
+  const pathname = request.nextUrl.pathname;
+  const hostname = request.headers.get('host') || '';
+  
+  const perfContext = middlewareMonitor.startRequest(requestId, pathname, hostname);
+  
+  // Early return for static assets
+  if (pathname.startsWith('/_next/') || 
+      pathname.startsWith('/static/') ||
+      pathname.startsWith('/favicon.ico') ||
+      pathname.startsWith('/logo.') ||
+      pathname.startsWith('/auth/')) {
+    middlewareMonitor.finishRequest(perfContext, 'success');
+    return NextResponse.next();
+  }
+  
   // Rate limiting kontrolü - tüm işlemlerden önce
   const rateLimitResponse = rateLimiterMiddleware(request);
   if (rateLimitResponse) {
-    return rateLimitResponse; // 429 response döndür
+    middlewareMonitor.finishRequest(perfContext, 'error');
+    return rateLimitResponse;
   }
   
   // Request logging başlat
   const requestLogger = createRequestLogger(request);
   
-  const pathname = request.nextUrl.pathname;
-  const hostname = request.headers.get('host') || '';
+  // Parallel operations for better performance
+  const [tenantResult, sessionResult] = await Promise.all([
+    (async () => {
+      middlewareMonitor.recordTenantResolution(perfContext);
+      return await resolveTenantOptimized(hostname);
+    })(),
+    (async () => {
+      middlewareMonitor.recordAuthCheck(perfContext);
+      const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() });
+      const { data: { session } } = await supabase.auth.getSession();
+      return session;
+    })()
+  ]);
   
-  // Supabase auth middleware client oluştur
-  const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() });
-  
-  // Mevcut oturumu al
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  
-  // Auth durumunu headerda tut
+  const tenantInfo = tenantResult.data;
+  const session = sessionResult;
   const response = NextResponse.next();
+  
+  // Set essential headers only
+  response.headers.set('x-tenant-id', tenantInfo.id);
   
   // Super-admin sayfaları için özel kontrol
   if (pathname.startsWith('/super-admin')) {

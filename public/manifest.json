@@ -1,0 +1,99 @@
+{
+  "name": "Iqra Eğitim Portalı",
+  "short_name": "Iqra EP",
+  "description": "Türkiye'deki eğitim kurumları için çok kiracılı SaaS okul yönetim sistemi",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0EA5E9",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "tr",
+  "dir": "ltr",
+  "categories": ["education", "productivity", "business"],
+  "icons": [
+    {
+      "src": "/logo.webp",
+      "sizes": "192x192",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.webp",
+      "sizes": "512x512",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/logo.webp",
+      "sizes": "1280x720",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Ana Dashboard"
+    },
+    {
+      "src": "/logo.webp",
+      "sizes": "750x1334",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Mobil Dashboard"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Öğrenciler",
+      "short_name": "Öğrenciler",
+      "description": "Öğrenci listesi ve yönetimi",
+      "url": "/dashboard/students",
+      "icons": [
+        {
+          "src": "/logo.webp",
+          "sizes": "96x96",
+          "type": "image/webp"
+        }
+      ]
+    },
+    {
+      "name": "Notlar",
+      "short_name": "Notlar",
+      "description": "Not girişi ve yönetimi",
+      "url": "/dashboard/grades",
+      "icons": [
+        {
+          "src": "/logo.webp",
+          "sizes": "96x96",
+          "type": "image/webp"
+        }
+      ]
+    },
+    {
+      "name": "Mesajlar",
+      "short_name": "Mesajlar",
+      "description": "Veli iletişim sistemi",
+      "url": "/dashboard/parent-communication",
+      "icons": [
+        {
+          "src": "/logo.webp",
+          "sizes": "96x96",
+          "type": "image/webp"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "handle_links": "preferred",
+  "protocol_handlers": [
+    {
+      "protocol": "web+iqra",
+      "url": "/?handler=%s"
+    }
+  ]
+}
