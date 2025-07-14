@@ -21,6 +21,18 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'staging.i-ep.app',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'test.i-ep.app',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   // API dokümantasyonu için yönlendirmeler
