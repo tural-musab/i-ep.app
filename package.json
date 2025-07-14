@@ -42,7 +42,9 @@
     "test:security:full": "npm run zap:scan && jest --testPathPattern=security",
     "doc:sync": "node scripts/doc-sync.js sync",
     "doc:watch": "node scripts/doc-sync.js watch",
-    "doc:status": "node scripts/doc-sync.js status"
+    "doc:status": "node scripts/doc-sync.js status",
+    "analyze": "ANALYZE=true npm run build",
+    "build:analyze": "ANALYZE=true npm run build"
   },
   "dependencies": {
     "@auth/supabase-adapter": "^1.8.0",
