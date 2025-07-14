@@ -268,6 +268,8 @@ function isPublicPath(pathname: string): boolean {
     pathname.startsWith('/favicon.ico') ||
     pathname.startsWith('/static') ||
     pathname.startsWith('/images') ||
+    pathname.startsWith('/logo.webp') ||
+    pathname.startsWith('/logo.optimized.svg') ||
     pathname === '/auth/giris' ||
     pathname === '/auth/sifremi-unuttum' ||
     pathname === '/auth/sifre-yenile' ||
@@ -309,6 +311,8 @@ function handleBaseDomainRequest(request: NextRequest, pathname: string): NextRe
   // Ana domain'de sadece lansman sayfalarına ve auth sayfalarına erişim izni
   if (
     pathname === '/' ||
+    pathname === '/onboarding' ||
+    pathname.startsWith('/onboarding/') ||
     pathname.startsWith('/auth/') ||
     pathname.startsWith('/api/auth/') ||
     pathname.startsWith('/blog') ||
