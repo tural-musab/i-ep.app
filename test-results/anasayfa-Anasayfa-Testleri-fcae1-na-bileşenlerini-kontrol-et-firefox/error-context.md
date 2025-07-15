@@ -1,13 +1,54 @@
 # Page snapshot
 
 ```yaml
-- heading "Unable to connect" [level=1]
-- paragraph: Firefox can’t establish a connection to the server at localhost:3000.
-- paragraph
-- list:
-  - listitem: The site could be temporarily unavailable or too busy. Try again in a few moments.
-  - listitem: If you are unable to load any pages, check your computer’s network connection.
-  - listitem: If your computer or network is protected by a firewall or proxy, make sure that Nightly is permitted to access the web.
-  - listitem: If you are trying to load a local network page, please check that Nightly has been granted Local Network permissions in the macOS Privacy & Security settings.
-- button "Try Again"
+- button "Open Next.js Dev Tools":
+  - img
+- button "Open issues overlay": 1 Issue
+- button "Collapse issues badge":
+  - img
+- dialog "Runtime Error":
+  - text: Runtime Error
+  - button "Copy Stack Trace":
+    - img
+  - button "No related documentation found" [disabled]:
+    - img
+  - link "Learn more about enabling Node.js inspector for server code with Chrome DevTools":
+    - /url: https://nextjs.org/docs/app/building-your-application/configuring/debugging#server-side-code
+    - img
+  - paragraph: "TypeError: Cannot read properties of null (reading 'id')"
+  - paragraph:
+    - img
+    - text: src/middleware.ts (168:55) @ middleware
+    - button "Open in editor":
+      - img
+  - text: 166 | 167 | // Set essential headers only > 168 | finalResponse.headers.set('x-tenant-id', tenantInfo.id); | ^ 169 | finalResponse.headers.set('x-request-id', requestId); 170 | 171 | // Super-admin sayfaları için özel kontrol
+  - paragraph: Call Stack 10
+  - button "Show 9 ignore-listed frame(s)":
+    - text: Show 9 ignore-listed frame(s)
+    - img
+  - text: middleware
+  - button:
+    - img
+  - text: src/middleware.ts (168:55)
+  - contentinfo:
+    - paragraph: This error happened while generating the page. Any console logs will be displayed in the terminal window.
+    - region "Error feedback":
+      - paragraph:
+        - link "Was this helpful?":
+          - /url: https://nextjs.org/telemetry#error-feedback
+      - button "Mark as helpful"
+      - button "Mark as not helpful"
+- navigation:
+  - button "previous" [disabled]:
+    - img "previous"
+  - text: 1/1
+  - button "next" [disabled]:
+    - img "next"
+- img
+- link "Next.js 15.2.2 (stale) Turbopack":
+  - /url: https://nextjs.org/docs/messages/version-staleness
+  - img
+  - text: Next.js 15.2.2 (stale) Turbopack
+- img
+- alert
 ```
