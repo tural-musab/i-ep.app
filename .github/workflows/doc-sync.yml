@@ -2,7 +2,7 @@ name: Documentation Auto-Sync
 
 on:
   push:
-    branches: [ main, development ]
+    branches: [ main, develop ]
     paths:
       - 'PROGRESS.md'
       - 'SPRINT-PLANNING-2025.md'
