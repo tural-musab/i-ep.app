@@ -1,19 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { resolveTenantFromDomain } from './lib/tenant/tenant-domain-resolver';
-import { logAccessDenied } from './lib/audit';
-import { createRequestLogger } from './middleware/logger';
-import { rateLimiterMiddleware } from './middleware/rateLimiter';
-import { middlewareMonitor } from './lib/performance/middleware-monitor';
-import { generateRequestId } from './lib/utils/request-id';
-import { withRateLimit, apiRateLimiter, authRateLimiter } from './lib/security/rate-limiter';
-import { withCSRFProtection } from './lib/security/csrf';
 import { withSecurityHeaders } from './lib/security/headers';
-import { withSSLEnforcement } from './lib/security/ssl-hardening';
-import { auditLogger } from './lib/security/audit';
-import { getConfig } from './lib/config/environment';
-import { alertingSystem } from './lib/monitoring/alerting';
-import { healthChecker } from './lib/monitoring/health-check';
 
 // Performance optimization: Tenant cache
 const tenantCache = new Map<string, { data: any; timestamp: number }>();
@@ -63,13 +51,8 @@ function isProtectedPath(pathname: string): boolean {
  * Referans: docs/architecture/multi-tenant-strategy.md, URL Tabanlı Tenant Ayrımı
  */
 export async function middleware(request: NextRequest) {
-  // Performance monitoring başlat
-  const requestId = generateRequestId();
   const pathname = request.nextUrl.pathname;
   const hostname = request.headers.get('host') || '';
-  
-  const perfContext = middlewareMonitor.startRequest(requestId, pathname, hostname);
-  const config = getConfig();
   
   // Early return for static assets
   if (pathname.startsWith('/_next/') || 
@@ -77,164 +60,47 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith('/favicon.ico') ||
       pathname.startsWith('/logo.') ||
       pathname.startsWith('/auth/')) {
-    middlewareMonitor.finishRequest(perfContext, 'success');
     return NextResponse.next();
   }
   
-  // Security layers - applied in order of importance
-  let response: NextResponse | null = null;
-  
-  // 1. SSL/TLS enforcement
-  if (config.security.enforceHttps) {
-    response = withSSLEnforcement()(request);
-    if (response) {
-      middlewareMonitor.finishRequest(perfContext, 'redirect');
-      return response;
-    }
+  // Localhost kontrolü - geliştirme ortamı için basit response
+  if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
+    return addTenantHeadersInDevelopment(request);
   }
   
-  // 2. Rate limiting - different limits for different endpoints
-  if (config.security.rateLimiting) {
-    let rateLimiter = apiRateLimiter;
-    
-    if (pathname.startsWith('/api/auth/') || pathname.startsWith('/auth/')) {
-      rateLimiter = authRateLimiter;
-    }
-    
-    response = await withRateLimit(rateLimiter)(request);
-    if (response) {
-      middlewareMonitor.finishRequest(perfContext, 'rate_limited');
-      await auditLogger.logSecurityEvent({
-        type: 'suspicious_activity',
-        severity: 'medium',
-        ip_address: request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip,
-        user_agent: request.headers.get('user-agent') || undefined,
-        description: 'Rate limit exceeded',
-        metadata: { path: pathname, limit_type: 'api' }
-      });
-      return response;
-    }
-  }
-  
-  // 3. CSRF protection
-  if (config.security.csrfProtection) {
-    response = await withCSRFProtection()(request);
-    if (response) {
-      middlewareMonitor.finishRequest(perfContext, 'csrf_failed');
-      await auditLogger.logSecurityEvent({
-        type: 'suspicious_activity',
-        severity: 'high',
-        ip_address: request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip,
-        user_agent: request.headers.get('user-agent') || undefined,
-        description: 'CSRF token validation failed',
-        metadata: { path: pathname }
-      });
-      return response;
-    }
-  }
-  
-  // Continue with original rate limiting fallback
-  const rateLimitResponse = rateLimiterMiddleware(request);
-  if (rateLimitResponse) {
-    middlewareMonitor.finishRequest(perfContext, 'error');
-    return rateLimitResponse;
-  }
-  
-  // Request logging başlat
-  const requestLogger = createRequestLogger(request);
+  // Create supabase client for auth
+  const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() });
   
   // Parallel operations for better performance
-  const [tenantResult, sessionResult] = await Promise.all([
-    (async () => {
-      middlewareMonitor.recordTenantResolution(perfContext);
-      return await resolveTenantOptimized(hostname);
-    })(),
-    (async () => {
-      middlewareMonitor.recordAuthCheck(perfContext);
-      const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() });
-      const { data: { session } } = await supabase.auth.getSession();
-      return session;
-    })()
+  const [tenantInfo, session] = await Promise.all([
+    resolveTenantOptimized(hostname),
+    supabase.auth.getSession().then(({ data: { session } }) => session)
   ]);
   
-  const tenantInfo = tenantResult.data;
-  const session = sessionResult;
   let finalResponse = NextResponse.next();
   
   // Apply security headers
   finalResponse = withSecurityHeaders()(request);
   
   // Set essential headers only
-  finalResponse.headers.set('x-tenant-id', tenantInfo.id);
-  finalResponse.headers.set('x-request-id', requestId);
+  if (tenantInfo.data?.id) {
+    finalResponse.headers.set('x-tenant-id', tenantInfo.data.id);
+  }
   
   // Super-admin sayfaları için özel kontrol
   if (pathname.startsWith('/super-admin')) {
     if (!session) {
-      // Oturum yoksa giriş sayfasına yönlendir
       const loginUrl = new URL('/auth/giris', request.url);
       loginUrl.searchParams.set('callbackUrl', request.url);
-      const response = NextResponse.redirect(loginUrl);
-      
-      // Security audit log
-      await auditLogger.logSecurityEvent({
-        type: 'login_attempt',
-        severity: 'medium',
-        ip_address: request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip,
-        user_agent: request.headers.get('user-agent') || undefined,
-        description: 'Unauthorized super-admin access attempt',
-        metadata: { path: pathname, redirect_to: '/auth/giris' }
-      });
-      
-      requestLogger.finish(response);
-      return response;
+      return NextResponse.redirect(loginUrl);
     }
     
-    // Kullanıcı super_admin rolünde mi kontrol et
     const isSuperAdmin = session.user.app_metadata?.role === 'super_admin';
     if (!isSuperAdmin) {
-      console.warn(`Super admin erişim yetkisi yok: ${session.user.email}`);
-      
-      // Security audit log for unauthorized access
-      await auditLogger.logSecurityEvent({
-        type: 'permission_change',
-        severity: 'high',
-        user_id: session.user.id,
-        ip_address: request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip,
-        user_agent: request.headers.get('user-agent') || undefined,
-        description: 'Unauthorized super-admin access attempt by authenticated user',
-        metadata: { 
-          email: session.user.email,
-          path: pathname,
-          actual_role: session.user.app_metadata?.role || 'user'
-        }
-      });
-      
-      const response = NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
-      requestLogger.finish(response);
-      return response;
+      return NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
     }
     
-    // Super admin erişimi onaylandı, devam et
     return NextResponse.next();
-  }
-  
-  // Localhost kontrolü - geliştirme ortamında sadece header'ları ayarla
-  if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
-    const devResponse = await addTenantHeadersInDevelopment(request);
-    
-    // Geliştirme ortamında Auth headerlarını kopyala
-    if (session) {
-      devResponse.headers.set('x-auth-user-id', session.user.id);
-      devResponse.headers.set('x-auth-user-email', session.user.email || '');
-      devResponse.headers.set('x-auth-user-role', session.user.app_metadata?.role || 'user');
-      
-      // Kullanıcının erişebileceği tenant'lar
-      const allowedTenants = session.user.user_metadata?.allowed_tenants || '[]';
-      devResponse.headers.set('x-auth-allowed-tenants', typeof allowedTenants === 'string' ? allowedTenants : JSON.stringify(allowedTenants));
-    }
-    
-    return devResponse;
   }
   
   // Sistem yönetimi ve auth gibi genel pathler için izolasyon kontrolü yok
@@ -253,26 +119,23 @@ export async function middleware(request: NextRequest) {
   
   // Tenant bulunamadı veya aktif değil
   if (!currentTenant) {
-    console.warn(`Tenant bulunamadı veya aktif değil: ${hostname}`);
     return NextResponse.redirect(new URL(`https://${BASE_DOMAIN}`, request.url));
   }
   
   // Tenant okumak için header'a tenant bilgisi ekle
-  response.headers.set('x-tenant-id', currentTenant.id);
-  response.headers.set('x-tenant-hostname', hostname);
-  response.headers.set('x-tenant-name', currentTenant.name || '');
-  response.headers.set('x-tenant-primary', String(currentTenant.isPrimary));
-  response.headers.set('x-tenant-custom-domain', String(currentTenant.isCustomDomain));
+  finalResponse.headers.set('x-tenant-id', currentTenant.id);
+  finalResponse.headers.set('x-tenant-hostname', hostname);
+  finalResponse.headers.set('x-tenant-name', currentTenant.name || '');
   
   // Auth headerlarını ekle
   if (session) {
-    response.headers.set('x-auth-user-id', session.user.id);
-    response.headers.set('x-auth-user-email', session.user.email || '');
-    response.headers.set('x-auth-user-role', session.user.app_metadata?.role || 'user');
+    finalResponse.headers.set('x-auth-user-id', session.user.id);
+    finalResponse.headers.set('x-auth-user-email', session.user.email || '');
+    finalResponse.headers.set('x-auth-user-role', session.user.app_metadata?.role || 'user');
     
     // Kullanıcının erişebileceği tenant'lar
     const allowedTenants = session.user.user_metadata?.allowed_tenants || '[]';
-    response.headers.set('x-auth-allowed-tenants', typeof allowedTenants === 'string' ? allowedTenants : JSON.stringify(allowedTenants));
+    finalResponse.headers.set('x-auth-allowed-tenants', typeof allowedTenants === 'string' ? allowedTenants : JSON.stringify(allowedTenants));
     
     // Tenant erişim kontrolü
     const isSuperAdmin = session.user.app_metadata?.role === 'super_admin';
@@ -288,121 +151,15 @@ export async function middleware(request: NextRequest) {
     
     // Kullanıcının bu tenant'a erişim yetkisi yoksa ve koruma altındaki bir sayfaya erişmeye çalışıyorsa
     if (!canAccessTenant && isProtectedPath(pathname)) {
-      console.warn(`Kullanıcının tenant erişim yetkisi yok: ${session.user.email} -> ${currentTenant.id}`);
-      
-      // Erişim reddedildi logunu kaydet
-      try {
-        await logAccessDenied(
-          session.user.id,
-          currentTenant.id,
-          'public',
-          'tenant_access',
-          'GET',
-          'tenant_access_denied',
-          {
-            path: pathname,
-            email: session.user.email,
-            requested_tenant: currentTenant.id,
-            allowed_tenants: allowedTenantsArray,
-            user_tenant: session.user.user_metadata?.tenant_id,
-            role: session.user.app_metadata?.role || 'user',
-            ip: request.headers.get('x-forwarded-for') || 'unknown'
-          }
-        ).catch(e => console.error('Middleware erişim reddi log hatası:', e));
-      } catch (error) {
-        console.error('Erişim reddi log hatası:', error);
-      }
-      
       return NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
-    }
-    
-    // Tenant bilgisini kullanıcı metadatasına ekle/güncelle
-    const updateUserMetadata = async () => {
-      // Son erişilen tenant'ları tut (maksimum 5)
-      let lastAccessedTenants = session.user.user_metadata?.last_accessed_tenants || [];
-      if (typeof lastAccessedTenants === 'string') {
-        try {
-          lastAccessedTenants = JSON.parse(lastAccessedTenants);
-        } catch {
-          lastAccessedTenants = [];
-        }
-      }
-      
-      if (!Array.isArray(lastAccessedTenants)) {
-        lastAccessedTenants = [];
-      }
-      
-      // Şu anki tenant'ı listeye ekle (eğer zaten yoksa)
-      if (!lastAccessedTenants.includes(currentTenant.id)) {
-        lastAccessedTenants.unshift(currentTenant.id);
-        // Maksimum 5 tenant tut
-        if (lastAccessedTenants.length > 5) {
-          lastAccessedTenants = lastAccessedTenants.slice(0, 5);
-        }
-      } else {
-        // Zaten listede varsa, en başa taşı
-        lastAccessedTenants = [
-          currentTenant.id,
-          ...lastAccessedTenants.filter((id: string) => id !== currentTenant.id)
-        ];
-      }
-      
-      // Kullanıcı metadatasını güncelle
-      await supabase.auth.updateUser({
-        data: { 
-          tenant_id: currentTenant.id,
-          tenant_name: currentTenant.name,
-          last_tenant_access: new Date().toISOString(),
-          last_accessed_tenants: lastAccessedTenants
-        }
-      });
-    };
-    
-    // Tenant değişmişse, kullanıcı metadatasını güncelle
-    if (canAccessTenant && (!session.user.user_metadata?.tenant_id || session.user.user_metadata?.tenant_id !== currentTenant.id)) {
-      updateUserMetadata().catch(err => {
-        console.error('Kullanıcı metadata güncelleme hatası:', err);
-      });
     }
   } else if (isProtectedPath(pathname)) {
     // Oturum yoksa ve korumalı bir sayfaya erişmeye çalışıyorsa, giriş sayfasına yönlendir
-    try {
-      await logAccessDenied(
-        'anonymous',
-        currentTenant?.id || 'unknown',
-        'public',
-        'tenant_access',
-        'GET',
-        'unauthenticated_access',
-        {
-          path: pathname,
-          ip: request.headers.get('x-forwarded-for') || 'unknown'
-        }
-      ).catch(e => console.error('Middleware erişim reddi log hatası:', e));
-    } catch (error) {
-      console.error('Anonim erişim reddi log hatası:', error);
-    }
-    
     const loginUrl = new URL('/auth/giris', request.url);
     loginUrl.searchParams.set('callbackUrl', request.url);
     return NextResponse.redirect(loginUrl);
   }
   
-  // Final security monitoring and metrics
-  if (config.monitoring.performanceMonitoring) {
-    const responseTime = Date.now() - perfContext.startTime;
-    if (responseTime > 1000) {
-      alertingSystem.addMetric({
-        timestamp: new Date(),
-        metric: 'slow_middleware_response',
-        value: responseTime,
-        labels: { path: pathname, hostname },
-        source: 'middleware'
-      });
-    }
-  }
-  
-  middlewareMonitor.finishRequest(perfContext, 'success');
   return finalResponse;
 }
 
@@ -410,26 +167,12 @@ export async function middleware(request: NextRequest) {
  * Geliştirme ortamında tenant bilgilerini headerlarla ekler
  */
 function addTenantHeadersInDevelopment(request: NextRequest): NextResponse {
-  // Localhost'ta URL üzerinden tenant parametresini okuyabiliriz
-  const searchParams = request.nextUrl.searchParams;
-  const tenantParam = searchParams.get('tenant');
-  
   const response = NextResponse.next();
   
-  if (tenantParam) {
-    response.headers.set('x-tenant-id', tenantParam);
-    response.headers.set('x-tenant-hostname', `${tenantParam}.localhost`);
-    response.headers.set('x-tenant-name', `Development Tenant (${tenantParam})`);
-    response.headers.set('x-tenant-primary', 'true');
-    response.headers.set('x-tenant-custom-domain', 'false');
-  } else {
-    // Varsayılan test tenant'ı
-    response.headers.set('x-tenant-id', 'test-tenant');
-    response.headers.set('x-tenant-hostname', 'test-tenant.localhost');
-    response.headers.set('x-tenant-name', 'Test Tenant');
-    response.headers.set('x-tenant-primary', 'true');
-    response.headers.set('x-tenant-custom-domain', 'false');
-  }
+  // Varsayılan test tenant'ı
+  response.headers.set('x-tenant-id', 'test-tenant');
+  response.headers.set('x-tenant-hostname', 'test-tenant.localhost');
+  response.headers.set('x-tenant-name', 'Test Tenant');
   
   return response;
 }
