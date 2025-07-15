@@ -195,6 +195,72 @@ npm run performance:test   # Performance testing
 - Multi-tenant isolation verified
 - Audit logging implemented
 
+## 🛠️ Coding Standards & Development Guidelines (15 Temmuz 2025)
+
+### **CRITICAL: Enhanced Development Infrastructure**
+> **Yeni Claude konuşmalarında mutlaka bu bölümü dikkate al!**
+
+#### **Systematic Quality Assurance System**
+- **Enhanced ESLint Configuration**: `eslint.config.mjs` - Strict rules, no `any` types
+- **Prettier Configuration**: `.prettierrc.json` - Consistent formatting
+- **Pre-commit Hooks**: `.husky/pre-commit` - Automated quality checks
+- **VS Code Integration**: `.vscode/` - Format on save, auto-fix enabled
+
+#### **Comprehensive Documentation**
+- **`/CONTRIBUTING.md`** - Complete development workflow and standards
+- **`/docs/CODE_STANDARDS.md`** - TypeScript, React, API development guidelines
+- **`/docs/DEVELOPMENT_SETUP.md`** - Quick start and tool configuration
+- **`/docs/templates/`** - Component, hook, and API route templates
+
+#### **Coding Standards (ENFORCED)**
+```typescript
+// ❌ YASAK - Never use 'any' types
+const handleData = (data: any) => { ... }
+
+// ✅ ZORUNLU - Always use proper typing
+interface UserData { id: string; name: string; }
+const handleData = (data: UserData) => { ... }
+
+// ❌ YASAK - Unused imports
+import { Button, Input, Badge } from 'ui'
+
+// ✅ ZORUNLU - Only used imports
+import { Button, Input } from 'ui'
+```
+
+#### **Development Commands (Updated)**
+```bash
+# Quality Checks
+npm run lint                    # ESLint check
+npm run lint:fix                # Auto-fix ESLint issues
+npm run format                  # Prettier formatting
+npm run format:check            # Check formatting
+
+# Pre-commit System
+npm run pre-commit             # Manual pre-commit check
+npx husky install              # Setup pre-commit hooks
+```
+
+#### **Anti-Pattern Prevention**
+- **TypeScript strict mode** - No `any`, `unknown` preferred
+- **React hooks best practices** - Dependency arrays enforced
+- **Import organization** - Unused imports auto-removed
+- **Component patterns** - Use provided templates
+- **API security** - Input validation with Zod mandatory
+
+#### **Quality Gates**
+1. **Pre-commit**: ESLint + Prettier + TypeScript compilation
+2. **CI/CD**: Zero linting errors policy
+3. **Code Review**: Use `/docs/templates/` for consistency
+4. **Testing**: 80%+ coverage required
+
+### **Development Workflow (Updated)**
+1. **Follow `/CONTRIBUTING.md`** for all development
+2. **Use `/docs/templates/`** for new components/hooks/APIs
+3. **Run `npm run lint:fix`** before commits
+4. **ESLint errors = blocking** - Must be fixed before merge
+5. **Review `/docs/CODE_STANDARDS.md`** for patterns
+
 ## 📊 Son Analiz Raporu
 
 ### Detaylı Raporlar:
