@@ -19,24 +19,15 @@ import {
   Star, 
   Users, 
   Clock,
-  Search,
-  Filter,
   Plus,
   Eye,
-  Edit,
-  Trash2,
-  Archive,
-  Reply,
-  Forward,
   Phone,
   Video,
   Mail,
-  UserCheck,
   AlertCircle,
   CheckCircle,
   TrendingUp,
   BarChart3,
-  FileText,
   Settings,
   Download
 } from 'lucide-react';
@@ -47,8 +38,6 @@ import { ParentFeedbackSystem } from '@/components/parent-communication/parent-f
 
 export default function ParentCommunicationPage() {
   const [selectedTab, setSelectedTab] = useState('overview');
-  const [searchTerm] = useState('');
-  const [selectedFilter] = useState('all');
 
   // Mock data - gerçek uygulamada API'den gelecek
   const communicationOverview = {

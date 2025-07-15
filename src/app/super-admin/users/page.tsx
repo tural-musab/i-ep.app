@@ -32,7 +32,7 @@ export default function UsersPage() {
     {
       accessorKey: 'full_name',
       header: 'Kullanıcı Adı',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: User } }) => (
         <div className="flex flex-col">
           <span className="font-medium">{row.original.full_name}</span>
           <span className="text-xs text-muted-foreground">{row.original.email}</span>
@@ -42,7 +42,7 @@ export default function UsersPage() {
     {
       accessorKey: 'role',
       header: 'Rol',
-      cell: ({ row }: any) => {
+      cell: ({ row }: { row: { original: User } }) => {
         const role = row.original.role;
         let color = 'bg-blue-50 text-blue-700 border-blue-200';
         
@@ -72,12 +72,12 @@ export default function UsersPage() {
     {
       accessorKey: 'tenant_name',
       header: 'Tenant',
-      cell: ({ row }: any) => row.original.tenant_name || '-',
+      cell: ({ row }: { row: { original: User } }) => row.original.tenant_name || '-',
     },
     {
       accessorKey: 'is_active',
       header: 'Durum',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: User } }) => (
         <div>
           {row.original.is_active ? (
             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
@@ -96,7 +96,7 @@ export default function UsersPage() {
     {
       accessorKey: 'last_sign_in_at',
       header: 'Son Giriş',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: User } }) => (
         row.original.last_sign_in_at
           ? format(new Date(row.original.last_sign_in_at), 'dd MMM yyyy', { locale: tr })
           : 'Hiç giriş yapmadı'
@@ -105,12 +105,12 @@ export default function UsersPage() {
     {
       accessorKey: 'created_at',
       header: 'Kayıt Tarihi',
-      cell: ({ row }: any) => format(new Date(row.original.created_at), 'dd MMM yyyy', { locale: tr }),
+      cell: ({ row }: { row: { original: User } }) => format(new Date(row.original.created_at), 'dd MMM yyyy', { locale: tr }),
     },
     {
       id: 'actions',
       header: 'İşlemler',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: User } }) => (
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" title="Görüntüle">
             <Eye className="h-4 w-4" />

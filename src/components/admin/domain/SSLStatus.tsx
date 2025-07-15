@@ -6,7 +6,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,21 +51,19 @@ interface SSLCertificate {
   validFrom?: string;
   validTo?: string;
   algorithm?: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 interface SSLError {
   code: string;
   message: string;
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 type SSLStatus = 'valid' | 'expired' | 'expiring_soon' | 'invalid' | 'pending';
 
 export function SSLStatus({
   domainId,
-  tenantId,
-  domain,
   onRenew,
   onError
 }: SSLStatusProps) {
@@ -76,7 +74,7 @@ export function SSLStatus({
   const [error, setError] = useState<string | null>(null);
   
   // SSL durumunu kontrol et
-  const checkSSLStatus = async () => {
+  const checkSSLStatus = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -136,7 +134,7 @@ export function SSLStatus({
     } finally {
       setLoading(false);
     }
-  };
+  }, [domainId, onError]);
   
   // SSL sertifikasını yenile
   const renewSSLCertificate = async () => {
@@ -242,7 +240,7 @@ export function SSLStatus({
   // Komponent yüklendiğinde SSL durumunu kontrol et
   useEffect(() => {
     checkSSLStatus();
-  }, [domainId]);
+  }, [domainId, checkSSLStatus]);
   
   if (loading) {
     return (

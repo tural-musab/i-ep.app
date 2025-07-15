@@ -70,7 +70,7 @@ export interface PaymentFormProps {
   amount: number;
   currency: string;
   billingCycle: 'monthly' | 'yearly';
-  onPaymentSuccess: (paymentResult: any) => void;
+  onPaymentSuccess: (paymentResult: { status: string; paymentId: string; [key: string]: unknown }) => void;
   onPaymentError: (error: string) => void;
   className?: string;
   disabled?: boolean;

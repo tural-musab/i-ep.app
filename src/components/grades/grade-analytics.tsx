@@ -9,27 +9,27 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+// import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { 
   TrendingUp, 
-  TrendingDown, 
+  // TrendingDown, 
   BarChart3, 
-  PieChart, 
+  // PieChart, 
   Calculator, 
   Users, 
   BookOpen, 
   Target, 
-  Calendar,
+  // Calendar,
   Download
 } from 'lucide-react';
 
 export function GradeAnalytics() {
   const [selectedClass, setSelectedClass] = useState('all');
   const [selectedSubject, setSelectedSubject] = useState('all');
-  const [selectedPeriod, setSelectedPeriod] = useState('semester');
+  // const [selectedPeriod, setSelectedPeriod] = useState('semester');
   const [selectedSemester, setSelectedSemester] = useState('1');
 
   // Mock data - gerçek uygulamada API'den gelecek
@@ -246,7 +246,7 @@ export function GradeAnalytics() {
           <Card>
             <CardHeader>
               <CardTitle>En İyi Performans Gösterenler</CardTitle>
-              <CardDescription>Yüksek GPA'ya sahip öğrenciler</CardDescription>
+              <CardDescription>Yüksek GPA&apos;ya sahip öğrenciler</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">

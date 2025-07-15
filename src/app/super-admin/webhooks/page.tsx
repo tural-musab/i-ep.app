@@ -87,7 +87,7 @@ export default function WebhooksPage() {
     {
       accessorKey: 'name',
       header: 'Webhook Adı',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Webhook } }) => (
         <div className="flex flex-col">
           <span className="font-medium">{row.original.name}</span>
           <span className="text-xs text-muted-foreground truncate max-w-[200px]">{row.original.description}</span>
@@ -97,14 +97,14 @@ export default function WebhooksPage() {
     {
       accessorKey: 'url',
       header: 'URL',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Webhook } }) => (
         <span className="text-xs font-mono truncate max-w-[200px]">{row.original.url}</span>
       ),
     },
     {
       accessorKey: 'events',
       header: 'Olaylar',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Webhook } }) => (
         <div className="flex flex-wrap gap-1">
           {row.original.events.slice(0, 2).map((event: string) => (
             <Badge key={event} variant="secondary" className="text-xs">
@@ -122,12 +122,12 @@ export default function WebhooksPage() {
     {
       accessorKey: 'tenant_name',
       header: 'Tenant',
-      cell: ({ row }: any) => row.original.tenant_name || 'Tüm Tenantlar',
+      cell: ({ row }: { row: { original: Webhook } }) => row.original.tenant_name || 'Tüm Tenantlar',
     },
     {
       accessorKey: 'is_active',
       header: 'Durum',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Webhook } }) => (
         <div>
           {row.original.is_active ? (
             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
@@ -146,7 +146,7 @@ export default function WebhooksPage() {
     {
       accessorKey: 'last_triggered_at',
       header: 'Son Tetikleme',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Webhook } }) => (
         <div className="flex items-center gap-1">
           <Clock className="h-3 w-3 text-muted-foreground" />
           {row.original.last_triggered_at 
@@ -158,7 +158,7 @@ export default function WebhooksPage() {
     {
       accessorKey: 'last_response_code',
       header: 'Son Cevap',
-      cell: ({ row }: any) => {
+      cell: ({ row }: { row: { original: Webhook } }) => {
         if (!row.original.last_response_code) return '-';
         
         const code = row.original.last_response_code;
@@ -182,7 +182,7 @@ export default function WebhooksPage() {
     {
       id: 'actions',
       header: 'İşlemler',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Webhook } }) => (
         <div className="flex items-center gap-2">
           <Button 
             variant="ghost" 
@@ -319,7 +319,7 @@ export default function WebhooksPage() {
       const supabase = createClientComponentClient();
       
       // Webhook'u ekle
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('webhooks')
         .insert({
           name: newWebhook.name,
@@ -400,9 +400,9 @@ export default function WebhooksPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Webhook'lar</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Webhook&apos;lar</h1>
           <p className="text-muted-foreground">
-            Sistem olaylarına abone olacak webhook'ları yönetin
+            Sistem olaylarına abone olacak webhook&apos;ları yönetin
           </p>
         </div>
         <Button 
@@ -418,7 +418,7 @@ export default function WebhooksPage() {
         <CardHeader>
           <CardTitle>Webhook Listesi</CardTitle>
           <CardDescription>
-            Sistemdeki tüm webhook'ların listesi ve durumları
+            Sistemdeki tüm webhook&apos;ların listesi ve durumları
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -439,7 +439,7 @@ export default function WebhooksPage() {
           <DialogHeader>
             <DialogTitle>Yeni Webhook Ekle</DialogTitle>
             <DialogDescription>
-              Belirli olaylara abone olacak yeni bir webhook ekleyin. Webhook, olaylar gerçekleştiğinde belirtilen URL'ye HTTP POST istekleri gönderecektir.
+              Belirli olaylara abone olacak yeni bir webhook ekleyin. Webhook, olaylar gerçekleştiğinde belirtilen URL&apos;ye HTTP POST istekleri gönderecektir.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -471,7 +471,7 @@ export default function WebhooksPage() {
                 value={newWebhook.url}
                 onChange={(e) => setNewWebhook({ ...newWebhook, url: e.target.value })}
               />
-              <p className="text-xs text-muted-foreground">Bu URL'ye HTTP POST istekleri gönderilecektir</p>
+              <p className="text-xs text-muted-foreground">Bu URL&apos;ye HTTP POST istekleri gönderilecektir</p>
             </div>
             
             <div className="space-y-2">
@@ -532,7 +532,7 @@ export default function WebhooksPage() {
                 checked={newWebhook.is_active}
                 onCheckedChange={(checked) => setNewWebhook({ ...newWebhook, is_active: checked })}
               />
-              <Label htmlFor="is_active">Webhook'u Aktif Et</Label>
+              <Label htmlFor="is_active">Webhook&apos;u Aktif Et</Label>
             </div>
           </div>
           <DialogFooter>
@@ -630,7 +630,7 @@ export default function WebhooksPage() {
             <DialogHeader>
               <DialogTitle>Webhook Test Et: {selectedWebhook.name}</DialogTitle>
               <DialogDescription>
-                Bu webhook'a test isteği gönderin ve yanıtı görüntüleyin.
+                Bu webhook&apos;a test isteği gönderin ve yanıtı görüntüleyin.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
@@ -700,7 +700,7 @@ export default function WebhooksPage() {
             <DialogHeader>
               <DialogTitle>Webhook Silme</DialogTitle>
               <DialogDescription>
-                <span className="font-medium">{selectedWebhook.name}</span> webhook'unu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                <span className="font-medium">{selectedWebhook.name}</span> webhook&apos;unu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
               </DialogDescription>
             </DialogHeader>
             <div className="py-4">

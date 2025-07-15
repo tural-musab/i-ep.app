@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+// import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { cn } from '@/lib/utils';
+// import { cn } from '@/lib/utils';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import {
   Sidebar,
@@ -19,7 +19,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
-  useSidebar,
+  // useSidebar,
 } from '@/components/ui/sidebar';
 import {
   DropdownMenu,
@@ -44,7 +44,7 @@ import {
   LogOut,
   User,
   ChevronDown,
-  Menu,
+  // Menu,
 } from 'lucide-react';
 
 interface DashboardLayoutProps {

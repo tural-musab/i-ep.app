@@ -11,14 +11,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { 
   Search, 
-  Filter, 
+  // Filter, 
   Save, 
   Send, 
   Clock, 
@@ -28,10 +28,10 @@ import {
   AlertCircle,
   FileText,
   Phone,
-  Mail,
-  Calendar,
-  Users,
-  Timer
+  // Mail,
+  // Calendar,
+  // Users,
+  // Timer
 } from 'lucide-react';
 
 interface AttendanceStatus {
@@ -125,7 +125,7 @@ export function DailyAttendanceInterface({ date }: DailyAttendanceInterfaceProps
     student.studentNumber.includes(searchTerm)
   );
 
-  const handleAttendanceChange = (studentId: string, field: keyof AttendanceStatus, value: any) => {
+  const handleAttendanceChange = (studentId: string, field: keyof AttendanceStatus, value: string) => {
     setAttendanceData(prev => ({
       ...prev,
       [studentId]: {

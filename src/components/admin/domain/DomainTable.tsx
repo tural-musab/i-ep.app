@@ -101,7 +101,7 @@ export function DomainTable({
         addSuffix: true,
         locale: tr
       });
-    } catch (error) {
+    } catch {
       return dateString;
     }
   };

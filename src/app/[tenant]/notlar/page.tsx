@@ -341,7 +341,7 @@ export default function GradesPage() {
       letterGrade: 'AA',
       status: 'pending',
     },
-  ], [currentTenantId]);
+  ], []);
 
   useEffect(() => {
     const loadGrades = async () => {

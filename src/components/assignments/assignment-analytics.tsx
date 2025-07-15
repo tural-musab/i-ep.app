@@ -475,7 +475,7 @@ export function AssignmentAnalytics() {
                 <div>
                   <h4 className="font-medium text-blue-900">Olumlu Trend</h4>
                   <p className="text-sm text-blue-700">
-                    Zamanında teslim oranı %92'ye çıktı. Öğrenciler süreleri daha iyi yönetiyor.
+                    Zamanında teslim oranı %92&apos;ye çıktı. Öğrenciler süreleri daha iyi yönetiyor.
                   </p>
                 </div>
               </div>

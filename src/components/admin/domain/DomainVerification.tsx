@@ -6,7 +6,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 // Toast servisi için basit bir fallback oluşturalım
@@ -16,7 +16,7 @@ const toast = (message: string) => {
 };
 
 // Utility fonksiyonu için basit bir implementasyon
-const cn = (...classes: any[]) => {
+const cn = (...classes: (string | boolean | undefined)[]) => {
   return classes.filter(Boolean).join(' ');
 };
 
@@ -196,7 +196,7 @@ function Steps({ size = "md", activeStep = 0, children }: { size?: "sm" | "md" |
       "gap-4": size === "lg",
     })}>
       {steps.map((step, index) => {
-        // @ts-ignore
+        // @ts-expect-error - React.cloneElement requires any type for element props
         return React.cloneElement(step, {
           status: index < activeStep ? "complete" : index === activeStep ? "current" : "waiting"
         });
@@ -228,7 +228,7 @@ interface DomainVerificationProps {
   onVerified?: () => void;
   
   /** Hata durumunda çağrılır */
-  onError?: (error: any) => void;
+  onError?: (error: Error) => void;
   
   /** Otomatik kontrol aralığı (ms) */
   checkInterval?: number;
@@ -357,7 +357,7 @@ export function DomainVerification({
     return 5;
   };
   
-  let intervalId: NodeJS.Timeout;
+  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
   
   // İlk yüklemede doğrulama durumunu kontrol et
   useEffect(() => {
@@ -365,14 +365,18 @@ export function DomainVerification({
     checkVerificationStatus();
     
     // Periyodik kontrol
-    intervalId = setInterval(() => {
+    intervalIdRef.current = setInterval(() => {
       if (!status?.verified) {
         checkVerificationStatus();
       }
     }, checkInterval);
     
-    return () => clearInterval(intervalId);
-  }, [domainId, tenantId]);
+    return () => {
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+      }
+    };
+  }, [domainId, tenantId, checkInterval, checkVerificationStatus, fetchVerificationInstructions, status?.verified]);
   
   if (loading) {
     return (

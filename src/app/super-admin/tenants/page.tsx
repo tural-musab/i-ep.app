@@ -19,7 +19,7 @@ type Tenant = {
   updated_at: string;
   subscription_tier: string;
   domain: string | null;
-  company_details: any;
+  company_details: Record<string, unknown>;
   admin_user_id: string;
 };
 
@@ -31,7 +31,7 @@ export default function TenantsPage() {
     {
       accessorKey: 'name',
       header: 'Tenant Adı',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Tenant } }) => (
         <div className="flex items-center gap-2">
           <span className="font-medium">{row.original.name}</span>
           {!row.original.is_active && (
@@ -56,7 +56,7 @@ export default function TenantsPage() {
     {
       accessorKey: 'subscription_tier',
       header: 'Abonelik',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Tenant } }) => (
         <Badge variant="secondary">
           {row.original.subscription_tier || 'Standart'}
         </Badge>
@@ -65,17 +65,17 @@ export default function TenantsPage() {
     {
       accessorKey: 'domain',
       header: 'Domain',
-      cell: ({ row }: any) => row.original.domain || '-',
+      cell: ({ row }: { row: { original: Tenant } }) => row.original.domain || '-',
     },
     {
       accessorKey: 'created_at',
       header: 'Oluşturulma Tarihi',
-      cell: ({ row }: any) => format(new Date(row.original.created_at), 'dd MMM yyyy', { locale: tr }),
+      cell: ({ row }: { row: { original: Tenant } }) => format(new Date(row.original.created_at), 'dd MMM yyyy', { locale: tr }),
     },
     {
       id: 'actions',
       header: 'İşlemler',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Tenant } }) => (
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" title="Görüntüle">
             <Eye className="h-4 w-4" />

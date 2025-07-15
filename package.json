@@ -44,7 +44,8 @@
     "doc:watch": "node scripts/doc-sync.js watch",
     "doc:status": "node scripts/doc-sync.js status",
     "analyze": "ANALYZE=true npm run build",
-    "build:analyze": "ANALYZE=true npm run build"
+    "build:analyze": "ANALYZE=true npm run build",
+    "prepare": "husky"
   },
   "dependencies": {
     "@auth/supabase-adapter": "^1.8.0",
@@ -137,6 +138,7 @@
     "eslint-import-resolver-typescript": "^4.2.3",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-prettier": "^5.2.5",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "msw": "^2.10.3",

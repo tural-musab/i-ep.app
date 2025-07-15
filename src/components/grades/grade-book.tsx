@@ -13,24 +13,24 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// import { Progress } from '@/components/ui/progress';
 import { 
   BookOpen, 
   Search, 
-  Filter, 
+  // Filter, 
   Edit, 
-  Save, 
+  // Save, 
   Download, 
   Upload,
   Calculator,
   TrendingUp,
   TrendingDown,
-  Users,
-  Award,
-  AlertCircle,
-  Eye,
-  FileText,
+  // Users,
+  // Award,
+  // AlertCircle,
+  // Eye,
+  // FileText,
   BarChart3
 } from 'lucide-react';
 

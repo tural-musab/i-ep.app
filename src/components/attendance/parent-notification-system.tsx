@@ -16,7 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Switch } from '@/components/ui/switch';
-import { Progress } from '@/components/ui/progress';
+// import { Progress } from '@/components/ui/progress';
 import { 
   Send, 
   Phone, 
@@ -26,9 +26,9 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  Users,
-  Filter,
-  Search,
+  // Users,
+  // Filter,
+  // Search,
   Settings,
   Bell,
   History,

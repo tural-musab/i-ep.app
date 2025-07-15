@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Check, Star, Zap, Crown, Users, BookOpen, MessageSquare, BarChart3 } from 'lucide-react';
+import { Check, Star, Zap, Crown, Users, MessageSquare, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // ==========================================
@@ -32,7 +32,7 @@ export interface SubscriptionPlan {
   maxStudents: number | null;
   maxTeachers: number | null;
   maxClasses: number | null;
-  features: Record<string, any>;
+  features: Record<string, unknown>;
   trialDays: number;
   isActive: boolean;
   sortOrder: number;
@@ -96,7 +96,7 @@ function PlanCard({ plan, isYearly, currentPlan, onSelectPlan, loading }: PlanCa
   
   // Get plan features
   const features = plan.features || {};
-  const featureList = Object.entries(features).filter(([_, value]) => value !== false && value !== '');
+  const featureList = Object.entries(features).filter(([, value]) => value !== false && value !== '');
   
   return (
     <Card className={cn(

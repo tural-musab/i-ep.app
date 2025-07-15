@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+// import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -85,7 +85,7 @@ export default function SystemSettingsPage() {
     const fetchSettings = async () => {
       setIsLoading(true);
       try {
-        const supabase = createClientComponentClient();
+        // const supabase = createClientComponentClient();
         
         // Sistem ayarlarını getir
         // Gerçek uygulamada burası veritabanından gelecek

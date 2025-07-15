@@ -13,11 +13,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -32,12 +30,9 @@ import {
 } from '@/components/ui/form';
 import { 
   CalendarIcon, 
-  Upload, 
   X, 
   Plus, 
-  BookOpen, 
   Clock, 
-  Users,
   FileText,
   Settings,
   Save,
@@ -74,7 +69,7 @@ type AssignmentFormData = z.infer<typeof assignmentSchema>;
 export function AssignmentCreateForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [attachments, setAttachments] = useState<string[]>([]);
+  // const [attachments] = useState<string[]>([]);
   const [rubricCriteria, setRubricCriteria] = useState([
     { criteria: '', points: 0, description: '' }
   ]);
@@ -128,16 +123,16 @@ export function AssignmentCreateForm() {
     setRubricCriteria(rubricCriteria.filter((_, i) => i !== index));
   };
 
-  const getTypeLabel = (type: string) => {
-    const types = {
-      homework: 'Ödev',
-      exam: 'Sınav',
-      project: 'Proje',
-      quiz: 'Quiz',
-      presentation: 'Sunum'
-    };
-    return types[type as keyof typeof types] || type;
-  };
+  // const getTypeLabel = (type: string) => {
+  //   const types = {
+  //     homework: 'Ödev',
+  //     exam: 'Sınav',
+  //     project: 'Proje',
+  //     quiz: 'Quiz',
+  //     presentation: 'Sunum'
+  //   };
+  //   return types[type as keyof typeof types] || type;
+  // };
 
   return (
     <Form {...form}>

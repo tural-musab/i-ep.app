@@ -58,7 +58,7 @@ export default function DomainsPage() {
     {
       accessorKey: 'domain',
       header: 'Domain',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Domain } }) => (
         <div className="flex items-center gap-2">
           <Globe className="h-4 w-4 text-muted-foreground" />
           <span className="font-medium">{row.original.domain}</span>
@@ -74,14 +74,14 @@ export default function DomainsPage() {
     {
       accessorKey: 'tenant_name',
       header: 'Tenant',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Domain } }) => (
         <span>{row.original.tenant_name || '-'}</span>
       ),
     },
     {
       accessorKey: 'is_verified',
       header: 'Doğrulama Durumu',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Domain } }) => (
         <div>
           {row.original.is_verified ? (
             <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
@@ -100,7 +100,7 @@ export default function DomainsPage() {
     {
       accessorKey: 'last_verified_at',
       header: 'Son Doğrulama',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Domain } }) => (
         row.original.last_verified_at 
           ? format(new Date(row.original.last_verified_at), 'dd MMM yyyy HH:mm', { locale: tr })
           : '-'
@@ -109,12 +109,12 @@ export default function DomainsPage() {
     {
       accessorKey: 'created_at',
       header: 'Eklenme Tarihi',
-      cell: ({ row }: any) => format(new Date(row.original.created_at), 'dd MMM yyyy', { locale: tr }),
+      cell: ({ row }: { row: { original: Domain } }) => format(new Date(row.original.created_at), 'dd MMM yyyy', { locale: tr }),
     },
     {
       id: 'actions',
       header: 'İşlemler',
-      cell: ({ row }: any) => (
+      cell: ({ row }: { row: { original: Domain } }) => (
         <div className="flex items-center gap-2">
           <Button 
             variant="ghost" 
@@ -276,7 +276,7 @@ export default function DomainsPage() {
       const supabase = createClientComponentClient();
       
       // Domaini ekle
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('domains')
         .insert({
           domain: newDomain.domain,
