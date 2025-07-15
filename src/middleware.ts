@@ -6,6 +6,14 @@ import { createRequestLogger } from './middleware/logger';
 import { rateLimiterMiddleware } from './middleware/rateLimiter';
 import { middlewareMonitor } from './lib/performance/middleware-monitor';
 import { generateRequestId } from './lib/utils/request-id';
+import { withRateLimit, apiRateLimiter, authRateLimiter } from './lib/security/rate-limiter';
+import { withCSRFProtection } from './lib/security/csrf';
+import { withSecurityHeaders } from './lib/security/headers';
+import { withSSLEnforcement } from './lib/security/ssl-hardening';
+import { auditLogger } from './lib/security/audit';
+import { getConfig } from './lib/config/environment';
+import { alertingSystem } from './lib/monitoring/alerting';
+import { healthChecker } from './lib/monitoring/health-check';
 
 // Performance optimization: Tenant cache
 const tenantCache = new Map<string, { data: any; timestamp: number }>();
@@ -51,7 +59,7 @@ function isProtectedPath(pathname: string): boolean {
 }
 
 /**
- * Tenant izolasyonu ve yönlendirme middleware
+ * Enhanced security middleware with comprehensive protection
  * Referans: docs/architecture/multi-tenant-strategy.md, URL Tabanlı Tenant Ayrımı
  */
 export async function middleware(request: NextRequest) {
@@ -61,6 +69,7 @@ export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
   
   const perfContext = middlewareMonitor.startRequest(requestId, pathname, hostname);
+  const config = getConfig();
   
   // Early return for static assets
   if (pathname.startsWith('/_next/') || 
@@ -72,7 +81,59 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
-  // Rate limiting kontrolü - tüm işlemlerden önce
+  // Security layers - applied in order of importance
+  let response: NextResponse | null = null;
+  
+  // 1. SSL/TLS enforcement
+  if (config.security.enforceHttps) {
+    response = withSSLEnforcement()(request);
+    if (response) {
+      middlewareMonitor.finishRequest(perfContext, 'redirect');
+      return response;
+    }
+  }
+  
+  // 2. Rate limiting - different limits for different endpoints
+  if (config.security.rateLimiting) {
+    let rateLimiter = apiRateLimiter;
+    
+    if (pathname.startsWith('/api/auth/') || pathname.startsWith('/auth/')) {
+      rateLimiter = authRateLimiter;
+    }
+    
+    response = await withRateLimit(rateLimiter)(request);
+    if (response) {
+      middlewareMonitor.finishRequest(perfContext, 'rate_limited');
+      await auditLogger.logSecurityEvent({
+        type: 'suspicious_activity',
+        severity: 'medium',
+        ip_address: request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip,
+        user_agent: request.headers.get('user-agent') || undefined,
+        description: 'Rate limit exceeded',
+        metadata: { path: pathname, limit_type: 'api' }
+      });
+      return response;
+    }
+  }
+  
+  // 3. CSRF protection
+  if (config.security.csrfProtection) {
+    response = await withCSRFProtection()(request);
+    if (response) {
+      middlewareMonitor.finishRequest(perfContext, 'csrf_failed');
+      await auditLogger.logSecurityEvent({
+        type: 'suspicious_activity',
+        severity: 'high',
+        ip_address: request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip,
+        user_agent: request.headers.get('user-agent') || undefined,
+        description: 'CSRF token validation failed',
+        metadata: { path: pathname }
+      });
+      return response;
+    }
+  }
+  
+  // Continue with original rate limiting fallback
   const rateLimitResponse = rateLimiterMiddleware(request);
   if (rateLimitResponse) {
     middlewareMonitor.finishRequest(perfContext, 'error');
@@ -98,10 +159,14 @@ export async function middleware(request: NextRequest) {
   
   const tenantInfo = tenantResult.data;
   const session = sessionResult;
-  const response = NextResponse.next();
+  let finalResponse = NextResponse.next();
+  
+  // Apply security headers
+  finalResponse = withSecurityHeaders()(request);
   
   // Set essential headers only
-  response.headers.set('x-tenant-id', tenantInfo.id);
+  finalResponse.headers.set('x-tenant-id', tenantInfo.id);
+  finalResponse.headers.set('x-request-id', requestId);
   
   // Super-admin sayfaları için özel kontrol
   if (pathname.startsWith('/super-admin')) {
@@ -110,6 +175,17 @@ export async function middleware(request: NextRequest) {
       const loginUrl = new URL('/auth/giris', request.url);
       loginUrl.searchParams.set('callbackUrl', request.url);
       const response = NextResponse.redirect(loginUrl);
+      
+      // Security audit log
+      await auditLogger.logSecurityEvent({
+        type: 'login_attempt',
+        severity: 'medium',
+        ip_address: request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip,
+        user_agent: request.headers.get('user-agent') || undefined,
+        description: 'Unauthorized super-admin access attempt',
+        metadata: { path: pathname, redirect_to: '/auth/giris' }
+      });
+      
       requestLogger.finish(response);
       return response;
     }
@@ -118,6 +194,22 @@ export async function middleware(request: NextRequest) {
     const isSuperAdmin = session.user.app_metadata?.role === 'super_admin';
     if (!isSuperAdmin) {
       console.warn(`Super admin erişim yetkisi yok: ${session.user.email}`);
+      
+      // Security audit log for unauthorized access
+      await auditLogger.logSecurityEvent({
+        type: 'permission_change',
+        severity: 'high',
+        user_id: session.user.id,
+        ip_address: request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip,
+        user_agent: request.headers.get('user-agent') || undefined,
+        description: 'Unauthorized super-admin access attempt by authenticated user',
+        metadata: { 
+          email: session.user.email,
+          path: pathname,
+          actual_role: session.user.app_metadata?.role || 'user'
+        }
+      });
+      
       const response = NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
       requestLogger.finish(response);
       return response;
@@ -296,7 +388,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
   
-  return response;
+  // Final security monitoring and metrics
+  if (config.monitoring.performanceMonitoring) {
+    const responseTime = Date.now() - perfContext.startTime;
+    if (responseTime > 1000) {
+      alertingSystem.addMetric({
+        timestamp: new Date(),
+        metric: 'slow_middleware_response',
+        value: responseTime,
+        labels: { path: pathname, hostname },
+        source: 'middleware'
+      });
+    }
+  }
+  
+  middlewareMonitor.finishRequest(perfContext, 'success');
+  return finalResponse;
 }
 
 /**
