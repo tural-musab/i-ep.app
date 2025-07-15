@@ -28,8 +28,39 @@
 
 ## 📅 2025 Roadmap ve Sprint Planı
 
-### PHASE 1: MVP COMPLETION (Q1 2025) - %35 Complete - GERÇEKLİK DURUMU
-**Hedef**: Commercial-ready MVP (%80 tamamlanma) - ❌ HEDEF UZAK
+### ⚠️ DOKÜMANTASYON HATASI DÜZELTİLDİ - YENİ STRATEJİ AKTİF
+
+## 🚀 FOUNDATION-FIRST STRATEGY (15 Temmuz 2025)
+
+### PHASE 1: Stabilization (1-2 hafta) - 🔥 AKTIF
+**Hedef**: Çalışan, deployable bir base oluşturmak
+**Odak**: Build errors, linting, security, CI/CD
+
+#### Week 1: Critical Fixes
+- [ ] Build Error Fix - Assignment page `createContext` hatası
+- [ ] Linting Cleanup - 50+ TypeScript/ESLint errors
+- [ ] Security Vulnerabilities - 17 vulnerability fixes (1 critical)
+
+#### Week 2: Infrastructure Foundation
+- [ ] API Foundation - Standardized endpoint patterns
+- [ ] Database Integration - Repository pattern completion
+- [ ] Error Handling - Consistent error responses
+
+### PHASE 2: Core Features (4-6 hafta) - PLANLANDI
+**Hedef**: Feature'ları tek tek 100% tamamlama
+**Yaklaşım**: "One Feature at a Time" metodolojisi
+
+#### Feature Implementation Timeline
+- **Week 3**: Assignment System (40% → 100%)
+- **Week 4**: Attendance System (45% → 100%)
+- **Week 5**: Grade Management (40% → 100%)
+- **Week 6**: Parent Communication (35% → 100%)
+- **Week 7**: Report Generation (30% → 100%)
+- **Week 8**: Class Scheduling (25% → 100%)
+
+### ESKİ PLAN (GERÇEKLİK DURUMU)
+### ~~PHASE 1: MVP COMPLETION (Q1 2025) - %35 Complete~~
+**~~Hedef~~**: ~~Commercial-ready MVP (%80 tamamlanma)~~ - ❌ HEDEF UZAK
 **✅ Sprint 1 Tamamlandı**: Payment & Billing Foundation (+10% progress)
 **✅ Sprint 2 Tamamlandı**: Performance Optimization (+8% progress)
 **⚠️ Sprint 3 Kısmi**: Assignment System - 40% (UI + Repository, API endpoints eksik)
