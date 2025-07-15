@@ -121,9 +121,36 @@ export class StorageService implements IStorageProvider {
    * Get file information from database
    */
   private async getFileInfo(fileId: string): Promise<StorageFile> {
-    // Bu repository katmanında implement edilecek
-    // Şimdilik hata fırlat
-    throw new Error('StorageRepository henüz implement edilmedi');
+    const { createServerSupabaseClient } = await import('@/lib/supabase/server');
+    const supabase = await createServerSupabaseClient();
+    
+    const { data: file, error } = await supabase
+      .from('files')
+      .select('*')
+      .eq('id', fileId)
+      .single();
+
+    if (error || !file) {
+      throw new Error(`File not found: ${fileId}`);
+    }
+
+    return {
+      id: file.id,
+      name: file.name,
+      path: file.path,
+      size_bytes: file.size_bytes,
+      mime_type: file.mime_type,
+      storage_provider: file.storage_provider as 'supabase' | 'r2',
+      category: file.category,
+      is_public: file.is_public,
+      uploaded_by: file.uploaded_by,
+      tenant_id: file.tenant_id,
+      assignment_id: file.assignment_id,
+      access_count: file.access_count || 0,
+      created_at: file.created_at,
+      updated_at: file.updated_at,
+      metadata: file.metadata || {}
+    };
   }
   
   /**

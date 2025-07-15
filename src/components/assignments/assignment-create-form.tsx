@@ -36,11 +36,13 @@ import {
   FileText,
   Settings,
   Save,
-  Send
+  Send,
+  Upload
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { FileUpload } from '@/components/ui/file-upload';
 
 const assignmentSchema = z.object({
   title: z.string().min(3, 'Başlık en az 3 karakter olmalıdır'),
@@ -69,7 +71,7 @@ type AssignmentFormData = z.infer<typeof assignmentSchema>;
 export function AssignmentCreateForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [attachments] = useState<string[]>([]);
+  const [attachments, setAttachments] = useState<string[]>([]);
   const [rubricCriteria, setRubricCriteria] = useState([
     { criteria: '', points: 0, description: '' }
   ]);
@@ -92,12 +94,48 @@ export function AssignmentCreateForm() {
     }
   });
 
+  const handleFileUpload = async (files: File[]) => {
+    try {
+      const uploadedFiles: string[] = [];
+      
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', 'assignment');
+        formData.append('category', 'teacher-material');
+        
+        const response = await fetch('/api/storage/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to upload ${file.name}`);
+        }
+        
+        const result = await response.json();
+        uploadedFiles.push(result.file.id);
+      }
+      
+      setAttachments(prev => [...prev, ...uploadedFiles]);
+    } catch (error) {
+      console.error('File upload error:', error);
+      throw error;
+    }
+  };
+
   const onSubmit = async (data: AssignmentFormData) => {
     setIsSubmitting(true);
     
     try {
+      const submissionData = {
+        ...data,
+        attachments,
+        rubric: rubricCriteria.filter(item => item.criteria.trim() !== '')
+      };
+      
       // API call will be implemented here
-      console.log('Assignment data:', data);
+      console.log('Assignment data:', submissionData);
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -330,6 +368,37 @@ export function AssignmentCreateForm() {
             </FormItem>
           )}
         />
+
+        {/* File Attachments */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5" />
+              Dosya Ekleri
+            </CardTitle>
+            <CardDescription>
+              Öğrencilerin görmesi gereken dosyaları ekleyin
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FileUpload
+              onUpload={handleFileUpload}
+              type="assignment"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.gif,.zip,.rar"
+              maxSize={50 * 1024 * 1024} // 50MB
+              maxFiles={5}
+              multiple={true}
+              disabled={isSubmitting}
+            />
+            {attachments.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm text-gray-600">
+                  {attachments.length} dosya yüklendi
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Settings */}
         <Card>
