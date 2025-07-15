@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     // Query parametrelerini kontrol et
     try {
       const searchParams = new URL(request.url).searchParams;
-      for (const [_key, value] of searchParams.entries()) {
+      for (const [, value] of searchParams.entries()) {
         if (containsSQLInjection(value)) {
           return new Response(
             JSON.stringify({ message: 'Invalid query parameters' }),
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
           );
         }
       }
-    } catch (_error) {
+    } catch {
       return new Response(
         JSON.stringify({ message: 'Invalid URL format' }),
         { 
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
     let body;
     try {
       body = await request.json();
-    } catch (_error) {
+    } catch {
       return new Response(
         JSON.stringify({ message: 'Invalid JSON format' }),
         { 

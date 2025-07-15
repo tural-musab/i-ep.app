@@ -55,7 +55,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
       // Mock successful Redis connection
       mockRedis.ping.mockResolvedValue(true);
@@ -84,7 +84,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
       // Mock successful Redis connection
       mockRedis.ping.mockResolvedValue(true);
@@ -106,7 +106,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
       // Mock Redis connection failure
       mockRedis.ping.mockRejectedValue(new Error('Redis connection failed'));
@@ -131,7 +131,7 @@ describe('SystemHealthService', () => {
           })
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
       mockRedis.ping.mockImplementation(async () => {
         await new Promise(resolve => setTimeout(resolve, 5)); // 5ms delay
@@ -154,7 +154,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
 
       const report = await SystemHealthService.generateHealthReport();
@@ -173,7 +173,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
 
       const report = await SystemHealthService.generateHealthReport();
@@ -198,7 +198,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
       // Mock Redis connection failure
       mockRedis.ping.mockRejectedValue(new Error('Redis down'));
@@ -222,7 +222,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
       const result = await SystemHealthService.quickHealthCheck();
 
@@ -241,7 +241,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
       const result = await SystemHealthService.quickHealthCheck();
 
@@ -259,7 +259,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
 
       const quickStart = Date.now();
@@ -285,7 +285,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
 
       const report = await SystemHealthService.generateHealthReport();
@@ -301,7 +301,7 @@ describe('SystemHealthService', () => {
           limit: jest.fn(() => Promise.reject(new Error('Query timeout')))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
 
       const report = await SystemHealthService.generateHealthReport();
@@ -321,7 +321,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
 
       const report = await SystemHealthService.generateHealthReport();
@@ -340,7 +340,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockRejectedValue(new Error('Redis unavailable'));
 
       const report = await SystemHealthService.generateHealthReport();
@@ -363,7 +363,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
 
       const report = await SystemHealthService.generateHealthReport();
@@ -386,7 +386,7 @@ describe('SystemHealthService', () => {
           }))
         }))
       };
-      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as any);
+      mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
 
       const report = await SystemHealthService.generateHealthReport();

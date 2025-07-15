@@ -15,16 +15,11 @@ import { Progress } from '@/components/ui/progress';
 import { 
   ArrowLeft, 
   Calendar, 
-  Clock, 
   Users, 
   CheckCircle,
   AlertCircle,
   Download,
   Edit,
-  Trash2,
-  Send,
-  FileText,
-  BarChart3,
   Star
 } from 'lucide-react';
 import Link from 'next/link';

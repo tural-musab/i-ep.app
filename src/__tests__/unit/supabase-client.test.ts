@@ -19,7 +19,7 @@ describe('Supabase Client', () => {
   it('should create supabase client with correct parameters', () => {
     // Re-import to trigger client creation
     jest.isolateModules(() => {
-      require('@/lib/supabase/client');
+      void import('@/lib/supabase/client');
     });
 
     expect(mockCreateClient).toHaveBeenCalledWith(
@@ -33,7 +33,7 @@ describe('Supabase Client', () => {
     delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     jest.isolateModules(() => {
-      require('@/lib/supabase/client');
+      void import('@/lib/supabase/client');
     });
 
     expect(mockCreateClient).toHaveBeenCalledWith('', '');

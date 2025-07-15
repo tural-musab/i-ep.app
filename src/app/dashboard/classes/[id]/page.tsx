@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import * as Sentry from "@sentry/nextjs";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -37,7 +37,7 @@ export default function ClassDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchClassDetails = async () => {
+  const fetchClassDetails = useCallback(async () => {
     return Sentry.startSpan(
       {
         op: "http.client",
@@ -61,7 +61,7 @@ export default function ClassDetailPage() {
         }
       }
     );
-  };
+  }, [classId]);
 
   useEffect(() => {
     fetchClassDetails();

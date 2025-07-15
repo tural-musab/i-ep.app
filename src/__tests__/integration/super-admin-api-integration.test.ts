@@ -239,7 +239,7 @@ describe('Super Admin API Integration Tests', () => {
     it('should reject non-super-admin users', async () => {
       // Mock non-super-admin user
       const supabaseAdminModule = await import('@/lib/supabase/admin');
-      const supabaseAdmin = supabaseAdminModule.supabaseAdmin as any;
+      const supabaseAdmin = supabaseAdminModule.supabaseAdmin as unknown;
       supabaseAdmin.auth.getUser.mockResolvedValueOnce({
         data: { user: { id: 'regular-user', user_metadata: { role: 'user' } } },
         error: null
@@ -260,7 +260,7 @@ describe('Super Admin API Integration Tests', () => {
     it('should handle database connection errors', async () => {
       // Mock database error
       const supabaseAdminModule = await import('@/lib/supabase/admin');
-      const supabaseAdmin = supabaseAdminModule.supabaseAdmin as any;
+      const supabaseAdmin = supabaseAdminModule.supabaseAdmin as unknown;
       supabaseAdmin.auth.getUser.mockRejectedValueOnce(new Error('Database connection failed'));
 
       const request = new NextRequest('http://localhost:3000/api/super-admin/system-health', {

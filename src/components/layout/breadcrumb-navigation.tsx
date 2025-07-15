@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { createContext, useContext, useMemo, useState, useCallback } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -56,7 +56,7 @@ export function BreadcrumbNavigation({
   const viewport = useViewport()
 
   // Generate breadcrumbs from current path if items not provided
-  const breadcrumbs = React.useMemo(() => {
+  const breadcrumbs = useMemo(() => {
     if (items) return items
 
     const pathSegments = pathname.split('/').filter(Boolean)
@@ -217,12 +217,12 @@ interface BreadcrumbContextValue {
   removeBreadcrumb: (href: string) => void
 }
 
-const BreadcrumbContext = React.createContext<BreadcrumbContextValue | undefined>(undefined)
+const BreadcrumbContext = createContext<BreadcrumbContextValue | undefined>(undefined)
 
 export function BreadcrumbProvider({ children }: { children: React.ReactNode }) {
-  const [breadcrumbs, setBreadcrumbs] = React.useState<BreadcrumbItem[]>([])
+  const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([])
 
-  const addBreadcrumb = React.useCallback((item: BreadcrumbItem) => {
+  const addBreadcrumb = useCallback((item: BreadcrumbItem) => {
     setBreadcrumbs(prev => {
       const exists = prev.some(b => b.href === item.href)
       if (exists) return prev
@@ -230,11 +230,11 @@ export function BreadcrumbProvider({ children }: { children: React.ReactNode }) 
     })
   }, [])
 
-  const removeBreadcrumb = React.useCallback((href: string) => {
+  const removeBreadcrumb = useCallback((href: string) => {
     setBreadcrumbs(prev => prev.filter(b => b.href !== href))
   }, [])
 
-  const value = React.useMemo(() => ({
+  const value = useMemo(() => ({
     setBreadcrumbs,
     addBreadcrumb,
     removeBreadcrumb,
@@ -248,7 +248,7 @@ export function BreadcrumbProvider({ children }: { children: React.ReactNode }) 
 }
 
 export function useBreadcrumb() {
-  const context = React.useContext(BreadcrumbContext)
+  const context = useContext(BreadcrumbContext)
   if (!context) {
     throw new Error('useBreadcrumb must be used within a BreadcrumbProvider')
   }

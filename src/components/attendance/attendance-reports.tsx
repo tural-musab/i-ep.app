@@ -584,7 +584,7 @@ export function AttendanceReports() {
                 <div>
                   <CardTitle>Kronik Devamsızlık Raporu</CardTitle>
                   <CardDescription>
-                    Yüksek devamsızlık oranına sahip öğrenciler (>%20)
+                    Yüksek devamsızlık oranına sahip öğrenciler (&gt;%20)
                   </CardDescription>
                 </div>
                 <div className="flex gap-2">

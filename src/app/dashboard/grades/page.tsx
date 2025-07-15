@@ -9,10 +9,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { 
@@ -22,11 +19,8 @@ import {
   Users, 
   Award, 
   FileText,
-  Filter,
-  Search,
   Plus,
   Edit,
-  Trash2,
   Eye,
   Download,
   Upload,
@@ -37,10 +31,10 @@ import { GradeBook } from '@/components/grades/grade-book';
 import { GradeAnalytics } from '@/components/grades/grade-analytics';
 
 export default function GradesPage() {
-  const [selectedClass, setSelectedClass] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectedSemester, setSelectedSemester] = useState('1');
-  const [searchTerm, setSearchTerm] = useState('');
+  // const [selectedClass, setSelectedClass] = useState('');
+  // const [selectedSubject, setSelectedSubject] = useState('');
+  // const [selectedSemester, setSelectedSemester] = useState('1');
+  // const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
 
   // Mock data - gerçek uygulamada API'den gelecek

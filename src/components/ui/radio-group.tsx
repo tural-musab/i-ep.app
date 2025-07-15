@@ -1,5 +1,6 @@
-import * as React from "react"
-import { type JSX } from "react"
+"use client"
+
+import { createContext, useContext, useState, useCallback, forwardRef, type JSX } from "react"
 import { cn } from "@/lib/utils"
 
 type RadioGroupContextValue = {
@@ -7,12 +8,12 @@ type RadioGroupContextValue = {
   onValueChange: (value: string) => void
 }
 
-const RadioGroupContext = React.createContext<RadioGroupContextValue | undefined>(
+const RadioGroupContext = createContext<RadioGroupContextValue | undefined>(
   undefined
 )
 
 const useRadioGroup = () => {
-  const context = React.useContext(RadioGroupContext)
+  const context = useContext(RadioGroupContext)
   if (!context) {
     throw new Error("useRadioGroup must be used within a RadioGroup")
   }
@@ -25,13 +26,13 @@ interface RadioGroupProps extends React.HTMLAttributes<HTMLDivElement> {
   onValueChange?: (value: string) => void
 }
 
-const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
+const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
   ({ className, value, defaultValue, onValueChange, ...props }, ref): JSX.Element => {
-    const [localValue, setLocalValue] = React.useState(defaultValue || "")
+    const [localValue, setLocalValue] = useState(defaultValue || "")
     
     const currentValue = value !== undefined ? value : localValue
     
-    const handleValueChange = React.useCallback(
+    const handleValueChange = useCallback(
       (newValue: string) => {
         setLocalValue(newValue)
         onValueChange?.(newValue)
@@ -58,7 +59,7 @@ interface RadioGroupItemProps extends React.HTMLAttributes<HTMLDivElement> {
   value: string
 }
 
-const RadioGroupItem = React.forwardRef<HTMLDivElement, RadioGroupItemProps>(
+const RadioGroupItem = forwardRef<HTMLDivElement, RadioGroupItemProps>(
   ({ className, value, children, ...props }, ref): JSX.Element => {
     const { value: groupValue, onValueChange } = useRadioGroup()
     const checked = value === groupValue

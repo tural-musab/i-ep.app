@@ -210,7 +210,7 @@ export default function AttendancePage() {
   const [dailyAttendance, setDailyAttendance] = useState<DailyAttendance[]>([]);
 
   // Mock data
-  const mockAttendanceRecords: AttendanceRecord[] = [
+  const mockAttendanceRecords: AttendanceRecord[] = useMemo(() => [
     {
       id: '1',
       studentId: 'student1',
@@ -269,9 +269,9 @@ export default function AttendancePage() {
       notes: 'Hasta',
       tenantId: currentTenantId || 'demo-school',
     },
-  ];
+  ], [currentTenantId]);
 
-  const mockAttendanceSummaries: AttendanceSummary[] = [
+  const mockAttendanceSummaries: AttendanceSummary[] = useMemo(() => [
     {
       studentId: 'student1',
       studentName: 'Ahmet Yılmaz',
@@ -296,13 +296,13 @@ export default function AttendancePage() {
       excusedDays: 0,
       attendanceRate: 85,
     },
-  ];
+  ], []);
 
-  const mockStudents = [
+  const mockStudents = useMemo(() => [
     { id: 'student1', name: 'Ahmet Yılmaz', number: '2024001' },
     { id: 'student2', name: 'Ayşe Demir', number: '2024002' },
     { id: 'student3', name: 'Mustafa Kaya', number: '2024003' },
-  ];
+  ], []);
 
   useEffect(() => {
     const loadAttendance = async () => {
@@ -322,7 +322,13 @@ export default function AttendancePage() {
     if (currentTenantId) {
       loadAttendance();
     }
-  }, [currentTenantId, mockAttendanceRecords, mockAttendanceSummaries]);
+  }, [currentTenantId]);
+
+  // Initialize data when mocks change
+  useEffect(() => {
+    setAttendanceRecords(mockAttendanceRecords);
+    setAttendanceSummaries(mockAttendanceSummaries);
+  }, [mockAttendanceRecords, mockAttendanceSummaries]);
 
   // Initialize daily attendance when class is selected
   useEffect(() => {

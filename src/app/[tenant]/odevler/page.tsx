@@ -286,7 +286,7 @@ export default function AssignmentsPage() {
       status: 'overdue',
       tenantId: currentTenantId || 'demo-school',
     },
-  ], []);
+  ], [currentTenantId]);
 
   const mockSubmissions: Submission[] = useMemo(() => [
     {
@@ -332,7 +332,7 @@ export default function AssignmentsPage() {
       status: 'not_submitted',
       tenantId: currentTenantId || 'demo-school',
     },
-  ], []);
+  ], [currentTenantId]);
 
   useEffect(() => {
     const loadAssignments = async () => {
@@ -352,7 +352,12 @@ export default function AssignmentsPage() {
     if (currentTenantId) {
       loadAssignments();
     }
-  }, [currentTenantId, mockAssignments, mockSubmissions]);
+  }, [currentTenantId]);
+
+  useEffect(() => {
+    setAssignments(mockAssignments);
+    setSubmissions(mockSubmissions);
+  }, [mockAssignments, mockSubmissions]);
 
   const filteredAssignments = assignments.filter(assignment => {
     const matchesSearch = 

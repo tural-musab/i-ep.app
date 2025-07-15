@@ -51,7 +51,7 @@ const createPaymentSchema = z.object({
   }),
 });
 
-type CreatePaymentRequest = z.infer<typeof createPaymentSchema>;
+// type CreatePaymentRequest = z.infer<typeof createPaymentSchema>;
 
 // ==========================================
 // MAIN API HANDLER

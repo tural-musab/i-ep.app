@@ -211,7 +211,7 @@ export default function ClassesPage() {
       status: 'active',
       tenantId: currentTenantId || 'demo-school',
     },
-  ], []);
+  ], [currentTenantId]);
 
   useEffect(() => {
     const loadClasses = async () => {
@@ -231,7 +231,11 @@ export default function ClassesPage() {
     if (currentTenantId) {
       loadClasses();
     }
-  }, [currentTenantId, mockClasses]);
+  }, [currentTenantId]);
+
+  useEffect(() => {
+    setClasses(mockClasses);
+  }, [mockClasses]);
 
   const filteredClasses = classes.filter(classItem => {
     const matchesSearch = 

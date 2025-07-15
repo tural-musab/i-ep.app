@@ -16,15 +16,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { 
   PlusCircle, 
   Search, 
-  Filter, 
   Calendar, 
   Clock, 
   Users, 
   CheckCircle,
   AlertCircle,
-  BookOpen,
-  FileText,
-  BarChart3
+  BookOpen
 } from 'lucide-react';
 import Link from 'next/link';
 

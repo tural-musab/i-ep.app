@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "18.x"
+    "node": ">=18.0.0"
   },
   "scripts": {
     "dev": "next dev --turbopack",
@@ -84,8 +84,8 @@
     "iyzipay": "^2.0.64",
     "lucide-react": "^0.294.0",
     "memory-store": "^0.0.1",
-    "next": "15.2.2",
-    "next-auth": "^4.24.11",
+    "next": "^15.4.1",
+    "next-auth": "^4.24.7",
     "next-mdx-remote": "^5.0.0",
     "next-swagger-doc": "^0.4.1",
     "pino": "^9.7.0",
@@ -100,7 +100,7 @@
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^3.0.1",
     "sonner": "^2.0.1",
-    "swagger-ui-react": "^3.29.0",
+    "swagger-ui-react": "^5.26.2",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "ua-parser-js": "^1.0.35",
@@ -124,6 +124,7 @@
     "@types/react-dom": "^18.2.0",
     "@types/redis": "^4.0.10",
     "@types/supertest": "^6.0.3",
+    "@types/swagger-ui-react": "^5.18.0",
     "@types/uuid": "^10.0.0",
     "abort-controller": "^3.0.0",
     "babel-jest": "^30.0.4",

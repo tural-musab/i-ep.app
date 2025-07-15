@@ -1,4 +1,6 @@
-import React from 'react';
+"use client"
+
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 
 interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -12,10 +14,10 @@ interface TabsContextValue {
   onValueChange: (value: string) => void;
 }
 
-const TabsContext = React.createContext<TabsContextValue | undefined>(undefined);
+const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 
 function useTabsContext() {
-  const context = React.useContext(TabsContext);
+  const context = useContext(TabsContext);
   if (!context) {
     throw new Error("useTabsContext must be used within a Tabs component");
   }
@@ -30,20 +32,20 @@ export function Tabs({
   children,
   ...props
 }: TabsProps) {
-  const [activeTab, setActiveTab] = React.useState(value || defaultValue || '');
+  const [activeTab, setActiveTab] = useState(value || defaultValue || '');
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (value !== undefined) {
       setActiveTab(value);
     }
   }, [value]);
 
-  const handleValueChange = React.useCallback((newValue: string) => {
+  const handleValueChange = useCallback((newValue: string) => {
     setActiveTab(newValue);
     onValueChange?.(newValue);
   }, [onValueChange]);
 
-  const contextValue = React.useMemo(() => ({
+  const contextValue = useMemo(() => ({
     value: activeTab,
     onValueChange: handleValueChange,
   }), [activeTab, handleValueChange]);

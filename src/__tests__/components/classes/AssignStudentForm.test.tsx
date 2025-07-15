@@ -45,7 +45,6 @@ describe("AssignStudentForm Component", () => {
   });
 
   it("should render student list", async () => {
-    const user = userEvent.setup();
     
     (global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,

@@ -17,17 +17,11 @@ import { Progress } from '@/components/ui/progress';
 import { 
   Calendar, 
   Clock, 
-  Users, 
-  CheckCircle,
-  XCircle,
   AlertCircle,
   UserCheck,
   UserX,
-  Timer,
   TrendingUp,
-  TrendingDown,
   Search,
-  Filter,
   Download,
   Send,
   Eye,
@@ -43,7 +37,7 @@ export default async function AttendancePage() {
   }
 
   // Mock data - gerçek uygulamada repository'den gelecek
-  const todayDate = new Date().toISOString().split('T')[0];
+  // const todayDate = new Date().toISOString().split('T')[0];
   
   const attendanceStats = {
     totalStudents: 150,
@@ -483,7 +477,7 @@ export default async function AttendancePage() {
             <CardHeader>
               <CardTitle>Kronik Devamsızlık</CardTitle>
               <CardDescription>
-                Yüksek devamsızlık oranına sahip öğrenciler (>%20)
+                Yüksek devamsızlık oranına sahip öğrenciler (&gt;%20)
               </CardDescription>
             </CardHeader>
             <CardContent>

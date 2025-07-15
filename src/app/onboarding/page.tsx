@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
 import OnboardingWizard from '@/components/onboarding/onboarding-wizard'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { CheckCircle, ArrowRight, Settings, Users, BookOpen, MessageSquare } from 'lucide-react'
@@ -20,9 +20,9 @@ export default function OnboardingPage() {
       // Check if user has already completed onboarding
       checkOnboardingStatus()
     }
-  }, [user, loading])
+  }, [user, loading, checkOnboardingStatus])
 
-  const checkOnboardingStatus = async () => {
+  const checkOnboardingStatus = useCallback(async () => {
     try {
       // This would typically check the user's onboarding status from the backend
       // For now, we'll simulate this check
@@ -38,7 +38,7 @@ export default function OnboardingPage() {
       console.error('Error checking onboarding status:', error)
       setIsCheckingStatus(false)
     }
-  }
+  }, [user, router])
 
   const handleStartOnboarding = () => {
     setShowWizard(true)
@@ -84,7 +84,7 @@ export default function OnboardingPage() {
         <div className="text-center mb-12">
           <div className="text-6xl mb-4">🎓</div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            İ-EP.APP'e Hoş Geldiniz!
+            İ-EP.APP&apos;e Hoş Geldiniz!
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Kapsamlı okul yönetim sisteminize hoş geldiniz. Başlamak için kısa bir kurulum sürecinden geçelim.
