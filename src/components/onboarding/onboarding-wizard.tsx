@@ -13,7 +13,7 @@ import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
-import { CheckCircle, Circle, Clock, ArrowRight, ArrowLeft, Skip, Play } from 'lucide-react'
+import { CheckCircle, Circle, Clock, ArrowRight, ArrowLeft, SkipForward, Play } from 'lucide-react'
 import { OnboardingFlowManager, OnboardingStep, OnboardingProgress, getStepTitle, getStepIcon, calculateOnboardingProgress, estimateTimeRemaining } from '@/lib/onboarding/onboarding-flow'
 
 interface OnboardingWizardProps {
@@ -687,7 +687,7 @@ export default function OnboardingWizard({ tenantId, userId, userRole, onComplet
               onClick={handleStepSkip}
               disabled={isLoading}
             >
-              <Skip className="w-4 h-4 mr-2" />
+              <SkipForward className="w-4 h-4 mr-2" />
               Atla
             </Button>
           )}

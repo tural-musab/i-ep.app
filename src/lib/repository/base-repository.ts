@@ -4,8 +4,7 @@
  * İ-EP.APP Multi-tenant SaaS - Database Access Layer
  */
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createClient } from '@/lib/supabase/client';
 import { Database } from '@/types/database';
 
 export interface BaseEntity {
@@ -37,7 +36,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
   protected tenantId: string;
 
   constructor(tableName: string, tenantId: string) {
-    this.supabase = createServerComponentClient<Database>({ cookies });
+    this.supabase = createClient();
     this.tableName = tableName;
     this.tenantId = tenantId;
   }

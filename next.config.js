@@ -12,7 +12,6 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons', 'react-icons'],
     webpackBuildWorker: true,
-    bundlePagesRouterDependencies: true,
   },
   
   // Swagger UI ve testlerde sorun çıkaran ESM paketleri için transpile seçeneği
@@ -80,8 +79,6 @@ const nextConfig = {
   // Compression
   compress: true,
   
-  // Enable SWC minification
-  swcMinify: true,
   
   // Compiler optimizations
   compiler: {

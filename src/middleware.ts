@@ -249,20 +249,20 @@ export async function middleware(request: NextRequest) {
   }
   
   // Domain bilgisinden tenant ID'sini tespit et
-  const tenantInfo = await resolveTenantFromDomain(hostname);
+  const currentTenant = await resolveTenantFromDomain(hostname);
   
   // Tenant bulunamadı veya aktif değil
-  if (!tenantInfo) {
+  if (!currentTenant) {
     console.warn(`Tenant bulunamadı veya aktif değil: ${hostname}`);
     return NextResponse.redirect(new URL(`https://${BASE_DOMAIN}`, request.url));
   }
   
   // Tenant okumak için header'a tenant bilgisi ekle
-  response.headers.set('x-tenant-id', tenantInfo.id);
+  response.headers.set('x-tenant-id', currentTenant.id);
   response.headers.set('x-tenant-hostname', hostname);
-  response.headers.set('x-tenant-name', tenantInfo.name || '');
-  response.headers.set('x-tenant-primary', String(tenantInfo.isPrimary));
-  response.headers.set('x-tenant-custom-domain', String(tenantInfo.isCustomDomain));
+  response.headers.set('x-tenant-name', currentTenant.name || '');
+  response.headers.set('x-tenant-primary', String(currentTenant.isPrimary));
+  response.headers.set('x-tenant-custom-domain', String(currentTenant.isCustomDomain));
   
   // Auth headerlarını ekle
   if (session) {
@@ -283,18 +283,18 @@ export async function middleware(request: NextRequest) {
     // Super admin'ler tüm tenant'lara erişebilir
     // Normal kullanıcılar sadece izin verilen tenant'lara erişebilir
     const canAccessTenant = isSuperAdmin || 
-      session.user.user_metadata?.tenant_id === tenantInfo.id ||
-      allowedTenantsArray.includes(tenantInfo.id);
+      session.user.user_metadata?.tenant_id === currentTenant.id ||
+      allowedTenantsArray.includes(currentTenant.id);
     
     // Kullanıcının bu tenant'a erişim yetkisi yoksa ve koruma altındaki bir sayfaya erişmeye çalışıyorsa
     if (!canAccessTenant && isProtectedPath(pathname)) {
-      console.warn(`Kullanıcının tenant erişim yetkisi yok: ${session.user.email} -> ${tenantInfo.id}`);
+      console.warn(`Kullanıcının tenant erişim yetkisi yok: ${session.user.email} -> ${currentTenant.id}`);
       
       // Erişim reddedildi logunu kaydet
       try {
         await logAccessDenied(
           session.user.id,
-          tenantInfo.id,
+          currentTenant.id,
           'public',
           'tenant_access',
           'GET',
@@ -302,7 +302,7 @@ export async function middleware(request: NextRequest) {
           {
             path: pathname,
             email: session.user.email,
-            requested_tenant: tenantInfo.id,
+            requested_tenant: currentTenant.id,
             allowed_tenants: allowedTenantsArray,
             user_tenant: session.user.user_metadata?.tenant_id,
             role: session.user.app_metadata?.role || 'user',
@@ -333,8 +333,8 @@ export async function middleware(request: NextRequest) {
       }
       
       // Şu anki tenant'ı listeye ekle (eğer zaten yoksa)
-      if (!lastAccessedTenants.includes(tenantInfo.id)) {
-        lastAccessedTenants.unshift(tenantInfo.id);
+      if (!lastAccessedTenants.includes(currentTenant.id)) {
+        lastAccessedTenants.unshift(currentTenant.id);
         // Maksimum 5 tenant tut
         if (lastAccessedTenants.length > 5) {
           lastAccessedTenants = lastAccessedTenants.slice(0, 5);
@@ -342,16 +342,16 @@ export async function middleware(request: NextRequest) {
       } else {
         // Zaten listede varsa, en başa taşı
         lastAccessedTenants = [
-          tenantInfo.id,
-          ...lastAccessedTenants.filter((id: string) => id !== tenantInfo.id)
+          currentTenant.id,
+          ...lastAccessedTenants.filter((id: string) => id !== currentTenant.id)
         ];
       }
       
       // Kullanıcı metadatasını güncelle
       await supabase.auth.updateUser({
         data: { 
-          tenant_id: tenantInfo.id,
-          tenant_name: tenantInfo.name,
+          tenant_id: currentTenant.id,
+          tenant_name: currentTenant.name,
           last_tenant_access: new Date().toISOString(),
           last_accessed_tenants: lastAccessedTenants
         }
@@ -359,7 +359,7 @@ export async function middleware(request: NextRequest) {
     };
     
     // Tenant değişmişse, kullanıcı metadatasını güncelle
-    if (canAccessTenant && (!session.user.user_metadata?.tenant_id || session.user.user_metadata?.tenant_id !== tenantInfo.id)) {
+    if (canAccessTenant && (!session.user.user_metadata?.tenant_id || session.user.user_metadata?.tenant_id !== currentTenant.id)) {
       updateUserMetadata().catch(err => {
         console.error('Kullanıcı metadata güncelleme hatası:', err);
       });
@@ -369,7 +369,7 @@ export async function middleware(request: NextRequest) {
     try {
       await logAccessDenied(
         'anonymous',
-        tenantInfo?.id || 'unknown',
+        currentTenant?.id || 'unknown',
         'public',
         'tenant_access',
         'GET',
@@ -454,21 +454,6 @@ function isPublicPath(pathname: string): boolean {
   );
 }
 
-/**
- * Korumalı path kontrolü
- */
-function isProtectedPath(pathname: string): boolean {
-  return (
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/admin') ||
-    pathname.startsWith('/super-admin') ||
-    pathname.startsWith('/profil') ||
-    pathname.startsWith('/ogrenci') ||
-    pathname.startsWith('/ogretmen') ||
-    pathname.startsWith('/rapor') ||
-    pathname.startsWith('/ayarlar')
-  );
-}
 
 /**
  * Domain'in ana domain olup olmadığını kontrol eder

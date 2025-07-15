@@ -9,6 +9,7 @@ jest.mock('@/lib/tenant/tenant-domain-resolver');
 jest.mock('@/lib/audit');
 jest.mock('@/middleware/logger');
 jest.mock('@/middleware/rateLimiter');
+jest.mock('@/middleware/optimized-middleware');
 
 const mockCreateMiddlewareClient = createMiddlewareClient as jest.Mock;
 const mockCreateRequestLogger = createRequestLogger as jest.Mock;
