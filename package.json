@@ -79,7 +79,7 @@
     "iyzipay": "^2.0.64",
     "lucide-react": "^0.294.0",
     "memory-store": "^0.0.1",
-    "next": "15.2.2",
+    "next": "15.3.4",
     "next-auth": "^4.24.11",
     "next-mdx-remote": "^5.0.0",
     "next-swagger-doc": "^0.4.1",
