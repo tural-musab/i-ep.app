@@ -111,19 +111,21 @@ export const authOptions: NextAuthOptions = {
       },
     }),
 
-    // Şifresiz e-posta bağlantısı ile giriş
-    EmailProvider({
-      server: {
-        host: process.env.EMAIL_SERVER_HOST,
-        port: process.env.EMAIL_SERVER_PORT,
-        auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
+    // Şifresiz e-posta bağlantısı ile giriş (development'ta disabled)
+    ...(process.env.NODE_ENV === 'production' ? [
+      EmailProvider({
+        server: {
+          host: process.env.EMAIL_SERVER_HOST,
+          port: process.env.EMAIL_SERVER_PORT,
+          auth: {
+            user: process.env.EMAIL_SERVER_USER,
+            pass: process.env.EMAIL_SERVER_PASSWORD,
+          },
         },
-      },
-      from: process.env.EMAIL_FROM,
-      maxAge: 24 * 60 * 60, // Bağlantının geçerlilik süresi (24 saat)
-    }),
+        from: process.env.EMAIL_FROM,
+        maxAge: 24 * 60 * 60, // Bağlantının geçerlilik süresi (24 saat)
+      })
+    ] : []),
   ],
 
   // Oturum ayarları

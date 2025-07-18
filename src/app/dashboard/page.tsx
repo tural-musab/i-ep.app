@@ -9,6 +9,8 @@ import { GradeDashboard } from '@/components/grades/grade-dashboard';
 import { ParentCommunicationDashboard } from '@/components/parent-communication/parent-communication-dashboard';
 import { ScheduleDashboard } from '@/components/schedule/schedule-dashboard';
 import { FileText, User, Users, Calendar, BarChart3, Clock } from 'lucide-react';
+import { DashboardStats } from '@/components/dashboard/dashboard-stats';
+import { RecentActivities } from '@/components/dashboard/recent-activities';
 
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
@@ -16,20 +18,6 @@ export default async function Dashboard() {
   if (!session) {
     redirect('/auth/giris');
   }
-
-  // Mock data (gerçek uygulamada API'den gelecek)
-  const stats: Record<string, unknown> = {
-    totalStudents: 150,
-    totalTeachers: 12,
-    totalClasses: 8,
-    pendingAssignments: 23,
-  };
-
-  const recentActivities: Record<string, unknown>[] = [
-    { id: 1, type: 'assignment', message: 'Matematik ödevi teslim edildi', time: '2 saat önce' },
-    { id: 2, type: 'grade', message: 'Fen bilgisi sınavı notlandırıldı', time: '4 saat önce' },
-    { id: 3, type: 'attendance', message: 'Günlük yoklama tamamlandı', time: '6 saat önce' },
-  ];
 
   return (
     <div className="container mx-auto p-6">
@@ -40,65 +28,11 @@ export default async function Dashboard() {
         </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Toplam Öğrenci</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{stats.totalStudents as number}</p>
-          </CardContent>
-        </Card>
+      {/* Stats Grid - Now client-side with API calls */}
+      <DashboardStats />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Toplam Öğretmen</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{stats.totalTeachers as number}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Toplam Sınıf</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{stats.totalClasses as number}</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Bekleyen Ödevler</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{stats.pendingAssignments as number}</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Recent Activities */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Son Aktiviteler</CardTitle>
-          <CardDescription>Sistemdeki son hareketler</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {recentActivities.map((activity) => (
-              <div
-                key={activity.id as string}
-                className="flex items-center justify-between rounded bg-gray-50 p-3"
-              >
-                <span>{activity.message as string}</span>
-                <span className="text-sm text-gray-500">{activity.time as string}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Recent Activities - Now client-side with API calls */}
+      <RecentActivities />
 
       {/* Assignment Dashboard */}
       <div className="mt-8">

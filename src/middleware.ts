@@ -174,10 +174,12 @@ export async function middleware(request: NextRequest) {
 function addTenantHeadersInDevelopment(request: NextRequest): NextResponse {
   const response = NextResponse.next();
 
-  // Varsayılan test tenant'ı
-  response.headers.set('x-tenant-id', 'test-tenant');
-  response.headers.set('x-tenant-hostname', 'test-tenant.localhost');
-  response.headers.set('x-tenant-name', 'Test Tenant');
+  // Development için demo tenant
+  response.headers.set('x-tenant-id', 'localhost-tenant'); // seed data ile uyumlu
+  response.headers.set('x-tenant-hostname', 'localhost:3000');
+  response.headers.set('x-tenant-name', 'Demo İlköğretim Okulu');
+  response.headers.set('x-tenant-primary', 'true');
+  response.headers.set('x-tenant-custom-domain', 'false');
 
   return response;
 }

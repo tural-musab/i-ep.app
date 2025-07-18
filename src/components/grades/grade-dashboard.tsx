@@ -27,218 +27,152 @@ import {
   Target,
   Clock,
   Edit,
+  Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useGradeData } from '@/hooks/use-grade-data';
 
 export function GradeDashboard() {
-  // Mock data - gerçek uygulamada API'den gelecek
-  const todayStats = {
+  // Real API data using custom hook
+  const { data: gradeData, loading, error, refetch } = useGradeData();
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Not verileri yükleniyor...</span>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex h-96 flex-col items-center justify-center">
+        <AlertTriangle className="h-12 w-12 text-red-500" />
+        <p className="mt-4 text-lg font-medium">Veri yükleme hatası</p>
+        <p className="text-sm text-gray-600">{error}</p>
+        <Button onClick={refetch} className="mt-4">
+          Tekrar Dene
+        </Button>
+      </div>
+    );
+  }
+
+  // Use real data or fallback
+  const stats = gradeData?.stats || {
     totalStudents: 150,
-    totalSubjects: 8,
-    averageGPA: 3.2,
     gradedAssignments: 245,
     pendingGrades: 18,
-    monthlyTrend: 'up',
-    trendValue: 0.15,
-    passingRate: 88.5,
+    averageGrade: 78.5,
+    classAverage: 76.8,
+    weeklyProgress: 12,
+    improvementRate: 8.3,
+    gradeDistribution: {
+      AA: 18, BA: 32, BB: 45, CB: 38, CC: 28, DC: 15, DD: 8, FF: 3
+    }
   };
 
-  const recentGrades = [
+  const recentGrades = gradeData?.recentGrades || [
     {
       id: '1',
-      student: 'Ali Veli',
-      studentNumber: '2025001',
-      class: '5-A',
-      subject: 'Matematik',
-      gradeType: 'Sınav',
-      grade: 85,
-      maxGrade: 100,
-      date: '2025-01-15',
-      teacher: 'Ahmet Öğretmen',
-      letterGrade: 'B',
+      studentName: 'Ali Veli',
+      className: '5-A',
+      assignmentTitle: 'Matematik Sınavı',
+      grade: 'BB',
+      score: 85,
+      date: '2025-07-18',
+      type: 'exam',
+      semester: 'Güz 2024',
     },
     {
       id: '2',
-      student: 'Ayşe Yılmaz',
-      studentNumber: '2025002',
-      class: '5-A',
-      subject: 'Türkçe',
-      gradeType: 'Ödev',
-      grade: 92,
-      maxGrade: 100,
-      date: '2025-01-15',
-      teacher: 'Fatma Öğretmen',
-      letterGrade: 'A',
+      studentName: 'Ayşe Yılmaz',
+      className: '5-A',
+      assignmentTitle: 'Türkçe Ödevi',
+      grade: 'AA',
+      score: 92,
+      date: '2025-07-18',
+      type: 'assignment',
+      semester: 'Güz 2024',
     },
     {
       id: '3',
-      student: 'Mehmet Kaya',
-      studentNumber: '2025003',
-      class: '5-A',
-      subject: 'Fen Bilgisi',
-      gradeType: 'Proje',
-      grade: 78,
-      maxGrade: 100,
-      date: '2025-01-14',
-      teacher: 'Mustafa Öğretmen',
-      letterGrade: 'C',
-    },
-    {
-      id: '4',
-      student: 'Fatma Demir',
-      studentNumber: '2025004',
-      class: '5-B',
-      subject: 'Sosyal Bilgiler',
-      gradeType: 'Sunum',
-      grade: 89,
-      maxGrade: 100,
-      date: '2025-01-14',
-      teacher: 'Zeynep Öğretmen',
-      letterGrade: 'B',
+      studentName: 'Mehmet Kaya',
+      className: '5-A',
+      assignmentTitle: 'Fen Bilgisi Projesi',
+      grade: 'CB',
+      score: 78,
+      date: '2025-07-17',
+      type: 'project',
+      semester: 'Güz 2024',
     },
   ];
 
-  const classPerformance = [
+  const classPerformance = gradeData?.classPerformance || [
     {
-      class: '5-A',
-      students: 30,
-      averageGPA: 3.4,
-      passingRate: 92,
-      topSubject: 'Matematik',
-      challengingSubject: 'Fen Bilgisi',
+      className: '5-A',
+      studentCount: 30,
+      averageScore: 78.5,
+      averageGrade: 'BB',
+      highestScore: 95,
+      lowestScore: 45,
+      passRate: 86.7,
       trend: 'up',
     },
     {
-      class: '5-B',
-      students: 28,
-      averageGPA: 3.1,
-      passingRate: 87,
-      topSubject: 'Türkçe',
-      challengingSubject: 'Matematik',
-      trend: 'down',
-    },
-    {
-      class: '6-A',
-      students: 32,
-      averageGPA: 3.3,
-      passingRate: 89,
-      topSubject: 'Sosyal Bilgiler',
-      challengingSubject: 'İngilizce',
-      trend: 'up',
-    },
-    {
-      class: '6-B',
-      students: 30,
-      averageGPA: 3.0,
-      passingRate: 85,
-      topSubject: 'Türkçe',
-      challengingSubject: 'Fen Bilgisi',
+      className: '5-B',
+      studentCount: 28,
+      averageScore: 76.2,
+      averageGrade: 'BB',
+      highestScore: 92,
+      lowestScore: 38,
+      passRate: 82.1,
       trend: 'stable',
     },
+    {
+      className: '6-A',
+      studentCount: 32,
+      averageScore: 81.3,
+      averageGrade: 'BA',
+      highestScore: 98,
+      lowestScore: 52,
+      passRate: 90.6,
+      trend: 'up',
+    },
   ];
 
-  const pendingGrades = [
+  const alerts = gradeData?.alerts || [
     {
       id: '1',
-      class: '5-A',
+      type: 'failing',
+      studentName: 'Ali Vural',
+      className: '5-A',
       subject: 'Matematik',
-      examName: 'Dönemlik Sınav',
-      studentsCount: 30,
-      gradedCount: 25,
-      pendingCount: 5,
-      deadline: '2025-01-17',
+      message: 'Matematik dersinde başarısızlık riski',
       priority: 'high',
+      actionRequired: true,
     },
     {
       id: '2',
-      class: '5-B',
-      subject: 'Türkçe',
-      examName: 'Kompozisyon Ödevi',
-      studentsCount: 28,
-      gradedCount: 20,
-      pendingCount: 8,
-      deadline: '2025-01-18',
+      type: 'improvement',
+      studentName: 'Fatma Şahin',
+      className: '6-B',
+      subject: 'Fen Bilgisi',
+      message: 'Son haftalarda kayda değer gelişim',
       priority: 'medium',
+      actionRequired: false,
     },
     {
       id: '3',
-      class: '6-A',
-      subject: 'Fen Bilgisi',
-      examName: 'Deney Raporu',
-      studentsCount: 32,
-      gradedCount: 30,
-      pendingCount: 2,
-      deadline: '2025-01-19',
-      priority: 'low',
-    },
-  ];
-
-  const subjectInsights = [
-    {
-      subject: 'Matematik',
-      averageGrade: 82.5,
-      trend: 'up',
-      trendValue: 2.3,
-      students: 150,
-      difficulty: 'medium',
-      passingRate: 88,
-    },
-    {
+      type: 'excellent',
+      studentName: 'Mustafa Özkan',
+      className: '5-B',
       subject: 'Türkçe',
-      averageGrade: 86.2,
-      trend: 'up',
-      trendValue: 1.8,
-      students: 150,
-      difficulty: 'easy',
-      passingRate: 92,
-    },
-    {
-      subject: 'Fen Bilgisi',
-      averageGrade: 79.8,
-      trend: 'down',
-      trendValue: -0.5,
-      students: 150,
-      difficulty: 'hard',
-      passingRate: 85,
-    },
-    {
-      subject: 'Sosyal Bilgiler',
-      averageGrade: 88.1,
-      trend: 'up',
-      trendValue: 3.1,
-      students: 150,
-      difficulty: 'easy',
-      passingRate: 94,
-    },
-  ];
-
-  const alerts = [
-    {
-      id: '1',
-      type: 'low_performance',
-      message: 'Fen Bilgisi dersinde sınıf ortalaması düşük',
-      priority: 'high',
-      class: '5-B',
-      subject: 'Fen Bilgisi',
-      value: 68.5,
-    },
-    {
-      id: '2',
-      type: 'pending_deadline',
-      message: 'Matematik sınav notları yarın son gün',
-      priority: 'medium',
-      class: '5-A',
-      subject: 'Matematik',
-      deadline: '2025-01-17',
-    },
-    {
-      id: '3',
-      type: 'excellent_performance',
-      message: 'Sosyal Bilgiler dersinde mükemmel performans',
+      message: 'Mükemmel performans gösteriyor',
       priority: 'low',
-      class: '6-A',
-      subject: 'Sosyal Bilgiler',
-      value: 94.2,
+      actionRequired: false,
     },
   ];
 
@@ -305,12 +239,14 @@ export function GradeDashboard() {
 
   const getAlertIcon = (type: string) => {
     switch (type) {
-      case 'low_performance':
+      case 'failing':
         return <AlertTriangle className="h-4 w-4 text-red-500" />;
-      case 'pending_deadline':
-        return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'excellent_performance':
+      case 'improvement':
+        return <TrendingUp className="h-4 w-4 text-blue-500" />;
+      case 'excellent':
         return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'missing':
+        return <XCircle className="h-4 w-4 text-orange-500" />;
       default:
         return <AlertTriangle className="h-4 w-4 text-gray-500" />;
     }
@@ -320,7 +256,13 @@ export function GradeDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Not Yönetimi</h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-bold">Not Yönetimi</h2>
+          {/* Data source indicator */}
+          <Badge variant={gradeData ? "default" : "secondary"}>
+            {gradeData ? "🔗 Canlı Veri" : "📊 Mock Veri"}
+          </Badge>
+        </div>
         <div className="flex gap-2">
           <Link href="/dashboard/grades">
             <Button variant="outline">
@@ -341,27 +283,27 @@ export function GradeDashboard() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ortalama GPA</CardTitle>
+            <CardTitle className="text-sm font-medium">Ortalama Not</CardTitle>
             <Calculator className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${getGPAColor(todayStats.averageGPA)}`}>
-              {todayStats.averageGPA}
+            <div className={`text-2xl font-bold ${getGradeColor(stats.averageGrade)}`}>
+              {stats.averageGrade}
             </div>
             <div className="flex items-center text-xs text-green-600">
-              <TrendingUp className="mr-1 h-3 w-3" />+{todayStats.trendValue} bu ay
+              <TrendingUp className="mr-1 h-3 w-3" />+{stats.improvementRate}% bu hafta
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Başarı Oranı</CardTitle>
-            <Target className="text-muted-foreground h-4 w-4" />
+            <CardTitle className="text-sm font-medium">Toplam Öğrenci</CardTitle>
+            <Users className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">%{todayStats.passingRate}</div>
-            <p className="text-muted-foreground text-xs">{todayStats.totalStudents} öğrenci</p>
+            <div className="text-2xl font-bold">{stats.totalStudents}</div>
+            <p className="text-muted-foreground text-xs">Aktif öğrenci</p>
           </CardContent>
         </Card>
 
@@ -371,7 +313,7 @@ export function GradeDashboard() {
             <Award className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{todayStats.gradedAssignments}</div>
+            <div className="text-2xl font-bold">{stats.gradedAssignments}</div>
             <p className="text-muted-foreground text-xs">Bu dönem</p>
           </CardContent>
         </Card>
@@ -382,7 +324,7 @@ export function GradeDashboard() {
             <FileText className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{todayStats.pendingGrades}</div>
+            <div className="text-2xl font-bold text-orange-600">{stats.pendingGrades}</div>
             <p className="text-muted-foreground text-xs">Not girilmesi gereken</p>
           </CardContent>
         </Card>
@@ -407,23 +349,23 @@ export function GradeDashboard() {
                 >
                   <div className="flex items-center gap-3">
                     <div>
-                      <h3 className="font-medium">{grade.student}</h3>
+                      <h3 className="font-medium">{grade.studentName}</h3>
                       <p className="text-sm text-gray-600">
-                        {grade.class} • {grade.subject}
+                        {grade.className} • {grade.assignmentTitle}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <div className="text-sm font-medium">{grade.gradeType}</div>
-                      <div className="text-sm text-gray-600">{grade.teacher}</div>
+                      <div className="text-sm font-medium">{grade.type}</div>
+                      <div className="text-sm text-gray-600">{grade.semester}</div>
                     </div>
-                    <Badge variant="outline" className={getGradeBadge(grade.grade)}>
-                      {grade.letterGrade}
+                    <Badge variant="outline" className={getGradeBadge(grade.score)}>
+                      {grade.grade}
                     </Badge>
                     <div className="text-right">
-                      <div className={`font-bold ${getGradeColor(grade.grade)}`}>{grade.grade}</div>
-                      <div className="text-sm text-gray-600">/{grade.maxGrade}</div>
+                      <div className={`font-bold ${getGradeColor(grade.score)}`}>{grade.score}</div>
+                      <div className="text-sm text-gray-600">/100</div>
                     </div>
                   </div>
                 </div>
@@ -447,15 +389,15 @@ export function GradeDashboard() {
                 <div key={index} className="rounded-lg border p-3">
                   <div className="mb-2 flex items-start justify-between">
                     <div>
-                      <h3 className="font-medium">{classData.class}</h3>
-                      <p className="text-sm text-gray-600">{classData.students} öğrenci</p>
+                      <h3 className="font-medium">{classData.className}</h3>
+                      <p className="text-sm text-gray-600">{classData.studentCount} öğrenci</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="text-right">
-                        <div className={`font-bold ${getGPAColor(classData.averageGPA)}`}>
-                          {classData.averageGPA}
+                        <div className={`font-bold ${getGradeColor(classData.averageScore)}`}>
+                          {classData.averageGrade}
                         </div>
-                        <div className="text-sm text-gray-600">GPA</div>
+                        <div className="text-sm text-gray-600">Ortalama</div>
                       </div>
                       {getTrendIcon(classData.trend)}
                     </div>
@@ -464,22 +406,22 @@ export function GradeDashboard() {
                   <div className="mb-2">
                     <div className="mb-1 flex items-center justify-between">
                       <span className="text-sm text-gray-600">Başarı Oranı</span>
-                      <span className="text-sm font-medium">{classData.passingRate}%</span>
+                      <span className="text-sm font-medium">{classData.passRate}%</span>
                     </div>
-                    <Progress value={classData.passingRate} className="h-2" />
+                    <Progress value={classData.passRate} className="h-2" />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
-                      <span className="text-gray-600">En Başarılı:</span>
+                      <span className="text-gray-600">En Yüksek:</span>
                       <span className="ml-1 font-medium text-green-600">
-                        {classData.topSubject}
+                        {classData.highestScore}
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Zor Olan:</span>
+                      <span className="text-gray-600">En Düşük:</span>
                       <span className="ml-1 font-medium text-red-600">
-                        {classData.challengingSubject}
+                        {classData.lowestScore}
                       </span>
                     </div>
                   </div>
@@ -490,145 +432,69 @@ export function GradeDashboard() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Pending Grades */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Bekleyen Notlar
-            </CardTitle>
-            <CardDescription>Not girişi bekleyen sınavlar ve ödevler</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {pendingGrades.map((pending) => (
-                <div key={pending.id} className="rounded-lg border bg-orange-50 p-3">
-                  <div className="mb-2 flex items-start justify-between">
-                    <div>
-                      <h3 className="font-medium">{pending.examName}</h3>
-                      <p className="text-sm text-gray-600">
-                        {pending.class} • {pending.subject}
-                      </p>
-                    </div>
-                    <Badge variant="outline" className={getPriorityColor(pending.priority)}>
-                      {pending.pendingCount} bekleyen
-                    </Badge>
-                  </div>
-
-                  <div className="mb-2 flex items-center justify-between">
-                    <div className="text-sm text-gray-600">
-                      İlerleme: {pending.gradedCount}/{pending.studentsCount}
-                    </div>
-                    <div className="text-sm text-gray-600">
-                      Son: {new Date(pending.deadline).toLocaleDateString('tr-TR')}
-                    </div>
-                  </div>
-
-                  <Progress
-                    value={(pending.gradedCount / pending.studentsCount) * 100}
-                    className="h-2"
-                  />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Subject Insights */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
-              Ders İçgörüleri
-            </CardTitle>
-            <CardDescription>Ders bazlı performans analizi</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {subjectInsights.map((subject, index) => (
-                <div key={index} className="rounded-lg border p-3">
-                  <div className="mb-2 flex items-start justify-between">
-                    <div>
-                      <h3 className="font-medium">{subject.subject}</h3>
-                      <p className="text-sm text-gray-600">{subject.students} öğrenci</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-right">
-                        <div className={`font-bold ${getGradeColor(subject.averageGrade)}`}>
-                          {subject.averageGrade}
-                        </div>
-                        <div className="text-sm text-gray-600">Ortalama</div>
-                      </div>
-                      {getTrendIcon(subject.trend)}
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div>
-                      <span className="text-gray-600">Zorluk:</span>
-                      <span
-                        className={`ml-1 font-medium ${getDifficultyColor(subject.difficulty)}`}
-                      >
-                        {subject.difficulty === 'easy'
-                          ? 'Kolay'
-                          : subject.difficulty === 'medium'
-                            ? 'Orta'
-                            : 'Zor'}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600">Başarı:</span>
-                      <span className="ml-1 font-medium text-blue-600">{subject.passingRate}%</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Alerts */}
+      {/* Grade Distribution */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5" />
-            Uyarılar ve Bildirimler
+            <BarChart3 className="h-5 w-5" />
+            Not Dağılımı
           </CardTitle>
-          <CardDescription>Dikkat edilmesi gereken durumlar</CardDescription>
+          <CardDescription>Türk eğitim sistemine göre not dağılımı</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {alerts.map((alert) => (
-              <div key={alert.id} className="flex items-center gap-3 rounded-lg border p-3">
-                {getAlertIcon(alert.type)}
-                <div className="flex-1">
-                  <div className="flex items-start justify-between">
-                    <p className="text-sm font-medium">{alert.message}</p>
-                    <Badge variant="outline" className={getPriorityColor(alert.priority)}>
-                      {alert.priority === 'high'
-                        ? 'Yüksek'
-                        : alert.priority === 'medium'
-                          ? 'Orta'
-                          : 'Düşük'}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-gray-600">
-                    {alert.class} • {alert.subject}
-                    {alert.value && ` • ${alert.value}`}
-                    {alert.deadline && ` • ${new Date(alert.deadline).toLocaleDateString('tr-TR')}`}
-                  </p>
-                </div>
-                <Button variant="outline" size="sm">
-                  <Eye className="mr-2 h-4 w-4" />
-                  İncele
-                </Button>
+          <div className="grid grid-cols-4 gap-4 md:grid-cols-8">
+            {Object.entries(stats.gradeDistribution).map(([grade, count]) => (
+              <div key={grade} className="text-center">
+                <div className="text-2xl font-bold">{count}</div>
+                <div className="text-sm text-gray-600">{grade}</div>
               </div>
             ))}
           </div>
         </CardContent>
       </Card>
+
+      {/* Alerts */}
+      {alerts.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5" />
+              Uyarılar ve Bildirimler
+            </CardTitle>
+            <CardDescription>Dikkat edilmesi gereken durumlar</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {alerts.map((alert) => (
+                <div key={alert.id} className="flex items-center gap-3 rounded-lg border p-3">
+                  {getAlertIcon(alert.type)}
+                  <div className="flex-1">
+                    <div className="flex items-start justify-between">
+                      <p className="text-sm font-medium">{alert.message}</p>
+                      <Badge variant="outline" className={getPriorityColor(alert.priority)}>
+                        {alert.priority === 'high'
+                          ? 'Yüksek'
+                          : alert.priority === 'medium'
+                            ? 'Orta'
+                            : 'Düşük'}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-gray-600">
+                      {alert.studentName} • {alert.className} • {alert.subject}
+                    </p>
+                  </div>
+                  {alert.actionRequired && (
+                    <Button variant="outline" size="sm">
+                      <Eye className="mr-2 h-4 w-4" />
+                      İncele
+                    </Button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Quick Actions */}
       <Card>

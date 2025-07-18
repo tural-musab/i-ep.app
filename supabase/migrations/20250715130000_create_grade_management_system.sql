@@ -11,6 +11,55 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ============================================================================
+-- SUBJECTS TABLE (PREREQUISITE)
+-- ============================================================================
+
+-- Create subjects table if it doesn't exist
+CREATE TABLE IF NOT EXISTS public.subjects (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    code VARCHAR(20) NOT NULL,
+    credit_hours INTEGER DEFAULT 1,
+    description TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    
+    UNIQUE(tenant_id, code)
+);
+
+-- Enable RLS on subjects
+ALTER TABLE public.subjects ENABLE ROW LEVEL SECURITY;
+
+-- RLS policies for subjects
+CREATE POLICY tenant_subjects_policy ON public.subjects
+    USING (tenant_id = get_current_tenant_id());
+
+-- Students table if it doesn't exist
+CREATE TABLE IF NOT EXISTS public.students (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    student_number VARCHAR(20) NOT NULL,
+    class_id UUID REFERENCES public.classes(id) ON DELETE SET NULL,
+    grade_level INTEGER NOT NULL,
+    enrollment_date DATE DEFAULT CURRENT_DATE,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    
+    UNIQUE(tenant_id, student_number)
+);
+
+-- Enable RLS on students
+ALTER TABLE public.students ENABLE ROW LEVEL SECURITY;
+
+-- RLS policies for students
+CREATE POLICY tenant_students_policy ON public.students
+    USING (tenant_id = get_current_tenant_id());
+
+-- ============================================================================
 -- CORE GRADES TABLE
 -- ============================================================================
 
@@ -270,6 +319,20 @@ ALTER TABLE public.grade_comments ENABLE ROW LEVEL SECURITY;
 -- RLS Policies for grades table
 CREATE POLICY "grades_tenant_isolation" ON public.grades
     FOR ALL USING (tenant_id = get_current_tenant_id());
+
+-- Function to get current user's student ID
+CREATE OR REPLACE FUNCTION get_current_user_student_id()
+RETURNS UUID AS $$
+BEGIN
+    RETURN (
+        SELECT id 
+        FROM public.students 
+        WHERE user_id = auth.uid() 
+        AND tenant_id = get_current_tenant_id()
+        LIMIT 1
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE POLICY "grades_student_access" ON public.grades
     FOR SELECT USING (

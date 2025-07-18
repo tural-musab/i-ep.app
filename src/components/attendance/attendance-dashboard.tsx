@@ -28,10 +28,39 @@ import {
   FileText,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useAttendanceData } from '@/hooks/use-attendance-data';
+import { Loader2 } from 'lucide-react';
 
 export function AttendanceDashboard() {
-  // Mock data - gerçek uygulamada API'den gelecek
-  const todayStats = {
+  // Real API data using custom hook
+  const { data: attendanceData, loading, error, refetch } = useAttendanceData();
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Devamsızlık verileri yükleniyor...</span>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex h-96 flex-col items-center justify-center">
+        <AlertCircle className="h-12 w-12 text-red-500" />
+        <p className="mt-4 text-lg font-medium">Veri yükleme hatası</p>
+        <p className="text-sm text-gray-600">{error}</p>
+        <Button onClick={refetch} className="mt-4">
+          Tekrar Dene
+        </Button>
+      </div>
+    );
+  }
+
+  // Use real data or fallback
+  const todayStats = attendanceData?.todayStats || {
     totalStudents: 150,
     presentToday: 142,
     absentToday: 8,
@@ -41,7 +70,7 @@ export function AttendanceDashboard() {
     trendValue: 1.2,
   };
 
-  const weeklyStats = {
+  const weeklyStats = attendanceData?.weeklyStats || {
     averageAttendance: 93.8,
     totalAbsences: 48,
     totalLates: 15,
@@ -49,7 +78,7 @@ export function AttendanceDashboard() {
     perfectAttendance: 12,
   };
 
-  const recentAbsences = [
+  const recentAbsences = attendanceData?.recentAbsences || [
     {
       id: '1',
       student: 'Ali Veli',
@@ -79,14 +108,14 @@ export function AttendanceDashboard() {
     },
   ];
 
-  const classAttendance = [
+  const classAttendance = attendanceData?.classAttendance || [
     { class: '5-A', present: 28, absent: 2, rate: 93.3 },
     { class: '5-B', present: 26, absent: 2, rate: 92.9 },
     { class: '6-A', present: 30, absent: 2, rate: 93.8 },
     { class: '6-B', present: 28, absent: 2, rate: 93.3 },
   ];
 
-  const upcomingAlerts = [
+  const upcomingAlerts = attendanceData?.upcomingAlerts || [
     {
       id: '1',
       type: 'chronic',

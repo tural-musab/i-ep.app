@@ -6,9 +6,8 @@ import type {
   UploadOptions,
   UploadResult,
   StorageFile,
-  StorageError,
 } from '@/types/storage';
-import { STORAGE_ERROR_CODES } from '@/types/storage';
+import { STORAGE_ERROR_CODES, StorageError } from '@/types/storage';
 import { generateStoragePath } from '../utils/path-generator';
 import { validateFile } from '../utils/file-validator';
 

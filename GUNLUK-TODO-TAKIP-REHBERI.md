@@ -12,7 +12,7 @@
 #### **1. İlk Okunacak Dosya:**
 
 ```
-/CURRENT-SPRINT-STATUS.md
+/sprints/CURRENT-SPRINT-STATUS.md
 ```
 
 - **Neden**: Güncel sprint durumu ve bugünkü görevler
@@ -34,7 +34,7 @@
 #### **Progress Güncellemesi:**
 
 ```
-/CURRENT-SPRINT-STATUS.md
+/sprints/CURRENT-SPRINT-STATUS.md
 ```
 
 - **Yapacağınız**: Sabah yaptıklarınızı "✅ Complete" olarak işaretleyin
@@ -46,7 +46,7 @@
 #### **1. Gün Sonu Güncellemesi:**
 
 ```
-/CURRENT-SPRINT-STATUS.md
+/sprints/CURRENT-SPRINT-STATUS.md
 ```
 
 - **Yapacağınız**: Günün tüm tamamladıklarını işaretleyin
@@ -55,7 +55,7 @@
 #### **2. Haftalık Kontrol (Sadece Cuma):**
 
 ```
-/PROGRESS.md
+/docs-site/docs/PROGRESS.md
 ```
 
 - **Yapacağınız**: Haftalık progress güncellemesi
@@ -65,9 +65,9 @@
 
 #### **Hafta Başı Rutini:**
 
-1. **PROGRESS.md** - Genel ilerleme durumu (5 dakika)
-2. **FOUNDATION-FIRST-STRATEGY.md** - Hangi phase'deyiz kontrol (3 dakika)
-3. **REALISTIC-TIMELINE-2025.md** - Timeline'a uyum kontrol (2 dakika)
+1. **`/docs-site/docs/PROGRESS.md`** - Genel ilerleme durumu (5 dakika)
+2. **`/FOUNDATION-FIRST-STRATEGY.md`** - Hangi phase'deyiz kontrol (3 dakika)
+3. **`/REALISTIC-TIMELINE-2025.md`** - Timeline'a uyum kontrol (2 dakika)
 
 ### 🚨 **Acil Durum Referansları**
 
@@ -93,22 +93,22 @@
 
 #### **Sabah (5 dakika toplam):**
 
-1. `CURRENT-SPRINT-STATUS.md` ← **EN ÖNEMLİ**
-2. `ACTION-PLAN-OPTIMIZATION.md` ← **ACİL EYLEMLER**
+1. `/sprints/CURRENT-SPRINT-STATUS.md` ← **EN ÖNEMLİ**
+2. `/ACTION-PLAN-OPTIMIZATION.md` ← **ACİL EYLEMLER**
 
 #### **Akşam (2 dakika):**
 
-1. `CURRENT-SPRINT-STATUS.md` ← **GÜNCELLEME**
+1. `/sprints/CURRENT-SPRINT-STATUS.md` ← **GÜNCELLEME**
 
 #### **Haftalık (10 dakika - sadece Pazartesi/Cuma):**
 
-1. `PROGRESS.md` ← **GENEL DURUM**
+1. `/docs-site/docs/PROGRESS.md` ← **GENEL DURUM**
 
 ### 💡 **Pro İpucu**
 
 **En kritik dosya**: `CURRENT-SPRINT-STATUS.md` - Bu tek dosya bile %90 yeterli!
 
-**Neden**: Bu dosya şu anda Phase 4.5'teyiz, veritabanı deployment'ı kritik, ve 127 geçici çözüm var bilgisini içeriyor.
+**Neden**: Bu dosya şu anda Phase 6.1'deyiz, Frontend-Backend Integration kritik, ve güncel sprint durumu bilgisini içeriyor.
 
 **Hızlı Start**: Sadece bu dosyayı okuyarak günlük geliştime başlayabilirsiniz. Diğer dosyalar gerektiğinde referans için.
 
@@ -118,21 +118,21 @@
 
 ### **Tipik Pazartesi Sabahı:**
 
-1. `CURRENT-SPRINT-STATUS.md` oku (3 dk)
-2. `ACTION-PLAN-OPTIMIZATION.md` kontrol et (2 dk)
-3. `PROGRESS.md` haftalık duruma bak (5 dk)
+1. `/sprints/CURRENT-SPRINT-STATUS.md` oku (3 dk)
+2. `/ACTION-PLAN-OPTIMIZATION.md` kontrol et (2 dk)
+3. `/docs-site/docs/PROGRESS.md` haftalık duruma bak (5 dk)
 4. **Toplam**: 10 dakika - Hafta için hazırsın!
 
 ### **Tipik Salı-Perşembe Sabahı:**
 
-1. `CURRENT-SPRINT-STATUS.md` oku (3 dk)
-2. `ACTION-PLAN-OPTIMIZATION.md` kontrol et (2 dk)
+1. `/sprints/CURRENT-SPRINT-STATUS.md` oku (3 dk)
+2. `/ACTION-PLAN-OPTIMIZATION.md` kontrol et (2 dk)
 3. **Toplam**: 5 dakika - Günlük geliştirme için hazırsın!
 
 ### **Tipik Cuma Akşamı:**
 
-1. `CURRENT-SPRINT-STATUS.md` güncelle (2 dk)
-2. `PROGRESS.md` haftalık progress güncelle (5 dk)
+1. `/sprints/CURRENT-SPRINT-STATUS.md` güncelle (2 dk)
+2. `/docs-site/docs/PROGRESS.md` haftalık progress güncelle (5 dk)
 3. **Toplam**: 7 dakika - Hafta tamamlandı!
 
 ---
@@ -167,7 +167,7 @@
 
 #### **Yapın:**
 
-- ✅ Her zaman `CURRENT-SPRINT-STATUS.md` ile başlayın
+- ✅ Her zaman `/sprints/CURRENT-SPRINT-STATUS.md` ile başlayın
 - ✅ Günde en fazla 2 ana dosya okuyun
 - ✅ Hızlı, odaklanmış güncellemeler yapın
 
@@ -175,17 +175,19 @@
 
 ## 🎯 **Kritik Hatırlatmalar**
 
-### **Şu Anda (Phase 4.5):**
+### **Şu Anda (Phase 6.1 - ACTIVE):**
 
-- **Ana Odak**: Database deployment + 127 geçici çözüm
-- **Kritik Dosya**: `CURRENT-SPRINT-STATUS.md`
+- **Ana Odak**: Frontend-Backend Integration + Mock Data Replacement
+- **Kritik Dosya**: `/sprints/CURRENT-SPRINT-STATUS.md`
 - **Günlük Rutini**: 5 dakika sabah + 2 dakika akşam
+- **Sprint Süresi**: 18-25 Temmuz 2025 (7 gün)
+- **Progress**: 72% → 78% hedef
 
 ### **Gelecek Phase'lerde:**
 
-- Phase 5: Parent Communication System
-- Phase 6: Production Deployment
-- Phase 7: Advanced Features
+- Phase 6.2: API Integration Testing
+- Phase 7: Production Deployment
+- Phase 8: Advanced Features
 
 ### **Sistem Değişiklikleri:**
 
@@ -218,8 +220,8 @@
 ---
 
 **Dosya Sahibi**: Development Team  
-**Son Güncelleme**: 16 Temmuz 2025  
-**Sonraki Güncelleme**: Phase 5 başlangıcında  
+**Son Güncelleme**: 18 Temmuz 2025  
+**Sonraki Güncelleme**: Phase 6.2 başlangıcında  
 **Durum**: Aktif Kullanımda  
 **Öncelik**: Yüksek (Günlük kullanım için kritik)
 

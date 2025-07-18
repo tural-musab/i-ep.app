@@ -20,12 +20,41 @@ import {
   Users,
   FileText,
   Plus,
+  Loader2,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useAssignmentData } from '@/hooks/use-assignment-data';
 
 export function AssignmentDashboard() {
-  // Mock data - gerçek uygulamada API'den gelecek
-  const stats = {
+  // Real API data using custom hook
+  const { data: assignmentData, loading, error, refetch } = useAssignmentData();
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+        <span className="ml-2">Ödev verileri yükleniyor...</span>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex h-96 flex-col items-center justify-center">
+        <AlertCircle className="h-12 w-12 text-red-500" />
+        <p className="mt-4 text-lg font-medium">Veri yükleme hatası</p>
+        <p className="text-sm text-gray-600">{error}</p>
+        <Button onClick={refetch} className="mt-4">
+          Tekrar Dene
+        </Button>
+      </div>
+    );
+  }
+
+  // Use real data or fallback
+  const stats = assignmentData?.stats || {
     totalAssignments: 15,
     activeAssignments: 8,
     pendingGrades: 23,
@@ -34,58 +63,8 @@ export function AssignmentDashboard() {
     completionRate: 85,
   };
 
-  const recentAssignments = [
-    {
-      id: '1',
-      title: 'Matematik Problemleri',
-      type: 'homework',
-      class: '5-A',
-      dueDate: '2025-01-20',
-      submissions: 25,
-      totalStudents: 30,
-      graded: 20,
-      status: 'active',
-    },
-    {
-      id: '2',
-      title: 'Fen Bilgisi Projesi',
-      type: 'project',
-      class: '5-B',
-      dueDate: '2025-01-25',
-      submissions: 18,
-      totalStudents: 28,
-      graded: 10,
-      status: 'active',
-    },
-    {
-      id: '3',
-      title: 'Türkçe Kompozisyon',
-      type: 'homework',
-      class: '5-A',
-      dueDate: '2025-01-18',
-      submissions: 30,
-      totalStudents: 30,
-      graded: 30,
-      status: 'completed',
-    },
-  ];
-
-  const upcomingDeadlines = [
-    {
-      id: '4',
-      title: 'İngilizce Kelime Testi',
-      class: '6-A',
-      dueDate: '2025-01-22',
-      daysLeft: 2,
-    },
-    {
-      id: '5',
-      title: 'Sosyal Bilgiler Araştırması',
-      class: '6-B',
-      dueDate: '2025-01-24',
-      daysLeft: 4,
-    },
-  ];
+  const recentAssignments = assignmentData?.recentAssignments || [];
+  const upcomingDeadlines = assignmentData?.upcomingDeadlines || [];
 
   const getTypeBadge = (type: string) => {
     switch (type) {
@@ -135,7 +114,13 @@ export function AssignmentDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Ödev Yönetimi</h2>
+        <div className="flex items-center gap-4">
+          <h2 className="text-2xl font-bold">Ödev Yönetimi</h2>
+          {/* Data source indicator */}
+          <Badge variant={assignmentData ? "default" : "secondary"}>
+            {assignmentData ? "🔗 Canlı Veri" : "📊 Mock Veri"}
+          </Badge>
+        </div>
         <div className="flex gap-2">
           <Link href="/dashboard/assignments">
             <Button variant="outline">

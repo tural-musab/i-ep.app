@@ -11,7 +11,7 @@ BEGIN;
 -- Main files table with provider abstraction
 CREATE TABLE IF NOT EXISTS public.files (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id UUID NOT NULL REFERENCES management.tenants(id) ON DELETE CASCADE,
+    tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
     
     -- User relationship
     uploaded_by UUID NOT NULL REFERENCES public.users(id) ON DELETE RESTRICT,
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS public.file_shares (
 -- Categorize files for better organization
 CREATE TABLE IF NOT EXISTS public.file_categories (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id UUID NOT NULL REFERENCES management.tenants(id) ON DELETE CASCADE,
+    tenant_id UUID NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     slug TEXT NOT NULL,
     description TEXT,
@@ -132,7 +132,7 @@ CREATE TABLE IF NOT EXISTS public.file_category_assignments (
 
 -- Track storage usage and limits per tenant
 CREATE TABLE IF NOT EXISTS public.storage_quotas (
-    tenant_id UUID PRIMARY KEY REFERENCES management.tenants(id) ON DELETE CASCADE,
+    tenant_id UUID PRIMARY KEY REFERENCES public.tenants(id) ON DELETE CASCADE,
     
     -- Quotas in MB
     total_quota_mb INTEGER DEFAULT 10240, -- 10GB default
@@ -411,7 +411,7 @@ $$ LANGUAGE plpgsql;
 
 -- Apply trigger to create categories for new tenants
 CREATE TRIGGER create_tenant_file_categories
-    AFTER INSERT ON management.tenants
+    AFTER INSERT ON public.tenants
     FOR EACH ROW
     EXECUTE FUNCTION public.create_default_file_categories();
 

@@ -25,6 +25,18 @@ export interface TenantInfo {
  */
 export async function resolveTenantFromDomain(domain: string): Promise<TenantInfo | null> {
   try {
+    // Development environment için fallback tenant
+    if (process.env.NODE_ENV === 'development' && 
+        (domain === 'localhost:3000' || domain === 'localhost' || domain === '127.0.0.1:3000')) {
+      return {
+        id: 'demo-tenant-id',
+        name: 'Demo Tenant',
+        domain: domain,
+        isPrimary: true,
+        isCustomDomain: false,
+      };
+    }
+
     // Subdomain kontrolü
     const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app';
     if (domain.endsWith(`.${BASE_DOMAIN}`)) {
@@ -36,6 +48,18 @@ export async function resolveTenantFromDomain(domain: string): Promise<TenantInf
     return await getTenantByCustomDomain(domain);
   } catch (error) {
     console.error('Tenant tespit hatası:', error);
+    
+    // Development için fallback
+    if (process.env.NODE_ENV === 'development') {
+      return {
+        id: 'demo-tenant-id',
+        name: 'Demo Tenant',
+        domain: domain,
+        isPrimary: true,
+        isCustomDomain: false,
+      };
+    }
+    
     return null;
   }
 }
@@ -110,7 +134,7 @@ async function getTenantByCustomDomain(domain: string): Promise<TenantInfo | nul
 
     return {
       id: data.tenant_id,
-      name: data.tenants.name,
+      name: (data.tenants as any).name,
       domain: domain,
       isPrimary: data.is_primary,
       isCustomDomain: true,

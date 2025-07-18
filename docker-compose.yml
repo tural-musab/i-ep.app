@@ -58,6 +58,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./sql:/docker-entrypoint-initdb.d
+      - ./supabase/seed:/docker-entrypoint-initdb.d/seed
     restart: unless-stopped
     networks:
       - i-ep-network
