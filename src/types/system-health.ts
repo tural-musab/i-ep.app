@@ -91,4 +91,4 @@ export interface HealthCheckResponse {
   data?: SystemHealthReport;
   error?: string;
   timestamp: string;
-} 
+}

@@ -9,24 +9,27 @@ Bu doküman, Iqra Eğitim Portalı projesinin test yaklaşımını ve stratejisi
 Birim testleri, kodun en küçük parçalarını (fonksiyonlar, sınıflar, bileşenler) izole bir şekilde test eder.
 
 **Teknolojiler:**
+
 - Jest
 - React Testing Library
 - @testing-library/user-event
 
 **Yaklaşım:**
+
 - Her bileşen ve yardımcı fonksiyon için birim testleri yazılmalıdır
 - Testler `src/__tests__` dizini altında, test edilen dosya ile aynı yapıda organize edilmelidir
 - Her test dosyası `.test.ts` veya `.test.tsx` uzantısına sahip olmalıdır
 - AAA (Arrange-Act-Assert) veya Given-When-Then kalıbı kullanılmalıdır
 
 **Örnek:**
+
 ```typescript
 // Button bileşeni için birim testi
 describe('Button Component', () => {
   it('butonu doğru bir şekilde render etmelidir', () => {
     // Arrange
     render(<Button>Test Butonu</Button>);
-    
+
     // Act & Assert
     expect(screen.getByRole('button', { name: /test butonu/i })).toBeInTheDocument();
   });
@@ -38,24 +41,27 @@ describe('Button Component', () => {
 Entegrasyon testleri, birden fazla bileşenin veya modülün birlikte çalışmasını test eder.
 
 **Teknolojiler:**
+
 - Jest
 - React Testing Library
 - MSW (Mock Service Worker)
 
 **Yaklaşım:**
+
 - API çağrıları MSW ile mock edilmelidir
 - Sayfalar ve karmaşık bileşen grupları için entegrasyon testleri yazılmalıdır
 - Veri akışı ve kullanıcı etkileşimleri test edilmelidir
 - Testler `src/__tests__/integration` dizini altında organize edilmelidir
 
 **Örnek:**
+
 ```typescript
 // API entegrasyon testi
 describe('User API Entegrasyon Testleri', () => {
   it('fetchUsers kullanıcıları başarıyla getirmelidir', async () => {
     // Act
     const users = await fetchUsers();
-    
+
     // Assert
     expect(users).toHaveLength(2);
     expect(users[0].full_name).toBe('Ahmet Yılmaz');
@@ -68,9 +74,11 @@ describe('User API Entegrasyon Testleri', () => {
 E2E testleri, uygulamanın gerçek kullanıcı senaryolarını tam olarak test eder.
 
 **Teknolojiler:**
+
 - Playwright
 
 **Yaklaşım:**
+
 - Kritik kullanıcı yolları için E2E testleri yazılmalıdır
 - Testler farklı tarayıcılarda çalıştırılmalıdır (Chrome, Firefox, Safari)
 - Mobil görünümler de test edilmelidir
@@ -78,11 +86,12 @@ E2E testleri, uygulamanın gerçek kullanıcı senaryolarını tam olarak test e
 - Her test dosyası `.spec.ts` uzantısına sahip olmalıdır
 
 **Örnek:**
+
 ```typescript
 test('Giriş sayfasına yönlendirme', async ({ page }) => {
   // Giriş butonuna tıkla
   await page.getByRole('link', { name: /giriş/i }).click();
-  
+
   // Giriş sayfasına yönlendirildi mi?
   await expect(page).toHaveURL(/.*giris/);
 });
@@ -181,4 +190,4 @@ npm run e2e:ui
 - Her test dosyası, test edilen işlevselliği açıkça belirtmelidir
 - Karmaşık test senaryoları için açıklamalar eklenmelidir
 - Test fixture'ları ve mock'lar dokümante edilmelidir
-- Test stratejisi düzenli olarak güncellenmelidir 
+- Test stratejisi düzenli olarak güncellenmelidir

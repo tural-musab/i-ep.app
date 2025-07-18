@@ -83,9 +83,7 @@ export class ParentRepository extends BaseRepository<Parent> {
    * Find parent by email
    */
   async findByEmail(email: string): Promise<Parent | null> {
-    const { data, error } = await this.getBaseQuery()
-      .eq('email', email)
-      .single();
+    const { data, error } = await this.getBaseQuery().eq('email', email).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -101,9 +99,7 @@ export class ParentRepository extends BaseRepository<Parent> {
    * Find parent by phone
    */
   async findByPhone(phone: string): Promise<Parent | null> {
-    const { data, error } = await this.getBaseQuery()
-      .eq('phone', phone)
-      .single();
+    const { data, error } = await this.getBaseQuery().eq('phone', phone).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -118,23 +114,24 @@ export class ParentRepository extends BaseRepository<Parent> {
   /**
    * Find parents by student ID
    */
-  async findByStudentId(studentId: string, options: QueryOptions = {}): Promise<QueryResult<Parent>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'name',
-      sortOrder = 'asc'
-    } = options;
+  async findByStudentId(
+    studentId: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Parent>> {
+    const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc' } = options;
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
     const { data, error, count } = await this.supabase
       .from('parents')
-      .select(`
+      .select(
+        `
         *,
         student_parents!inner(student_id)
-      `, { count: 'exact' })
+      `,
+        { count: 'exact' }
+      )
       .eq('tenant_id', this.tenantId)
       .eq('student_parents.student_id', studentId)
       .order(sortBy, { ascending: sortOrder === 'asc' })
@@ -151,7 +148,7 @@ export class ParentRepository extends BaseRepository<Parent> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
@@ -159,12 +156,7 @@ export class ParentRepository extends BaseRepository<Parent> {
    * Search parents by name
    */
   async searchByName(searchTerm: string, options: QueryOptions = {}): Promise<QueryResult<Parent>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'name',
-      sortOrder = 'asc'
-    } = options;
+    const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc' } = options;
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -186,7 +178,7 @@ export class ParentRepository extends BaseRepository<Parent> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
@@ -196,7 +188,8 @@ export class ParentRepository extends BaseRepository<Parent> {
   async findWithRelations(id: string): Promise<ParentWithRelations | null> {
     const { data, error } = await this.supabase
       .from('parents')
-      .select(`
+      .select(
+        `
         *,
         student_parents!inner(
           student:students(
@@ -208,7 +201,8 @@ export class ParentRepository extends BaseRepository<Parent> {
             class:classes(name)
           )
         )
-      `)
+      `
+      )
       .eq('id', id)
       .eq('tenant_id', this.tenantId)
       .single();
@@ -229,27 +223,33 @@ export class ParentRepository extends BaseRepository<Parent> {
   async findEmergencyContacts(options: QueryOptions = {}): Promise<QueryResult<Parent>> {
     return this.findAll({
       ...options,
-      filters: { emergency_contact: true }
+      filters: { emergency_contact: true },
     });
   }
 
   /**
    * Find parents by relationship type
    */
-  async findByRelationship(relationship: Parent['relationship'], options: QueryOptions = {}): Promise<QueryResult<Parent>> {
+  async findByRelationship(
+    relationship: Parent['relationship'],
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Parent>> {
     return this.findAll({
       ...options,
-      filters: { relationship }
+      filters: { relationship },
     });
   }
 
   /**
    * Find parents by communication preference
    */
-  async findByPreferredCommunication(communicationType: Parent['preferred_communication'], options: QueryOptions = {}): Promise<QueryResult<Parent>> {
+  async findByPreferredCommunication(
+    communicationType: Parent['preferred_communication'],
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Parent>> {
     return this.findAll({
       ...options,
-      filters: { preferred_communication: communicationType }
+      filters: { preferred_communication: communicationType },
     });
   }
 
@@ -263,14 +263,20 @@ export class ParentRepository extends BaseRepository<Parent> {
   /**
    * Update emergency contact status
    */
-  async updateEmergencyContact(parentId: string, emergencyContact: boolean): Promise<Parent | null> {
+  async updateEmergencyContact(
+    parentId: string,
+    emergencyContact: boolean
+  ): Promise<Parent | null> {
     return this.update(parentId, { emergency_contact: emergencyContact });
   }
 
   /**
    * Update communication preference
    */
-  async updateCommunicationPreference(parentId: string, preference: Parent['preferred_communication']): Promise<Parent | null> {
+  async updateCommunicationPreference(
+    parentId: string,
+    preference: Parent['preferred_communication']
+  ): Promise<Parent | null> {
     return this.update(parentId, { preferred_communication: preference });
   }
 
@@ -286,34 +292,38 @@ export class ParentRepository extends BaseRepository<Parent> {
   }> {
     const { data, error } = await this.supabase.rpc('get_parent_statistics', {
       parent_id: parentId,
-      tenant_id: this.tenantId
+      tenant_id: this.tenantId,
     });
 
     if (error) {
       throw new Error(`Repository error: ${error.message}`);
     }
 
-    return data || {
-      totalChildren: 0,
-      activeChildren: 0,
-      totalCommunications: 0,
-      lastCommunicationDate: null,
-      upcomingMeetings: 0
-    };
+    return (
+      data || {
+        totalChildren: 0,
+        activeChildren: 0,
+        totalCommunications: 0,
+        lastCommunicationDate: null,
+        upcomingMeetings: 0,
+      }
+    );
   }
 
   /**
    * Associate parent with student
    */
-  async associateWithStudent(parentId: string, studentId: string, relationship: Parent['relationship']): Promise<boolean> {
-    const { error } = await this.supabase
-      .from('student_parents')
-      .insert({
-        parent_id: parentId,
-        student_id: studentId,
-        relationship,
-        tenant_id: this.tenantId
-      });
+  async associateWithStudent(
+    parentId: string,
+    studentId: string,
+    relationship: Parent['relationship']
+  ): Promise<boolean> {
+    const { error } = await this.supabase.from('student_parents').insert({
+      parent_id: parentId,
+      student_id: studentId,
+      relationship,
+      tenant_id: this.tenantId,
+    });
 
     if (error) {
       throw new Error(`Repository error: ${error.message}`);
@@ -343,12 +353,15 @@ export class ParentRepository extends BaseRepository<Parent> {
   /**
    * Bulk update parent communication preference
    */
-  async bulkUpdateCommunicationPreference(parentIds: string[], preference: Parent['preferred_communication']): Promise<boolean> {
+  async bulkUpdateCommunicationPreference(
+    parentIds: string[],
+    preference: Parent['preferred_communication']
+  ): Promise<boolean> {
     const { error } = await this.supabase
       .from('parents')
-      .update({ 
+      .update({
         preferred_communication: preference,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .in('id', parentIds)
       .eq('tenant_id', this.tenantId);
@@ -372,30 +385,39 @@ export class ParentCommunicationRepository extends BaseRepository<ParentCommunic
   /**
    * Find communications by parent ID
    */
-  async findByParentId(parentId: string, options: QueryOptions = {}): Promise<QueryResult<ParentCommunication>> {
+  async findByParentId(
+    parentId: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<ParentCommunication>> {
     return this.findAll({
       ...options,
-      filters: { parent_id: parentId }
+      filters: { parent_id: parentId },
     });
   }
 
   /**
    * Find communications by type
    */
-  async findByType(type: ParentCommunication['type'], options: QueryOptions = {}): Promise<QueryResult<ParentCommunication>> {
+  async findByType(
+    type: ParentCommunication['type'],
+    options: QueryOptions = {}
+  ): Promise<QueryResult<ParentCommunication>> {
     return this.findAll({
       ...options,
-      filters: { type }
+      filters: { type },
     });
   }
 
   /**
    * Find communications by status
    */
-  async findByStatus(status: ParentCommunication['status'], options: QueryOptions = {}): Promise<QueryResult<ParentCommunication>> {
+  async findByStatus(
+    status: ParentCommunication['status'],
+    options: QueryOptions = {}
+  ): Promise<QueryResult<ParentCommunication>> {
     return this.findAll({
       ...options,
-      filters: { status }
+      filters: { status },
     });
   }
 
@@ -409,10 +431,13 @@ export class ParentCommunicationRepository extends BaseRepository<ParentCommunic
   /**
    * Add response to communication
    */
-  async addResponse(communicationId: string, response: string): Promise<ParentCommunication | null> {
+  async addResponse(
+    communicationId: string,
+    response: string
+  ): Promise<ParentCommunication | null> {
     return this.update(communicationId, {
       response,
-      response_at: new Date().toISOString()
+      response_at: new Date().toISOString(),
     });
   }
 }
@@ -428,30 +453,39 @@ export class ParentMeetingRepository extends BaseRepository<ParentMeeting> {
   /**
    * Find meetings by parent ID
    */
-  async findByParentId(parentId: string, options: QueryOptions = {}): Promise<QueryResult<ParentMeeting>> {
+  async findByParentId(
+    parentId: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<ParentMeeting>> {
     return this.findAll({
       ...options,
-      filters: { parent_id: parentId }
+      filters: { parent_id: parentId },
     });
   }
 
   /**
    * Find meetings by teacher ID
    */
-  async findByTeacherId(teacherId: string, options: QueryOptions = {}): Promise<QueryResult<ParentMeeting>> {
+  async findByTeacherId(
+    teacherId: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<ParentMeeting>> {
     return this.findAll({
       ...options,
-      filters: { teacher_id: teacherId }
+      filters: { teacher_id: teacherId },
     });
   }
 
   /**
    * Find meetings by status
    */
-  async findByStatus(status: ParentMeeting['status'], options: QueryOptions = {}): Promise<QueryResult<ParentMeeting>> {
+  async findByStatus(
+    status: ParentMeeting['status'],
+    options: QueryOptions = {}
+  ): Promise<QueryResult<ParentMeeting>> {
     return this.findAll({
       ...options,
-      filters: { status }
+      filters: { status },
     });
   }
 
@@ -459,12 +493,7 @@ export class ParentMeetingRepository extends BaseRepository<ParentMeeting> {
    * Find upcoming meetings
    */
   async findUpcoming(options: QueryOptions = {}): Promise<QueryResult<ParentMeeting>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'scheduled_at',
-      sortOrder = 'asc'
-    } = options;
+    const { page = 1, limit = 10, sortBy = 'scheduled_at', sortOrder = 'asc' } = options;
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -488,7 +517,7 @@ export class ParentMeetingRepository extends BaseRepository<ParentMeeting> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
@@ -498,7 +527,7 @@ export class ParentMeetingRepository extends BaseRepository<ParentMeeting> {
   async completeMeeting(meetingId: string, notes?: string): Promise<ParentMeeting | null> {
     return this.update(meetingId, {
       status: 'completed',
-      notes
+      notes,
     });
   }
 
@@ -515,7 +544,7 @@ export class ParentMeetingRepository extends BaseRepository<ParentMeeting> {
   async rescheduleMeeting(meetingId: string, newDateTime: string): Promise<ParentMeeting | null> {
     return this.update(meetingId, {
       scheduled_at: newDateTime,
-      status: 'rescheduled'
+      status: 'rescheduled',
     });
   }
 

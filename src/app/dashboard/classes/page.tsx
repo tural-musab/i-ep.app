@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import * as Sentry from "@sentry/nextjs";
-import { ClassList } from "@/components/classes/ClassList";
+import { useEffect, useState } from 'react';
+import * as Sentry from '@sentry/nextjs';
+import { ClassList } from '@/components/classes/ClassList';
 
 interface Teacher {
   id: string;
@@ -31,22 +31,22 @@ export default function ClassesPage() {
   const fetchClasses = async () => {
     return Sentry.startSpan(
       {
-        op: "http.client",
-        name: "GET /api/classes",
+        op: 'http.client',
+        name: 'GET /api/classes',
       },
       async () => {
         try {
-          const response = await fetch("/api/classes");
+          const response = await fetch('/api/classes');
           if (!response.ok) {
-            throw new Error("Sınıf listesi alınamadı");
+            throw new Error('Sınıf listesi alınamadı');
           }
           const data = await response.json();
           setClasses(data);
           setError(null);
         } catch (error) {
-          console.error("Error fetching classes:", error);
+          console.error('Error fetching classes:', error);
           Sentry.captureException(error);
-          setError("Sınıf listesi yüklenirken bir hata oluştu");
+          setError('Sınıf listesi yüklenirken bir hata oluştu');
         } finally {
           setIsLoading(false);
         }
@@ -60,16 +60,16 @@ export default function ClassesPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-lg text-muted-foreground">Yükleniyor...</div>
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-muted-foreground text-lg">Yükleniyor...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-lg text-destructive">{error}</div>
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-destructive text-lg">{error}</div>
       </div>
     );
   }
@@ -79,4 +79,4 @@ export default function ClassesPage() {
       <ClassList classes={classes} onClassCreated={fetchClasses} />
     </div>
   );
-} 
+}

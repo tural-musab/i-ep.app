@@ -4,7 +4,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 // Mock the Supabase client
 jest.mock('@supabase/auth-helpers-nextjs', () => ({
-  createClientComponentClient: jest.fn()
+  createClientComponentClient: jest.fn(),
 }));
 
 describe('Supabase Auth Integration Tests (Mocked)', () => {
@@ -35,20 +35,20 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
         resetPasswordForEmail: jest.fn(),
         getSession: jest.fn(),
         onAuthStateChange: jest.fn(() => ({
-          data: { subscription: { unsubscribe: jest.fn() } }
-        }))
+          data: { subscription: { unsubscribe: jest.fn() } },
+        })),
       },
       from: jest.fn(() => ({
         select: jest.fn(() => ({
           eq: jest.fn(() => ({
-            single: jest.fn()
-          }))
-        }))
-      }))
+            single: jest.fn(),
+          })),
+        })),
+      })),
     };
 
     (createClientComponentClient as jest.Mock).mockReturnValue(mockSupabaseClient);
-    
+
     // Her test öncesinde mock'ları temizle
     TestEnvironmentHelper.cleanup();
   });
@@ -69,41 +69,41 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
       // Arrange
       const email = 'test@example.com';
       const password = 'validPassword123';
-      
+
       // Başarılı giriş mock'ını ayarla
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
         data: {
           user: {
-            id: "550e8400-e29b-41d4-a716-446655440000",
+            id: '550e8400-e29b-41d4-a716-446655440000',
             email: email,
             user_metadata: {
-              tenant_id: "tenant-123",
-              role: "admin"
-            }
+              tenant_id: 'tenant-123',
+              role: 'admin',
+            },
           },
           session: {
-            access_token: "test-access-token",
-            refresh_token: "test-refresh-token"
-          }
+            access_token: 'test-access-token',
+            refresh_token: 'test-refresh-token',
+          },
         },
-        error: null
+        error: null,
       });
 
       // Act
       const result = await mockSupabaseClient.auth.signInWithPassword({
         email,
-        password
+        password,
       });
 
       // Assert
       expect(result.data.user).toBeDefined();
       expect(result.data.user.email).toBe(email);
-      expect(result.data.user.user_metadata.tenant_id).toBe("tenant-123");
+      expect(result.data.user.user_metadata.tenant_id).toBe('tenant-123');
       expect(result.data.session).toBeDefined();
       expect(result.error).toBeNull();
       expect(mockSupabaseClient.auth.signInWithPassword).toHaveBeenCalledWith({
         email,
-        password
+        password,
       });
     });
 
@@ -111,28 +111,28 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
       // Arrange
       const email = 'test@example.com';
       const wrongPassword = 'wrongPassword';
-      
+
       // Hatalı giriş mock'ını ayarla
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
         data: { user: null, session: null },
         error: {
-          name: "AuthApiError",
-          message: "Invalid login credentials",
-          status: 400
-        }
+          name: 'AuthApiError',
+          message: 'Invalid login credentials',
+          status: 400,
+        },
       });
 
       // Act
       const result = await mockSupabaseClient.auth.signInWithPassword({
         email,
-        password: wrongPassword
+        password: wrongPassword,
       });
 
       // Assert
       expect(result.data.user).toBeNull();
       expect(result.data.session).toBeNull();
       expect(result.error).toBeDefined();
-      expect(result.error.message).toBe("Invalid login credentials");
+      expect(result.error.message).toBe('Invalid login credentials');
       expect(result.error.status).toBe(400);
     });
 
@@ -141,24 +141,24 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
       const email = 'tenant-user@example.com';
       const password = 'tenantPassword123';
       const tenantId = 'tenant-456';
-      
+
       // Tenant-specific giriş mock'ını ayarla
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
         data: {
           user: {
-            id: "660e8400-e29b-41d4-a716-446655440001",
+            id: '660e8400-e29b-41d4-a716-446655440001',
             email: email,
             user_metadata: {
               tenant_id: tenantId,
-              role: "teacher"
-            }
+              role: 'teacher',
+            },
           },
           session: {
-            access_token: "tenant-access-token",
-            refresh_token: "tenant-refresh-token"
-          }
+            access_token: 'tenant-access-token',
+            refresh_token: 'tenant-refresh-token',
+          },
         },
-        error: null
+        error: null,
       });
 
       // Kullanıcı profil bilgilerini alma mock'ı
@@ -167,22 +167,22 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
           eq: jest.fn().mockReturnValue({
             single: jest.fn().mockResolvedValue({
               data: {
-                id: "660e8400-e29b-41d4-a716-446655440001",
+                id: '660e8400-e29b-41d4-a716-446655440001',
                 email: email,
-                role: "teacher",
+                role: 'teacher',
                 tenant_id: tenantId,
-                is_active: true
+                is_active: true,
               },
-              error: null
-            })
-          })
-        })
+              error: null,
+            }),
+          }),
+        }),
       });
 
       // Act
       const authResult = await mockSupabaseClient.auth.signInWithPassword({
         email,
-        password
+        password,
       });
 
       // Kullanıcı profil bilgilerini al
@@ -195,7 +195,7 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
       // Assert
       expect(authResult.data.user.user_metadata.tenant_id).toBe(tenantId);
       expect(profileResult.data.tenant_id).toBe(tenantId);
-      expect(profileResult.data.role).toBe("teacher");
+      expect(profileResult.data.role).toBe('teacher');
       expect(profileResult.data.is_active).toBe(true);
     });
   });
@@ -206,23 +206,23 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
       const email = TestUtilityHelper.generateRandomEmail();
       const password = 'newUserPassword123';
       const tenantId = TestUtilityHelper.generateRandomTenantId();
-      
+
       // Başarılı kayıt mock'ını ayarla
       mockSupabaseClient.auth.signUp.mockResolvedValue({
         data: {
           user: {
-            id: "770e8400-e29b-41d4-a716-446655440002",
+            id: '770e8400-e29b-41d4-a716-446655440002',
             email: email,
             email_confirmed_at: null,
             user_metadata: {
               tenant_id: tenantId,
-              role: "student",
-              name: "Yeni Kullanıcı"
-            }
+              role: 'student',
+              name: 'Yeni Kullanıcı',
+            },
           },
-          session: null // E-posta onayı beklendiği için
+          session: null, // E-posta onayı beklendiği için
         },
-        error: null
+        error: null,
       });
 
       // Act
@@ -232,10 +232,10 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
         options: {
           data: {
             tenant_id: tenantId,
-            role: "student",
-            name: "Yeni Kullanıcı"
-          }
-        }
+            role: 'student',
+            name: 'Yeni Kullanıcı',
+          },
+        },
       });
 
       // Assert
@@ -251,28 +251,28 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
       // Arrange
       const existingEmail = 'existing@example.com';
       const password = 'somePassword123';
-      
+
       // E-posta zaten mevcut hatası mock'ını ayarla
       mockSupabaseClient.auth.signUp.mockResolvedValue({
         data: { user: null, session: null },
         error: {
-          name: "AuthApiError",
-          message: "User already registered",
-          status: 422
-        }
+          name: 'AuthApiError',
+          message: 'User already registered',
+          status: 422,
+        },
       });
 
       // Act
       const result = await mockSupabaseClient.auth.signUp({
         email: existingEmail,
-        password
+        password,
       });
 
       // Assert
       expect(result.data.user).toBeNull();
       expect(result.data.session).toBeNull();
       expect(result.error).toBeDefined();
-      expect(result.error.message).toBe("User already registered");
+      expect(result.error.message).toBe('User already registered');
       expect(result.error.status).toBe(422);
     });
 
@@ -280,27 +280,27 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
       // Arrange
       const email = 'newuser@example.com';
       const weakPassword = '123'; // Çok zayıf şifre
-      
+
       // Zayıf şifre hatası mock'ını ayarla
       mockSupabaseClient.auth.signUp.mockResolvedValue({
         data: { user: null, session: null },
         error: {
-          name: "AuthApiError",
-          message: "Password should be at least 6 characters",
-          status: 422
-        }
+          name: 'AuthApiError',
+          message: 'Password should be at least 6 characters',
+          status: 422,
+        },
       });
 
       // Act
       const result = await mockSupabaseClient.auth.signUp({
         email,
-        password: weakPassword
+        password: weakPassword,
       });
 
       // Assert
       expect(result.data.user).toBeNull();
       expect(result.error).toBeDefined();
-      expect(result.error.message).toContain("Password should be at least");
+      expect(result.error.message).toContain('Password should be at least');
     });
   });
 
@@ -308,22 +308,22 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
     it('should retrieve existing user session', async () => {
       // Arrange
       const mockSession = {
-        access_token: "existing-access-token",
-        refresh_token: "existing-refresh-token",
+        access_token: 'existing-access-token',
+        refresh_token: 'existing-refresh-token',
         user: {
-          id: "550e8400-e29b-41d4-a716-446655440000",
-          email: "session-user@example.com",
+          id: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'session-user@example.com',
           user_metadata: {
-            tenant_id: "tenant-789",
-            role: "admin"
-          }
-        }
+            tenant_id: 'tenant-789',
+            role: 'admin',
+          },
+        },
       };
 
       // Mevcut session mock'ını ayarla
       mockSupabaseClient.auth.getSession.mockResolvedValue({
         data: { session: mockSession },
-        error: null
+        error: null,
       });
 
       // Act
@@ -331,8 +331,8 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
 
       // Assert
       expect(result.data.session).toBeDefined();
-      expect(result.data.session.user.email).toBe("session-user@example.com");
-      expect(result.data.session.user.user_metadata.tenant_id).toBe("tenant-789");
+      expect(result.data.session.user.email).toBe('session-user@example.com');
+      expect(result.data.session.user.user_metadata.tenant_id).toBe('tenant-789');
       expect(result.error).toBeNull();
     });
 
@@ -340,7 +340,7 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
       // Arrange
       mockSupabaseClient.auth.getSession.mockResolvedValue({
         data: { session: null },
-        error: null
+        error: null,
       });
 
       // Act
@@ -354,7 +354,7 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
     it('should successfully sign out user', async () => {
       // Arrange
       mockSupabaseClient.auth.signOut.mockResolvedValue({
-        error: null
+        error: null,
       });
 
       // Act
@@ -370,10 +370,10 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
     it('should successfully send password reset email', async () => {
       // Arrange
       const email = 'user@example.com';
-      
+
       mockSupabaseClient.auth.resetPasswordForEmail.mockResolvedValue({
         data: {},
-        error: null
+        error: null,
       });
 
       // Act
@@ -387,14 +387,14 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
     it('should handle password reset for non-existent email', async () => {
       // Arrange
       const nonExistentEmail = 'nonexistent@example.com';
-      
+
       mockSupabaseClient.auth.resetPasswordForEmail.mockResolvedValue({
         data: {},
         error: {
-          name: "AuthApiError",
-          message: "User not found",
-          status: 400
-        }
+          name: 'AuthApiError',
+          message: 'User not found',
+          status: 400,
+        },
       });
 
       // Act
@@ -402,7 +402,7 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
 
       // Assert
       expect(result.error).toBeDefined();
-      expect(result.error.message).toBe("User not found");
+      expect(result.error.message).toBe('User not found');
     });
   });
 
@@ -412,33 +412,33 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
       const email = 'multitenant-user@example.com';
       const password = 'password123';
       const expectedTenantId = 'tenant-123';
-      
+
       // Başarılı auth ama farklı tenant
       mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
         data: {
           user: {
-            id: "880e8400-e29b-41d4-a716-446655440003",
+            id: '880e8400-e29b-41d4-a716-446655440003',
             email: email,
             user_metadata: {
               tenant_id: 'tenant-456', // Farklı tenant
-              role: "user"
-            }
+              role: 'user',
+            },
           },
-          session: { access_token: "token" }
+          session: { access_token: 'token' },
         },
-        error: null
+        error: null,
       });
 
       // Act
       const result = await mockSupabaseClient.auth.signInWithPassword({
         email,
-        password
+        password,
       });
 
       // Assert - Kullanıcı farklı tenant'ta
       expect(result.data.user.user_metadata.tenant_id).not.toBe(expectedTenantId);
       expect(result.data.user.user_metadata.tenant_id).toBe('tenant-456');
-      
+
       // Bu durumda uygulama mantığında tenant kontrolü yapılması gerekir
     });
 
@@ -446,13 +446,13 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
       // Arrange
       const mockCallback = jest.fn();
       const mockUnsubscribe = jest.fn();
-      
+
       mockSupabaseClient.auth.onAuthStateChange.mockReturnValue({
         data: {
           subscription: {
-            unsubscribe: mockUnsubscribe
-          }
-        }
+            unsubscribe: mockUnsubscribe,
+          },
+        },
       });
 
       // Act
@@ -467,15 +467,13 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
   describe('Error Handling and Resilience', () => {
     it('should handle network timeouts gracefully', async () => {
       // Arrange
-      mockSupabaseClient.auth.signInWithPassword.mockRejectedValue(
-        new Error('Network timeout')
-      );
+      mockSupabaseClient.auth.signInWithPassword.mockRejectedValue(new Error('Network timeout'));
 
       // Act & Assert
       await expect(
         mockSupabaseClient.auth.signInWithPassword({
           email: 'test@example.com',
-          password: 'password'
+          password: 'password',
         })
       ).rejects.toThrow('Network timeout');
     });
@@ -484,7 +482,7 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
       // Arrange
       const email = 'retry-test@example.com';
       const password = 'password123';
-      
+
       // İlk iki çağrıda hata, üçüncüde başarı
       mockSupabaseClient.auth.signInWithPassword
         .mockRejectedValueOnce(new Error('Network error'))
@@ -492,24 +490,20 @@ describe('Supabase Auth Integration Tests (Mocked)', () => {
         .mockResolvedValueOnce({
           data: {
             user: { id: 'test-user-id', email },
-            session: { access_token: 'success-token' }
+            session: { access_token: 'success-token' },
           },
-          error: null
+          error: null,
         });
 
       // Act
       const result = await TestUtilityHelper.retryOperation<{
         data: { user: { id: string; email: string }; session: { access_token: string } };
         error: null;
-      }>(
-        () => mockSupabaseClient.auth.signInWithPassword({ email, password }),
-        3,
-        50
-      );
+      }>(() => mockSupabaseClient.auth.signInWithPassword({ email, password }), 3, 50);
 
       // Assert
       expect(result.data.user.email).toBe(email);
       expect(mockSupabaseClient.auth.signInWithPassword).toHaveBeenCalledTimes(3);
     });
   });
-}); 
+});

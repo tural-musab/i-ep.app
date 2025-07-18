@@ -18,19 +18,19 @@ Sistem sağlık durumunu izleyen ve raporlayan komponent.
 interface SystemHealthProps {
   /** İzlenecek servisler */
   services?: ServiceConfig[];
-  
+
   /** Yenileme aralığı (ms) */
   refreshInterval?: number;
-  
+
   /** Alarm eşikleri */
   thresholds?: HealthThresholds;
-  
+
   /** Durum değiştiğinde çağrılır */
   onStatusChange?: (status: SystemStatus) => void;
-  
+
   /** Alarm durumunda çağrılır */
   onAlert?: (alert: HealthAlert) => void;
-  
+
   /** Detay seviyesi */
   detailLevel?: 'basic' | 'detailed' | 'debug';
 }
@@ -110,20 +110,20 @@ export default function HealthMonitoringPage() {
           id: 'db',
           name: 'PostgreSQL',
           type: 'database',
-          endpoint: '/api/health/db'
+          endpoint: '/api/health/db',
         },
         {
           id: 'redis',
           name: 'Redis',
           type: 'cache',
-          endpoint: '/api/health/redis'
+          endpoint: '/api/health/redis',
         },
         {
           id: 's3',
           name: 'S3 Storage',
           type: 'storage',
-          endpoint: '/api/health/storage'
-        }
+          endpoint: '/api/health/storage',
+        },
       ]}
       refreshInterval={30000}
       thresholds={{
@@ -131,7 +131,7 @@ export default function HealthMonitoringPage() {
         memory: { warning: 85, critical: 95 },
         disk: { warning: 85, critical: 90 },
         responseTime: { warning: 1000, critical: 3000 },
-        errorRate: { warning: 0.01, critical: 0.05 }
+        errorRate: { warning: 0.01, critical: 0.05 },
       }}
       onStatusChange={handleStatusChange}
       onAlert={handleAlert}
@@ -144,30 +144,21 @@ export default function HealthMonitoringPage() {
 ## Durum Gösterimi
 
 ### Servis Durumu
+
 ```tsx
-<ServiceStatus
-  service={service}
-  metrics={metrics}
-  dependencies={dependencies}
-/>
+<ServiceStatus service={service} metrics={metrics} dependencies={dependencies} />
 ```
 
 ### Sağlık Göstergesi
+
 ```tsx
-<HealthIndicator
-  status={status}
-  lastUpdated={lastCheck}
-  showTimestamp
-/>
+<HealthIndicator status={status} lastUpdated={lastCheck} showTimestamp />
 ```
 
 ### Metrik Grafiği
+
 ```tsx
-<MetricGraph
-  data={metricHistory}
-  type="line"
-  thresholds={thresholds}
-/>
+<MetricGraph data={metricHistory} type="line" thresholds={thresholds} />
 ```
 
 ## API Entegrasyonu
@@ -176,7 +167,7 @@ export default function HealthMonitoringPage() {
 // Sağlık kontrolü
 const checkHealth = async (service: ServiceConfig) => {
   const response = await fetch(service.endpoint, {
-    timeout: service.timeout
+    timeout: service.timeout,
   });
   return response.json();
 };
@@ -205,11 +196,11 @@ useEffect(() => {
     try {
       const newStatus = await checkSystemHealth();
       setStatus(newStatus);
-      
+
       if (newStatus.overall !== status?.overall) {
         onStatusChange?.(newStatus);
       }
-      
+
       const newAlerts = checkThresholds(newStatus.metrics);
       if (newAlerts.length > 0) {
         setAlerts(newAlerts);
@@ -232,19 +223,19 @@ useEffect(() => {
 ```typescript
 const checkThresholds = (metrics: SystemMetrics): HealthAlert[] => {
   const alerts: HealthAlert[] = [];
-  
+
   if (metrics.cpu > thresholds.cpu.critical) {
     alerts.push({
       type: 'cpu',
       level: 'critical',
       value: metrics.cpu,
       threshold: thresholds.cpu.critical,
-      message: 'CPU kullanımı kritik seviyede'
+      message: 'CPU kullanımı kritik seviyede',
     });
   }
-  
+
   // Diğer metrik kontrolleri...
-  
+
   return alerts;
 };
 ```
@@ -259,11 +250,11 @@ const checkThresholds = (metrics: SystemMetrics): HealthAlert[] => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1200px | Tam dashboard görünümü |
-| 768px - 1200px | Kompakt dashboard |
-| < 768px | Liste görünümü |
+| Ekran Boyutu   | Davranış               |
+| -------------- | ---------------------- |
+| > 1200px       | Tam dashboard görünümü |
+| 768px - 1200px | Kompakt dashboard      |
+| < 768px        | Liste görünümü         |
 
 ## Test
 
@@ -277,7 +268,7 @@ describe('SystemHealth', () => {
         ]}
       />
     );
-    
+
     await waitFor(() => {
       expect(screen.getByText('Sistem Sağlıklı')).toBeInTheDocument();
     });
@@ -294,10 +285,10 @@ describe('SystemHealth', () => {
         onAlert={onAlert}
       />
     );
-    
+
     // Simulate high CPU usage
     mockMetrics({ cpu: 95 });
-    
+
     await waitFor(() => {
       expect(onAlert).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -321,7 +312,7 @@ describe('SystemHealth', () => {
         ]}
       />
     );
-    
+
     await waitFor(() => {
       expect(screen.getByText('Bağımlılıklar')).toBeInTheDocument();
     });
@@ -408,7 +399,7 @@ WithAlerts.args = {
   customStyles={{
     healthy: 'bg-green-50 text-green-700',
     degraded: 'bg-yellow-50 text-yellow-700',
-    unhealthy: 'bg-red-50 text-red-700'
+    unhealthy: 'bg-red-50 text-red-700',
   }}
 />
 ```
@@ -419,4 +410,4 @@ WithAlerts.args = {
 2. Bağımlılıkları izle
 3. Metrik geçmişini tut
 4. Alarm eşiklerini yapılandır
-5. İyileşme sürecini otomatikleştir 
+5. İyileşme sürecini otomatikleştir

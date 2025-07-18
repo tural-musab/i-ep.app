@@ -28,13 +28,13 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  ChevronsLeft, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
   ChevronsRight,
   Search,
-  Loader2
+  Loader2,
 } from 'lucide-react';
 
 interface DataTableProps<TData, TValue> {
@@ -89,7 +89,7 @@ export function DataTable<TData, TValue>({
       {searchColumn && (
         <div className="flex items-center py-4">
           <div className="relative w-full max-w-sm">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+            <Search className="absolute top-2.5 left-2.5 h-4 w-4 text-gray-500" />
             <Input
               placeholder={searchPlaceholder}
               value={(table.getColumn(searchColumn)?.getFilterValue() as string) ?? ''}
@@ -111,10 +111,7 @@ export function DataTable<TData, TValue>({
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
@@ -123,38 +120,26 @@ export function DataTable<TData, TValue>({
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  <div className="flex justify-center items-center h-full">
-                    <Loader2 className="h-6 w-6 text-primary animate-spin mr-2" />
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <div className="flex h-full items-center justify-center">
+                    <Loader2 className="text-primary mr-2 h-6 w-6 animate-spin" />
                     <span>Yükleniyor...</span>
                   </div>
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row: Row<TData>) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
+                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
                   {row.getVisibleCells().map((cell: Cell<TData, unknown>) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="h-24 text-center">
                   {emptyMessage}
                 </TableCell>
               </TableRow>
@@ -165,7 +150,7 @@ export function DataTable<TData, TValue>({
 
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex items-center space-x-2">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Toplam <strong>{table.getFilteredRowModel().rows.length}</strong> kayıt
           </p>
           <select
@@ -173,7 +158,7 @@ export function DataTable<TData, TValue>({
             onChange={(e) => {
               table.setPageSize(Number(e.target.value));
             }}
-            className="h-8 w-16 rounded-md border border-input bg-background text-sm"
+            className="border-input bg-background h-8 w-16 rounded-md border text-sm"
           >
             {pageSizeOptions.map((pageSize) => (
               <option key={pageSize} value={pageSize}>
@@ -202,11 +187,8 @@ export function DataTable<TData, TValue>({
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="text-sm">
-            Sayfa{' '}
-            <strong>
-              {table.getState().pagination.pageIndex + 1}
-            </strong>{' '}
-            / {table.getPageCount()}
+            Sayfa <strong>{table.getState().pagination.pageIndex + 1}</strong> /{' '}
+            {table.getPageCount()}
           </span>
           <Button
             variant="outline"
@@ -230,4 +212,4 @@ export function DataTable<TData, TValue>({
       </div>
     </div>
   );
-} 
+}

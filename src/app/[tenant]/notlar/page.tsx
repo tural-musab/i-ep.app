@@ -6,33 +6,33 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/ui/data-table';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue 
+  SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
-  GraduationCap, 
-  TrendingUp, 
-  Users, 
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  GraduationCap,
+  TrendingUp,
+  Users,
   BookOpen,
   FileText,
   Calculator,
-  Download
+  Download,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 
@@ -119,12 +119,12 @@ const gradeColumns = [
       const grade = row.getValue('grade');
       const maxGrade = row.original.maxGrade;
       const percentage = (grade / maxGrade) * 100;
-      
+
       let colorClass = 'text-red-600';
       if (percentage >= 85) colorClass = 'text-green-600';
       else if (percentage >= 70) colorClass = 'text-blue-600';
       else if (percentage >= 60) colorClass = 'text-yellow-600';
-      
+
       return (
         <span className={`font-semibold ${colorClass}`}>
           {grade}/{maxGrade} ({percentage.toFixed(0)}%)
@@ -188,11 +188,9 @@ const summaryColumns = [
       if (avg >= 85) colorClass = 'text-green-600';
       else if (avg >= 70) colorClass = 'text-blue-600';
       else if (avg >= 60) colorClass = 'text-yellow-600';
-      
+
       return (
-        <span className={`font-semibold ${colorClass}`}>
-          {avg > 0 ? avg.toFixed(1) : '-'}
-        </span>
+        <span className={`font-semibold ${colorClass}`}>{avg > 0 ? avg.toFixed(1) : '-'}</span>
       );
     },
   },
@@ -202,17 +200,20 @@ const summaryColumns = [
     cell: ({ row }: { row: { getValue: (key: string) => string } }) => {
       const grade = row.getValue('letterGrade');
       const gradeConfig = {
-        'AA': { variant: 'default' as const, color: 'bg-green-100 text-green-800' },
-        'BA': { variant: 'default' as const, color: 'bg-blue-100 text-blue-800' },
-        'BB': { variant: 'secondary' as const, color: 'bg-blue-100 text-blue-800' },
-        'CB': { variant: 'secondary' as const, color: 'bg-yellow-100 text-yellow-800' },
-        'CC': { variant: 'outline' as const, color: 'bg-yellow-100 text-yellow-800' },
-        'DC': { variant: 'outline' as const, color: 'bg-orange-100 text-orange-800' },
-        'DD': { variant: 'outline' as const, color: 'bg-orange-100 text-orange-800' },
-        'FF': { variant: 'destructive' as const, color: 'bg-red-100 text-red-800' },
+        AA: { variant: 'default' as const, color: 'bg-green-100 text-green-800' },
+        BA: { variant: 'default' as const, color: 'bg-blue-100 text-blue-800' },
+        BB: { variant: 'secondary' as const, color: 'bg-blue-100 text-blue-800' },
+        CB: { variant: 'secondary' as const, color: 'bg-yellow-100 text-yellow-800' },
+        CC: { variant: 'outline' as const, color: 'bg-yellow-100 text-yellow-800' },
+        DC: { variant: 'outline' as const, color: 'bg-orange-100 text-orange-800' },
+        DD: { variant: 'outline' as const, color: 'bg-orange-100 text-orange-800' },
+        FF: { variant: 'destructive' as const, color: 'bg-red-100 text-red-800' },
       };
-      const config = gradeConfig[grade as keyof typeof gradeConfig] || { variant: 'outline' as const, color: '' };
-      
+      const config = gradeConfig[grade as keyof typeof gradeConfig] || {
+        variant: 'outline' as const,
+        color: '',
+      };
+
       return grade ? (
         <Badge variant={config.variant} className={config.color}>
           {grade}
@@ -251,97 +252,103 @@ export default function GradesPage() {
   const [selectedGrade, setSelectedGrade] = useState<Grade | null>(null);
 
   // Mock data
-  const mockGrades: Grade[] = useMemo(() => [
-    {
-      id: '1',
-      studentId: 'student1',
-      studentName: 'Ahmet Yılmaz',
-      studentNumber: '2024001',
-      classId: 'class1',
-      className: '9-A',
-      subjectId: 'math',
-      subjectName: 'Matematik',
-      teacherId: 'teacher1',
-      teacherName: 'Mehmet Öztürk',
-      examType: 'midterm',
-      examName: '1. Ara Sınav',
-      grade: 85,
-      maxGrade: 100,
-      weight: 40,
-      examDate: '2024-11-15',
-      entryDate: '2024-11-16',
-      notes: 'İyi performans',
-      tenantId: currentTenantId || 'demo-school',
-    },
-    {
-      id: '2',
-      studentId: 'student1',
-      studentName: 'Ahmet Yılmaz',
-      studentNumber: '2024001',
-      classId: 'class1',
-      className: '9-A',
-      subjectId: 'physics',
-      subjectName: 'Fizik',
-      teacherId: 'teacher2',
-      teacherName: 'Ayşe Demir',
-      examType: 'quiz',
-      examName: 'Quiz 1',
-      grade: 78,
-      maxGrade: 100,
-      weight: 10,
-      examDate: '2024-11-10',
-      entryDate: '2024-11-11',
-      tenantId: currentTenantId || 'demo-school',
-    },
-    {
-      id: '3',
-      studentId: 'student2',
-      studentName: 'Ayşe Demir',
-      studentNumber: '2024002',
-      classId: 'class1',
-      className: '9-A',
-      subjectId: 'math',
-      subjectName: 'Matematik',
-      teacherId: 'teacher1',
-      teacherName: 'Mehmet Öztürk',
-      examType: 'midterm',
-      examName: '1. Ara Sınav',
-      grade: 92,
-      maxGrade: 100,
-      weight: 40,
-      examDate: '2024-11-15',
-      entryDate: '2024-11-16',
-      notes: 'Mükemmel performans',
-      tenantId: currentTenantId || 'demo-school',
-    },
-  ], [currentTenantId]);
+  const mockGrades: Grade[] = useMemo(
+    () => [
+      {
+        id: '1',
+        studentId: 'student1',
+        studentName: 'Ahmet Yılmaz',
+        studentNumber: '2024001',
+        classId: 'class1',
+        className: '9-A',
+        subjectId: 'math',
+        subjectName: 'Matematik',
+        teacherId: 'teacher1',
+        teacherName: 'Mehmet Öztürk',
+        examType: 'midterm',
+        examName: '1. Ara Sınav',
+        grade: 85,
+        maxGrade: 100,
+        weight: 40,
+        examDate: '2024-11-15',
+        entryDate: '2024-11-16',
+        notes: 'İyi performans',
+        tenantId: currentTenantId || 'demo-school',
+      },
+      {
+        id: '2',
+        studentId: 'student1',
+        studentName: 'Ahmet Yılmaz',
+        studentNumber: '2024001',
+        classId: 'class1',
+        className: '9-A',
+        subjectId: 'physics',
+        subjectName: 'Fizik',
+        teacherId: 'teacher2',
+        teacherName: 'Ayşe Demir',
+        examType: 'quiz',
+        examName: 'Quiz 1',
+        grade: 78,
+        maxGrade: 100,
+        weight: 10,
+        examDate: '2024-11-10',
+        entryDate: '2024-11-11',
+        tenantId: currentTenantId || 'demo-school',
+      },
+      {
+        id: '3',
+        studentId: 'student2',
+        studentName: 'Ayşe Demir',
+        studentNumber: '2024002',
+        classId: 'class1',
+        className: '9-A',
+        subjectId: 'math',
+        subjectName: 'Matematik',
+        teacherId: 'teacher1',
+        teacherName: 'Mehmet Öztürk',
+        examType: 'midterm',
+        examName: '1. Ara Sınav',
+        grade: 92,
+        maxGrade: 100,
+        weight: 40,
+        examDate: '2024-11-15',
+        entryDate: '2024-11-16',
+        notes: 'Mükemmel performans',
+        tenantId: currentTenantId || 'demo-school',
+      },
+    ],
+    [currentTenantId]
+  );
 
-  const mockSummaries: GradeSummary[] = useMemo(() => [
-    {
-      studentId: 'student1',
-      studentName: 'Ahmet Yılmaz',
-      subjectId: 'math',
-      subjectName: 'Matematik',
-      className: '9-A',
-      midtermAverage: 85,
-      finalAverage: 0,
-      overallAverage: 85,
-      letterGrade: 'BA',
-      status: 'pending',
-    },
-    {
-      studentId: 'student2',
-      studentName: 'Ayşe Demir',
-      subjectId: 'math',
-      subjectName: 'Matematik',
-      className: '9-A',
-      midtermAverage: 92,
-      finalAverage: 0,
-      overallAverage: 92,
-      letterGrade: 'AA',
-      status: 'pending',
-    },
-  ], []);
+  const mockSummaries: GradeSummary[] = useMemo(
+    () => [
+      {
+        studentId: 'student1',
+        studentName: 'Ahmet Yılmaz',
+        subjectId: 'math',
+        subjectName: 'Matematik',
+        className: '9-A',
+        midtermAverage: 85,
+        finalAverage: 0,
+        overallAverage: 85,
+        letterGrade: 'BA',
+        status: 'pending',
+      },
+      {
+        studentId: 'student2',
+        studentName: 'Ayşe Demir',
+        subjectId: 'math',
+        subjectName: 'Matematik',
+        className: '9-A',
+        midtermAverage: 92,
+        finalAverage: 0,
+        overallAverage: 92,
+        letterGrade: 'AA',
+        status: 'pending',
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     const loadGrades = async () => {
@@ -363,27 +370,27 @@ export default function GradesPage() {
     }
   }, [currentTenantId, mockGrades, mockSummaries]);
 
-  const filteredGrades = grades.filter(grade => {
-    const matchesSearch = 
+  const filteredGrades = grades.filter((grade) => {
+    const matchesSearch =
       grade.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       grade.studentNumber.includes(searchTerm) ||
       grade.subjectName.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesClass = classFilter === 'all' || grade.className === classFilter;
     const matchesSubject = subjectFilter === 'all' || grade.subjectName === subjectFilter;
     const matchesExamType = examTypeFilter === 'all' || grade.examType === examTypeFilter;
-    
+
     return matchesSearch && matchesClass && matchesSubject && matchesExamType;
   });
 
-  const filteredSummaries = gradeSummaries.filter(summary => {
-    const matchesSearch = 
+  const filteredSummaries = gradeSummaries.filter((summary) => {
+    const matchesSearch =
       summary.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       summary.subjectName.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesClass = classFilter === 'all' || summary.className === classFilter;
     const matchesSubject = subjectFilter === 'all' || summary.subjectName === subjectFilter;
-    
+
     return matchesSearch && matchesClass && matchesSubject;
   });
 
@@ -400,7 +407,7 @@ export default function GradesPage() {
   const handleDeleteGrade = async (gradeId: string) => {
     if (confirm('Bu notu silmek istediğinizden emin misiniz?')) {
       try {
-        setGrades(prev => prev.filter(g => g.id !== gradeId));
+        setGrades((prev) => prev.filter((g) => g.id !== gradeId));
       } catch (error) {
         console.error('Not silinirken hata:', error);
       }
@@ -411,7 +418,7 @@ export default function GradesPage() {
     <form className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Öğrenci</label>
+          <label className="mb-1 block text-sm font-medium">Öğrenci</label>
           <Select defaultValue={selectedGrade?.studentId}>
             <SelectTrigger>
               <SelectValue placeholder="Öğrenci seçin" />
@@ -423,7 +430,7 @@ export default function GradesPage() {
           </Select>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Ders</label>
+          <label className="mb-1 block text-sm font-medium">Ders</label>
           <Select defaultValue={selectedGrade?.subjectId}>
             <SelectTrigger>
               <SelectValue placeholder="Ders seçin" />
@@ -437,10 +444,10 @@ export default function GradesPage() {
           </Select>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Sınav Türü</label>
+          <label className="mb-1 block text-sm font-medium">Sınav Türü</label>
           <Select defaultValue={selectedGrade?.examType}>
             <SelectTrigger>
               <SelectValue placeholder="Sınav türü seçin" />
@@ -455,18 +462,15 @@ export default function GradesPage() {
           </Select>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Sınav Adı</label>
-          <Input 
-            placeholder="1. Ara Sınav"
-            defaultValue={selectedGrade?.examName}
-          />
+          <label className="mb-1 block text-sm font-medium">Sınav Adı</label>
+          <Input placeholder="1. Ara Sınav" defaultValue={selectedGrade?.examName} />
         </div>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Not</label>
-          <Input 
+          <label className="mb-1 block text-sm font-medium">Not</label>
+          <Input
             type="number"
             placeholder="85"
             min="0"
@@ -475,17 +479,12 @@ export default function GradesPage() {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Maks. Not</label>
-          <Input 
-            type="number"
-            placeholder="100"
-            min="1"
-            defaultValue={selectedGrade?.maxGrade}
-          />
+          <label className="mb-1 block text-sm font-medium">Maks. Not</label>
+          <Input type="number" placeholder="100" min="1" defaultValue={selectedGrade?.maxGrade} />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Ağırlık (%)</label>
-          <Input 
+          <label className="mb-1 block text-sm font-medium">Ağırlık (%)</label>
+          <Input
             type="number"
             placeholder="40"
             min="0"
@@ -496,32 +495,20 @@ export default function GradesPage() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Sınav Tarihi</label>
-        <Input 
-          type="date"
-          defaultValue={selectedGrade?.examDate}
-        />
+        <label className="mb-1 block text-sm font-medium">Sınav Tarihi</label>
+        <Input type="date" defaultValue={selectedGrade?.examDate} />
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Notlar</label>
-        <Input 
-          placeholder="Ek notlar (opsiyonel)"
-          defaultValue={selectedGrade?.notes}
-        />
+        <label className="mb-1 block text-sm font-medium">Notlar</label>
+        <Input placeholder="Ek notlar (opsiyonel)" defaultValue={selectedGrade?.notes} />
       </div>
 
       <div className="flex justify-end space-x-2 pt-4">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={() => setIsCreateDialogOpen(false)}
-        >
+        <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
           İptal
         </Button>
-        <Button type="submit">
-          {selectedGrade ? 'Güncelle' : 'Kaydet'}
-        </Button>
+        <Button type="submit">{selectedGrade ? 'Güncelle' : 'Kaydet'}</Button>
       </div>
     </form>
   );
@@ -535,18 +522,10 @@ export default function GradesPage() {
         const grade = row.original;
         return (
           <div className="flex space-x-2">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => handleEditGrade(grade)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => handleEditGrade(grade)}>
               <Edit className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => handleDeleteGrade(grade.id)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => handleDeleteGrade(grade.id)}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
@@ -559,39 +538,37 @@ export default function GradesPage() {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 w-1/4 rounded bg-gray-200"></div>
+          <div className="h-64 rounded bg-gray-200"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+      <div className="flex flex-col items-start justify-between space-y-4 sm:flex-row sm:items-center sm:space-y-0">
         <div>
           <h1 className="text-2xl font-bold">Not Yönetimi</h1>
           <p className="text-gray-600">Öğrenci notlarını girin ve değerlendirin</p>
         </div>
-        
+
         <div className="flex space-x-2">
           <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Rapor Al
           </Button>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={handleCreateGrade}>
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Not Ekle
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-2xl">
               <DialogHeader>
-                <DialogTitle>
-                  {selectedGrade ? 'Not Düzenle' : 'Yeni Not Ekle'}
-                </DialogTitle>
+                <DialogTitle>{selectedGrade ? 'Not Düzenle' : 'Yeni Not Ekle'}</DialogTitle>
               </DialogHeader>
               <GradeForm />
             </DialogContent>
@@ -600,11 +577,11 @@ export default function GradesPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-blue-100 rounded-full">
+              <div className="rounded-full bg-blue-100 p-2">
                 <GraduationCap className="h-4 w-4 text-blue-600" />
               </div>
               <div>
@@ -614,51 +591,54 @@ export default function GradesPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-green-100 rounded-full">
+              <div className="rounded-full bg-green-100 p-2">
                 <TrendingUp className="h-4 w-4 text-green-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Ortalama</p>
                 <p className="text-xl font-semibold">
-                  {grades.length > 0 
-                    ? (grades.reduce((sum, g) => sum + (g.grade / g.maxGrade * 100), 0) / grades.length).toFixed(1)
+                  {grades.length > 0
+                    ? (
+                        grades.reduce((sum, g) => sum + (g.grade / g.maxGrade) * 100, 0) /
+                        grades.length
+                      ).toFixed(1)
                     : '0'}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-yellow-100 rounded-full">
+              <div className="rounded-full bg-yellow-100 p-2">
                 <Users className="h-4 w-4 text-yellow-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Geçen Öğrenci</p>
                 <p className="text-xl font-semibold">
-                  {gradeSummaries.filter(s => s.status === 'passed').length}
+                  {gradeSummaries.filter((s) => s.status === 'passed').length}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-purple-100 rounded-full">
+              <div className="rounded-full bg-purple-100 p-2">
                 <BookOpen className="h-4 w-4 text-purple-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Ders Sayısı</p>
                 <p className="text-xl font-semibold">
-                  {new Set(grades.map(g => g.subjectName)).size}
+                  {new Set(grades.map((g) => g.subjectName)).size}
                 </p>
               </div>
             </div>
@@ -678,16 +658,16 @@ export default function GradesPage() {
             <span>Not Özetleri</span>
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="grades" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Not Girişleri</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
+              <div className="mb-4 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <Input
                     placeholder="Öğrenci, ders ara"
                     value={searchTerm}
@@ -695,7 +675,7 @@ export default function GradesPage() {
                     className="pl-10"
                   />
                 </div>
-                
+
                 <Select value={classFilter} onValueChange={setClassFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Sınıf filtrele" />
@@ -706,7 +686,7 @@ export default function GradesPage() {
                     <SelectItem value="10-B">10-B</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select value={subjectFilter} onValueChange={setSubjectFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Ders filtrele" />
@@ -717,7 +697,7 @@ export default function GradesPage() {
                     <SelectItem value="Fizik">Fizik</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select value={examTypeFilter} onValueChange={setExamTypeFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Sınav türü" />
@@ -733,23 +713,20 @@ export default function GradesPage() {
                 </Select>
               </div>
 
-              <DataTable
-                columns={gradeTableColumns}
-                data={filteredGrades}
-              />
+              <DataTable columns={gradeTableColumns} data={filteredGrades} />
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="summary" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Not Özetleri</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
+              <div className="mb-4 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <Input
                     placeholder="Öğrenci, ders ara"
                     value={searchTerm}
@@ -757,7 +734,7 @@ export default function GradesPage() {
                     className="pl-10"
                   />
                 </div>
-                
+
                 <Select value={classFilter} onValueChange={setClassFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Sınıf filtrele" />
@@ -768,7 +745,7 @@ export default function GradesPage() {
                     <SelectItem value="10-B">10-B</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select value={subjectFilter} onValueChange={setSubjectFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Ders filtrele" />
@@ -781,10 +758,7 @@ export default function GradesPage() {
                 </Select>
               </div>
 
-              <DataTable
-                columns={summaryColumns}
-                data={filteredSummaries}
-              />
+              <DataTable columns={summaryColumns} data={filteredSummaries} />
             </CardContent>
           </Card>
         </TabsContent>

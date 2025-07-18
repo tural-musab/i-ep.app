@@ -4,7 +4,7 @@
  * Referans: docs/domain-management.md
  */
 
-"use client";
+'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -43,7 +43,7 @@ export default function DomainDetailPage({ params }: DomainDetailPageProps) {
   const fetchDomainDetails = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`/api/domains/${domainId}`);
       const result = await response.json();
@@ -51,20 +51,20 @@ export default function DomainDetailPage({ params }: DomainDetailPageProps) {
       if (result.success) {
         setDomain(result.data);
       } else {
-        setError(result.error || "Domain bilgileri alınamadı");
+        setError(result.error || 'Domain bilgileri alınamadı');
         toast({
-          title: "Hata",
-          description: result.error || "Domain bilgileri alınamadı",
-          variant: "destructive",
+          title: 'Hata',
+          description: result.error || 'Domain bilgileri alınamadı',
+          variant: 'destructive',
         });
       }
     } catch (error) {
-      console.error("Domain bilgileri alınamadı:", error);
-      setError("Domain bilgileri alınamadı");
+      console.error('Domain bilgileri alınamadı:', error);
+      setError('Domain bilgileri alınamadı');
       toast({
-        title: "Hata",
-        description: "Domain bilgileri alınamadı",
-        variant: "destructive",
+        title: 'Hata',
+        description: 'Domain bilgileri alınamadı',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -75,59 +75,59 @@ export default function DomainDetailPage({ params }: DomainDetailPageProps) {
   useEffect(() => {
     fetchDomainDetails();
   }, [fetchDomainDetails]);
-  
+
   // Doğrulama tamamlandığında
   const handleVerificationCompleted = () => {
     toast({
-      title: "Doğrulama Tamamlandı",
-      description: "Domain başarıyla doğrulandı",
+      title: 'Doğrulama Tamamlandı',
+      description: 'Domain başarıyla doğrulandı',
     });
     fetchDomainDetails(); // Domain bilgilerini güncelle
   };
-  
+
   // Doğrulama hatası
   const handleVerificationError = (error: Error) => {
     toast({
-      title: "Doğrulama Hatası",
-      description: error.message || "Domain doğrulanırken bir hata oluştu",
-      variant: "destructive",
+      title: 'Doğrulama Hatası',
+      description: error.message || 'Domain doğrulanırken bir hata oluştu',
+      variant: 'destructive',
     });
   };
-  
+
   // SSL yenileme
   const handleSSLRenewal = () => {
     toast({
-      title: "SSL Yenileme",
-      description: "SSL sertifikası yenileme işlemi başlatıldı",
+      title: 'SSL Yenileme',
+      description: 'SSL sertifikası yenileme işlemi başlatıldı',
     });
   };
-  
+
   if (loading) {
     return (
-      <div className="container mx-auto py-8 flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="container mx-auto flex h-96 items-center justify-center py-8">
+        <Loader2 className="text-primary h-8 w-8 animate-spin" />
       </div>
     );
   }
-  
+
   if (error || !domain) {
     return (
       <div className="container mx-auto py-8">
-        <div className="flex items-center mb-6">
+        <div className="mb-6 flex items-center">
           <Link href="/admin/domains">
             <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Domainlere Dön
             </Button>
           </Link>
         </div>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Hata</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>{error || "Domain bulunamadı"}</p>
+            <p>{error || 'Domain bulunamadı'}</p>
             <Button className="mt-4" onClick={fetchDomainDetails}>
               Tekrar Dene
             </Button>
@@ -136,101 +136,97 @@ export default function DomainDetailPage({ params }: DomainDetailPageProps) {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto py-8">
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Link href="/admin/domains">
             <Button variant="ghost" size="sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="mr-2 h-4 w-4" />
               Domainlere Dön
             </Button>
           </Link>
           <h1 className="text-3xl font-bold">{domain.domain}</h1>
         </div>
-        
-        <Button 
-          variant="outline" 
-          size="sm" 
+
+        <Button
+          variant="outline"
+          size="sm"
           onClick={() => window.open(`https://${domain.domain}`, '_blank')}
           disabled={!domain.is_verified}
         >
-          <ExternalLink className="h-4 w-4 mr-2" />
+          <ExternalLink className="mr-2 h-4 w-4" />
           Ziyaret Et
         </Button>
       </div>
-      
-      <Tabs defaultValue={domain.is_verified ? "info" : "verification"} className="mb-8">
+
+      <Tabs defaultValue={domain.is_verified ? 'info' : 'verification'} className="mb-8">
         <TabsList>
           <TabsTrigger value="info">Domain Bilgileri</TabsTrigger>
-          {domain.type === "custom" && !domain.is_verified && (
+          {domain.type === 'custom' && !domain.is_verified && (
             <TabsTrigger value="verification">Doğrulama</TabsTrigger>
           )}
-          {domain.is_verified && (
-            <TabsTrigger value="ssl">SSL Durumu</TabsTrigger>
-          )}
+          {domain.is_verified && <TabsTrigger value="ssl">SSL Durumu</TabsTrigger>}
         </TabsList>
-        
+
         <TabsContent value="info" className="mt-6">
           <Card>
             <CardHeader>
               <CardTitle>Domain Bilgileri</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Domain</h3>
+                  <h3 className="text-muted-foreground text-sm font-medium">Domain</h3>
                   <p className="text-lg font-medium">{domain.domain}</p>
                 </div>
-                
+
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Tür</h3>
+                  <h3 className="text-muted-foreground text-sm font-medium">Tür</h3>
                   <p className="text-lg font-medium">
-                    {domain.type === "subdomain" ? "Subdomain" : "Özel Domain"}
+                    {domain.type === 'subdomain' ? 'Subdomain' : 'Özel Domain'}
                   </p>
                 </div>
-                
+
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Doğrulama Durumu</h3>
+                  <h3 className="text-muted-foreground text-sm font-medium">Doğrulama Durumu</h3>
                   <p className="text-lg font-medium">
-                    {domain.is_verified ? "Doğrulanmış" : "Doğrulanmamış"}
+                    {domain.is_verified ? 'Doğrulanmış' : 'Doğrulanmamış'}
                   </p>
                 </div>
-                
+
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Primary</h3>
-                  <p className="text-lg font-medium">
-                    {domain.is_primary ? "Evet" : "Hayır"}
-                  </p>
+                  <h3 className="text-muted-foreground text-sm font-medium">Primary</h3>
+                  <p className="text-lg font-medium">{domain.is_primary ? 'Evet' : 'Hayır'}</p>
                 </div>
-                
+
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Oluşturulma Tarihi</h3>
+                  <h3 className="text-muted-foreground text-sm font-medium">Oluşturulma Tarihi</h3>
                   <p className="text-lg font-medium">
                     {new Date(domain.created_at).toLocaleDateString('tr-TR')}
                   </p>
                 </div>
-                
+
                 {domain.verified_at && (
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground">Doğrulama Tarihi</h3>
+                    <h3 className="text-muted-foreground text-sm font-medium">Doğrulama Tarihi</h3>
                     <p className="text-lg font-medium">
                       {new Date(domain.verified_at).toLocaleDateString('tr-TR')}
                     </p>
                   </div>
                 )}
-                
+
                 <div>
-                  <h3 className="text-sm font-medium text-muted-foreground">Tenant ID</h3>
+                  <h3 className="text-muted-foreground text-sm font-medium">Tenant ID</h3>
                   <p className="text-lg font-medium">{domain.tenant_id}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-        
-        {domain.type === "custom" && !domain.is_verified && (
+
+        {domain.type === 'custom' && !domain.is_verified && (
           <TabsContent value="verification" className="mt-6">
             <DomainVerification
               domainId={domainId}
@@ -241,7 +237,7 @@ export default function DomainDetailPage({ params }: DomainDetailPageProps) {
             />
           </TabsContent>
         )}
-        
+
         {domain.is_verified && (
           <TabsContent value="ssl" className="mt-6">
             <SSLStatus
@@ -255,4 +251,4 @@ export default function DomainDetailPage({ params }: DomainDetailPageProps) {
       </Tabs>
     </div>
   );
-} 
+}

@@ -19,17 +19,25 @@ const UpdateAssignmentSchema = z.object({
   class_id: z.string().uuid('Invalid class ID').optional(),
   teacher_id: z.string().uuid('Invalid teacher ID').optional(),
   due_date: z.string().datetime('Invalid due date').optional(),
-  max_score: z.number().min(1, 'Max score must be positive').max(1000, 'Max score too high').optional(),
+  max_score: z
+    .number()
+    .min(1, 'Max score must be positive')
+    .max(1000, 'Max score too high')
+    .optional(),
   instructions: z.string().optional(),
   attachments: z.array(z.string()).optional(),
-  rubric: z.array(z.object({
-    criteria: z.string(),
-    points: z.number(),
-    description: z.string().optional()
-  })).optional(),
+  rubric: z
+    .array(
+      z.object({
+        criteria: z.string(),
+        points: z.number(),
+        description: z.string().optional(),
+      })
+    )
+    .optional(),
   metadata: z.record(z.any()).optional(),
   status: z.enum(['draft', 'published', 'completed', 'archived']).optional(),
-  is_graded: z.boolean().optional()
+  is_graded: z.boolean().optional(),
 });
 
 /**
@@ -38,11 +46,11 @@ const UpdateAssignmentSchema = z.object({
 function getTenantId(): string {
   const headersList = headers();
   const tenantId = headersList.get('x-tenant-id');
-  
+
   if (!tenantId) {
     throw new Error('Tenant ID not found in headers');
   }
-  
+
   return tenantId;
 }
 
@@ -50,21 +58,18 @@ function getTenantId(): string {
  * GET /api/assignments/[id]
  * Get a specific assignment by ID
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Validate assignment ID
@@ -81,32 +86,25 @@ export async function GET(
     // Fetch assignment
     const assignment = await assignmentRepo.findById(assignmentId, {
       includeRelations,
-      includeStatistics
+      includeStatistics,
     });
 
     if (!assignment) {
-      return NextResponse.json(
-        { error: 'Assignment not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
     }
 
     return NextResponse.json(assignment);
-
   } catch (error) {
     console.error('Error fetching assignment:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid assignment ID', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -114,21 +112,18 @@ export async function GET(
  * PUT /api/assignments/[id]
  * Update a specific assignment
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Validate assignment ID
@@ -141,53 +136,44 @@ export async function PUT(
     // Verify user has permission to update assignment
     const userId = session.user.id;
     const userRole = session.user.app_metadata?.role || 'user';
-    
+
     // Initialize repository
     const assignmentRepo = new AssignmentRepository(tenantId);
 
     // Check if assignment exists and user has permission
     const existingAssignment = await assignmentRepo.findById(assignmentId);
     if (!existingAssignment) {
-      return NextResponse.json(
-        { error: 'Assignment not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
     }
 
     // Permission check: Only teachers who created the assignment, admins, or super admins can update
-    const canUpdate = userRole === 'super_admin' || 
-                     userRole === 'admin' || 
-                     (userRole === 'teacher' && existingAssignment.teacher_id === userId);
+    const canUpdate =
+      userRole === 'super_admin' ||
+      userRole === 'admin' ||
+      (userRole === 'teacher' && existingAssignment.teacher_id === userId);
 
     if (!canUpdate) {
-      return NextResponse.json(
-        { error: 'Insufficient permissions' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
     // Update assignment
     const updatedAssignment = await assignmentRepo.update(assignmentId, {
       ...validatedData,
-      updated_by: userId
+      updated_by: userId,
     });
 
     return NextResponse.json(updatedAssignment);
-
   } catch (error) {
     console.error('Error updating assignment:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -195,21 +181,18 @@ export async function PUT(
  * DELETE /api/assignments/[id]
  * Delete a specific assignment
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Validate assignment ID
@@ -218,29 +201,24 @@ export async function DELETE(
     // Verify user has permission to delete assignment
     const userId = session.user.id;
     const userRole = session.user.app_metadata?.role || 'user';
-    
+
     // Initialize repository
     const assignmentRepo = new AssignmentRepository(tenantId);
 
     // Check if assignment exists and user has permission
     const existingAssignment = await assignmentRepo.findById(assignmentId);
     if (!existingAssignment) {
-      return NextResponse.json(
-        { error: 'Assignment not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
     }
 
     // Permission check: Only teachers who created the assignment, admins, or super admins can delete
-    const canDelete = userRole === 'super_admin' || 
-                     userRole === 'admin' || 
-                     (userRole === 'teacher' && existingAssignment.teacher_id === userId);
+    const canDelete =
+      userRole === 'super_admin' ||
+      userRole === 'admin' ||
+      (userRole === 'teacher' && existingAssignment.teacher_id === userId);
 
     if (!canDelete) {
-      return NextResponse.json(
-        { error: 'Insufficient permissions' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
     // Check if assignment has submissions
@@ -250,13 +228,13 @@ export async function DELETE(
       // Instead, archive them
       const archivedAssignment = await assignmentRepo.update(assignmentId, {
         status: 'archived',
-        updated_by: userId
+        updated_by: userId,
       });
-      
+
       return NextResponse.json({
         success: true,
         message: 'Assignment archived instead of deleted due to existing submissions',
-        assignment: archivedAssignment
+        assignment: archivedAssignment,
       });
     }
 
@@ -264,30 +242,23 @@ export async function DELETE(
     const deleted = await assignmentRepo.delete(assignmentId);
 
     if (!deleted) {
-      return NextResponse.json(
-        { error: 'Failed to delete assignment' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to delete assignment' }, { status: 500 });
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Assignment deleted successfully'
+      message: 'Assignment deleted successfully',
     });
-
   } catch (error) {
     console.error('Error deleting assignment:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid assignment ID', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

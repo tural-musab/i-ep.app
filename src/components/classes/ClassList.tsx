@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -8,18 +8,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { PlusIcon } from "@radix-ui/react-icons";
-import { ClassForm } from "./ClassForm";
+} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { PlusIcon } from '@radix-ui/react-icons';
+import { ClassForm } from './ClassForm';
 
 interface Teacher {
   id: string;
@@ -50,12 +50,12 @@ export function ClassList({ classes, onClassCreated }: ClassListProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Sınıflar</h2>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button>
-              <PlusIcon className="w-4 h-4 mr-2" />
+              <PlusIcon className="mr-2 h-4 w-4" />
               Yeni Sınıf
             </Button>
           </DialogTrigger>
@@ -73,7 +73,7 @@ export function ClassList({ classes, onClassCreated }: ClassListProps) {
         </Dialog>
       </div>
 
-      <div className="border rounded-lg">
+      <div className="rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -92,45 +92,35 @@ export function ClassList({ classes, onClassCreated }: ClassListProps) {
                 <TableCell className="font-medium">
                   <div>
                     <div>{classItem.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {classItem.academic_year}
-                    </div>
+                    <div className="text-muted-foreground text-sm">{classItem.academic_year}</div>
                   </div>
                 </TableCell>
                 <TableCell>
                   {classItem.homeroom_teacher ? (
                     <div>
                       <div>
-                        {classItem.homeroom_teacher.first_name}{" "}
+                        {classItem.homeroom_teacher.first_name}{' '}
                         {classItem.homeroom_teacher.last_name}
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-muted-foreground text-sm">
                         {classItem.homeroom_teacher.email}
                       </div>
                     </div>
                   ) : (
-                    <span className="text-muted-foreground">
-                      Sınıf öğretmeni atanmamış
-                    </span>
+                    <span className="text-muted-foreground">Sınıf öğretmeni atanmamış</span>
                   )}
                 </TableCell>
-                <TableCell className="text-center">
-                  {classItem.grade_level}. Sınıf
-                </TableCell>
+                <TableCell className="text-center">{classItem.grade_level}. Sınıf</TableCell>
                 <TableCell className="text-center">
                   <div>
                     <div>{classItem.student_count}</div>
-                    <div className="text-sm text-muted-foreground">
-                      / {classItem.capacity}
-                    </div>
+                    <div className="text-muted-foreground text-sm">/ {classItem.capacity}</div>
                   </div>
                 </TableCell>
+                <TableCell className="text-center">{classItem.teacher_count}</TableCell>
                 <TableCell className="text-center">
-                  {classItem.teacher_count}
-                </TableCell>
-                <TableCell className="text-center">
-                  <Badge variant={classItem.is_active ? "default" : "secondary"}>
-                    {classItem.is_active ? "Aktif" : "Pasif"}
+                  <Badge variant={classItem.is_active ? 'default' : 'secondary'}>
+                    {classItem.is_active ? 'Aktif' : 'Pasif'}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">
@@ -142,10 +132,8 @@ export function ClassList({ classes, onClassCreated }: ClassListProps) {
             ))}
             {classes.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center h-24">
-                  <div className="text-muted-foreground">
-                    Henüz sınıf oluşturulmamış
-                  </div>
+                <TableCell colSpan={7} className="h-24 text-center">
+                  <div className="text-muted-foreground">Henüz sınıf oluşturulmamış</div>
                 </TableCell>
               </TableRow>
             )}
@@ -154,4 +142,4 @@ export function ClassList({ classes, onClassCreated }: ClassListProps) {
       </div>
     </div>
   );
-} 
+}

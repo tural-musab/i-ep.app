@@ -217,7 +217,11 @@ export interface ScheduleGeneration {
         duration: number;
       }>;
       optimization_priorities: Array<{
-        factor: 'teacher_preference' | 'classroom_utilization' | 'student_load' | 'resource_efficiency';
+        factor:
+          | 'teacher_preference'
+          | 'classroom_utilization'
+          | 'student_load'
+          | 'resource_efficiency';
         weight: number;
       }>;
     };
@@ -260,7 +264,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
           name: '5-A',
           teacher: 'Ahmet Öğretmen',
           student_count: 28,
-          grade_level: 5
+          grade_level: 5,
         },
         weekly_schedule: [
           {
@@ -274,7 +278,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 teacher_id: 'teacher_1',
                 teacher_name: 'Ayşe Matematik',
                 classroom: 'A-101',
-                notes: 'Haftalık test'
+                notes: 'Haftalık test',
               },
               {
                 period_number: 2,
@@ -283,7 +287,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 subject: 'Türkçe',
                 teacher_id: 'teacher_2',
                 teacher_name: 'Mehmet Türkçe',
-                classroom: 'A-101'
+                classroom: 'A-101',
               },
               {
                 period_number: 3,
@@ -292,7 +296,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 subject: 'Fen Bilgisi',
                 teacher_id: 'teacher_3',
                 teacher_name: 'Fatma Fen',
-                classroom: 'A-101'
+                classroom: 'A-101',
               },
               {
                 period_number: 4,
@@ -301,7 +305,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 subject: 'Sosyal Bilgiler',
                 teacher_id: 'teacher_4',
                 teacher_name: 'Ali Sosyal',
-                classroom: 'A-101'
+                classroom: 'A-101',
               },
               {
                 period_number: 5,
@@ -310,7 +314,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 subject: 'İngilizce',
                 teacher_id: 'teacher_5',
                 teacher_name: 'Zeynep İngilizce',
-                classroom: 'A-101'
+                classroom: 'A-101',
               },
               {
                 period_number: 6,
@@ -319,9 +323,9 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 subject: 'Beden Eğitimi',
                 teacher_id: 'teacher_6',
                 teacher_name: 'Hasan Beden',
-                classroom: 'Spor Salonu'
-              }
-            ]
+                classroom: 'Spor Salonu',
+              },
+            ],
           },
           {
             day: 'tuesday',
@@ -333,7 +337,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 subject: 'Türkçe',
                 teacher_id: 'teacher_2',
                 teacher_name: 'Mehmet Türkçe',
-                classroom: 'A-101'
+                classroom: 'A-101',
               },
               {
                 period_number: 2,
@@ -342,7 +346,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 subject: 'Matematik',
                 teacher_id: 'teacher_1',
                 teacher_name: 'Ayşe Matematik',
-                classroom: 'A-101'
+                classroom: 'A-101',
               },
               {
                 period_number: 3,
@@ -351,7 +355,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 subject: 'Resim',
                 teacher_id: 'teacher_7',
                 teacher_name: 'Elif Resim',
-                classroom: 'Resim Atölyesi'
+                classroom: 'Resim Atölyesi',
               },
               {
                 period_number: 4,
@@ -360,7 +364,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 subject: 'Müzik',
                 teacher_id: 'teacher_8',
                 teacher_name: 'Murat Müzik',
-                classroom: 'Müzik Odası'
+                classroom: 'Müzik Odası',
               },
               {
                 period_number: 5,
@@ -369,7 +373,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 subject: 'Fen Bilgisi',
                 teacher_id: 'teacher_3',
                 teacher_name: 'Fatma Fen',
-                classroom: 'A-101'
+                classroom: 'A-101',
               },
               {
                 period_number: 6,
@@ -378,10 +382,10 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 subject: 'Sosyal Bilgiler',
                 teacher_id: 'teacher_4',
                 teacher_name: 'Ali Sosyal',
-                classroom: 'A-101'
-              }
-            ]
-          }
+                classroom: 'A-101',
+              },
+            ],
+          },
         ],
         schedule_metadata: {
           total_periods_per_week: 30,
@@ -392,28 +396,28 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
               name: 'Ara Teneffüs',
               start_time: '09:30',
               end_time: '09:40',
-              duration: 10
+              duration: 10,
             },
             {
               name: 'Büyük Teneffüs',
               start_time: '11:10',
               end_time: '11:20',
-              duration: 10
+              duration: 10,
             },
             {
               name: 'Öğle Arası',
               start_time: '12:00',
               end_time: '13:00',
-              duration: 60
-            }
-          ]
-        }
+              duration: 60,
+            },
+          ],
+        },
       },
       conflicts: [],
       status: 'draft',
       created_by: 'system',
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     return mockSchedule;
@@ -436,7 +440,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
           subject: 'Matematik',
           email: 'ayse.matematik@school.edu.tr',
           phone: '+90 532 123 4567',
-          max_hours_per_week: 25
+          max_hours_per_week: 25,
         },
         weekly_schedule: [
           {
@@ -451,7 +455,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 class_name: '5-A',
                 classroom: 'A-101',
                 student_count: 28,
-                preparation_time: 10
+                preparation_time: 10,
               },
               {
                 period_number: 3,
@@ -462,7 +466,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 class_name: '5-B',
                 classroom: 'A-102',
                 student_count: 26,
-                preparation_time: 10
+                preparation_time: 10,
               },
               {
                 period_number: 5,
@@ -473,9 +477,9 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 class_name: '6-A',
                 classroom: 'A-103',
                 student_count: 30,
-                preparation_time: 10
-              }
-            ]
+                preparation_time: 10,
+              },
+            ],
           },
           {
             day: 'tuesday',
@@ -489,7 +493,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 class_name: '5-A',
                 classroom: 'A-101',
                 student_count: 28,
-                preparation_time: 10
+                preparation_time: 10,
               },
               {
                 period_number: 4,
@@ -500,7 +504,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 class_name: '5-B',
                 classroom: 'A-102',
                 student_count: 26,
-                preparation_time: 10
+                preparation_time: 10,
               },
               {
                 period_number: 6,
@@ -511,10 +515,10 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
                 class_name: '6-A',
                 classroom: 'A-103',
                 student_count: 30,
-                preparation_time: 10
-              }
-            ]
-          }
+                preparation_time: 10,
+              },
+            ],
+          },
         ],
         workload_statistics: {
           total_hours_per_week: 18,
@@ -523,52 +527,52 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
           peak_day: 'monday',
           light_day: 'friday',
           average_class_size: 28,
-          preparation_time_total: 60
-        }
+          preparation_time_total: 60,
+        },
       },
       preferences: {
         preferred_days: ['monday', 'tuesday', 'wednesday', 'thursday'],
         preferred_times: [
           {
             start_time: '08:00',
-            end_time: '12:00'
-          }
+            end_time: '12:00',
+          },
         ],
         avoid_back_to_back: false,
         max_consecutive_hours: 3,
         lunch_break_required: true,
-        notes: 'Cuma günleri tercih etmiyor'
+        notes: 'Cuma günleri tercih etmiyor',
       },
       availability: [
         {
           day: 'monday',
           available_periods: [1, 2, 3, 4, 5, 6],
-          unavailable_periods: []
+          unavailable_periods: [],
         },
         {
           day: 'tuesday',
           available_periods: [1, 2, 3, 4, 5, 6],
-          unavailable_periods: []
+          unavailable_periods: [],
         },
         {
           day: 'wednesday',
           available_periods: [1, 2, 3, 4, 5, 6],
-          unavailable_periods: []
+          unavailable_periods: [],
         },
         {
           day: 'thursday',
           available_periods: [1, 2, 3, 4, 5, 6],
-          unavailable_periods: []
+          unavailable_periods: [],
         },
         {
           day: 'friday',
           available_periods: [1, 2, 3, 4],
           unavailable_periods: [5, 6],
-          reason: 'Öğretmen tercihi'
-        }
+          reason: 'Öğretmen tercihi',
+        },
       ],
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     return mockTeacherSchedule;
@@ -587,7 +591,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
         affected_entities: {
           teachers: ['teacher_1'],
           classes: ['class_1', 'class_2'],
-          classrooms: ['A-101', 'A-102']
+          classrooms: ['A-101', 'A-102'],
         },
         conflict_details: {
           description: 'Ayşe Matematik öğretmeni aynı saatte iki farklı sınıfta ders veriyor',
@@ -595,20 +599,20 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
             day: 'monday',
             period: 1,
             start_time: '08:00',
-            end_time: '08:40'
+            end_time: '08:40',
           },
           conflicting_schedules: [
             {
               schedule_id: 'schedule_1',
               schedule_type: 'class',
-              entity_name: '5-A'
+              entity_name: '5-A',
             },
             {
               schedule_id: 'schedule_2',
               schedule_type: 'class',
-              entity_name: '5-B'
-            }
-          ]
+              entity_name: '5-B',
+            },
+          ],
         },
         resolution_options: [
           {
@@ -618,10 +622,10 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
             steps: [
               '5-B sınıfının 1. saatini boşalt',
               '5-B sınıfının 2. saatindeki dersi kontrol et',
-              'Çakışma yoksa matematik dersini 2. saate taşı'
+              'Çakışma yoksa matematik dersini 2. saate taşı',
             ],
             estimated_time: 5,
-            affects_other_schedules: false
+            affects_other_schedules: false,
           },
           {
             option_id: 'option_2',
@@ -630,15 +634,15 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
             steps: [
               'Müsait matematik öğretmeni bul',
               'Öğretmen uygunluğunu kontrol et',
-              'Ders programını güncelle'
+              'Ders programını güncelle',
             ],
             estimated_time: 10,
-            affects_other_schedules: true
-          }
+            affects_other_schedules: true,
+          },
         ],
         status: 'pending',
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       },
       {
         id: `conflict_${Date.now() + 1}`,
@@ -647,7 +651,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
         severity: 'medium',
         affected_entities: {
           classes: ['class_1', 'class_3'],
-          classrooms: ['A-101']
+          classrooms: ['A-101'],
         },
         conflict_details: {
           description: 'A-101 sınıfı aynı saatte iki farklı sınıf tarafından kullanılıyor',
@@ -655,20 +659,20 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
             day: 'tuesday',
             period: 3,
             start_time: '09:40',
-            end_time: '10:20'
+            end_time: '10:20',
           },
           conflicting_schedules: [
             {
               schedule_id: 'schedule_1',
               schedule_type: 'class',
-              entity_name: '5-A'
+              entity_name: '5-A',
             },
             {
               schedule_id: 'schedule_3',
               schedule_type: 'class',
-              entity_name: '6-A'
-            }
-          ]
+              entity_name: '6-A',
+            },
+          ],
         },
         resolution_options: [
           {
@@ -678,16 +682,16 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
             steps: [
               'A-103 sınıfının uygunluğunu kontrol et',
               'Sınıf değişikliğini uygula',
-              'Öğretmen ve öğrencileri bilgilendir'
+              'Öğretmen ve öğrencileri bilgilendir',
             ],
             estimated_time: 3,
-            affects_other_schedules: false
-          }
+            affects_other_schedules: false,
+          },
         ],
         status: 'pending',
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
+        updated_at: new Date().toISOString(),
+      },
     ];
 
     return mockConflicts;
@@ -708,15 +712,13 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
       is_default: false,
       created_by: 'system',
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     return mockTemplate;
   }
 
-  async generateAutomaticSchedule(
-    parameters: any
-  ): Promise<ScheduleGeneration> {
+  async generateAutomaticSchedule(parameters: any): Promise<ScheduleGeneration> {
     const mockGeneration: ScheduleGeneration = {
       id: `generation_${Date.now()}`,
       tenant_id: 'current_tenant',
@@ -730,15 +732,15 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
         generation_time: 1200,
         warnings: [
           'Bazı öğretmenlerin tercih ettiği saatlerde çakışma var',
-          'Spor salonu kullanımında yoğunluk'
+          'Spor salonu kullanımında yoğunluk',
         ],
-        errors: []
+        errors: [],
       },
       status: 'completed',
       started_at: new Date().toISOString(),
       completed_at: new Date().toISOString(),
       created_by: 'system',
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     return mockGeneration;
@@ -771,10 +773,7 @@ export class ScheduleRepository extends BaseRepository<ClassSchedule> {
     return [];
   }
 
-  async exportSchedule(
-    scheduleId: string,
-    format: 'pdf' | 'excel' | 'ical'
-  ): Promise<ArrayBuffer> {
+  async exportSchedule(scheduleId: string, format: 'pdf' | 'excel' | 'ical'): Promise<ArrayBuffer> {
     // Mock export functionality
     return new ArrayBuffer(0);
   }

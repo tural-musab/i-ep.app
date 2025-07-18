@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 
 export default async function DailyAttendancePage() {
   const session = await getServerSession(authOptions);
-  
+
   if (!session) {
     redirect('/auth/giris');
   }
@@ -25,22 +25,22 @@ export default async function DailyAttendancePage() {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
   });
 
   return (
     <div className="container mx-auto p-6">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="mb-8 flex items-center gap-4">
         <Link href="/dashboard/attendance">
           <Button variant="ghost" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Geri
           </Button>
         </Link>
         <div className="flex-1">
           <h1 className="text-3xl font-bold text-gray-900">Günlük Yoklama</h1>
-          <p className="text-gray-600 mt-2 flex items-center gap-2">
+          <p className="mt-2 flex items-center gap-2 text-gray-600">
             <Calendar className="h-4 w-4" />
             {todayFormatted}
           </p>
@@ -54,9 +54,7 @@ export default async function DailyAttendancePage() {
             <Users className="h-5 w-5" />
             Öğrenci Yoklama Listesi
           </CardTitle>
-          <CardDescription>
-            Bugün için öğrenci devamsızlığını işaretleyin
-          </CardDescription>
+          <CardDescription>Bugün için öğrenci devamsızlığını işaretleyin</CardDescription>
         </CardHeader>
         <CardContent>
           <DailyAttendanceInterface date={today} />

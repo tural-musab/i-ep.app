@@ -75,13 +75,13 @@ Yeni bir tenant oluşturmak için:
 ```sql
 -- Yeni tenant ekle (tetikleyici otomatik olarak şema ve tabloları oluşturacak)
 INSERT INTO management.tenants (
-  name, 
-  display_name, 
+  name,
+  display_name,
   status,
   subscription_plan
 ) VALUES (
-  'okul-adi', 
-  'Okul Adı', 
+  'okul-adi',
+  'Okul Adı',
   'trial',
   'free'
 ) RETURNING id;
@@ -137,4 +137,4 @@ Kurulum sırasında hata alırsanız:
 
 ## İletişim
 
-Sorularınız veya sorunlarınız için: info@i-ep.app 
+Sorularınız veya sorunlarınız için: info@i-ep.app

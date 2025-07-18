@@ -5,7 +5,7 @@ import { Database } from '@/types/database.types';
 
 /**
  * Kullanıcının mevcut tenant bilgilerini getiren API
- * 
+ *
  * Bu API, oturum açmış kullanıcının mevcut tenant bilgilerini ve
  * erişim izni olan diğer tenant'ları döndürür.
  */
@@ -13,44 +13,40 @@ export async function GET() {
   try {
     // Supabase istemcisi oluştur
     const supabase = createRouteHandlerClient<Database>({ cookies });
-    
+
     // Kullanıcı oturumunu kontrol et
-    const { data: { session } } = await supabase.auth.getSession();
-    
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
     if (!session) {
-      return NextResponse.json(
-        { error: 'Oturum açılmamış' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Oturum açılmamış' }, { status: 401 });
     }
-    
+
     const { user } = session;
     const isSuperAdmin = user.app_metadata?.role === 'super_admin';
-    
+
     // Kullanıcının mevcut tenant bilgisini al
     const currentTenantId = user.user_metadata?.tenant_id || user.user_metadata?.current_tenant;
-    
+
     if (!currentTenantId) {
       return NextResponse.json(
-        { error: 'Kullanıcı herhangi bir tenant\'a atanmamış' },
+        { error: "Kullanıcı herhangi bir tenant'a atanmamış" },
         { status: 404 }
       );
     }
-    
+
     // Tenant bilgilerini getir
     const { data: tenantData, error: tenantError } = await supabase
       .from('tenants')
       .select('id, name, subdomain, plan_type, is_active, created_at, updated_at')
       .eq('id', currentTenantId)
       .single();
-    
+
     if (tenantError || !tenantData) {
-      return NextResponse.json(
-        { error: 'Tenant bilgileri bulunamadı' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Tenant bilgileri bulunamadı' }, { status: 404 });
     }
-    
+
     // Tenant'ın primary domain bilgisini al
     const { data: primaryDomainData } = await supabase
       .from('tenant_domains')
@@ -58,25 +54,27 @@ export async function GET() {
       .eq('tenant_id', currentTenantId)
       .eq('is_primary', true)
       .single();
-    
-    const primaryDomain = primaryDomainData?.domain || `${tenantData.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app'}`;
-    
+
+    const primaryDomain =
+      primaryDomainData?.domain ||
+      `${tenantData.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app'}`;
+
     // Tenant aktif değilse uyarı ekle
     const tenantWarnings = [];
     if (!tenantData.is_active) {
       tenantWarnings.push('Bu tenant şu anda aktif değil');
     }
-    
+
     // Kullanıcının erişim izni olan tenant'ları al
     let accessibleTenants: Array<{ id: string; name: string; subdomain: string }> = [];
-    
+
     if (isSuperAdmin) {
       // Super admin tüm active tenant'lara erişebilir
       const { data: allTenants } = await supabase
         .from('tenants')
         .select('id, name, subdomain')
         .eq('is_active', true);
-      
+
       accessibleTenants = allTenants || [];
     } else {
       // Kullanıcının izin verilen tenant'larını kontrol et
@@ -88,17 +86,17 @@ export async function GET() {
           allowedTenants = [];
         }
       }
-      
+
       if (!Array.isArray(allowedTenants)) {
         allowedTenants = [];
       }
-      
+
       // Birincil tenant'ı da listeye ekle (eğer zaten yoksa)
       const primaryTenantId = user.user_metadata?.primary_tenant_id;
       if (primaryTenantId && !allowedTenants.includes(primaryTenantId)) {
         allowedTenants.push(primaryTenantId);
       }
-      
+
       // Boş liste kontrolü
       if (allowedTenants.length > 0) {
         // Kullanıcının erişim izni olan tenant'ların bilgilerini getir
@@ -107,11 +105,11 @@ export async function GET() {
           .select('id, name, subdomain')
           .in('id', allowedTenants)
           .eq('is_active', true);
-        
+
         accessibleTenants = tenants || [];
       }
     }
-    
+
     // Son erişilen tenant'ları al
     let lastAccessedTenants = user.user_metadata?.last_accessed_tenants || [];
     if (typeof lastAccessedTenants === 'string') {
@@ -121,11 +119,11 @@ export async function GET() {
         lastAccessedTenants = [];
       }
     }
-    
+
     if (!Array.isArray(lastAccessedTenants)) {
       lastAccessedTenants = [];
     }
-    
+
     // Yanıt verilerini hazırla
     return NextResponse.json({
       currentTenant: {
@@ -136,18 +134,21 @@ export async function GET() {
         isActive: tenantData.is_active,
         primaryDomain: primaryDomain,
         createdAt: tenantData.created_at,
-        updatedAt: tenantData.updated_at
+        updatedAt: tenantData.updated_at,
       },
       accessibleTenants,
       lastAccessedTenants,
       warnings: tenantWarnings,
-      isSuperAdmin
+      isSuperAdmin,
     });
   } catch (error) {
     console.error('Tenant bilgileri alınırken hata:', error);
-    
+
     return NextResponse.json(
-      { error: 'Tenant bilgileri alınırken bir hata oluştu', details: error instanceof Error ? error.message : 'Bilinmeyen hata' },
+      {
+        error: 'Tenant bilgileri alınırken bir hata oluştu',
+        details: error instanceof Error ? error.message : 'Bilinmeyen hata',
+      },
       { status: 500 }
     );
   }
@@ -162,7 +163,7 @@ export async function OPTIONS() {
     headers: {
       'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Access-Control-Max-Age': '86400'
-    }
+      'Access-Control-Max-Age': '86400',
+    },
   });
-} 
+}

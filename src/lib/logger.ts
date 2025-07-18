@@ -4,16 +4,17 @@ const isProd = process.env.NODE_ENV === 'production';
 
 const logger = pino({
   level: process.env.LOG_LEVEL || 'info',
-  transport: !isProd && process.env.NODE_ENV !== 'development'
-    ? {
-        target: 'pino-pretty',
-        options: { 
-          colorize: true, 
-          ignore: 'pid,hostname',
-          translateTime: 'SYS:yyyy-mm-dd HH:MM:ss.l'
+  transport:
+    !isProd && process.env.NODE_ENV !== 'development'
+      ? {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+            ignore: 'pid,hostname',
+            translateTime: 'SYS:yyyy-mm-dd HH:MM:ss.l',
+          },
         }
-      }
-    : undefined,
+      : undefined,
   serializers: {
     req: (req) => ({
       method: req.method,
@@ -30,4 +31,4 @@ const logger = pino({
   },
 });
 
-export default logger; 
+export default logger;

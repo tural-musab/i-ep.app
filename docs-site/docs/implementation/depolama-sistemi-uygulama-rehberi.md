@@ -55,6 +55,7 @@ mkdir -p src/lib/storage/repository
 ### Adım 4: Depolama Servisini Uygula
 
 Sağlanan dosyaları ilgili konumlara kopyala:
+
 - `src/types/storage.ts` - Tip tanımları
 - `src/lib/storage/index.ts` - Ana servis
 - `src/lib/storage/providers/supabase.provider.ts` - Supabase sağlayıcı
@@ -93,7 +94,7 @@ const handleFileUpload = async (file: File) => {
         description: 'Kullanıcı tarafından yüklenen döküman',
       },
     });
-    
+
     console.log('Dosya yüklendi:', result.file);
     console.log('Genel URL:', result.url);
   } catch (error) {
@@ -108,7 +109,7 @@ const handleFileUpload = async (file: File) => {
 const handleDownload = async (fileId: string) => {
   try {
     const blob = await storage.download(fileId);
-    
+
     // İndirme linki oluştur
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -166,7 +167,8 @@ R2_BUCKET_NAME=i-ep-files
 ### 3. Hibrit Modu Etkinleştir
 
 Sistem otomatik olarak:
-- >10MB dosyaları R2'ye yönlendirir
+
+- > 10MB dosyaları R2'ye yönlendirir
 - Küçük dosyaları Supabase'de tutar
 - Her şeyi veritabanında takip eder
 
@@ -181,7 +183,7 @@ async function migrateFilesToR2() {
       size_bytes: { gt: 10 * 1024 * 1024 }, // >10MB
     },
   });
-  
+
   for (const file of files) {
     await storage.migrateToR2(file.id);
   }
@@ -195,15 +197,15 @@ async function migrateFilesToR2() {
 ```typescript
 const StorageUsageCard = () => {
   const [quota, setQuota] = useState<StorageQuota | null>(null);
-  
+
   useEffect(() => {
     fetchStorageQuota().then(setQuota);
   }, []);
-  
+
   if (!quota) return <Loading />;
-  
+
   const usagePercent = (quota.used_storage_mb / quota.total_quota_mb) * 100;
-  
+
   return (
     <Card>
       <CardHeader>
@@ -212,7 +214,7 @@ const StorageUsageCard = () => {
       <CardContent>
         <Progress value={usagePercent} />
         <p className="text-sm text-muted-foreground mt-2">
-          {formatFileSize(quota.used_storage_mb * 1024 * 1024)} / 
+          {formatFileSize(quota.used_storage_mb * 1024 * 1024)} /
           {formatFileSize(quota.total_quota_mb * 1024 * 1024)}
         </p>
       </CardContent>
@@ -239,12 +241,15 @@ const StorageUsageCard = () => {
 ## 🚨 Yaygın Sorunlar
 
 ### Sorun: "Kota aşıldı" hatası ile dosya yükleme başarısız
+
 **Çözüm**: Tenant'ın depolama kotasını kontrol et ve gerekirse artır
 
 ### Sorun: Yüklemeden sonra dosyalara erişilemiyor
+
 **Çözüm**: RLS politikalarının doğru kurulduğundan emin ol
 
 ### Sorun: Büyük dosya yüklemeleri zaman aşımına uğruyor
+
 **Çözüm**: Parçalı yükleme uygula veya doğrudan tarayıcı yüklemesi kullan
 
 ## 🔮 Gelecek İyileştirmeler

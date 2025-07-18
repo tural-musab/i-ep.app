@@ -25,4 +25,4 @@ export interface TenantSettings {
     enableEmailNotifications: boolean;
     enablePushNotifications: boolean;
   };
-} 
+}

@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 
 export default async function CreateAssignmentPage() {
   const session = await getServerSession(authOptions);
-  
+
   if (!session) {
     redirect('/auth/giris');
   }
@@ -23,16 +23,16 @@ export default async function CreateAssignmentPage() {
   return (
     <div className="container mx-auto p-6">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-8">
+      <div className="mb-8 flex items-center gap-4">
         <Link href="/dashboard/assignments">
           <Button variant="ghost" size="sm">
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Geri
           </Button>
         </Link>
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Yeni Ödev Oluştur</h1>
-          <p className="text-gray-600 mt-2">Öğrencileriniz için yeni bir ödev oluşturun</p>
+          <p className="mt-2 text-gray-600">Öğrencileriniz için yeni bir ödev oluşturun</p>
         </div>
       </div>
 
@@ -40,9 +40,7 @@ export default async function CreateAssignmentPage() {
       <Card className="max-w-4xl">
         <CardHeader>
           <CardTitle>Ödev Detayları</CardTitle>
-          <CardDescription>
-            Ödevin temel bilgilerini girin ve ayarlarını yapın
-          </CardDescription>
+          <CardDescription>Ödevin temel bilgilerini girin ve ayarlarını yapın</CardDescription>
         </CardHeader>
         <CardContent>
           <AssignmentCreateForm />

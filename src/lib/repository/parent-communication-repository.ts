@@ -58,7 +58,13 @@ export interface ParentNotification {
   parent_id: string;
   student_id?: string;
   teacher_id?: string;
-  notification_type: 'academic' | 'behavioral' | 'attendance' | 'administrative' | 'event' | 'emergency';
+  notification_type:
+    | 'academic'
+    | 'behavioral'
+    | 'attendance'
+    | 'administrative'
+    | 'event'
+    | 'emergency';
   title: string;
   message: string;
   priority: 'info' | 'warning' | 'urgent' | 'critical';
@@ -81,7 +87,13 @@ export interface ParentFeedback {
   parent_id: string;
   student_id?: string;
   teacher_id?: string;
-  feedback_type: 'teacher_performance' | 'school_service' | 'curriculum' | 'facility' | 'suggestion' | 'complaint';
+  feedback_type:
+    | 'teacher_performance'
+    | 'school_service'
+    | 'curriculum'
+    | 'facility'
+    | 'suggestion'
+    | 'complaint';
   category: 'academic' | 'behavioral' | 'administrative' | 'facility' | 'communication' | 'other';
   rating: number;
   title: string;
@@ -150,14 +162,16 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
   }
 
   // Message Management
-  async createMessage(messageData: Omit<ParentMessage, 'id' | 'tenant_id' | 'created_at' | 'updated_at'>): Promise<ParentMessage> {
+  async createMessage(
+    messageData: Omit<ParentMessage, 'id' | 'tenant_id' | 'created_at' | 'updated_at'>
+  ): Promise<ParentMessage> {
     const { data, error } = await this.supabase
       .from('parent_messages')
       .insert({
         ...messageData,
         tenant_id: this.tenantId,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -210,10 +224,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
     return data || [];
   }
 
-  async getMessagesByStudent(
-    studentId: string,
-    limit?: number
-  ): Promise<ParentMessage[]> {
+  async getMessagesByStudent(studentId: string, limit?: number): Promise<ParentMessage[]> {
     let query = this.getBaseQuery()
       .eq('student_id', studentId)
       .order('created_at', { ascending: false });
@@ -233,7 +244,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
       .update({
         status: 'read',
         read_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', messageId)
       .eq('tenant_id', this.tenantId)
@@ -255,7 +266,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
         reply_to: messageId,
         tenant_id: this.tenantId,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -268,7 +279,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
       .update({
         status: 'replied',
         replied_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', messageId)
       .eq('tenant_id', this.tenantId);
@@ -277,14 +288,16 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
   }
 
   // Meeting Management
-  async createMeeting(meetingData: Omit<ParentMeeting, 'id' | 'tenant_id' | 'created_at' | 'updated_at'>): Promise<ParentMeeting> {
+  async createMeeting(
+    meetingData: Omit<ParentMeeting, 'id' | 'tenant_id' | 'created_at' | 'updated_at'>
+  ): Promise<ParentMeeting> {
     const { data, error } = await this.supabase
       .from('parent_meetings')
       .insert({
         ...meetingData,
         tenant_id: this.tenantId,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -324,7 +337,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
       .update({
         status: 'confirmed',
         confirmed_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', meetingId)
       .eq('tenant_id', this.tenantId)
@@ -343,7 +356,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
     const updateData: any = {
       meeting_date: newDate,
       status: 'rescheduled',
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     if (newDuration) {
@@ -362,11 +375,15 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
     return data;
   }
 
-  async addMeetingNotes(meetingId: string, notes: string, actionItems?: string[]): Promise<ParentMeeting> {
+  async addMeetingNotes(
+    meetingId: string,
+    notes: string,
+    actionItems?: string[]
+  ): Promise<ParentMeeting> {
     const updateData: any = {
       notes,
       status: 'completed',
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     if (actionItems) {
@@ -386,14 +403,16 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
   }
 
   // Notification Management
-  async createNotification(notificationData: Omit<ParentNotification, 'id' | 'tenant_id' | 'created_at' | 'updated_at'>): Promise<ParentNotification> {
+  async createNotification(
+    notificationData: Omit<ParentNotification, 'id' | 'tenant_id' | 'created_at' | 'updated_at'>
+  ): Promise<ParentNotification> {
     const { data, error } = await this.supabase
       .from('parent_notifications')
       .insert({
         ...notificationData,
         tenant_id: this.tenantId,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -433,7 +452,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
       .update({
         status: 'read',
         read_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', notificationId)
       .eq('tenant_id', this.tenantId)
@@ -446,14 +465,17 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
 
   async sendBulkNotifications(
     parentIds: string[],
-    notificationData: Omit<ParentNotification, 'id' | 'tenant_id' | 'parent_id' | 'created_at' | 'updated_at'>
+    notificationData: Omit<
+      ParentNotification,
+      'id' | 'tenant_id' | 'parent_id' | 'created_at' | 'updated_at'
+    >
   ): Promise<ParentNotification[]> {
-    const notifications = parentIds.map(parentId => ({
+    const notifications = parentIds.map((parentId) => ({
       ...notificationData,
       parent_id: parentId,
       tenant_id: this.tenantId,
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     }));
 
     const { data, error } = await this.supabase
@@ -466,14 +488,16 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
   }
 
   // Feedback Management
-  async createFeedback(feedbackData: Omit<ParentFeedback, 'id' | 'tenant_id' | 'created_at' | 'updated_at'>): Promise<ParentFeedback> {
+  async createFeedback(
+    feedbackData: Omit<ParentFeedback, 'id' | 'tenant_id' | 'created_at' | 'updated_at'>
+  ): Promise<ParentFeedback> {
     const { data, error } = await this.supabase
       .from('parent_feedback')
       .insert({
         ...feedbackData,
         tenant_id: this.tenantId,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -513,7 +537,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
         response,
         response_date: new Date().toISOString(),
         status: 'responded',
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', feedbackId)
       .eq('tenant_id', this.tenantId)
@@ -525,14 +549,16 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
   }
 
   // Portal Access Management
-  async createPortalAccess(accessData: Omit<ParentPortalAccess, 'id' | 'tenant_id' | 'created_at' | 'updated_at'>): Promise<ParentPortalAccess> {
+  async createPortalAccess(
+    accessData: Omit<ParentPortalAccess, 'id' | 'tenant_id' | 'created_at' | 'updated_at'>
+  ): Promise<ParentPortalAccess> {
     const { data, error } = await this.supabase
       .from('parent_portal_access')
       .insert({
         ...accessData,
         tenant_id: this.tenantId,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -560,7 +586,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
       .from('parent_portal_access')
       .update({
         notification_preferences: preferences,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('parent_id', parentId)
       .eq('tenant_id', this.tenantId)
@@ -576,7 +602,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
       .from('parent_portal_access')
       .update({
         last_login: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('parent_id', parentId)
       .eq('tenant_id', this.tenantId);
@@ -585,14 +611,19 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
   }
 
   // Communication Thread Management
-  async createThread(threadData: Omit<CommunicationThread, 'id' | 'tenant_id' | 'created_at' | 'updated_at' | 'messages'>): Promise<CommunicationThread> {
+  async createThread(
+    threadData: Omit<
+      CommunicationThread,
+      'id' | 'tenant_id' | 'created_at' | 'updated_at' | 'messages'
+    >
+  ): Promise<CommunicationThread> {
     const { data, error } = await this.supabase
       .from('communication_threads')
       .insert({
         ...threadData,
         tenant_id: this.tenantId,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -601,7 +632,10 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
     return data;
   }
 
-  async getThreadsByParent(parentId: string, status?: CommunicationThread['status']): Promise<CommunicationThread[]> {
+  async getThreadsByParent(
+    parentId: string,
+    status?: CommunicationThread['status']
+  ): Promise<CommunicationThread[]> {
     let query = this.supabase
       .from('communication_threads')
       .select('*')
@@ -630,7 +664,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
     const [messagesCount, meetingsCount, notificationsCount] = await Promise.all([
       this.getMessagesByParent(parentId),
       this.getMeetingsByParent(parentId),
-      this.getNotificationsByParent(parentId)
+      this.getNotificationsByParent(parentId),
     ]);
 
     const totalMessages = messagesCount.length;
@@ -638,21 +672,22 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
     const totalNotifications = notificationsCount.length;
 
     const lastActivity = Math.max(
-      ...messagesCount.map(m => new Date(m.created_at).getTime()),
-      ...meetingsCount.map(m => new Date(m.created_at).getTime()),
-      ...notificationsCount.map(n => new Date(n.created_at).getTime())
+      ...messagesCount.map((m) => new Date(m.created_at).getTime()),
+      ...meetingsCount.map((m) => new Date(m.created_at).getTime()),
+      ...notificationsCount.map((n) => new Date(n.created_at).getTime())
     );
 
-    const repliedMessages = messagesCount.filter(m => m.status === 'replied');
+    const repliedMessages = messagesCount.filter((m) => m.status === 'replied');
     const responseRate = totalMessages > 0 ? (repliedMessages.length / totalMessages) * 100 : 0;
 
     const responseTimes = repliedMessages
-      .filter(m => m.replied_at)
-      .map(m => new Date(m.replied_at!).getTime() - new Date(m.created_at).getTime());
+      .filter((m) => m.replied_at)
+      .map((m) => new Date(m.replied_at!).getTime() - new Date(m.created_at).getTime());
 
-    const averageResponseTime = responseTimes.length > 0 
-      ? responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
-      : 0;
+    const averageResponseTime =
+      responseTimes.length > 0
+        ? responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
+        : 0;
 
     return {
       totalMessages,
@@ -660,7 +695,7 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
       totalNotifications,
       lastActivity: new Date(lastActivity).toISOString(),
       responseRate,
-      averageResponseTime: averageResponseTime / (1000 * 60 * 60) // Convert to hours
+      averageResponseTime: averageResponseTime / (1000 * 60 * 60), // Convert to hours
     };
   }
 
@@ -682,32 +717,35 @@ export class ParentCommunicationRepository extends BaseRepository<ParentMessage>
         .from('parent_feedback')
         .select('*')
         .eq('tenant_id', this.tenantId)
-        .eq('teacher_id', teacherId)
+        .eq('teacher_id', teacherId),
     ]);
 
     const totalMessages = messages.length;
     const totalMeetings = meetings.data?.length || 0;
-    const uniqueParents = new Set([...messages.map(m => m.parent_id), ...(meetings.data || []).map(m => m.parent_id)]).size;
+    const uniqueParents = new Set([
+      ...messages.map((m) => m.parent_id),
+      ...(meetings.data || []).map((m) => m.parent_id),
+    ]).size;
 
     const responseTimes = messages
-      .filter(m => m.replied_at)
-      .map(m => new Date(m.replied_at!).getTime() - new Date(m.created_at).getTime());
+      .filter((m) => m.replied_at)
+      .map((m) => new Date(m.replied_at!).getTime() - new Date(m.created_at).getTime());
 
-    const averageResponseTime = responseTimes.length > 0 
-      ? responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
-      : 0;
+    const averageResponseTime =
+      responseTimes.length > 0
+        ? responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
+        : 0;
 
-    const ratings = feedback.data?.map(f => f.rating) || [];
-    const satisfactionRating = ratings.length > 0 
-      ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length
-      : 0;
+    const ratings = feedback.data?.map((f) => f.rating) || [];
+    const satisfactionRating =
+      ratings.length > 0 ? ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length : 0;
 
     return {
       totalMessages,
       totalMeetings,
       uniqueParents,
       averageResponseTime: averageResponseTime / (1000 * 60 * 60), // Convert to hours
-      satisfactionRating
+      satisfactionRating,
     };
   }
 }

@@ -18,25 +18,25 @@ Yedekleme işlemlerini listeleyen ve yöneten komponent.
 interface BackupListProps {
   /** Tenant ID */
   tenantId?: string;
-  
+
   /** Sayfa başına kayıt sayısı */
   pageSize?: number;
-  
+
   /** Varsayılan sıralama */
   defaultSort?: SortConfig;
-  
+
   /** Varsayılan filtreler */
   defaultFilters?: BackupFilters;
-  
+
   /** Yedekleme seçildiğinde çağrılır */
   onBackupSelect?: (backup: BackupItem) => void;
-  
+
   /** Toplu işlem yapıldığında çağrılır */
   onBulkAction?: (action: BulkAction, backups: BackupItem[]) => void;
-  
+
   /** Yenileme aralığı (ms) */
   refreshInterval?: number;
-  
+
   /** Görünüm tipi */
   viewType?: 'table' | 'grid' | 'list';
 }
@@ -93,10 +93,10 @@ export default function BackupsPage() {
   const handleBulkAction = async (action: BulkAction, backups: BackupItem[]) => {
     switch (action) {
       case 'delete':
-        await deleteBackups(backups.map(b => b.id));
+        await deleteBackups(backups.map((b) => b.id));
         break;
       case 'download':
-        await downloadBackups(backups.map(b => b.id));
+        await downloadBackups(backups.map((b) => b.id));
         break;
       // ... diğer işlemler
     }
@@ -107,11 +107,11 @@ export default function BackupsPage() {
       pageSize={20}
       defaultSort={{
         field: 'createdAt',
-        direction: 'desc'
+        direction: 'desc',
       }}
       defaultFilters={{
         status: ['completed'],
-        dateRange: [subDays(new Date(), 30), new Date()]
+        dateRange: [subDays(new Date(), 30), new Date()],
       }}
       onBackupSelect={handleBackupSelect}
       onBulkAction={handleBulkAction}
@@ -130,42 +130,37 @@ const columns: Column<BackupItem>[] = [
     id: 'status',
     header: 'Durum',
     cell: (row) => <BackupStatusBadge status={row.status} />,
-    sortable: true
+    sortable: true,
   },
   {
     id: 'type',
     header: 'Tip',
     cell: (row) => row.type,
-    sortable: true
+    sortable: true,
   },
   {
     id: 'createdAt',
     header: 'Oluşturulma',
     cell: (row) => format(new Date(row.createdAt), 'dd.MM.yyyy HH:mm'),
-    sortable: true
+    sortable: true,
   },
   {
     id: 'size',
     header: 'Boyut',
     cell: (row) => formatBytes(row.size),
-    sortable: true
+    sortable: true,
   },
   {
     id: 'tenant',
     header: 'Tenant',
     cell: (row) => row.tenant?.name,
-    sortable: true
+    sortable: true,
   },
   {
     id: 'actions',
     header: 'İşlemler',
-    cell: (row) => (
-      <BackupActions
-        backup={row}
-        onAction={handleAction}
-      />
-    )
-  }
+    cell: (row) => <BackupActions backup={row} onAction={handleAction} />,
+  },
 ];
 ```
 
@@ -180,8 +175,8 @@ const fetchBackups = async (params: ListParams) => {
       page: params.page,
       limit: params.pageSize,
       sort: `${params.sort.field}:${params.sort.direction}`,
-      ...params.filters
-    }
+      ...params.filters,
+    },
   });
   return response.json();
 };
@@ -190,7 +185,7 @@ const fetchBackups = async (params: ListParams) => {
 const deleteBackups = async (ids: string[]) => {
   const response = await fetch('/api/backups/bulk-delete', {
     method: 'POST',
-    body: JSON.stringify({ ids })
+    body: JSON.stringify({ ids }),
   });
   return response.json();
 };
@@ -199,7 +194,7 @@ const deleteBackups = async (ids: string[]) => {
 const downloadBackups = async (ids: string[]) => {
   const response = await fetch('/api/backups/bulk-download', {
     method: 'POST',
-    body: JSON.stringify({ ids })
+    body: JSON.stringify({ ids }),
   });
   return response.blob();
 };
@@ -236,11 +231,11 @@ const downloadBackups = async (ids: string[]) => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1200px | Tam tablo görünümü |
+| Ekran Boyutu   | Davranış           |
+| -------------- | ------------------ |
+| > 1200px       | Tam tablo görünümü |
 | 768px - 1200px | Gizlenmiş kolonlar |
-| < 768px | Liste görünümü |
+| < 768px        | Liste görünümü     |
 
 ## Test
 
@@ -253,7 +248,7 @@ describe('BackupList', () => {
         defaultSort={{ field: 'createdAt', direction: 'desc' }}
       />
     );
-    
+
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument();
     });
@@ -261,10 +256,10 @@ describe('BackupList', () => {
 
   it('handles filtering', async () => {
     render(<BackupList />);
-    
+
     await userEvent.click(screen.getByText('Filtrele'));
     await userEvent.click(screen.getByText('Tamamlandı'));
-    
+
     expect(screen.getByText('1 filtre aktif')).toBeInTheDocument();
   });
 
@@ -275,11 +270,11 @@ describe('BackupList', () => {
         onBulkAction={onBulkAction}
       />
     );
-    
+
     await userEvent.click(screen.getByRole('checkbox', { name: 'Tümünü seç' }));
     await userEvent.click(screen.getByText('Toplu İşlem'));
     await userEvent.click(screen.getByText('Sil'));
-    
+
     expect(onBulkAction).toHaveBeenCalledWith(
       'delete',
       expect.any(Array)
@@ -343,13 +338,13 @@ Empty.args = {
   rowClassName={(backup) =>
     clsx('backup-row', {
       'bg-red-50': backup.status === 'failed',
-      'bg-green-50': backup.status === 'completed'
+      'bg-green-50': backup.status === 'completed',
     })
   }
   customStyles={{
     header: 'bg-gray-50',
     cell: 'px-4 py-2',
-    pagination: 'mt-4'
+    pagination: 'mt-4',
   }}
 />
 ```
@@ -360,4 +355,4 @@ Empty.args = {
 2. Filtreleri URL'de tut
 3. Seçimleri önbelleğe al
 4. Toplu işlemleri onayla
-5. Durum güncellemelerini optimize et 
+5. Durum güncellemelerini optimize et

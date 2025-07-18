@@ -1,9 +1,11 @@
 # PR: [Kısa Açıklama]
 
 ## Değişikliklerin Özeti
+
 <!-- Yaptığınız değişiklikleri kısaca açıklayın -->
 
 ## Değişiklik Türü
+
 - [ ] Yeni özellik
 - [ ] Hata düzeltmesi
 - [ ] Performans iyileştirmesi
@@ -13,6 +15,7 @@
 - [ ] Diğer (lütfen açıklayın):
 
 ## Dokümantasyon Kontrol Listesi
+
 <!-- Bu PR dokümantasyonu etkiliyorsa, lütfen aşağıdaki maddeleri kontrol edin -->
 
 - [ ] Yeni özellikler/API'ler için dokümantasyon eklendi
@@ -23,6 +26,7 @@
 - [ ] Teknik borç/iyileştirme açıkça tanımlandı
 
 ## Test Kontrol Listesi
+
 <!-- Bu PR'ın nasıl test edildiğini açıklayın -->
 
 - [ ] Birim testleri eklendi/güncellendi
@@ -31,12 +35,15 @@
 - [ ] Tüm testler başarıyla geçti
 
 ## Ekran Görüntüleri / Videolar
+
 <!-- Varsa değişiklikleri gösteren ekran görüntüleri/videolar -->
 
 ## İlgili İssue(lar)
+
 <!-- Varsa ilgili issue numaralarını listeleyin, örn: "#123, #456" -->
 
 ## Multi-tenant Uyumluluk Kontrolü
+
 <!-- Multi-tenant yapıyla ilgili değişiklikler içeren PR'lar için gereklidir -->
 
 - [ ] Bu değişiklik, verilerin tenant'lar arasında sızmasına yol açmaz
@@ -44,4 +51,5 @@
 - [ ] RLS politikaları veya şema izolasyonu doğru şekilde uygulandı
 
 ## İlave Notlar
-<!-- Ekstra bilgi veya bağlam sağlamak isterseniz buraya ekleyin --> 
+
+<!-- Ekstra bilgi veya bağlam sağlamak isterseniz buraya ekleyin -->

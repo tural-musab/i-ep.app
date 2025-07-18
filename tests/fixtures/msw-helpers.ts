@@ -13,8 +13,8 @@ export const mockServer = setupServer();
  */
 export class CloudflareMockHelper {
   static setupSuccessfulDnsRecordCreation(subdomain: string = 'test-tenant') {
-    const zoneId = "023e105f4ecef8ad9ca31a8372d0c353";
-    
+    const zoneId = '023e105f4ecef8ad9ca31a8372d0c353';
+
     // Zone ID alma isteğini mock'la
     mockServer.use(
       http.get('https://api.cloudflare.com/client/v4/zones', ({ request }) => {
@@ -33,16 +33,18 @@ export class CloudflareMockHelper {
           ...cloudflareFixtures.createDnsRecordSuccess,
           result: {
             ...cloudflareFixtures.createDnsRecordSuccess.result,
-            name: `${subdomain}.i-ep.app`
-          }
+            name: `${subdomain}.i-ep.app`,
+          },
         });
       })
     );
   }
 
-  static setupFailedDnsRecordCreation(errorType: 'unauthorized' | 'rateLimit' | 'recordExists' = 'recordExists') {
-    const zoneId = "023e105f4ecef8ad9ca31a8372d0c353";
-    
+  static setupFailedDnsRecordCreation(
+    errorType: 'unauthorized' | 'rateLimit' | 'recordExists' = 'recordExists'
+  ) {
+    const zoneId = '023e105f4ecef8ad9ca31a8372d0c353';
+
     // Zone ID alma başarılı
     mockServer.use(
       http.get('https://api.cloudflare.com/client/v4/zones', () => {
@@ -86,8 +88,8 @@ export class CloudflareMockHelper {
   }
 
   static setupDnsRecordsList() {
-    const zoneId = "023e105f4ecef8ad9ca31a8372d0c353";
-    
+    const zoneId = '023e105f4ecef8ad9ca31a8372d0c353';
+
     mockServer.use(
       http.get(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records`, () => {
         return HttpResponse.json(cloudflareFixtures.listDnsRecordsSuccess);
@@ -95,13 +97,16 @@ export class CloudflareMockHelper {
     );
   }
 
-  static setupDnsRecordDeletion(recordId: string = "372e67954025e0ba6aaa6d586b9e0b59") {
-    const zoneId = "023e105f4ecef8ad9ca31a8372d0c353";
-    
+  static setupDnsRecordDeletion(recordId: string = '372e67954025e0ba6aaa6d586b9e0b59') {
+    const zoneId = '023e105f4ecef8ad9ca31a8372d0c353';
+
     mockServer.use(
-      http.delete(`https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records/${recordId}`, () => {
-        return HttpResponse.json(cloudflareFixtures.deleteDnsRecordSuccess);
-      })
+      http.delete(
+        `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records/${recordId}`,
+        () => {
+          return HttpResponse.json(cloudflareFixtures.deleteDnsRecordSuccess);
+        }
+      )
     );
   }
 }
@@ -114,11 +119,17 @@ export class SupabaseMockHelper {
     // Auth sign-in isteğini mock'la
     mockServer.use(
       http.post('https://test.supabase.co/auth/v1/token', async ({ request }) => {
-        const body = await request.json() as { grant_type: string; email: string; password: string };
+        const body = (await request.json()) as {
+          grant_type: string;
+          email: string;
+          password: string;
+        };
         if (body.grant_type === 'password' && body.email === email) {
           return HttpResponse.json(supabaseAuthFixtures.signInSuccess);
         }
-        return HttpResponse.json(supabaseAuthFixtures.signInErrorInvalidCredentials, { status: 400 });
+        return HttpResponse.json(supabaseAuthFixtures.signInErrorInvalidCredentials, {
+          status: 400,
+        });
       })
     );
 
@@ -130,7 +141,9 @@ export class SupabaseMockHelper {
     );
   }
 
-  static setupFailedSignIn(errorType: 'invalidCredentials' | 'userNotFound' = 'invalidCredentials') {
+  static setupFailedSignIn(
+    errorType: 'invalidCredentials' | 'userNotFound' = 'invalidCredentials'
+  ) {
     let errorResponse;
 
     switch (errorType) {
@@ -138,10 +151,10 @@ export class SupabaseMockHelper {
         errorResponse = {
           ...supabaseAuthFixtures.signInErrorInvalidCredentials,
           error: {
-            name: "AuthApiError",
-            message: "User not found",
-            status: 400
-          }
+            name: 'AuthApiError',
+            message: 'User not found',
+            status: 400,
+          },
         };
         break;
       case 'invalidCredentials':
@@ -164,8 +177,8 @@ export class SupabaseMockHelper {
           ...supabaseAuthFixtures.signUpSuccess,
           user: {
             ...supabaseAuthFixtures.signUpSuccess.user,
-            email
-          }
+            email,
+          },
         });
       })
     );
@@ -179,10 +192,10 @@ export class SupabaseMockHelper {
         errorResponse = {
           ...supabaseAuthFixtures.signUpErrorEmailExists,
           error: {
-            name: "AuthApiError",
-            message: "Password should be at least 6 characters",
-            status: 422
-          }
+            name: 'AuthApiError',
+            message: 'Password should be at least 6 characters',
+            status: 422,
+          },
         };
         break;
       case 'emailExists':
@@ -199,8 +212,8 @@ export class SupabaseMockHelper {
   }
 
   static setupGetSession(hasSession: boolean = true) {
-    const response = hasSession 
-      ? supabaseAuthFixtures.getSessionSuccess 
+    const response = hasSession
+      ? supabaseAuthFixtures.getSessionSuccess
       : supabaseAuthFixtures.getSessionEmpty;
 
     mockServer.use(
@@ -211,8 +224,8 @@ export class SupabaseMockHelper {
   }
 
   static setupPasswordReset(success: boolean = true) {
-    const response = success 
-      ? supabaseAuthFixtures.resetPasswordSuccess 
+    const response = success
+      ? supabaseAuthFixtures.resetPasswordSuccess
       : supabaseAuthFixtures.resetPasswordErrorEmailNotFound;
 
     const statusCode = success ? 200 : 400;
@@ -233,8 +246,8 @@ export class SupabaseMockHelper {
   }
 
   static setupGetTenant(tenantExists: boolean = true) {
-    const response = tenantExists 
-      ? supabaseDbFixtures.getTenantSuccess 
+    const response = tenantExists
+      ? supabaseDbFixtures.getTenantSuccess
       : supabaseDbFixtures.getTenantNotFound;
 
     mockServer.use(
@@ -300,12 +313,12 @@ export class TestEnvironmentHelper {
  */
 export class TestUtilityHelper {
   static async waitFor(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   static async retryOperation<T>(
-    operation: () => Promise<T>, 
-    maxRetries: number = 3, 
+    operation: () => Promise<T>,
+    maxRetries: number = 3,
     delay: number = 100
   ): Promise<T> {
     let lastError: Error;
@@ -331,4 +344,4 @@ export class TestUtilityHelper {
   static generateRandomEmail(): string {
     return `test-${Math.random().toString(36).substr(2, 9)}@example.com`;
   }
-} 
+}

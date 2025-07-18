@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import type { FC } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import * as Sentry from "@sentry/nextjs";
+import * as React from 'react';
+import type { FC } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import * as Sentry from '@sentry/nextjs';
 import {
   Form,
   FormControl,
@@ -13,17 +13,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface Teacher {
   id: string;
@@ -35,10 +35,10 @@ interface Teacher {
 
 const formSchema = z.object({
   teacher_id: z.string({
-    required_error: "Öğretmen seçiniz",
+    required_error: 'Öğretmen seçiniz',
   }),
-  role: z.enum(["subject", "homeroom"], {
-    required_error: "Öğretmen rolü seçiniz",
+  role: z.enum(['subject', 'homeroom'], {
+    required_error: 'Öğretmen rolü seçiniz',
   }),
 });
 
@@ -50,16 +50,12 @@ interface AssignTeacherFormProps {
   onCancel: () => void;
 }
 
-export const AssignTeacherForm: FC<AssignTeacherFormProps> = ({
-  classId,
-  onSuccess,
-  onCancel,
-}) => {
+export const AssignTeacherForm: FC<AssignTeacherFormProps> = ({ classId, onSuccess, onCancel }) => {
   const [teachers, setTeachers] = React.useState<Teacher[]>([]);
   const [filteredTeachers, setFilteredTeachers] = React.useState<Teacher[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [searchTerm, setSearchTerm] = React.useState("");
+  const [searchTerm, setSearchTerm] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
 
   const form = useForm<FormValues>({
@@ -69,25 +65,23 @@ export const AssignTeacherForm: FC<AssignTeacherFormProps> = ({
   const fetchAvailableTeachers = React.useCallback(async () => {
     return Sentry.startSpan(
       {
-        op: "http.client",
-        name: "GET /api/teachers/available",
+        op: 'http.client',
+        name: 'GET /api/teachers/available',
       },
       async () => {
         try {
-          const response = await fetch(
-            `/api/teachers?available=true&classId=${classId}`
-          );
+          const response = await fetch(`/api/teachers?available=true&classId=${classId}`);
           if (!response.ok) {
-            throw new Error("Öğretmen listesi alınamadı");
+            throw new Error('Öğretmen listesi alınamadı');
           }
           const data = await response.json();
           setTeachers(data);
           setFilteredTeachers(data);
           setError(null);
         } catch (error) {
-          console.error("Error fetching available teachers:", error);
+          console.error('Error fetching available teachers:', error);
           Sentry.captureException(error);
-          setError("Öğretmen listesi alınamadı");
+          setError('Öğretmen listesi alınamadı');
         } finally {
           setIsLoading(false);
         }
@@ -104,8 +98,7 @@ export const AssignTeacherForm: FC<AssignTeacherFormProps> = ({
       const fullName = `${teacher.first_name} ${teacher.last_name}`.toLowerCase();
       const email = teacher.email.toLowerCase();
       return (
-        fullName.includes(searchTerm.toLowerCase()) ||
-        email.includes(searchTerm.toLowerCase())
+        fullName.includes(searchTerm.toLowerCase()) || email.includes(searchTerm.toLowerCase())
       );
     });
     setFilteredTeachers(filtered);
@@ -114,8 +107,8 @@ export const AssignTeacherForm: FC<AssignTeacherFormProps> = ({
   const onSubmit = async (values: FormValues) => {
     return Sentry.startSpan(
       {
-        op: "ui.submit",
-        name: "Assign Teacher Form Submit",
+        op: 'ui.submit',
+        name: 'Assign Teacher Form Submit',
       },
       async () => {
         try {
@@ -123,9 +116,9 @@ export const AssignTeacherForm: FC<AssignTeacherFormProps> = ({
           setError(null);
 
           const response = await fetch(`/api/class-teachers/${classId}`, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               teacher_id: values.teacher_id,
@@ -135,14 +128,14 @@ export const AssignTeacherForm: FC<AssignTeacherFormProps> = ({
 
           if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || "Öğretmen eklenemedi");
+            throw new Error(error.message || 'Öğretmen eklenemedi');
           }
 
           onSuccess();
         } catch (error) {
-          console.error("Error assigning teacher:", error);
+          console.error('Error assigning teacher:', error);
           Sentry.captureException(error);
-          setError("Öğretmen eklenemedi");
+          setError('Öğretmen eklenemedi');
         } finally {
           setIsSubmitting(false);
         }
@@ -152,10 +145,8 @@ export const AssignTeacherForm: FC<AssignTeacherFormProps> = ({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-48">
-        <div className="text-lg text-muted-foreground">
-          Öğretmenler yükleniyor...
-        </div>
+      <div className="flex h-48 items-center justify-center">
+        <div className="text-muted-foreground text-lg">Öğretmenler yükleniyor...</div>
       </div>
     );
   }
@@ -220,13 +211,13 @@ export const AssignTeacherForm: FC<AssignTeacherFormProps> = ({
                 defaultValue={field.value}
                 className="flex flex-col space-y-1"
               >
-                <FormItem className="flex items-center space-x-3 space-y-0">
+                <FormItem className="flex items-center space-y-0 space-x-3">
                   <FormControl>
                     <RadioGroupItem value="subject" />
                   </FormControl>
                   <FormLabel className="font-normal">Branş Öğretmeni</FormLabel>
                 </FormItem>
-                <FormItem className="flex items-center space-x-3 space-y-0">
+                <FormItem className="flex items-center space-y-0 space-x-3">
                   <FormControl>
                     <RadioGroupItem value="homeroom" />
                   </FormControl>
@@ -244,21 +235,14 @@ export const AssignTeacherForm: FC<AssignTeacherFormProps> = ({
             className="flex-1"
             disabled={isSubmitting || filteredTeachers.length === 0}
           >
-            {isSubmitting ? "Ekleniyor..." : "Ekle"}
+            {isSubmitting ? 'Ekleniyor...' : 'Ekle'}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1"
-            onClick={onCancel}
-          >
+          <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
             İptal
           </Button>
         </div>
 
-        {error && (
-          <div className="text-sm text-destructive text-center">{error}</div>
-        )}
+        {error && <div className="text-destructive text-center text-sm">{error}</div>}
       </form>
     </Form>
   );

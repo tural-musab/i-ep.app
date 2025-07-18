@@ -12,16 +12,22 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 // import { Progress } from '@/components/ui/progress';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { 
-  CalendarIcon, 
-  Download, 
-  FileText, 
-  // Eye, 
+import {
+  CalendarIcon,
+  Download,
+  FileText,
+  // Eye,
   BarChart3,
   TrendingUp,
   TrendingDown,
@@ -56,8 +62,8 @@ export function AttendanceReports() {
       { class: '5-A', students: 30, attendanceRate: 95.1, absences: 28, lates: 8 },
       { class: '5-B', students: 28, attendanceRate: 93.8, absences: 32, lates: 12 },
       { class: '6-A', students: 32, attendanceRate: 94.7, absences: 38, lates: 15 },
-      { class: '6-B', students: 30, attendanceRate: 93.2, absences: 45, lates: 10 }
-    ]
+      { class: '6-B', students: 30, attendanceRate: 93.2, absences: 45, lates: 10 },
+    ],
   };
 
   const studentReport = [
@@ -73,7 +79,7 @@ export function AttendanceReports() {
       attendanceRate: 90.0,
       consecutiveAbsences: 0,
       lastAbsence: '2025-01-10',
-      trend: 'improving'
+      trend: 'improving',
     },
     {
       id: '2',
@@ -87,7 +93,7 @@ export function AttendanceReports() {
       attendanceRate: 85.0,
       consecutiveAbsences: 2,
       lastAbsence: '2025-01-14',
-      trend: 'declining'
+      trend: 'declining',
     },
     {
       id: '3',
@@ -101,8 +107,8 @@ export function AttendanceReports() {
       attendanceRate: 95.0,
       consecutiveAbsences: 0,
       lastAbsence: '2025-01-05',
-      trend: 'stable'
-    }
+      trend: 'stable',
+    },
   ];
 
   const dailyReport = [
@@ -113,7 +119,7 @@ export function AttendanceReports() {
       absent: 8,
       late: 3,
       attendanceRate: 94.7,
-      weather: 'Güneşli'
+      weather: 'Güneşli',
     },
     {
       date: '2025-01-14',
@@ -122,7 +128,7 @@ export function AttendanceReports() {
       absent: 12,
       late: 5,
       attendanceRate: 92.0,
-      weather: 'Yağmurlu'
+      weather: 'Yağmurlu',
     },
     {
       date: '2025-01-13',
@@ -131,8 +137,8 @@ export function AttendanceReports() {
       absent: 5,
       late: 2,
       attendanceRate: 96.7,
-      weather: 'Güneşli'
-    }
+      weather: 'Güneşli',
+    },
   ];
 
   const chronicAbsentees = [
@@ -145,7 +151,7 @@ export function AttendanceReports() {
       totalAbsences: 7,
       consecutiveAbsences: 4,
       parentContacted: true,
-      interventionPlan: true
+      interventionPlan: true,
     },
     {
       id: '2',
@@ -156,13 +162,13 @@ export function AttendanceReports() {
       totalAbsences: 5,
       consecutiveAbsences: 3,
       parentContacted: true,
-      interventionPlan: false
-    }
+      interventionPlan: false,
+    },
   ];
 
   const generateReport = async () => {
     setIsGenerating(true);
-    
+
     try {
       // API call will be implemented here
       console.log('Generating report:', {
@@ -170,12 +176,12 @@ export function AttendanceReports() {
         startDate,
         endDate,
         class: selectedClass,
-        student: selectedStudent
+        student: selectedStudent,
       });
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       alert('Rapor oluşturuldu!');
     } catch (error) {
       console.error('Error generating report:', error);
@@ -224,7 +230,7 @@ export function AttendanceReports() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-2">
               <Label>Rapor Türü</Label>
               <Select value={reportType} onValueChange={setReportType}>
@@ -279,12 +285,12 @@ export function AttendanceReports() {
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !startDate && "text-muted-foreground"
+                      'w-full justify-start text-left font-normal',
+                      !startDate && 'text-muted-foreground'
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP", { locale: tr }) : "Tarih seçin"}
+                    {startDate ? format(startDate, 'PPP', { locale: tr }) : 'Tarih seçin'}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -305,32 +311,23 @@ export function AttendanceReports() {
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !endDate && "text-muted-foreground"
+                      'w-full justify-start text-left font-normal',
+                      !endDate && 'text-muted-foreground'
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, "PPP", { locale: tr }) : "Tarih seçin"}
+                    {endDate ? format(endDate, 'PPP', { locale: tr }) : 'Tarih seçin'}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    initialFocus
-                  />
+                  <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
                 </PopoverContent>
               </Popover>
             </div>
 
             <div className="space-y-2">
               <Label>&nbsp;</Label>
-              <Button 
-                onClick={generateReport} 
-                disabled={isGenerating}
-                className="w-full"
-              >
+              <Button onClick={generateReport} disabled={isGenerating} className="w-full">
                 {isGenerating ? (
                   <>
                     <Clock className="mr-2 h-4 w-4 animate-spin" />
@@ -361,7 +358,7 @@ export function AttendanceReports() {
         <TabsContent value="summary" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-start">
+              <div className="flex items-start justify-between">
                 <div>
                   <CardTitle>Genel Özet Raporu</CardTitle>
                   <CardDescription>
@@ -370,32 +367,40 @@ export function AttendanceReports() {
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => exportReport('pdf')}>
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     PDF
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => exportReport('excel')}>
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     Excel
                   </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{summaryReport.totalStudents}</div>
+              <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <div className="rounded-lg bg-blue-50 p-4 text-center">
+                  <div className="text-2xl font-bold text-blue-600">
+                    {summaryReport.totalStudents}
+                  </div>
                   <div className="text-sm text-blue-800">Toplam Öğrenci</div>
                 </div>
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">%{summaryReport.averageAttendanceRate}</div>
+                <div className="rounded-lg bg-green-50 p-4 text-center">
+                  <div className="text-2xl font-bold text-green-600">
+                    %{summaryReport.averageAttendanceRate}
+                  </div>
                   <div className="text-sm text-green-800">Ortalama Devamsızlık</div>
                 </div>
-                <div className="text-center p-4 bg-red-50 rounded-lg">
-                  <div className="text-2xl font-bold text-red-600">{summaryReport.totalAbsences}</div>
+                <div className="rounded-lg bg-red-50 p-4 text-center">
+                  <div className="text-2xl font-bold text-red-600">
+                    {summaryReport.totalAbsences}
+                  </div>
                   <div className="text-sm text-red-800">Toplam Devamsızlık</div>
                 </div>
-                <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                  <div className="text-2xl font-bold text-yellow-600">{summaryReport.totalLates}</div>
+                <div className="rounded-lg bg-yellow-50 p-4 text-center">
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {summaryReport.totalLates}
+                  </div>
                   <div className="text-sm text-yellow-800">Toplam Geç Kalma</div>
                 </div>
               </div>
@@ -403,14 +408,19 @@ export function AttendanceReports() {
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Sınıf Bazlı Dağılım</h3>
                 {summaryReport.classBreakdown.map((classData, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg border p-4"
+                  >
                     <div>
                       <h4 className="font-medium">{classData.class}</h4>
                       <p className="text-sm text-gray-600">{classData.students} öğrenci</p>
                     </div>
                     <div className="flex items-center gap-4">
                       <div className="text-right">
-                        <div className={`text-lg font-bold ${getAttendanceRateColor(classData.attendanceRate)}`}>
+                        <div
+                          className={`text-lg font-bold ${getAttendanceRateColor(classData.attendanceRate)}`}
+                        >
                           %{classData.attendanceRate}
                         </div>
                         <div className="text-sm text-gray-600">devamsızlık oranı</div>
@@ -435,20 +445,18 @@ export function AttendanceReports() {
         <TabsContent value="student" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-start">
+              <div className="flex items-start justify-between">
                 <div>
                   <CardTitle>Öğrenci Bazlı Rapor</CardTitle>
-                  <CardDescription>
-                    Her öğrencinin detaylı devamsızlık durumu
-                  </CardDescription>
+                  <CardDescription>Her öğrencinin detaylı devamsızlık durumu</CardDescription>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => exportReport('pdf')}>
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     PDF
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => exportReport('excel')}>
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     Excel
                   </Button>
                 </div>
@@ -457,23 +465,30 @@ export function AttendanceReports() {
             <CardContent>
               <div className="space-y-4">
                 {studentReport.map((student) => (
-                  <div key={student.id} className="p-4 border rounded-lg">
-                    <div className="flex justify-between items-start mb-4">
+                  <div key={student.id} className="rounded-lg border p-4">
+                    <div className="mb-4 flex items-start justify-between">
                       <div>
                         <h3 className="font-medium">{student.name}</h3>
-                        <p className="text-sm text-gray-600">#{student.number} • {student.class}</p>
+                        <p className="text-sm text-gray-600">
+                          #{student.number} • {student.class}
+                        </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className={getAttendanceRateBadge(student.attendanceRate)}>
+                        <Badge
+                          variant="outline"
+                          className={getAttendanceRateBadge(student.attendanceRate)}
+                        >
                           %{student.attendanceRate}
                         </Badge>
                         {getTrendIcon(student.trend)}
                       </div>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-green-600">{student.presentDays}</div>
+                        <div className="text-2xl font-bold text-green-600">
+                          {student.presentDays}
+                        </div>
                         <div className="text-sm text-gray-600">Mevcut Gün</div>
                       </div>
                       <div className="text-center">
@@ -485,17 +500,20 @@ export function AttendanceReports() {
                         <div className="text-sm text-gray-600">Geç Kalma</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-orange-600">{student.consecutiveAbsences}</div>
+                        <div className="text-2xl font-bold text-orange-600">
+                          {student.consecutiveAbsences}
+                        </div>
                         <div className="text-sm text-gray-600">Ardışık Devamsızlık</div>
                       </div>
                     </div>
-                    
+
                     {student.consecutiveAbsences > 0 && (
-                      <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded">
+                      <div className="mt-4 rounded border border-red-200 bg-red-50 p-3">
                         <div className="flex items-center gap-2 text-red-800">
                           <AlertCircle className="h-4 w-4" />
                           <span className="text-sm font-medium">
-                            Son devamsızlık: {new Date(student.lastAbsence).toLocaleDateString('tr-TR')}
+                            Son devamsızlık:{' '}
+                            {new Date(student.lastAbsence).toLocaleDateString('tr-TR')}
                           </span>
                         </div>
                       </div>
@@ -511,20 +529,18 @@ export function AttendanceReports() {
         <TabsContent value="daily" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-start">
+              <div className="flex items-start justify-between">
                 <div>
                   <CardTitle>Günlük Devamsızlık Raporu</CardTitle>
-                  <CardDescription>
-                    Son günlerin devamsızlık durumu
-                  </CardDescription>
+                  <CardDescription>Son günlerin devamsızlık durumu</CardDescription>
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => exportReport('pdf')}>
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     PDF
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => exportReport('excel')}>
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     Excel
                   </Button>
                 </div>
@@ -533,25 +549,28 @@ export function AttendanceReports() {
             <CardContent>
               <div className="space-y-4">
                 {dailyReport.map((day, index) => (
-                  <div key={index} className="p-4 border rounded-lg">
-                    <div className="flex justify-between items-start mb-4">
+                  <div key={index} className="rounded-lg border p-4">
+                    <div className="mb-4 flex items-start justify-between">
                       <div>
                         <h3 className="font-medium">
-                          {new Date(day.date).toLocaleDateString('tr-TR', { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
+                          {new Date(day.date).toLocaleDateString('tr-TR', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
                           })}
                         </h3>
                         <p className="text-sm text-gray-600">Hava: {day.weather}</p>
                       </div>
-                      <Badge variant="outline" className={getAttendanceRateBadge(day.attendanceRate)}>
+                      <Badge
+                        variant="outline"
+                        className={getAttendanceRateBadge(day.attendanceRate)}
+                      >
                         %{day.attendanceRate}
                       </Badge>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                       <div className="text-center">
                         <div className="text-2xl font-bold text-blue-600">{day.totalStudents}</div>
                         <div className="text-sm text-gray-600">Toplam Öğrenci</div>
@@ -580,7 +599,7 @@ export function AttendanceReports() {
         <TabsContent value="chronic" className="space-y-4">
           <Card>
             <CardHeader>
-              <div className="flex justify-between items-start">
+              <div className="flex items-start justify-between">
                 <div>
                   <CardTitle>Kronik Devamsızlık Raporu</CardTitle>
                   <CardDescription>
@@ -589,11 +608,11 @@ export function AttendanceReports() {
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => exportReport('pdf')}>
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     PDF
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => exportReport('excel')}>
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     Excel
                   </Button>
                 </div>
@@ -602,24 +621,28 @@ export function AttendanceReports() {
             <CardContent>
               <div className="space-y-4">
                 {chronicAbsentees.map((student) => (
-                  <div key={student.id} className="p-4 border border-red-200 rounded-lg bg-red-50">
-                    <div className="flex justify-between items-start mb-4">
+                  <div key={student.id} className="rounded-lg border border-red-200 bg-red-50 p-4">
+                    <div className="mb-4 flex items-start justify-between">
                       <div>
                         <h3 className="font-medium text-red-900">{student.name}</h3>
-                        <p className="text-sm text-red-700">#{student.number} • {student.class}</p>
+                        <p className="text-sm text-red-700">
+                          #{student.number} • {student.class}
+                        </p>
                       </div>
-                      <Badge variant="destructive">
-                        %{student.absenceRate} devamsızlık
-                      </Badge>
+                      <Badge variant="destructive">%{student.absenceRate} devamsızlık</Badge>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
+                    <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-red-600">{student.totalAbsences}</div>
+                        <div className="text-2xl font-bold text-red-600">
+                          {student.totalAbsences}
+                        </div>
                         <div className="text-sm text-red-700">Toplam Devamsızlık</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-2xl font-bold text-red-600">{student.consecutiveAbsences}</div>
+                        <div className="text-2xl font-bold text-red-600">
+                          {student.consecutiveAbsences}
+                        </div>
                         <div className="text-sm text-red-700">Ardışık Devamsızlık</div>
                       </div>
                       <div className="text-center">
@@ -629,7 +652,7 @@ export function AttendanceReports() {
                         <div className="text-sm text-red-700">Veli İletişimi</div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
                         {student.parentContacted ? (

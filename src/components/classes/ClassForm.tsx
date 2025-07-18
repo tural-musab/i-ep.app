@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import * as Sentry from "@sentry/nextjs";
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import * as Sentry from '@sentry/nextjs';
 import {
   Form,
   FormControl,
@@ -12,32 +12,32 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+} from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 
 const formSchema = z.object({
   name: z
     .string()
-    .min(2, "Sınıf adı en az 2 karakter olmalıdır")
-    .max(100, "Sınıf adı en fazla 100 karakter olabilir"),
+    .min(2, 'Sınıf adı en az 2 karakter olmalıdır')
+    .max(100, 'Sınıf adı en fazla 100 karakter olabilir'),
   grade_level: z
     .number()
-    .min(1, "Sınıf seviyesi en az 1 olmalıdır")
-    .max(12, "Sınıf seviyesi en fazla 12 olabilir"),
+    .min(1, 'Sınıf seviyesi en az 1 olmalıdır')
+    .max(12, 'Sınıf seviyesi en fazla 12 olabilir'),
   capacity: z
     .number()
-    .min(1, "Kapasite en az 1 olmalıdır")
-    .max(50, "Kapasite en fazla 50 olabilir"),
-  academic_year: z.string().regex(/^\d{4}-\d{4}$/, "Örnek format: 2023-2024"),
+    .min(1, 'Kapasite en az 1 olmalıdır')
+    .max(50, 'Kapasite en fazla 50 olabilir'),
+  academic_year: z.string().regex(/^\d{4}-\d{4}$/, 'Örnek format: 2023-2024'),
   is_active: z.boolean().default(true),
 });
 
@@ -54,12 +54,10 @@ export function ClassForm({ initialData, onSuccess }: ClassFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
-      name: "",
+      name: '',
       grade_level: 1,
       capacity: 30,
-      academic_year: `${new Date().getFullYear()}-${
-        new Date().getFullYear() + 1
-      }`,
+      academic_year: `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`,
       is_active: true,
     },
   });
@@ -67,33 +65,33 @@ export function ClassForm({ initialData, onSuccess }: ClassFormProps) {
   const onSubmit = async (values: FormValues) => {
     return Sentry.startSpan(
       {
-        op: "ui.submit",
-        name: "Class Form Submit",
+        op: 'ui.submit',
+        name: 'Class Form Submit',
       },
       async () => {
         try {
           setIsSubmitting(true);
 
-          const response = await fetch("/api/classes", {
-            method: initialData ? "PUT" : "POST",
+          const response = await fetch('/api/classes', {
+            method: initialData ? 'PUT' : 'POST',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify(values),
           });
 
           if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || "Bir hata oluştu");
+            throw new Error(error.message || 'Bir hata oluştu');
           }
 
           onSuccess();
         } catch (error) {
-          console.error("Error submitting class form:", error);
+          console.error('Error submitting class form:', error);
           Sentry.captureException(error);
-          form.setError("root", {
-            type: "manual",
-            message: "Sınıf kaydedilirken bir hata oluştu",
+          form.setError('root', {
+            type: 'manual',
+            message: 'Sınıf kaydedilirken bir hata oluştu',
           });
         } finally {
           setIsSubmitting(false);
@@ -189,24 +187,21 @@ export function ClassForm({ initialData, onSuccess }: ClassFormProps) {
             <FormItem className="flex items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel>Aktif</FormLabel>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-muted-foreground text-sm">
                   Sınıfın aktif olup olmadığını belirler
                 </div>
               </div>
               <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
             </FormItem>
           )}
         />
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Kaydediliyor..." : "Kaydet"}
+          {isSubmitting ? 'Kaydediliyor...' : 'Kaydet'}
         </Button>
       </form>
     </Form>
   );
-} 
+}

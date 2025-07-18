@@ -74,19 +74,19 @@ import { loginUser, fetchStudent } from '@/test-utils/api-helpers';
 describe('Tenant Data Isolation', () => {
   let tenant1Token: string;
   let tenant2StudentId: string;
-  
+
   beforeAll(async () => {
     // Tenant 1 kullanıcısı ile giriş yap
     tenant1Token = await loginUser('admin@test-okul-1.com', 'password');
-    
+
     // Tenant 2'deki bir öğrencinin ID'sini al (doğrudan DB sorgusu ile)
     tenant2StudentId = await getStudentIdFromTenant2();
   });
-  
+
   test('Should not allow access to other tenant data', async () => {
     // Tenant 1 token'ı ile Tenant 2 öğrencisine erişmeyi dene
     const response = await fetchStudent(tenant2StudentId, tenant1Token);
-    
+
     // 403 veya 404 yanıtı beklenir
     expect(response.status).toBeOneOf([403, 404]);
     expect(response.data).not.toHaveProperty('id', tenant2StudentId);
@@ -115,26 +115,26 @@ describe('API Tenant Isolation', () => {
   let tenant1Token: string;
   let tenant2Token: string;
   let tenant1Id: string;
-  
+
   beforeAll(async () => {
     // Her iki tenant için token al
     tenant1Token = await loginUser('admin@test-okul-1.com', 'password');
     tenant2Token = await loginUser('admin@test-okul-2.com', 'password');
-    
+
     // Tenant 1 ID'sini al
     tenant1Id = await getTenantIdBySubdomain('test-okul-1');
   });
-  
+
   test('Tenant 1 token should access Tenant 1 API', async () => {
     const response = await fetchTenantUsers(tenant1Id, tenant1Token);
-    
+
     expect(response.status).toBe(200);
     expect(Array.isArray(response.data)).toBe(true);
   });
-  
+
   test('Tenant 2 token should not access Tenant 1 API', async () => {
     const response = await fetchTenantUsers(tenant1Id, tenant2Token);
-    
+
     expect(response.status).toBe(403);
     expect(response.data).toHaveProperty('error');
   });
@@ -163,42 +163,42 @@ describe('Database Isolation', () => {
     // Test verileri oluştur
     await seedTestData();
   });
-  
+
   test('Schema isolation works correctly', async () => {
     // Tenant 1 şemasında sorgu
     const { data: tenant1Students } = await supabase
-      .from('tenant_X.students')  // X yerine gerçek tenant ID
+      .from('tenant_X.students') // X yerine gerçek tenant ID
       .select('*');
-      
+
     // Tenant 2 şemasında sorgu
     const { data: tenant2Students } = await supabase
-      .from('tenant_Y.students')  // Y yerine gerçek tenant ID
+      .from('tenant_Y.students') // Y yerine gerçek tenant ID
       .select('*');
-    
+
     // Her şemanın kendi verilerini döndürdüğünü doğrula
     expect(tenant1Students?.length).toBeGreaterThan(0);
     expect(tenant2Students?.length).toBeGreaterThan(0);
-    
+
     // Cross-check: Her şemada öğrenci ID'leri farklı olmalı
-    const tenant1Ids = tenant1Students?.map(s => s.id) || [];
-    const tenant2Ids = tenant2Students?.map(s => s.id) || [];
-    
-    expect(tenant1Ids.some(id => tenant2Ids.includes(id))).toBe(false);
+    const tenant1Ids = tenant1Students?.map((s) => s.id) || [];
+    const tenant2Ids = tenant2Students?.map((s) => s.id) || [];
+
+    expect(tenant1Ids.some((id) => tenant2Ids.includes(id))).toBe(false);
   });
-  
+
   test('RLS policies work correctly', async () => {
     // Tenant 1 kullanıcısı için Supabase client oluştur
     const tenant1Client = await createSupabaseClientForUser('admin@test-okul-1.com');
-    
+
     // Tenant 2'ye ait veriye erişmeyi dene
     const { data, error } = await tenant1Client
-      .from('shared_metrics')  // RLS korumalı paylaşılan tablo
+      .from('shared_metrics') // RLS korumalı paylaşılan tablo
       .select('*')
-      .eq('tenant_id', 'tenant2_id');  // Tenant 2'ye ait veri
-    
+      .eq('tenant_id', 'tenant2_id'); // Tenant 2'ye ait veri
+
     // RLS politikası nedeniyle veri dönmemeli
     expect(data).toEqual([]);
-    expect(error).toBeNull();  // Hata vermemeli, sadece boş sonuç döndürmeli
+    expect(error).toBeNull(); // Hata vermemeli, sadece boş sonuç döndürmeli
   });
 });
 ```
@@ -225,21 +225,21 @@ test.describe('Subdomain Routing', () => {
   test('should load correct tenant for valid subdomain', async ({ page }) => {
     // Tenant 1 subdomain'ine git
     await page.goto('http://test-okul-1.i-ep.app:3000');
-    
+
     // Tenant 1'e özgü içeriğin gösterildiğini doğrula
     await expect(page.locator('h1')).toContainText('Test Okul 1');
-    
+
     // Tenant 2 subdomain'ine git
     await page.goto('http://test-okul-2.i-ep.app:3000');
-    
+
     // Tenant 2'ye özgü içeriğin gösterildiğini doğrula
     await expect(page.locator('h1')).toContainText('Test Okul 2');
   });
-  
+
   test('should show error for invalid subdomain', async ({ page }) => {
     // Var olmayan bir subdomain'e git
     await page.goto('http://invalid-tenant.i-ep.app:3000');
-    
+
     // Hata sayfasının gösterildiğini doğrula
     await expect(page.locator('h1')).toContainText('Tenant Bulunamadı');
   });
@@ -265,24 +265,24 @@ import { setupCustomDomain, teardownCustomDomain } from '@/test-utils/domain-hel
 
 test.describe('Custom Domain Routing', () => {
   let customDomain: string;
-  
+
   test.beforeAll(async () => {
     // Test için özel domain ayarla
     customDomain = await setupCustomDomain('test-okul-1');
   });
-  
+
   test.afterAll(async () => {
     // Test sonrası özel domain'i temizle
     await teardownCustomDomain(customDomain);
   });
-  
+
   test('should load correct tenant for custom domain', async ({ page }) => {
     // Özel domain'e git
     await page.goto(`http://${customDomain}:3000`);
-    
+
     // Tenant 1'e özgü içeriğin gösterildiğini doğrula
     await expect(page.locator('h1')).toContainText('Test Okul 1');
-    
+
     // Tenant ID'sinin doğru olduğunu kontrol et (sayfadaki meta etiketlerden)
     const tenantId = await page.getAttribute('meta[name="tenant-id"]', 'content');
     expect(tenantId).toBe('tenant1_id');
@@ -313,37 +313,37 @@ test.describe('Cross-Tenant Authentication', () => {
     email: 'test-user@example.com',
     password: 'Test123!',
   };
-  
+
   test.beforeAll(async () => {
     // Tenant 1'de test kullanıcısı oluştur
     await createUserInTenant('tenant1_id', testUser);
   });
-  
+
   test('User should log in to correct tenant', async ({ page }) => {
     // Tenant 1'e git
     await page.goto('http://test-okul-1.i-ep.app:3000/login');
-    
+
     // Giriş yap
     await page.fill('input[name="email"]', testUser.email);
     await page.fill('input[name="password"]', testUser.password);
     await page.click('button[type="submit"]');
-    
+
     // Başarılı giriş kontrolü
     await expect(page).toHaveURL(/dashboard/);
   });
-  
+
   test('User should not log in to wrong tenant', async ({ page }) => {
     // Tenant 2'ye git
     await page.goto('http://test-okul-2.i-ep.app:3000/login');
-    
+
     // Giriş yap
     await page.fill('input[name="email"]', testUser.email);
     await page.fill('input[name="password"]', testUser.password);
     await page.click('button[type="submit"]');
-    
+
     // Hata mesajı kontrolü
     await expect(page.locator('.error-message')).toContainText('Geçersiz kimlik bilgileri');
-    
+
     // URL değişmemeli
     await expect(page).toHaveURL(/login/);
   });
@@ -372,7 +372,7 @@ test.describe('Role-Based Access Control', () => {
     test(`${role} role should have correct access`, async ({ page }) => {
       // Role özgü kullanıcı ile giriş yap
       await loginAsRole(page, role);
-      
+
       // Admin paneline erişim
       await page.goto('http://test-okul-1.i-ep.app:3000/admin');
       if (role === 'admin') {
@@ -380,7 +380,7 @@ test.describe('Role-Based Access Control', () => {
       } else {
         await expect(page).toHaveURL(/unauthorized/);
       }
-      
+
       // Öğretmen paneline erişim
       await page.goto('http://test-okul-1.i-ep.app:3000/teacher');
       if (['admin', 'teacher'].includes(role)) {
@@ -388,7 +388,7 @@ test.describe('Role-Based Access Control', () => {
       } else {
         await expect(page).toHaveURL(/unauthorized/);
       }
-      
+
       // Öğrenci paneline erişim
       await page.goto('http://test-okul-1.i-ep.app:3000/student');
       if (['admin', 'teacher', 'student'].includes(role)) {
@@ -436,34 +436,34 @@ describe('Tenant Creation', () => {
     subdomain: 'test-tenant',
     adminEmail: 'admin@test-tenant.com',
   };
-  
+
   let createdTenantId: string;
-  
+
   test('should create tenant record', async () => {
     const tenant = await createTenant(newTenant);
-    
+
     expect(tenant).toHaveProperty('id');
     expect(tenant.name).toBe(newTenant.name);
     expect(tenant.subdomain).toBe(newTenant.subdomain);
-    
+
     createdTenantId = tenant.id;
   });
-  
+
   test('should create tenant database schema', async () => {
     const schemaExists = await checkSchemaExists(`tenant_${createdTenantId}`);
     expect(schemaExists).toBe(true);
   });
-  
+
   test('should create tenant database tables', async () => {
     const requiredTables = ['users', 'classes', 'students', 'teachers'];
     const tablesExist = await checkTablesExist(`tenant_${createdTenantId}`, requiredTables);
-    
+
     expect(tablesExist).toBe(true);
   });
-  
+
   test('should be accessible via subdomain', async () => {
     const tenant = await getTenantBySubdomain(newTenant.subdomain);
-    
+
     expect(tenant).not.toBeNull();
     expect(tenant?.id).toBe(createdTenantId);
   });
@@ -490,7 +490,7 @@ import { checkSchemaExists } from '@/test-utils/db-helpers';
 
 describe('Tenant Deactivation and Deletion', () => {
   let testTenantId: string;
-  
+
   beforeAll(async () => {
     // Test tenant'ı oluştur
     const tenant = await createTenant({
@@ -498,33 +498,33 @@ describe('Tenant Deactivation and Deletion', () => {
       subdomain: 'deletion-test',
       adminEmail: 'admin@deletion-test.com',
     });
-    
+
     testTenantId = tenant.id;
   });
-  
+
   test('should deactivate tenant', async () => {
     await deactivateTenant(testTenantId);
-    
+
     // Tenant'ın devre dışı bırakıldığını doğrula
     const tenant = await getTenantById(testTenantId);
     expect(tenant.status).toBe('inactive');
-    
+
     // Subdomain'e erişimin engellendiğini doğrula (E2E test gerekebilir)
   });
-  
+
   test('should delete tenant data', async () => {
     // Tenant verilerini sil (soft delete)
     await deleteTenant(testTenantId);
-    
+
     // Tenant kaydının silindiğini doğrula
     const tenant = await getTenantById(testTenantId);
     expect(tenant).toBeNull();
-    
+
     // Şemanın hala var olduğunu ama arşivlendiğini doğrula
     // Not: Gerçek silme politikanıza göre değişebilir
     const schemaExists = await checkSchemaExists(`tenant_${testTenantId}`);
     expect(schemaExists).toBe(true);
-    
+
     // Arşivlenmiş şema olduğunu doğrula
     const isArchived = await checkSchemaIsArchived(`tenant_${testTenantId}`);
     expect(isArchived).toBe(true);
@@ -555,7 +555,7 @@ import { measureExecutionTime } from '@/test-utils/performance-helpers';
 describe('Multi-Tenant Load Test', () => {
   const NUM_TENANTS = 50; // Test tenant sayısı
   const tenants: any[] = [];
-  
+
   beforeAll(async () => {
     // Test tenant'ları oluştur
     for (let i = 0; i < NUM_TENANTS; i++) {
@@ -564,43 +564,37 @@ describe('Multi-Tenant Load Test', () => {
         subdomain: `load-test-${i}`,
         adminEmail: `admin@load-test-${i}.com`,
       });
-      
+
       tenants.push(tenant);
     }
   });
-  
+
   test('should handle concurrent tenant logins', async () => {
-    const loginPromises = tenants.map(tenant => 
+    const loginPromises = tenants.map((tenant) =>
       loginUser(`admin@${tenant.subdomain}.com`, 'password')
     );
-    
-    const { executionTime, results } = await measureExecutionTime(() => 
-      Promise.all(loginPromises)
-    );
-    
+
+    const { executionTime, results } = await measureExecutionTime(() => Promise.all(loginPromises));
+
     // Tüm giriş işlemlerinin başarılı olduğunu doğrula
-    expect(results.every(token => !!token)).toBe(true);
-    
+    expect(results.every((token) => !!token)).toBe(true);
+
     // Giriş işlemlerinin kabul edilebilir bir sürede tamamlandığını doğrula
     expect(executionTime).toBeLessThan(5000); // 5 saniyeden az
   });
-  
+
   test('should handle concurrent API requests across tenants', async () => {
     const tokens = await Promise.all(
-      tenants.map(tenant => loginUser(`admin@${tenant.subdomain}.com`, 'password'))
+      tenants.map((tenant) => loginUser(`admin@${tenant.subdomain}.com`, 'password'))
     );
-    
-    const apiPromises = tenants.map((tenant, index) => 
-      fetchTenantUsers(tenant.id, tokens[index])
-    );
-    
-    const { executionTime, results } = await measureExecutionTime(() => 
-      Promise.all(apiPromises)
-    );
-    
+
+    const apiPromises = tenants.map((tenant, index) => fetchTenantUsers(tenant.id, tokens[index]));
+
+    const { executionTime, results } = await measureExecutionTime(() => Promise.all(apiPromises));
+
     // Tüm API isteklerinin başarılı olduğunu doğrula
-    expect(results.every(res => res.status === 200)).toBe(true);
-    
+    expect(results.every((res) => res.status === 200)).toBe(true);
+
     // API isteklerinin kabul edilebilir bir sürede tamamlandığını doğrula
     expect(executionTime).toBeLessThan(10000); // 10 saniyeden az
   });
@@ -628,43 +622,37 @@ import { loginUser, fetchData } from '@/test-utils/api-helpers';
 describe('Tenant Isolation Security', () => {
   let tenant1Token: string;
   let tenant2Id: string;
-  
+
   beforeAll(async () => {
     tenant1Token = await loginUser('admin@test-okul-1.com', 'password');
     tenant2Id = await getTenantIdBySubdomain('test-okul-2');
   });
-  
+
   test('should reject URL manipulation attempts', async () => {
     // Tenant 2'nin API'sine erişmeyi dene
     const response = await fetchData(`/api/tenants/${tenant2Id}/users`, tenant1Token);
-    
+
     expect(response.status).toBeOneOf([401, 403, 404]);
     expect(response.data).not.toHaveProperty('users');
   });
-  
+
   test('should reject SQL injection attempts', async () => {
     // SQL injection denemesi
-    const response = await fetchData(
-      `/api/tenants/1; DROP TABLE users;--/data`,
-      tenant1Token
-    );
-    
+    const response = await fetchData(`/api/tenants/1; DROP TABLE users;--/data`, tenant1Token);
+
     expect(response.status).toBeOneOf([400, 401, 403, 404]);
-    
+
     // Veritabanı bütünlüğünü kontrol et
     const tablesExist = await checkTablesExist('public', ['tenants', 'users']);
     expect(tablesExist).toBe(true);
   });
-  
+
   test('should reject tenant parameter forgery', async () => {
     // Tenant bilgisi içeren JWT token manipülasyonu
     const forgedToken = forgeTokenWithTenantId(tenant1Token, tenant2Id);
-    
-    const response = await fetchData(
-      `/api/tenants/${tenant2Id}/users`,
-      forgedToken
-    );
-    
+
+    const response = await fetchData(`/api/tenants/${tenant2Id}/users`, forgedToken);
+
     expect(response.status).toBeOneOf([401, 403]);
   });
 });
@@ -718,4 +706,4 @@ Güvenlik Bulguları:
 
 ---
 
-Bu rehber, İ-EP.APP'ın multi-tenant mimarisinin doğru ve güvenli bir şekilde test edilmesine yardımcı olmak için tasarlanmıştır. Yeni test senaryoları eklendikçe rehber güncellenecektir. 
+Bu rehber, İ-EP.APP'ın multi-tenant mimarisinin doğru ve güvenli bir şekilde test edilmesine yardımcı olmak için tasarlanmıştır. Yeni test senaryoları eklendikçe rehber güncellenecektir.

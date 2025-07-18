@@ -27,38 +27,29 @@ interface CreateStudentData {
  */
 export async function GET(request: NextRequest) {
   return Sentry.startSpan(
-    { 
-      op: "http.server",
-      name: "GET /api/students" 
+    {
+      op: 'http.server',
+      name: 'GET /api/students',
     },
     async () => {
       try {
         // Authentication check
         const session = await getServerSession(authOptions);
         if (!session || !session.user) {
-          return NextResponse.json(
-            { error: 'Unauthorized' },
-            { status: 401 }
-          );
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         // Get tenant information
         const tenant = await getCurrentTenant();
         if (!tenant) {
-          return NextResponse.json(
-            { error: 'Tenant not found' },
-            { status: 400 }
-          );
+          return NextResponse.json({ error: 'Tenant not found' }, { status: 400 });
         }
 
         // Authorization check - admin, teacher can view students
         // @ts-expect-error - NextAuth user type doesn't include role
         const userRole = session.user.role;
         if (!['admin', 'teacher', 'parent'].includes(userRole)) {
-          return NextResponse.json(
-            { error: 'Insufficient permissions' },
-            { status: 403 }
-          );
+          return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
         }
 
         // Parse query parameters
@@ -72,7 +63,8 @@ export async function GET(request: NextRequest) {
         // Build the query for students
         let query = supabase
           .from('users')
-          .select(`
+          .select(
+            `
             id,
             email,
             first_name,
@@ -81,14 +73,17 @@ export async function GET(request: NextRequest) {
             created_at,
             updated_at,
             is_active
-          `)
+          `
+          )
           .eq('tenant_id', tenant.id)
           .eq('role', 'student')
           .is('deleted_at', null);
 
         // Add search filter
         if (search) {
-          query = query.or(`first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%`);
+          query = query.or(
+            `first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%`
+          );
         }
 
         // Add pagination
@@ -123,18 +118,14 @@ export async function GET(request: NextRequest) {
             current: page,
             total: count || 0,
             pages: totalPages,
-            limit: limit
-          }
+            limit: limit,
+          },
         });
-
       } catch (error) {
         console.error('Students GET error:', error);
         Sentry.captureException(error);
-        
-        return NextResponse.json(
-          { error: 'Failed to fetch students' },
-          { status: 500 }
-        );
+
+        return NextResponse.json({ error: 'Failed to fetch students' }, { status: 500 });
       }
     }
   );
@@ -146,42 +137,33 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   return Sentry.startSpan(
-    { 
-      op: "http.server",
-      name: "POST /api/students" 
+    {
+      op: 'http.server',
+      name: 'POST /api/students',
     },
     async () => {
       try {
         // Authentication check
         const session = await getServerSession(authOptions);
         if (!session || !session.user) {
-          return NextResponse.json(
-            { error: 'Unauthorized' },
-            { status: 401 }
-          );
+          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         // Get tenant information
         const tenant = await getCurrentTenant();
         if (!tenant) {
-          return NextResponse.json(
-            { error: 'Tenant not found' },
-            { status: 400 }
-          );
+          return NextResponse.json({ error: 'Tenant not found' }, { status: 400 });
         }
 
         // Authorization check - only admin can create students
         const userRole = (session.user as User).role;
         if (!['admin'].includes(userRole)) {
-          return NextResponse.json(
-            { error: 'Insufficient permissions' },
-            { status: 403 }
-          );
+          return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
         }
 
         // Parse request body
         const body: CreateStudentData = await request.json();
-        
+
         // Validate required fields
         if (!body.first_name || !body.last_name || !body.student_number) {
           return NextResponse.json(
@@ -207,10 +189,7 @@ export async function POST(request: NextRequest) {
         }
 
         if (existingStudent) {
-          return NextResponse.json(
-            { error: 'Student number already exists' },
-            { status: 409 }
-          );
+          return NextResponse.json({ error: 'Student number already exists' }, { status: 409 });
         }
 
         // Create user record
@@ -226,8 +205,8 @@ export async function POST(request: NextRequest) {
             birth_date: body.birth_date,
             gender: body.gender,
             phone: body.phone,
-            address: body.address
-          }
+            address: body.address,
+          },
         };
 
         const { data: newUser, error: userError } = await supabase
@@ -252,20 +231,19 @@ export async function POST(request: NextRequest) {
           { student_data: userData }
         );
 
-        return NextResponse.json({
-          message: 'Student created successfully',
-          data: newUser
-        }, { status: 201 });
-
+        return NextResponse.json(
+          {
+            message: 'Student created successfully',
+            data: newUser,
+          },
+          { status: 201 }
+        );
       } catch (error) {
         console.error('Students POST error:', error);
         Sentry.captureException(error);
-        
-        return NextResponse.json(
-          { error: 'Failed to create student' },
-          { status: 500 }
-        );
+
+        return NextResponse.json({ error: 'Failed to create student' }, { status: 500 });
       }
     }
   );
-} 
+}

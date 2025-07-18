@@ -18,15 +18,15 @@ Bu doküman, Iqra Eğitim Portalı'nın Türkiye'nin farklı bölgelerindeki çe
 
 Türkiye'nin 7 coğrafi bölgesinin eğitim alanındaki farklı ihtiyaç ve özelliklerini tanımlayan harita:
 
-| Bölge | Temel Özellikler | Eğitim İhtiyaçları | Adaptasyon Odakları |
-|-------|------------------|---------------------|---------------------|
-| Marmara | Yüksek nüfus yoğunluğu, kentleşme, çeşitli sosyoekonomik profiller | Kalabalık sınıf yönetimi, çeşitli dil desteği, yüksek öğrenci hareketliliği | Ölçeklenebilirlik, çok dilli destek, entegre şehir yaşamı araçları |
-| Ege | Kıyı yerleşimleri, turizm bölgeleri, tarımsal faaliyetler | Mevsimsel öğrenci değişimi, çok kültürlü etkileşim | Esnek akademik takvim, yerel ürün/hizmet entegrasyonu |
-| Akdeniz | Turizm bölgeleri, tarım, mevsimsel değişimler | Mevsimsel öğrenci hareketliliği, çok dilli gereksinimler | Esnek devam takibi, mevsimsel planlama araçları |
-| İç Anadolu | Şehir merkezleri ile kırsal bölgelerin karışımı | Karma öğretim ihtiyaçları, ulaşım zorlukları | Çevrimdışı çalışma özellikleri, uzaktan eğitim desteği |
-| Karadeniz | Dağlık arazi, dağınık yerleşim, zorlu iklim koşulları | Ulaşım zorlukları, iklim kaynaklı eğitim kesintileri | Çevrimdışı çalışma, alternatif eğitim planlama araçları |
-| Doğu Anadolu | Zorlu iklim, kırsal yerleşimler, ulaşım zorlukları | Temel altyapı eksiklikleri, internet erişim kısıtları | Düşük bant genişliği optimizasyonu, basitleştirilmiş arayüz |
-| Güneydoğu Anadolu | Çok dilli topluluklar, bölgesel sosyoekonomik zorluklar | Dil desteği, eğitimde fırsat eşitliği araçları | Çoklu dil desteği, kapsayıcı eğitim araçları |
+| Bölge             | Temel Özellikler                                                   | Eğitim İhtiyaçları                                                          | Adaptasyon Odakları                                                |
+| ----------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Marmara           | Yüksek nüfus yoğunluğu, kentleşme, çeşitli sosyoekonomik profiller | Kalabalık sınıf yönetimi, çeşitli dil desteği, yüksek öğrenci hareketliliği | Ölçeklenebilirlik, çok dilli destek, entegre şehir yaşamı araçları |
+| Ege               | Kıyı yerleşimleri, turizm bölgeleri, tarımsal faaliyetler          | Mevsimsel öğrenci değişimi, çok kültürlü etkileşim                          | Esnek akademik takvim, yerel ürün/hizmet entegrasyonu              |
+| Akdeniz           | Turizm bölgeleri, tarım, mevsimsel değişimler                      | Mevsimsel öğrenci hareketliliği, çok dilli gereksinimler                    | Esnek devam takibi, mevsimsel planlama araçları                    |
+| İç Anadolu        | Şehir merkezleri ile kırsal bölgelerin karışımı                    | Karma öğretim ihtiyaçları, ulaşım zorlukları                                | Çevrimdışı çalışma özellikleri, uzaktan eğitim desteği             |
+| Karadeniz         | Dağlık arazi, dağınık yerleşim, zorlu iklim koşulları              | Ulaşım zorlukları, iklim kaynaklı eğitim kesintileri                        | Çevrimdışı çalışma, alternatif eğitim planlama araçları            |
+| Doğu Anadolu      | Zorlu iklim, kırsal yerleşimler, ulaşım zorlukları                 | Temel altyapı eksiklikleri, internet erişim kısıtları                       | Düşük bant genişliği optimizasyonu, basitleştirilmiş arayüz        |
+| Güneydoğu Anadolu | Çok dilli topluluklar, bölgesel sosyoekonomik zorluklar            | Dil desteği, eğitimde fırsat eşitliği araçları                              | Çoklu dil desteği, kapsayıcı eğitim araçları                       |
 
 ### Okul Türlerine Göre Adaptasyon Gereksinimleri
 
@@ -36,43 +36,43 @@ export const schoolTypeAdaptations = {
   devletOkulu: {
     features: ['resmiEvrakYonetimi', 'mebEntegrasyonu', 'ucretsizOgleYemegi'],
     reporting: ['mebRaporlamasi', 'performansKriterleri', 'devamsizlikTakibi'],
-    constraints: ['kisitliBtKaynaklari', 'yuksekOgrenciMevcudu', 'standartMufredat']
+    constraints: ['kisitliBtKaynaklari', 'yuksekOgrenciMevcudu', 'standartMufredat'],
   },
   ozelOkul: {
     features: ['ozelMusteri', 'ekstrakurikulerAktiviteler', 'yabanciBolumler'],
     reporting: ['finansalRaporlama', 'pazarlamaVerileri', 'velimemnuniyeti'],
-    constraints: ['rekabetciPazar', 'yuksekVeliBeklentileri', 'farklilasmaihtiyaci']
+    constraints: ['rekabetciPazar', 'yuksekVeliBeklentileri', 'farklilasmaihtiyaci'],
   },
   imamHatip: {
     features: ['diniEgitimModulleri', 'ozelTakvimEntegrasyonu', 'vakitCizelgesi'],
     reporting: ['diniEgitimPerformans', 'standartRaporlar'],
-    constraints: ['ozelProgramGereksinimi', 'karmaModulIhtiyaci']
+    constraints: ['ozelProgramGereksinimi', 'karmaModulIhtiyaci'],
   },
   anadoluLisesi: {
     features: ['yuksekOgrenimHazirligi', 'akademikTakip', 'projeTakvimi'],
     reporting: ['sinifBasariKarsilastirmasi', 'yuksekOgrenimYerlestirmeAnalizleri'],
-    constraints: ['yuksekAkademikBeklentiler', 'rekabetciOrtam']
+    constraints: ['yuksekAkademikBeklentiler', 'rekabetciOrtam'],
   },
   meslek: {
     features: ['stajtakibi', 'isyeriEntegrasyonu', 'beceriEgitimi'],
     reporting: ['isyeriPerformansi', 'stajDegerlendirme', 'istihdam'],
-    constraints: ['ozelEgitimAlanlari', 'ekipmanTakibi', 'sanayiisbirligi']
+    constraints: ['ozelEgitimAlanlari', 'ekipmanTakibi', 'sanayiisbirligi'],
   },
   ilkokul: {
     features: ['temelYetenekler', 'veliyogunKatilim', 'gorselDestekliArayuz'],
     reporting: ['gelisimselRaporlama', 'davranisGelisimi'],
-    constraints: ['basitlestitilmisArayuz', 'yuksekVeliErisimi']
+    constraints: ['basitlestitilmisArayuz', 'yuksekVeliErisimi'],
   },
   ortaokul: {
     features: ['gelisimselTakip', 'yetenek', 'sinavaHazirlik'],
     reporting: ['temelLgsTakibi', 'yetenekyonelim'],
-    constraints: ['ergenlikDonemiDesteği', 'farkliTakipGereksinimleri']
+    constraints: ['ergenlikDonemiDesteği', 'farkliTakipGereksinimleri'],
   },
   anaokulu: {
     features: ['oyunTakvimi', 'gelisimGozlemleri', 'gorselArayuz'],
     reporting: ['gelisimselGozlemler', 'sosyallikRaporu', 'beceriharitasi'],
-    constraints: ['ogretmenOdakli', 'ogrenciDogrudan', 'veliYogunKatilim']
-  }
+    constraints: ['ogretmenOdakli', 'ogrenciDogrudan', 'veliYogunKatilim'],
+  },
 };
 ```
 
@@ -86,89 +86,89 @@ export const schoolTypeAdaptations = {
 // lib/adaptation/terminology-mapping.ts
 export const regionalTerminologyVariants = {
   // Okul Eğitim Terimleri
-  'öğretmen': {
+  öğretmen: {
     standard: 'öğretmen',
     regionalVariants: {
-      'doguAnadolu': ['hocam', 'muallim'],
-      'karadeniz': ['hocum'],
-      'guneydoguAnadolu': ['mamosta', 'hocam']
-    }
+      doguAnadolu: ['hocam', 'muallim'],
+      karadeniz: ['hocum'],
+      guneydoguAnadolu: ['mamosta', 'hocam'],
+    },
   },
-  'müdür': {
+  müdür: {
     standard: 'müdür',
     regionalVariants: {
-      'doguAnadolu': ['müdür bey', 'mudur'],
-      'guneydoguAnadolu': ['mudur bey', 'midür']
-    }
+      doguAnadolu: ['müdür bey', 'mudur'],
+      guneydoguAnadolu: ['mudur bey', 'midür'],
+    },
   },
-  'ders': {
+  ders: {
     standard: 'ders',
     regionalVariants: {
-      'karadeniz': ['dars'],
-      'doguAnadolu': ['dars']
-    }
+      karadeniz: ['dars'],
+      doguAnadolu: ['dars'],
+    },
   },
-  
+
   // Zaman Dilimleri
-  'dönem': {
+  dönem: {
     standard: 'dönem',
     regionalVariants: {
-      'ege': ['yarıyıl'],
-      'marmara': ['sömestr', 'yarıyıl']
-    }
+      ege: ['yarıyıl'],
+      marmara: ['sömestr', 'yarıyıl'],
+    },
   },
-  
+
   // Sınav Terimleri
-  'sınav': {
+  sınav: {
     standard: 'sınav',
     regionalVariants: {
-      'karadeniz': ['imtihan'],
-      'doguAnadolu': ['imtihan'],
-      'guneydoguAnadolu': ['imtihan']
-    }
+      karadeniz: ['imtihan'],
+      doguAnadolu: ['imtihan'],
+      guneydoguAnadolu: ['imtihan'],
+    },
   },
-  
+
   // Veli İletişim Terimleri
-  'veli': {
+  veli: {
     standard: 'veli',
     regionalVariants: {
-      'doguAnadolu': ['ebeveyn', 'ana-baba'],
-      'guneydoguAnadolu': ['ebeveyn', 'ana-baba']
-    }
+      doguAnadolu: ['ebeveyn', 'ana-baba'],
+      guneydoguAnadolu: ['ebeveyn', 'ana-baba'],
+    },
   },
-  
+
   // Kullanıcı Arayüzü
-  'bildirim': {
+  bildirim: {
     standard: 'bildirim',
     regionalVariants: {
-      'marmara': ['uyarı', 'notification'],
-      'ege': ['uyarı', 'hatırlatma']
-    }
-  }
+      marmara: ['uyarı', 'notification'],
+      ege: ['uyarı', 'hatırlatma'],
+    },
+  },
 };
 
 // Kullanıcı tercihine veya bölgeye göre terim uyarlama
 export function adaptTerminology(
-  term: string, 
-  region: keyof typeof regionalTerminologyVariants[string]['regionalVariants'],
+  term: string,
+  region: keyof (typeof regionalTerminologyVariants)[string]['regionalVariants'],
   useRegionalVariant: boolean = false
 ): string {
   if (!useRegionalVariant) {
     return term;
   }
-  
+
   const termData = regionalTerminologyVariants[term];
-  
+
   if (!termData) {
     return term;
   }
-  
+
   const variants = termData.regionalVariants[region];
-  
+
   if (!variants || variants.length === 0) {
     return termData.standard;
   }
-  
+
   return variants[0]; // İlk varyantı döndür
 }
 ```
@@ -217,7 +217,7 @@ export const regionalThemes: ThemeOption[] = [
     accentColor: '#0ea5e9',
     fontFamily: '"Roboto", "Nunito Sans", sans-serif',
     isRegional: true,
-    region: 'marmara'
+    region: 'marmara',
   },
   {
     id: 'karadeniz',
@@ -228,7 +228,7 @@ export const regionalThemes: ThemeOption[] = [
     accentColor: '#2563eb',
     fontFamily: '"Nunito Sans", sans-serif',
     isRegional: true,
-    region: 'karadeniz'
+    region: 'karadeniz',
   },
   {
     id: 'akdeniz',
@@ -239,7 +239,7 @@ export const regionalThemes: ThemeOption[] = [
     accentColor: '#0891b2',
     fontFamily: '"Source Sans Pro", sans-serif',
     isRegional: true,
-    region: 'akdeniz'
+    region: 'akdeniz',
   },
   {
     id: 'doguAnadolu',
@@ -250,7 +250,7 @@ export const regionalThemes: ThemeOption[] = [
     accentColor: '#1e3a8a',
     fontFamily: '"Segoe UI", sans-serif',
     isRegional: true,
-    region: 'doguAnadolu'
+    region: 'doguAnadolu',
   },
   {
     id: 'guneydoguAnadolu',
@@ -261,8 +261,8 @@ export const regionalThemes: ThemeOption[] = [
     accentColor: '#1e40af',
     fontFamily: '"Segoe UI", sans-serif',
     isRegional: true,
-    region: 'guneydoguAnadolu'
-  }
+    region: 'guneydoguAnadolu',
+  },
 ];
 ```
 
@@ -305,11 +305,11 @@ export const regionalContentStrategies: Record<string, RegionalContentStrategy> 
       winter: ['karYağışıÖnlemleri', 'müzeZiyaretleri'],
       spring: ['baharŞenlikleri', 'doğaEğitimi'],
       summer: ['denizEtkinlikleri', 'yüzmeKursları'],
-      fall: ['kültürSanatEtkinlikleri', 'kitapFuarları']
+      fall: ['kültürSanatEtkinlikleri', 'kitapFuarları'],
     },
-    localEvents: ['istanbulMaratonu', 'kitapFuarı', 'bienaller']
+    localEvents: ['istanbulMaratonu', 'kitapFuarı', 'bienaller'],
   },
-  
+
   ege: {
     region: 'Ege',
     contentPriorities: ['tarihiMiras', 'tarım', 'turizm'],
@@ -319,11 +319,11 @@ export const regionalContentStrategies: Record<string, RegionalContentStrategy> 
       winter: ['zeytin', 'açıkHavaMüzeleri'],
       spring: ['çiçekFestivalleri', 'doğaYürüyüşleri'],
       summer: ['denizEtkinlikleri', 'tarihiGeziler'],
-      fall: ['bağBozumu', 'zeytinHasadı']
+      fall: ['bağBozumu', 'zeytinHasadı'],
     },
-    localEvents: ['izmir', 'efesKültürGezileri', 'bağBozumuFestivalleri']
+    localEvents: ['izmir', 'efesKültürGezileri', 'bağBozumuFestivalleri'],
   },
-  
+
   karadeniz: {
     region: 'Karadeniz',
     contentPriorities: ['doğalYaşam', 'geleneklerveGörenekler', 'tarım'],
@@ -333,11 +333,11 @@ export const regionalContentStrategies: Record<string, RegionalContentStrategy> 
       winter: ['karFaaliyetleri', 'elSanatları'],
       spring: ['yaylacılık', 'doğaYürüyüşleri'],
       summer: ['yaylaŞenlikleri', 'doğalYaşamEğitimi'],
-      fall: ['findik', 'çay']
+      fall: ['findik', 'çay'],
     },
-    localEvents: ['yayla', 'horon', 'çayFestivalleri']
+    localEvents: ['yayla', 'horon', 'çayFestivalleri'],
   },
-  
+
   icAnadolu: {
     region: 'İç Anadolu',
     contentPriorities: ['tarihiMiras', 'gelenekselKültür', 'tarım'],
@@ -347,11 +347,11 @@ export const regionalContentStrategies: Record<string, RegionalContentStrategy> 
       winter: ['kapalı', 'elSanatları'],
       spring: ['doğaEğitimi', 'tarihiGeziler'],
       summer: ['arkeolojikKazılar', 'yörelerFestivali'],
-      fall: ['tarımHasadı', 'kültürelEtkinlikler']
+      fall: ['tarımHasadı', 'kültürelEtkinlikler'],
     },
-    localEvents: ['semaGösterileri', 'tarihiKervansaraylar', 'festivallerveşenlikler']
+    localEvents: ['semaGösterileri', 'tarihiKervansaraylar', 'festivallerveşenlikler'],
   },
-  
+
   akdeniz: {
     region: 'Akdeniz',
     contentPriorities: ['turizmveKültür', 'denizEkolojisi', 'tarihiMiras'],
@@ -361,11 +361,11 @@ export const regionalContentStrategies: Record<string, RegionalContentStrategy> 
       winter: ['narenciyeHasadı', 'seraEğitimi'],
       spring: ['baharŞenlikleri', 'doğaEğitimi'],
       summer: ['denizEtkinlikleri', 'suSporları'],
-      fall: ['tarımEtkinlikleri', 'ekoTurizm']
+      fall: ['tarımEtkinlikleri', 'ekoTurizm'],
     },
-    localEvents: ['portakalÇiçeğiKarnavalı', 'likya', 'operaFestivali']
+    localEvents: ['portakalÇiçeğiKarnavalı', 'likya', 'operaFestivali'],
   },
-  
+
   doguAnadolu: {
     region: 'Doğu Anadolu',
     contentPriorities: ['gelenekselYaşam', 'tarih', 'elSanatları'],
@@ -375,11 +375,11 @@ export const regionalContentStrategies: Record<string, RegionalContentStrategy> 
       winter: ['karFaaliyetleri', 'elSanatları'],
       spring: ['doğalYaşam', 'hayvancılık'],
       summer: ['yaylaşenlikleri', 'doğalYaşamEğitimi'],
-      fall: ['hasatFestivalleri', 'elSanatlarıEğitimi']
+      fall: ['hasatFestivalleri', 'elSanatlarıEğitimi'],
     },
-    localEvents: ['ehramDokuması', 'kayakMerkezleri', 'vanGölüEtkinlikleri']
+    localEvents: ['ehramDokuması', 'kayakMerkezleri', 'vanGölüEtkinlikleri'],
   },
-  
+
   guneydoguAnadolu: {
     region: 'Güneydoğu Anadolu',
     contentPriorities: ['kültürelMiras', 'gelenekler', 'gastronomi'],
@@ -389,10 +389,10 @@ export const regionalContentStrategies: Record<string, RegionalContentStrategy> 
       winter: ['kapalıMekanEtkinlikleri', 'elSanatları'],
       spring: ['tarihiGeziler', 'bahçecilik'],
       summer: ['suKaynakları', 'tarihiYerler'],
-      fall: ['üzümHasadı', 'yöreselFestivaller']
+      fall: ['üzümHasadı', 'yöreselFestivaller'],
     },
-    localEvents: ['şanlıurfa', 'mardinTaşİşçiliği', 'gaziantepMutfağı']
-  }
+    localEvents: ['şanlıurfa', 'mardinTaşİşçiliği', 'gaziantepMutfağı'],
+  },
 };
 ```
 
@@ -440,9 +440,9 @@ export const regionalCalendarCustomizations: Record<string, RegionalCalendarCust
     schoolDayEndTime: '15:30',
     breakPattern: 'standard',
     localHolidays: [],
-    seasonalScheduleChanges: []
+    seasonalScheduleChanges: [],
   },
-  
+
   // Doğu Anadolu için örnek özelleştirme
   doguAnadolu: {
     region: 'Doğu Anadolu',
@@ -456,27 +456,24 @@ export const regionalCalendarCustomizations: Record<string, RegionalCalendarCust
       {
         name: 'Erzurum Kurtuluş Günü',
         date: '03-12',
-        isRecurring: true
+        isRecurring: true,
       },
       {
         name: 'Kars Kurtuluş Günü',
         date: '10-30',
-        isRecurring: true
-      }
+        isRecurring: true,
+      },
     ],
     seasonalScheduleChanges: [
       {
         season: 'winter',
         adjustedStartTime: '09:00', // Kış aylarında daha geç başlangıç
-        adjustedEndTime: '15:00',   // Kış aylarında daha erken bitiş
-        specialConsiderations: [
-          'karFırtınaları', 
-          'ulaşımEngelleri'
-        ]
-      }
-    ]
+        adjustedEndTime: '15:00', // Kış aylarında daha erken bitiş
+        specialConsiderations: ['karFırtınaları', 'ulaşımEngelleri'],
+      },
+    ],
   },
-  
+
   // Akdeniz için örnek özelleştirme
   akdeniz: {
     region: 'Akdeniz',
@@ -490,26 +487,23 @@ export const regionalCalendarCustomizations: Record<string, RegionalCalendarCust
       {
         name: 'Antalya Kurtuluş Günü',
         date: '07-05',
-        isRecurring: true
+        isRecurring: true,
       },
       {
         name: 'Mersin Kurtuluş Günü',
         date: '01-03',
-        isRecurring: true
-      }
+        isRecurring: true,
+      },
     ],
     seasonalScheduleChanges: [
       {
         season: 'summer',
         adjustedStartTime: '08:00', // Yaz aylarında daha erken başlangıç
-        adjustedEndTime: '14:00',   // Yaz aylarında daha erken bitiş (sıcak hava)
-        specialConsiderations: [
-          'aşırıSıcak', 
-          'turizmSezonu'
-        ]
-      }
-    ]
-  }
+        adjustedEndTime: '14:00', // Yaz aylarında daha erken bitiş (sıcak hava)
+        specialConsiderations: ['aşırıSıcak', 'turizmSezonu'],
+      },
+    ],
+  },
 };
 ```
 
@@ -538,7 +532,7 @@ interface RegionalSupportStrategy {
   preferredChannels: ('telefon' | 'email' | 'chat' | 'video' | 'yüzyüze')[];
   localSupportHours: {
     start: string; // HH:MM formatı
-    end: string;   // HH:MM formatı
+    end: string; // HH:MM formatı
     timezone: string;
   };
   localLanguageSupport: boolean;
@@ -554,54 +548,54 @@ export const regionalSupportStrategies: Record<string, RegionalSupportStrategy> 
     localSupportHours: {
       start: '09:00',
       end: '18:00',
-      timezone: 'Europe/Istanbul'
+      timezone: 'Europe/Istanbul',
     },
     localLanguageSupport: true,
     localDialectSupport: false,
-    offlineSupport: false
+    offlineSupport: false,
   },
-  
+
   marmara: {
     region: 'Marmara',
     preferredChannels: ['chat', 'email', 'telefon'],
     localSupportHours: {
       start: '08:30',
       end: '18:30',
-      timezone: 'Europe/Istanbul'
+      timezone: 'Europe/Istanbul',
     },
     localLanguageSupport: true,
     localDialectSupport: false,
     offlineSupport: false,
-    regionalSupportPartners: ['İstanbulEğitimTeknolojileriMerkezi', 'BursaEğitimDanışmanlık']
+    regionalSupportPartners: ['İstanbulEğitimTeknolojileriMerkezi', 'BursaEğitimDanışmanlık'],
   },
-  
+
   doguAnadolu: {
     region: 'Doğu Anadolu',
     preferredChannels: ['telefon', 'yüzyüze', 'video'],
     localSupportHours: {
       start: '08:30',
       end: '17:00',
-      timezone: 'Europe/Istanbul'
+      timezone: 'Europe/Istanbul',
     },
     localLanguageSupport: true,
     localDialectSupport: true,
     offlineSupport: true,
-    regionalSupportPartners: ['ErzurumEğitimMerkezi', 'VanDijitalKütüphane']
+    regionalSupportPartners: ['ErzurumEğitimMerkezi', 'VanDijitalKütüphane'],
   },
-  
+
   guneydoguAnadolu: {
     region: 'Güneydoğu Anadolu',
     preferredChannels: ['telefon', 'yüzyüze', 'video'],
     localSupportHours: {
       start: '08:30',
       end: '17:00',
-      timezone: 'Europe/Istanbul'
+      timezone: 'Europe/Istanbul',
     },
     localLanguageSupport: true,
     localDialectSupport: true,
     offlineSupport: true,
-    regionalSupportPartners: ['DiyarbakırTeknolojimerkezi', 'GAPokulları']
-  }
+    regionalSupportPartners: ['DiyarbakırTeknolojimerkezi', 'GAPokulları'],
+  },
 };
 ```
 
@@ -659,26 +653,27 @@ export const regionalPersonas: RegionalPersona[] = [
       desktop: true,
       laptop: true,
       tablet: true,
-      smartphone: true
+      smartphone: true,
     },
     painPoints: [
       'Kalabalık sınıfların not ve devamsızlık takibi zaman alıyor',
       'Öğrenci performans analizlerini hızlıca görselleştirmek istiyor',
-      'Velilerle iletişimi düzenli tutmak zorlaşıyor'
+      'Velilerle iletişimi düzenli tutmak zorlaşıyor',
     ],
     goals: [
       'Ders materyallerini dijital olarak organize etmek',
       'Öğrenci başarısını ölçülebilir şekilde takip etmek',
-      'Veli iletişimini otomatize etmek'
+      'Veli iletişimini otomatize etmek',
     ],
     preferences: {
       uiDensity: 'balanced',
       communicationStyle: 'formal',
-      learningPreference: 'visual'
+      learningPreference: 'visual',
     },
-    quote: 'Zamanım çok değerli, sistemin bana zaman kazandırmasını ve analitik içgörüler sunmasını istiyorum.'
+    quote:
+      'Zamanım çok değerli, sistemin bana zaman kazandırmasını ve analitik içgörüler sunmasını istiyorum.',
   },
-  
+
   {
     id: 'van-ilkokul-ogretmen',
     name: 'Mehmet Öztürk',
@@ -692,26 +687,27 @@ export const regionalPersonas: RegionalPersona[] = [
       desktop: false,
       laptop: true,
       tablet: false,
-      smartphone: true
+      smartphone: true,
     },
     painPoints: [
       'İnternet bağlantısı kesintili olduğunda sistem kullanılamıyor',
       'Teknik terimler anlaşılması zor olabiliyor',
-      'Veli katılımı düşük seviyede'
+      'Veli katılımı düşük seviyede',
     ],
     goals: [
       'Çevrimdışı çalışabilen basit bir sistem kullanmak',
       'Görsel ağırlıklı içeriklerle öğrencileri motive etmek',
-      'Velilere kolay ulaşılabilir bildirimler göndermek'
+      'Velilere kolay ulaşılabilir bildirimler göndermek',
     ],
     preferences: {
       uiDensity: 'spacious',
       communicationStyle: 'casual',
-      learningPreference: 'visual'
+      learningPreference: 'visual',
     },
-    quote: 'Sistemin en basit haliyle, internet yokken bile kullanılabilir olması benim için çok önemli.'
+    quote:
+      'Sistemin en basit haliyle, internet yokken bile kullanılabilir olması benim için çok önemli.',
   },
-  
+
   {
     id: 'izmir-veli',
     name: 'Can Demir',
@@ -725,26 +721,27 @@ export const regionalPersonas: RegionalPersona[] = [
       desktop: false,
       laptop: true,
       tablet: false,
-      smartphone: true
+      smartphone: true,
     },
     painPoints: [
       'İş seyahatleri nedeniyle okul etkinliklerine katılamama',
       'Çocuğun eğitim durumunu uzaktan takip etme zorluğu',
-      'Öğretmenlerle iletişim için okul saatlerinde müsait olamama'
+      'Öğretmenlerle iletişim için okul saatlerinde müsait olamama',
     ],
     goals: [
       'Çocuğun akademik performansını anlık takip etmek',
       'Mobil cihazdan tüm okul iletişimini yönetmek',
-      'Öğretmenlerle esnek zamanlarda görüşebilmek'
+      'Öğretmenlerle esnek zamanlarda görüşebilmek',
     ],
     preferences: {
       uiDensity: 'compact',
       communicationStyle: 'mixed',
-      learningPreference: 'interactive'
+      learningPreference: 'interactive',
     },
-    quote: 'Çalışan bir ebeveyn olarak, çocuğumun eğitimiyle ilgili her detayı mobil cihazımdan takip etmek istiyorum.'
+    quote:
+      'Çalışan bir ebeveyn olarak, çocuğumun eğitimiyle ilgili her detayı mobil cihazımdan takip etmek istiyorum.',
   },
-  
+
   {
     id: 'diyarbakir-mudur',
     name: 'Ali Kaya',
@@ -758,25 +755,26 @@ export const regionalPersonas: RegionalPersona[] = [
       desktop: true,
       laptop: true,
       tablet: false,
-      smartphone: true
+      smartphone: true,
     },
     painPoints: [
       'Bürokrasi ve evrak işleri çok zaman alıyor',
       'Öğretmen ve veli iletişiminde aracılık yapmak zorunda kalıyor',
-      'MEB raporlamaları manuel hazırlanıyor'
+      'MEB raporlamaları manuel hazırlanıyor',
     ],
     goals: [
       'Okul yönetimini dijitalleştirerek bürokrasiyi azaltmak',
       'Öğretmen performansını objektif olarak değerlendirmek',
-      'Otomatik raporlamalarla zamandan tasarruf etmek'
+      'Otomatik raporlamalarla zamandan tasarruf etmek',
     ],
     preferences: {
       uiDensity: 'balanced',
       communicationStyle: 'formal',
-      learningPreference: 'text'
+      learningPreference: 'text',
     },
-    quote: 'Okulumuzun hem akademik hem de manevi gelişimini destekleyecek, geleneklerimize uygun bir sistem arıyorum.'
-  }
+    quote:
+      'Okulumuzun hem akademik hem de manevi gelişimini destekleyecek, geleneklerimize uygun bir sistem arıyorum.',
+  },
 ];
 ```
 
@@ -832,60 +830,60 @@ export const regionalDefaultConfigs: Record<string, Partial<CulturalAdaptationCo
     language_preferences: {
       primary_language: 'tr',
       use_regional_terminology: false,
-      formality_level: 'mixed'
+      formality_level: 'mixed',
     },
     ui_preferences: {
       theme: 'marmara',
       density: 'balanced',
-      accessibility_features: ['highContrast', 'screenReader']
+      accessibility_features: ['highContrast', 'screenReader'],
     },
     calendar_preferences: {
       week_starts_on: 1,
       working_days: [1, 2, 3, 4, 5],
       enable_local_holidays: true,
-      enable_seasonal_adjustments: false
+      enable_seasonal_adjustments: false,
     },
     content_preferences: {
       use_regional_examples: true,
       content_priority: ['kentYaşamı', 'kültürelÇeşitlilik', 'teknolojiEntegrasyonu'],
-      seasonal_content: true
+      seasonal_content: true,
     },
     support_preferences: {
       preferred_channels: ['chat', 'email', 'telefon'],
-      local_support_enabled: true
+      local_support_enabled: true,
     },
-    override_user_preferences: false
+    override_user_preferences: false,
   },
-  
+
   doguAnadolu: {
     region: 'doguAnadolu',
     language_preferences: {
       primary_language: 'tr',
       use_regional_terminology: true,
-      formality_level: 'formal'
+      formality_level: 'formal',
     },
     ui_preferences: {
       theme: 'doguAnadolu',
       density: 'spacious',
-      accessibility_features: ['offlineMode', 'lowBandwidth', 'highContrast']
+      accessibility_features: ['offlineMode', 'lowBandwidth', 'highContrast'],
     },
     calendar_preferences: {
       week_starts_on: 1,
       working_days: [1, 2, 3, 4, 5],
       enable_local_holidays: true,
-      enable_seasonal_adjustments: true
+      enable_seasonal_adjustments: true,
     },
     content_preferences: {
       use_regional_examples: true,
       content_priority: ['gelenekselYaşam', 'tarih', 'elSanatları'],
-      seasonal_content: true
+      seasonal_content: true,
     },
     support_preferences: {
       preferred_channels: ['telefon', 'yüzyüze', 'video'],
-      local_support_enabled: true
+      local_support_enabled: true,
     },
-    override_user_preferences: false
-  }
+    override_user_preferences: false,
+  },
 };
 ```
 
@@ -921,74 +919,77 @@ export const regionalTestScenarios: CulturalAdaptationTestScenario[] = [
     region: 'marmara',
     userRole: 'teacher',
     schoolType: 'anadoluLisesi',
-    scenario: 'Kalabalık bir İstanbul lisesinde, öğretmen olarak sınav sonuçlarını girmek, analiz etmek ve velilerle paylaşmak istiyorsunuz.',
+    scenario:
+      'Kalabalık bir İstanbul lisesinde, öğretmen olarak sınav sonuçlarını girmek, analiz etmek ve velilerle paylaşmak istiyorsunuz.',
     tasks: [
       'Yeni bir sınav sonucu girişi yapın',
       'Sınıf başarı analizini görüntüleyin',
       'Düşük performans gösteren öğrencilerin velilerine otomatik bildirim gönderin',
-      'Sınav sonuçlarını MEB formatında dışa aktarın'
+      'Sınav sonuçlarını MEB formatında dışa aktarın',
     ],
     successCriteria: [
       'Tüm görevler 10 dakikadan kısa sürede tamamlanabilmeli',
       'Kullanıcı arayüzü terminolojisi anlaşılır olmalı',
-      'Veri girişi hataları %5\'ten az olmalı'
+      "Veri girişi hataları %5'ten az olmalı",
     ],
     feedbackQuestions: [
       'Arayüz terminolojisi sizin için uygun muydu?',
       'Hangi özellikler iş akışınızı hızlandırdı?',
-      'Hangi özellikler beklentilerinizi karşılamadı?'
-    ]
+      'Hangi özellikler beklentilerinizi karşılamadı?',
+    ],
   },
-  
+
   {
     id: 'doguAnadolu-principal-rural',
     name: 'Van Kırsal Okul Müdürü Senaryosu',
     region: 'doguAnadolu',
     userRole: 'principal',
     schoolType: 'ilkokul',
-    scenario: 'Van\'ın kırsal bir bölgesindeki ilkokulun müdürü olarak, kış aylarında okul devam durumunu takip etmek ve MEB raporlaması yapmak istiyorsunuz.',
+    scenario:
+      "Van'ın kırsal bir bölgesindeki ilkokulun müdürü olarak, kış aylarında okul devam durumunu takip etmek ve MEB raporlaması yapmak istiyorsunuz.",
     tasks: [
       'Kar tatili bildirimi oluşturun',
       'Öğrenci devamsızlık raporunu görüntüleyin',
       'Öğretmen ders telafi planı oluşturun',
-      'MEB aylık raporu hazırlayın'
+      'MEB aylık raporu hazırlayın',
     ],
     successCriteria: [
       'Sistem düşük internet bağlantısında çalışabilmeli',
       'Tüm görevler çevrimdışı modda başlatılabilmeli',
-      'Terminoloji yerel kullanıma uygun olmalı'
+      'Terminoloji yerel kullanıma uygun olmalı',
     ],
     feedbackQuestions: [
       'Sistem internet bağlantınız zayıfken nasıl performans gösterdi?',
       'Kullanılan terimler sizin için anlaşılır mıydı?',
-      'Hangi ek özelliklere ihtiyaç duyuyorsunuz?'
-    ]
+      'Hangi ek özelliklere ihtiyaç duyuyorsunuz?',
+    ],
   },
-  
+
   {
     id: 'guneydoguAnadolu-parent-multilingual',
     name: 'Diyarbakır Çok Dilli Veli Senaryosu',
     region: 'guneydoguAnadolu',
     userRole: 'parent',
     schoolType: 'ortaokul',
-    scenario: 'Diyarbakır\'da bir ortaokul öğrencisinin velisi olarak, çocuğunuzun gelişimini takip etmek ve öğretmenleriyle iletişim kurmak istiyorsunuz.',
+    scenario:
+      "Diyarbakır'da bir ortaokul öğrencisinin velisi olarak, çocuğunuzun gelişimini takip etmek ve öğretmenleriyle iletişim kurmak istiyorsunuz.",
     tasks: [
       'Çocuğunuzun haftalık ders programını görüntüleyin',
       'Öğretmeniyle mesajlaşma başlatın',
       'Yaklaşan veli toplantısı için randevu alın',
-      'Çocuğunuzun sınav sonuçlarını görüntüleyin'
+      'Çocuğunuzun sınav sonuçlarını görüntüleyin',
     ],
     successCriteria: [
       'Arayüz basit ve sezgisel olmalı',
       'Teknik olmayan terimler kullanılmalı',
-      'Görseller ve simgeler anlaşılır olmalı'
+      'Görseller ve simgeler anlaşılır olmalı',
     ],
     feedbackQuestions: [
       'Sistemi kullanırken zorlandığınız noktalar oldu mu?',
       'Bilgilere kolayca erişebildiniz mi?',
-      'Öğretmenle iletişim kurma süreci nasıldı?'
-    ]
-  }
+      'Öğretmenle iletişim kurma süreci nasıldı?',
+    ],
+  },
 ];
 ```
 
@@ -1028,33 +1029,33 @@ export const regionalTrainingPlans: Record<string, RegionalTrainingPlan> = {
       'Kalabalık Sınıf Yönetimi',
       'Veri Analizi ve Raporlama',
       'Veli İletişim Stratejileri',
-      'Entegrasyon Özellikleri'
+      'Entegrasyon Özellikleri',
     ],
     localExamples: true,
     materials: [
       {
         type: 'video',
         title: 'Iqra Eğitim Portalı Temel Kullanım',
-        isRegionallyAdapted: false
+        isRegionallyAdapted: false,
       },
       {
         type: 'interactive',
         title: 'İstanbul Örnek Okul Senaryosu',
-        isRegionallyAdapted: true
+        isRegionallyAdapted: true,
       },
       {
         type: 'document',
         title: 'Büyük Okul Yönetimi Kılavuzu',
-        isRegionallyAdapted: true
-      }
+        isRegionallyAdapted: true,
+      },
     ],
     followUpSupport: [
       'Online Soru-Cevap Oturumları',
       'Haftalık Webinarlar',
-      'Şampiyon Kullanıcı Desteği'
-    ]
+      'Şampiyon Kullanıcı Desteği',
+    ],
   },
-  
+
   doguAnadolu: {
     region: 'Doğu Anadolu',
     trainingApproach: 'inPerson',
@@ -1063,33 +1064,33 @@ export const regionalTrainingPlans: Record<string, RegionalTrainingPlan> = {
       'Temel Sistem Kullanımı',
       'Çevrimdışı Çalışma Özellikleri',
       'Kış Koşullarında Okul Yönetimi',
-      'MEB Raporlama Entegrasyonu'
+      'MEB Raporlama Entegrasyonu',
     ],
     localExamples: true,
     materials: [
       {
         type: 'presentation',
         title: 'Iqra Eğitim Portalı Temel Eğitim',
-        isRegionallyAdapted: true
+        isRegionallyAdapted: true,
       },
       {
         type: 'document',
         title: 'Çevrimdışı Kullanım Kılavuzu',
-        isRegionallyAdapted: true
+        isRegionallyAdapted: true,
       },
       {
         type: 'interactive',
         title: 'Kırsal Okul Senaryosu Uygulaması',
-        isRegionallyAdapted: true
-      }
+        isRegionallyAdapted: true,
+      },
     ],
     followUpSupport: [
       'Yerinde Teknik Destek Ziyaretleri',
       'Bölgesel Destek Hattı',
-      'WhatsApp Destek Grubu'
-    ]
+      'WhatsApp Destek Grubu',
+    ],
   },
-  
+
   guneydoguAnadolu: {
     region: 'Güneydoğu Anadolu',
     trainingApproach: 'inPerson',
@@ -1098,32 +1099,32 @@ export const regionalTrainingPlans: Record<string, RegionalTrainingPlan> = {
       'Temel Sistem Kullanımı',
       'Çok Dilli Öğrenci Yönetimi',
       'Veli Katılımını Artırma Stratejileri',
-      'Bölgesel Eğitim İhtiyaçları'
+      'Bölgesel Eğitim İhtiyaçları',
     ],
     localExamples: true,
     materials: [
       {
         type: 'presentation',
         title: 'Iqra Eğitim Portalı Temel Eğitim',
-        isRegionallyAdapted: true
+        isRegionallyAdapted: true,
       },
       {
         type: 'video',
         title: 'Veli Katılımı Başarı Hikayeleri',
-        isRegionallyAdapted: true
+        isRegionallyAdapted: true,
       },
       {
         type: 'document',
         title: 'Çok Dilli Sınıf Yönetimi',
-        isRegionallyAdapted: true
-      }
+        isRegionallyAdapted: true,
+      },
     ],
     followUpSupport: [
       'Yerinde Teknik Destek Ziyaretleri',
       'Yerel Eğitim Koordinatörleri',
-      'Topluluk Lider Programı'
-    ]
-  }
+      'Topluluk Lider Programı',
+    ],
+  },
 };
 ```
 
@@ -1207,18 +1208,17 @@ interface CulturalAdaptationMetrics {
 
 ### Çok Dilli Destek Stratejisi
 
-
 #### Türkçe Dışındaki Dil İhtiyaçları
 
 Türkiye'nin çeşitli bölgelerinde, özellikle sınır bölgelerinde ve çok kültürlü şehirlerde, Türkçe dışındaki dillere yönelik ihtiyaçlar bulunmaktadır:
 
-| Dil | Öncelikli Bölgeler | Kullanım Senaryoları | Öncelik Seviyesi |
-|-----|---------------------|----------------------|------------------|
-| Kürtçe (Kurmanci) | Güneydoğu Anadolu | Veli iletişimi, temel bildirimler | Orta |
-| Arapça | Güneydoğu Anadolu, Sınır illeri | Mülteci öğrenci ve veli iletişimi | Orta |
-| İngilizce | Büyük şehirler, Turizm bölgeleri | Uluslararası okullar, yabancı öğretmenler | Yüksek |
-| Almanca | Turizm bölgeleri | Yabancı aileler, kültürel değişim | Düşük |
-| Rusça | Karadeniz, Turizm bölgeleri | Yabancı aileler | Düşük |
+| Dil               | Öncelikli Bölgeler               | Kullanım Senaryoları                      | Öncelik Seviyesi |
+| ----------------- | -------------------------------- | ----------------------------------------- | ---------------- |
+| Kürtçe (Kurmanci) | Güneydoğu Anadolu                | Veli iletişimi, temel bildirimler         | Orta             |
+| Arapça            | Güneydoğu Anadolu, Sınır illeri  | Mülteci öğrenci ve veli iletişimi         | Orta             |
+| İngilizce         | Büyük şehirler, Turizm bölgeleri | Uluslararası okullar, yabancı öğretmenler | Yüksek           |
+| Almanca           | Turizm bölgeleri                 | Yabancı aileler, kültürel değişim         | Düşük            |
+| Rusça             | Karadeniz, Turizm bölgeleri      | Yabancı aileler                           | Düşük            |
 
 #### Çok Dilli Destek Uygulama Planı
 
@@ -1252,9 +1252,9 @@ export const multilingualSupportPlans: MultilingualSupportPlan[] = [
       notifications: true,
       reports: true,
       help: true,
-      contentCreation: true
+      contentCreation: true,
     },
-    implementationStrategy: 'Professional translation with technical review'
+    implementationStrategy: 'Professional translation with technical review',
   },
   {
     language: 'ku',
@@ -1267,9 +1267,9 @@ export const multilingualSupportPlans: MultilingualSupportPlan[] = [
       notifications: true,
       reports: false,
       help: true,
-      contentCreation: false
+      contentCreation: false,
     },
-    implementationStrategy: 'Community translation with professional review'
+    implementationStrategy: 'Community translation with professional review',
   },
   {
     language: 'ar',
@@ -1282,9 +1282,9 @@ export const multilingualSupportPlans: MultilingualSupportPlan[] = [
       notifications: true,
       reports: false,
       help: true,
-      contentCreation: false
+      contentCreation: false,
     },
-    implementationStrategy: 'Professional translation with community review'
+    implementationStrategy: 'Professional translation with community review',
   },
   {
     language: 'de',
@@ -1297,9 +1297,9 @@ export const multilingualSupportPlans: MultilingualSupportPlan[] = [
       notifications: true,
       reports: false,
       help: false,
-      contentCreation: false
+      contentCreation: false,
     },
-    implementationStrategy: 'Machine translation with professional review'
+    implementationStrategy: 'Machine translation with professional review',
   },
   {
     language: 'ru',
@@ -1312,42 +1312,47 @@ export const multilingualSupportPlans: MultilingualSupportPlan[] = [
       notifications: true,
       reports: false,
       help: false,
-      contentCreation: false
+      contentCreation: false,
     },
-    implementationStrategy: 'Machine translation with professional review'
-  }
+    implementationStrategy: 'Machine translation with professional review',
+  },
 ];
 ```
 
 ### Kültürel Adaptasyon Yol Haritası
 
 #### Faz 1: Temel Adaptasyon (0-6 Ay)
-* **Bölgesel ihtiyaç analizi** tamamlanması
-* **Temel dil ve terminoloji** adaptasyonlarının uygulanması
-* **Bölgesel kullanıcı personaları** oluşturulması
-* **Pilot okullarla** ilk testlerin yapılması
+
+- **Bölgesel ihtiyaç analizi** tamamlanması
+- **Temel dil ve terminoloji** adaptasyonlarının uygulanması
+- **Bölgesel kullanıcı personaları** oluşturulması
+- **Pilot okullarla** ilk testlerin yapılması
 
 #### Faz 2: Kapsamlı Adaptasyon (6-12 Ay)
-* **Bölgesel UI adaptasyonları** uygulanması
-* **Takvim ve zamanlama** özelleştirmelerinin tamamlanması
-* **İçerik adaptasyon** stratejilerinin uygulanması
-* **Bölgesel eğitim programları** başlatılması
+
+- **Bölgesel UI adaptasyonları** uygulanması
+- **Takvim ve zamanlama** özelleştirmelerinin tamamlanması
+- **İçerik adaptasyon** stratejilerinin uygulanması
+- **Bölgesel eğitim programları** başlatılması
 
 #### Faz 3: Çok Dilli Destek (12-18 Ay)
-* **İngilizce** tam desteğin sağlanması
-* **Kürtçe ve Arapça** kısmi desteğin uygulanması
-* **Bölgesel destek kanalları** oluşturulması
-* **Çok dilli yardım içerikleri** geliştirilmesi
+
+- **İngilizce** tam desteğin sağlanması
+- **Kürtçe ve Arapça** kısmi desteğin uygulanması
+- **Bölgesel destek kanalları** oluşturulması
+- **Çok dilli yardım içerikleri** geliştirilmesi
 
 #### Faz 4: İleri Adaptasyon ve Optimizasyon (18-24 Ay)
-* **Bölgesel performans optimizasyonları** yapılması
-* **Ek dil desteklerinin** eklenmesi
-* **Bölgesel başarı hikayelerinin** belgelenmesi
-* **Sürekli iyileştirme** döngüsünün kurulması
+
+- **Bölgesel performans optimizasyonları** yapılması
+- **Ek dil desteklerinin** eklenmesi
+- **Bölgesel başarı hikayelerinin** belgelenmesi
+- **Sürekli iyileştirme** döngüsünün kurulması
 
 ### Başarı Kriterleri ve KPI'lar
 
 #### Kültürel Adaptasyon Başarı Metrikleri
+
 1. **Bölgesel Kullanıcı Memnuniyeti**: Her bölge için kullanıcı memnuniyet skorları
 2. **Bölgesel Adaptasyon Skoru**: Kültürel uygunluk değerlendirme puanı
 3. **Bölgesel Benimseme Oranı**: Aktif kullanım ve özellik kullanım oranları
@@ -1356,13 +1361,13 @@ export const multilingualSupportPlans: MultilingualSupportPlan[] = [
 
 #### Hedef KPI'lar
 
-| Metrik | Hedef | Zaman Çerçevesi |
-|--------|-------|-----------------|
-| Bölgesel Kullanıcı Memnuniyeti | Her bölgede min. 8/10 | 12 ay |
-| Bölgesel Adaptasyon Skoru | Her bölgede min. 7/10 | 18 ay |
-| Bölgesel Benimseme Oranı | Her bölgede min. %60 aktif kullanım | 24 ay |
-| Kültürel Uyumsuzluk Bildirimleri | Aylık 5'ten az | 12 ay |
-| Çok Dilli Destek Memnuniyeti | Min. 7/10 | 18 ay |
+| Metrik                           | Hedef                               | Zaman Çerçevesi |
+| -------------------------------- | ----------------------------------- | --------------- |
+| Bölgesel Kullanıcı Memnuniyeti   | Her bölgede min. 8/10               | 12 ay           |
+| Bölgesel Adaptasyon Skoru        | Her bölgede min. 7/10               | 18 ay           |
+| Bölgesel Benimseme Oranı         | Her bölgede min. %60 aktif kullanım | 24 ay           |
+| Kültürel Uyumsuzluk Bildirimleri | Aylık 5'ten az                      | 12 ay           |
+| Çok Dilli Destek Memnuniyeti     | Min. 7/10                           | 18 ay           |
 
 ### Sonuç
 
@@ -1371,7 +1376,8 @@ Iqra Eğitim Portalı'nın kültürel ve bölgesel farklılıklar yönetimi stra
 Kültürel adaptasyon, tek seferlik bir proje değil, sürekli gelişen ve iyileştirilen bir süreçtir. Kullanıcı geri bildirimleri, bölgesel ihtiyaçlardaki değişimler ve yeni teknolojik imkanlar doğrultusunda bu strateji düzenli olarak güncellenecek ve geliştirilecektir.
 
 ## İlgili Kaynaklar
-* [Proje Planı](/docs/project-plan.md)
-* [Community Building Stratejisi](/docs/community-strategy.md)
-* [Multi-Tenant Stratejisi](/docs/architecture/multi-tenant-strategy.md)
-* [UX İzleme Planı](/docs/ux-monitoring.md)
+
+- [Proje Planı](/docs/project-plan.md)
+- [Community Building Stratejisi](/docs/community-strategy.md)
+- [Multi-Tenant Stratejisi](/docs/architecture/multi-tenant-strategy.md)
+- [UX İzleme Planı](/docs/ux-monitoring.md)

@@ -28,7 +28,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
       // Arrange
       const testSubdomain = 'test-okulu';
       const rootDomain = 'i-ep.app';
-      
+
       // Başarılı DNS record oluşturma mock'ını ayarla
       CloudflareMockHelper.setupSuccessfulDnsRecordCreation(testSubdomain);
 
@@ -37,7 +37,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: true,
-        ttl: 1
+        ttl: 1,
       });
 
       // Assert
@@ -54,7 +54,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
       // Arrange
       const testSubdomain = 'existing-tenant';
       const rootDomain = 'i-ep.app';
-      
+
       // DNS record zaten var hatası mock'ını ayarla
       CloudflareMockHelper.setupFailedDnsRecordCreation('recordExists');
 
@@ -63,7 +63,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: true,
-        ttl: 1
+        ttl: 1,
       });
 
       // Assert
@@ -78,7 +78,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
       // Arrange
       const testSubdomain = 'unauthorized-test';
       const rootDomain = 'i-ep.app';
-      
+
       // Yetkisiz erişim hatası mock'ını ayarla
       CloudflareMockHelper.setupFailedDnsRecordCreation('unauthorized');
 
@@ -87,7 +87,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: true,
-        ttl: 1
+        ttl: 1,
       });
 
       // Assert
@@ -102,7 +102,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
       // Arrange
       const testSubdomain = 'ratelimit-test';
       const rootDomain = 'i-ep.app';
-      
+
       // Rate limit hatası mock'ını ayarla
       CloudflareMockHelper.setupFailedDnsRecordCreation('rateLimit');
 
@@ -111,7 +111,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: true,
-        ttl: 1
+        ttl: 1,
       });
 
       // Assert
@@ -126,7 +126,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
       // Arrange
       const testSubdomain = 'test-subdomain';
       const rootDomain = 'nonexistent.com';
-      
+
       // Zone bulunamadı mock'ını ayarla
       CloudflareMockHelper.setupZoneNotFound();
 
@@ -135,7 +135,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: true,
-        ttl: 1
+        ttl: 1,
       });
 
       // Assert
@@ -151,7 +151,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
       const rootDomain = 'i-ep.app';
       const customTtl = 300;
       const proxied = false;
-      
+
       // Özelleştirilmiş ayarlarla DNS record oluşturma mock'ını ayarla
       CloudflareMockHelper.setupSuccessfulDnsRecordCreation(testSubdomain);
 
@@ -160,7 +160,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: proxied,
-        ttl: customTtl
+        ttl: customTtl,
       });
 
       // Assert
@@ -176,12 +176,14 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
       const rootDomain = 'i-ep.app';
 
       // Act & Assert - Invalid subdomain durumunda hata beklenir
-      await expect(createDnsRecord({
-        subdomain: invalidSubdomain,
-        rootDomain: rootDomain,
-        proxied: true,
-        ttl: 1
-      })).rejects.toThrow();
+      await expect(
+        createDnsRecord({
+          subdomain: invalidSubdomain,
+          rootDomain: rootDomain,
+          proxied: true,
+          ttl: 1,
+        })
+      ).rejects.toThrow();
     });
 
     it('should handle empty subdomain gracefully', async () => {
@@ -190,12 +192,14 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
       const rootDomain = 'i-ep.app';
 
       // Act & Assert - Boş subdomain durumunda hata beklenir
-      await expect(createDnsRecord({
-        subdomain: emptySubdomain,
-        rootDomain: rootDomain,
-        proxied: true,
-        ttl: 1
-      })).rejects.toThrow();
+      await expect(
+        createDnsRecord({
+          subdomain: emptySubdomain,
+          rootDomain: rootDomain,
+          proxied: true,
+          ttl: 1,
+        })
+      ).rejects.toThrow();
     });
   });
 
@@ -204,17 +208,19 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
       // Arrange
       const testSubdomain = 'network-error-test';
       const rootDomain = 'i-ep.app';
-      
+
       // Network hatası simülasyonu için tüm istekleri reddet
       // (nock mock'ları kurmazsan, gerçek network isteği yapılmaya çalışır ve hata verir)
 
       // Act & Assert
-      await expect(createDnsRecord({
-        subdomain: testSubdomain,
-        rootDomain: rootDomain,
-        proxied: true,
-        ttl: 1
-      })).rejects.toThrow();
+      await expect(
+        createDnsRecord({
+          subdomain: testSubdomain,
+          rootDomain: rootDomain,
+          proxied: true,
+          ttl: 1,
+        })
+      ).rejects.toThrow();
     });
   });
 
@@ -223,7 +229,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
       // Bu test gerçek bir workflow'u simüle eder
       const testSubdomain = 'workflow-test';
       const rootDomain = 'i-ep.app';
-      
+
       // 1. DNS record oluşturma mock'ı
       CloudflareMockHelper.setupSuccessfulDnsRecordCreation(testSubdomain);
 
@@ -232,7 +238,7 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: true,
-        ttl: 1
+        ttl: 1,
       });
 
       // Assert - Oluşturma başarılı
@@ -242,16 +248,16 @@ describe('Cloudflare DNS Integration Tests (Mocked)', () => {
       // 2. DNS record listesi mock'ı (doğrulama için)
       CloudflareMockHelper.setupDnsRecordsList();
 
-      // Burada gerçek implementasyonda DNS record'ların listesini alıp 
+      // Burada gerçek implementasyonda DNS record'ların listesini alıp
       // oluşturulan record'ın var olduğunu doğrulayabiliriz
-      
+
       // 3. DNS record silme mock'ı (cleanup için)
       if (createResult.result?.id) {
         CloudflareMockHelper.setupDnsRecordDeletion(createResult.result.id);
       }
-      
+
       // Bu noktada gerçek implementasyonda record'ı silebiliriz
       // Şimdilik mock'ların doğru kurulduğunu test ettik
     });
   });
-}); 
+});

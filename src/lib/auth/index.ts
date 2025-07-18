@@ -8,4 +8,4 @@
 export * from './auth-options';
 export * from './permissions';
 export * from '../tenant/tenant-access';
-export * from '../audit'; 
+export * from '../audit';

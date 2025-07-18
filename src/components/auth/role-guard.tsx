@@ -21,16 +21,16 @@ interface RoleGuardProps {
 
 /**
  * Rol ve izin tabanlı erişim kontrolü için koruyucu bileşen
- * 
+ *
  * @example
  * // Sadece Admin ve Manager rollerinin erişebileceği sayfa
  * <RoleGuard allowedRoles={[UserRole.ADMIN, UserRole.MANAGER]} redirectTo="/auth/giris">
  *   <AdminPanel />
  * </RoleGuard>
- * 
+ *
  * @example
  * // Tenant oluşturma iznine sahip kullanıcıların erişebileceği sayfa
- * <RoleGuard 
+ * <RoleGuard
  *   requiredPermission={{ resource: ResourceType.TENANT, action: ActionType.CREATE }}
  *   fallback={<AccessDenied />}
  * >
@@ -43,20 +43,20 @@ export function RoleGuard({
   requiredPermission,
   fallback,
   redirectTo,
-  tenantRequired = false
+  tenantRequired = false,
 }: RoleGuardProps) {
   const { user, isLoading, currentTenantId, hasPermission } = useAuth();
   const router = useRouter();
-  
+
   // Yükleme durumunda bekletme ekranı
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center w-full h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="flex h-screen w-full items-center justify-center">
+        <Loader2 className="text-primary h-8 w-8 animate-spin" />
       </div>
     );
   }
-  
+
   // Oturum kontrolü
   if (!user) {
     if (redirectTo) {
@@ -64,38 +64,38 @@ export function RoleGuard({
       router.push(redirectTo);
       return null;
     }
-    
+
     // Fallback varsa göster, yoksa null döndür
     return fallback ? <>{fallback}</> : null;
   }
-  
+
   // Tenant kontrolü
   if (tenantRequired && !currentTenantId) {
     if (redirectTo) {
       router.push(redirectTo);
       return null;
     }
-    
+
     return fallback ? <>{fallback}</> : null;
   }
-  
+
   // Rol kontrolü
   const hasAllowedRole = !allowedRoles || allowedRoles.includes(user.role);
-  
+
   // İzin kontrolü
-  const hasRequiredPermission = !requiredPermission || 
-    hasPermission(requiredPermission.resource, requiredPermission.action);
-  
+  const hasRequiredPermission =
+    !requiredPermission || hasPermission(requiredPermission.resource, requiredPermission.action);
+
   // Erişim kontrolü
   if (!hasAllowedRole || !hasRequiredPermission) {
     if (redirectTo) {
       router.push(redirectTo);
       return null;
     }
-    
+
     return fallback ? <>{fallback}</> : null;
   }
-  
+
   // Erişim izni var, çocuk bileşenleri göster
   return <>{children}</>;
 }
@@ -103,17 +103,13 @@ export function RoleGuard({
 /**
  * Admin rolüne sahip kullanıcılar için koruyucu bileşen
  */
-export function AdminGuard({ 
-  children, 
-  fallback, 
-  redirectTo 
+export function AdminGuard({
+  children,
+  fallback,
+  redirectTo,
 }: Omit<RoleGuardProps, 'allowedRoles'>) {
   return (
-    <RoleGuard 
-      allowedRoles={[UserRole.ADMIN]} 
-      fallback={fallback} 
-      redirectTo={redirectTo}
-    >
+    <RoleGuard allowedRoles={[UserRole.ADMIN]} fallback={fallback} redirectTo={redirectTo}>
       {children}
     </RoleGuard>
   );
@@ -122,15 +118,15 @@ export function AdminGuard({
 /**
  * Öğretmen rolüne sahip kullanıcılar için koruyucu bileşen
  */
-export function TeacherGuard({ 
-  children, 
-  fallback, 
-  redirectTo 
+export function TeacherGuard({
+  children,
+  fallback,
+  redirectTo,
 }: Omit<RoleGuardProps, 'allowedRoles'>) {
   return (
-    <RoleGuard 
-      allowedRoles={[UserRole.ADMIN, UserRole.TEACHER]} 
-      fallback={fallback} 
+    <RoleGuard
+      allowedRoles={[UserRole.ADMIN, UserRole.TEACHER]}
+      fallback={fallback}
       redirectTo={redirectTo}
       tenantRequired={true}
     >
@@ -142,15 +138,15 @@ export function TeacherGuard({
 /**
  * Öğrenci rolüne sahip kullanıcılar için koruyucu bileşen
  */
-export function StudentGuard({ 
-  children, 
-  fallback, 
-  redirectTo 
+export function StudentGuard({
+  children,
+  fallback,
+  redirectTo,
 }: Omit<RoleGuardProps, 'allowedRoles'>) {
   return (
-    <RoleGuard 
-      allowedRoles={[UserRole.STUDENT]} 
-      fallback={fallback} 
+    <RoleGuard
+      allowedRoles={[UserRole.STUDENT]}
+      fallback={fallback}
       redirectTo={redirectTo}
       tenantRequired={true}
     >
@@ -162,19 +158,19 @@ export function StudentGuard({
 /**
  * Veli rolüne sahip kullanıcılar için koruyucu bileşen
  */
-export function ParentGuard({ 
-  children, 
-  fallback, 
-  redirectTo 
+export function ParentGuard({
+  children,
+  fallback,
+  redirectTo,
 }: Omit<RoleGuardProps, 'allowedRoles'>) {
   return (
-    <RoleGuard 
-      allowedRoles={[UserRole.PARENT]} 
-      fallback={fallback} 
+    <RoleGuard
+      allowedRoles={[UserRole.PARENT]}
+      fallback={fallback}
       redirectTo={redirectTo}
       tenantRequired={true}
     >
       {children}
     </RoleGuard>
   );
-} 
+}

@@ -4,8 +4,8 @@ import { describe, it, expect, beforeEach, afterEach, beforeAll } from '@jest/gl
 jest.mock('@/env', () => ({
   env: {
     CLOUDFLARE_API_TOKEN: 'test-cf-token',
-    CLOUDFLARE_ZONE_ID: '023e105f4ecef8ad9ca31a8372d0c353'
-  }
+    CLOUDFLARE_ZONE_ID: '023e105f4ecef8ad9ca31a8372d0c353',
+  },
 }));
 
 import { createDnsRecord } from '@/lib/cloudflare/domains';
@@ -17,7 +17,7 @@ global.fetch = mockFetch;
 // Test environment variables
 const TEST_ENV = {
   CLOUDFLARE_API_TOKEN: 'test-cf-token',
-  CLOUDFLARE_ZONE_ID: '023e105f4ecef8ad9ca31a8372d0c353'
+  CLOUDFLARE_ZONE_ID: '023e105f4ecef8ad9ca31a8372d0c353',
 };
 
 describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
@@ -39,40 +39,42 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
       // Arrange
       const testSubdomain = 'test-okulu';
       const rootDomain = 'i-ep.app';
-      
+
       // Zone ID alma mock'ı
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          success: true,
-          errors: [],
-          messages: [],
-          result: [
-            {
-              id: "023e105f4ecef8ad9ca31a8372d0c353",
-              name: "i-ep.app",
-              status: "active"
-            }
-          ]
-        })
+        json: () =>
+          Promise.resolve({
+            success: true,
+            errors: [],
+            messages: [],
+            result: [
+              {
+                id: '023e105f4ecef8ad9ca31a8372d0c353',
+                name: 'i-ep.app',
+                status: 'active',
+              },
+            ],
+          }),
       });
 
       // DNS record oluşturma mock'ı
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          success: true,
-          errors: [],
-          messages: [],
-          result: {
-            id: "372e67954025e0ba6aaa6d586b9e0b59",
-            type: "CNAME",
-            name: `${testSubdomain}.${rootDomain}`,
-            content: "i-ep.app",
-            proxied: true,
-            ttl: 1
-          }
-        })
+        json: () =>
+          Promise.resolve({
+            success: true,
+            errors: [],
+            messages: [],
+            result: {
+              id: '372e67954025e0ba6aaa6d586b9e0b59',
+              type: 'CNAME',
+              name: `${testSubdomain}.${rootDomain}`,
+              content: 'i-ep.app',
+              proxied: true,
+              ttl: 1,
+            },
+          }),
       });
 
       // Act
@@ -80,7 +82,7 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: true,
-        ttl: 1
+        ttl: 1,
       });
 
       // Assert
@@ -94,27 +96,29 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
 
       // API çağrılarının doğru yapıldığını kontrol et
       expect(mockFetch).toHaveBeenCalledTimes(2);
-      
-             // Zone ID alma çağrısı
-       expect(mockFetch).toHaveBeenNthCalledWith(1, 
-         'https://api.cloudflare.com/client/v4/zones?name=i-ep.app',
-         expect.objectContaining({
-           headers: expect.objectContaining({
-             'Authorization': `Bearer ${TEST_ENV.CLOUDFLARE_API_TOKEN}`
-           })
-         })
-       );
+
+      // Zone ID alma çağrısı
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        1,
+        'https://api.cloudflare.com/client/v4/zones?name=i-ep.app',
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: `Bearer ${TEST_ENV.CLOUDFLARE_API_TOKEN}`,
+          }),
+        })
+      );
 
       // DNS record oluşturma çağrısı
-      expect(mockFetch).toHaveBeenNthCalledWith(2,
+      expect(mockFetch).toHaveBeenNthCalledWith(
+        2,
         `https://api.cloudflare.com/client/v4/zones/${TEST_ENV.CLOUDFLARE_ZONE_ID}/dns_records`,
         expect.objectContaining({
           method: 'POST',
           headers: expect.objectContaining({
-            'Authorization': `Bearer ${TEST_ENV.CLOUDFLARE_API_TOKEN}`,
-            'Content-Type': 'application/json'
+            Authorization: `Bearer ${TEST_ENV.CLOUDFLARE_API_TOKEN}`,
+            'Content-Type': 'application/json',
           }),
-          body: expect.stringContaining(testSubdomain)
+          body: expect.stringContaining(testSubdomain),
         })
       );
     });
@@ -123,31 +127,33 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
       // Arrange
       const testSubdomain = 'existing-tenant';
       const rootDomain = 'i-ep.app';
-      
+
       // Zone ID alma başarılı
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          success: true,
-          result: [{ id: TEST_ENV.CLOUDFLARE_ZONE_ID, name: rootDomain }]
-        })
+        json: () =>
+          Promise.resolve({
+            success: true,
+            result: [{ id: TEST_ENV.CLOUDFLARE_ZONE_ID, name: rootDomain }],
+          }),
       });
 
       // DNS record zaten var hatası
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
-        json: () => Promise.resolve({
-          success: false,
-          errors: [
-            {
-              code: 81053,
-              message: "DNS record already exists"
-            }
-          ],
-          messages: [],
-          result: null
-        })
+        json: () =>
+          Promise.resolve({
+            success: false,
+            errors: [
+              {
+                code: 81053,
+                message: 'DNS record already exists',
+              },
+            ],
+            messages: [],
+            result: null,
+          }),
       });
 
       // Act
@@ -155,7 +161,7 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: true,
-        ttl: 1
+        ttl: 1,
       });
 
       // Assert
@@ -170,30 +176,32 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
       // Arrange
       const testSubdomain = 'unauthorized-test';
       const rootDomain = 'i-ep.app';
-      
+
       // Zone ID alma başarılı
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          success: true,
-          result: [{ id: TEST_ENV.CLOUDFLARE_ZONE_ID, name: rootDomain }]
-        })
+        json: () =>
+          Promise.resolve({
+            success: true,
+            result: [{ id: TEST_ENV.CLOUDFLARE_ZONE_ID, name: rootDomain }],
+          }),
       });
 
       // Yetkisiz erişim hatası
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 401,
-        json: () => Promise.resolve({
-          success: false,
-          errors: [
-            {
-              code: 10000,
-              message: "Authentication error"
-            }
-          ],
-          messages: []
-        })
+        json: () =>
+          Promise.resolve({
+            success: false,
+            errors: [
+              {
+                code: 10000,
+                message: 'Authentication error',
+              },
+            ],
+            messages: [],
+          }),
       });
 
       // Act
@@ -201,7 +209,7 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: true,
-        ttl: 1
+        ttl: 1,
       });
 
       // Assert
@@ -216,16 +224,17 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
       // Arrange
       const testSubdomain = 'test-subdomain';
       const rootDomain = 'nonexistent.com';
-      
+
       // Zone bulunamadı
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          success: true,
-          errors: [],
-          messages: [],
-          result: [] // Boş result, zone bulunamadı
-        })
+        json: () =>
+          Promise.resolve({
+            success: true,
+            errors: [],
+            messages: [],
+            result: [], // Boş result, zone bulunamadı
+          }),
       });
 
       // Act
@@ -233,7 +242,7 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: true,
-        ttl: 1
+        ttl: 1,
       });
 
       // Assert
@@ -243,82 +252,84 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
       expect(result.errors![0].message).toContain('zone bulunamadı');
     });
 
-         it('should handle network timeout errors', async () => {
-       // Arrange
-       const testSubdomain = 'timeout-test';
-       const rootDomain = 'i-ep.app';
-       
-       // Network timeout simülasyonu
-       mockFetch.mockRejectedValueOnce(new Error('Network timeout'));
+    it('should handle network timeout errors', async () => {
+      // Arrange
+      const testSubdomain = 'timeout-test';
+      const rootDomain = 'i-ep.app';
 
-       // Act
-       const result = await createDnsRecord({
-         subdomain: testSubdomain,
-         rootDomain: rootDomain,
-         proxied: true,
-         ttl: 1
-       });
+      // Network timeout simülasyonu
+      mockFetch.mockRejectedValueOnce(new Error('Network timeout'));
 
-       // Assert - Error objesi döndürülmeli (throw edilmez)
-       expect(result.success).toBe(false);
-       expect(result.errors).toHaveLength(1);
-       expect(result.errors![0].message).toContain('zone bulunamadı');
-     });
+      // Act
+      const result = await createDnsRecord({
+        subdomain: testSubdomain,
+        rootDomain: rootDomain,
+        proxied: true,
+        ttl: 1,
+      });
 
-         it('should validate required parameters', async () => {
-       // Act - Boş subdomain
-       const result1 = await createDnsRecord({
-         subdomain: '',
-         rootDomain: 'i-ep.app',
-         proxied: true,
-         ttl: 1
-       });
+      // Assert - Error objesi döndürülmeli (throw edilmez)
+      expect(result.success).toBe(false);
+      expect(result.errors).toHaveLength(1);
+      expect(result.errors![0].message).toContain('zone bulunamadı');
+    });
 
-       // Assert - Error objesi döndürülmeli (throw edilmez)
-       expect(result1.success).toBe(false);
-       expect(result1.errors).toHaveLength(1);
+    it('should validate required parameters', async () => {
+      // Act - Boş subdomain
+      const result1 = await createDnsRecord({
+        subdomain: '',
+        rootDomain: 'i-ep.app',
+        proxied: true,
+        ttl: 1,
+      });
 
-       // Act - Boş root domain  
-       const result2 = await createDnsRecord({
-         subdomain: 'test',
-         rootDomain: '',
-         proxied: true,
-         ttl: 1
-       });
+      // Assert - Error objesi döndürülmeli (throw edilmez)
+      expect(result1.success).toBe(false);
+      expect(result1.errors).toHaveLength(1);
 
-       // Assert - Error objesi döndürülmeli (throw edilmez)
-       expect(result2.success).toBe(false);
-       expect(result2.errors).toHaveLength(1);
-     });
+      // Act - Boş root domain
+      const result2 = await createDnsRecord({
+        subdomain: 'test',
+        rootDomain: '',
+        proxied: true,
+        ttl: 1,
+      });
+
+      // Assert - Error objesi döndürülmeli (throw edilmez)
+      expect(result2.success).toBe(false);
+      expect(result2.errors).toHaveLength(1);
+    });
 
     it('should handle rate limit errors gracefully', async () => {
       // Arrange
       const testSubdomain = 'ratelimit-test';
       const rootDomain = 'i-ep.app';
-      
+
       // Zone ID alma başarılı
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          success: true,
-          result: [{ id: TEST_ENV.CLOUDFLARE_ZONE_ID, name: rootDomain }]
-        })
+        json: () =>
+          Promise.resolve({
+            success: true,
+            result: [{ id: TEST_ENV.CLOUDFLARE_ZONE_ID, name: rootDomain }],
+          }),
       });
 
       // Rate limit hatası
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 429,
-        json: () => Promise.resolve({
-          success: false,
-          errors: [
-            {
-              code: 10013,
-              message: "Rate limit exceeded"
-            }
-          ],
-          messages: []
-        })
+        json: () =>
+          Promise.resolve({
+            success: false,
+            errors: [
+              {
+                code: 10013,
+                message: 'Rate limit exceeded',
+              },
+            ],
+            messages: [],
+          }),
       });
 
       // Act
@@ -326,7 +337,7 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: true,
-        ttl: 1
+        ttl: 1,
       });
 
       // Assert
@@ -345,30 +356,32 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
       const rootDomain = 'i-ep.app';
       const customTtl = 300;
       const proxied = false;
-      
+
       // Zone ID alma
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          success: true,
-          result: [{ id: TEST_ENV.CLOUDFLARE_ZONE_ID, name: rootDomain }]
-        })
+        json: () =>
+          Promise.resolve({
+            success: true,
+            result: [{ id: TEST_ENV.CLOUDFLARE_ZONE_ID, name: rootDomain }],
+          }),
       });
 
       // DNS record oluşturma
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          success: true,
-          result: {
-            id: "test-record-id",
-            type: "CNAME",
-            name: `${testSubdomain}.${rootDomain}`,
-            content: rootDomain,
-            proxied: proxied,
-            ttl: customTtl
-          }
-        })
+        json: () =>
+          Promise.resolve({
+            success: true,
+            result: {
+              id: 'test-record-id',
+              type: 'CNAME',
+              name: `${testSubdomain}.${rootDomain}`,
+              content: rootDomain,
+              proxied: proxied,
+              ttl: customTtl,
+            },
+          }),
       });
 
       // Act
@@ -376,7 +389,7 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
         subdomain: testSubdomain,
         rootDomain: rootDomain,
         proxied: proxied,
-        ttl: customTtl
+        ttl: customTtl,
       });
 
       // Assert - İstek formatını kontrol et
@@ -384,7 +397,7 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
       expect(lastCall[1].method).toBe('POST');
       expect(lastCall[1].headers['Content-Type']).toBe('application/json');
       expect(lastCall[1].headers['Authorization']).toBe(`Bearer ${TEST_ENV.CLOUDFLARE_API_TOKEN}`);
-      
+
       const requestBody = JSON.parse(lastCall[1].body);
       expect(requestBody.type).toBe('CNAME');
       expect(requestBody.name).toBe(`${testSubdomain}.${rootDomain}`);
@@ -393,4 +406,4 @@ describe('Cloudflare DNS Integration Tests (Jest Mocked)', () => {
       expect(requestBody.ttl).toBe(customTtl);
     });
   });
-}); 
+});

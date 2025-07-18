@@ -21,7 +21,7 @@ flowchart TD
     Client[Tarayıcı Kullanıcısı]
     Vercel[Vercel Platform]
     Supabase[Supabase Platform]
-    
+
     %% Frontend Bileşenleri
     subgraph FE[Frontend]
         NextJS[Next.js 15 App Router]:::frontend
@@ -30,7 +30,7 @@ flowchart TD
         Analytics[Vercel Analytics]:::analytics
         SentryFE[Sentry Client]:::analytics
     end
-    
+
     %% Backend Bileşenleri
     subgraph BE[Backend]
         API[Next.js API Routes]:::backend
@@ -41,7 +41,7 @@ flowchart TD
         WebhookAPI[Webhook API]:::backend
         SentryBE[Sentry Server]:::analytics
     end
-    
+
     %% Veritabanı ve Depolama
     subgraph DB[Veritabanı]
         Postgres[PostgreSQL]:::database
@@ -50,7 +50,7 @@ flowchart TD
         TenantSchemas[Tenant Şemaları]:::database
         Backups[Yedekleme Deposu]:::storage
     end
-    
+
     %% Kimlik Doğrulama ve Güvenlik
     subgraph Auth[Kimlik Doğrulama]
         SupabaseAuth[Supabase Auth]:::auth
@@ -65,7 +65,7 @@ flowchart TD
         EdgeCache[Edge Cache]:::cache
         SessionStore[Oturum Deposu]:::cache
     end
-    
+
     %% Entegrasyonlar
     subgraph Integrations[Entegrasyonlar]
         EmailProviders[E-posta Sağlayıcıları\nSMTP/AWS]:::integration
@@ -74,7 +74,7 @@ flowchart TD
         DocumentProcessors[Belge İşleme]:::integration
         CloudflareAPI[Cloudflare API]:::integration
     end
-    
+
     %% CI/CD ve DevOps
     subgraph CICD[CI/CD Pipeline]
         GitHubActions[GitHub Actions]:::cicd
@@ -82,7 +82,7 @@ flowchart TD
         BranchPreview[Branch Preview]:::cicd
         QualityGates[Kalite Kontrolleri]:::cicd
     end
-    
+
     %% Güvenlik Katmanları
     subgraph Security[Güvenlik]
         RLS[Row Level Security]:::security
@@ -91,63 +91,63 @@ flowchart TD
         RBAC[Role-Based Access Control]:::security
         Audit[Denetim Günlükleri]:::security
     end
-    
+
     %% AI/Agent Bileşenleri
     subgraph AI[AI/Agent Bileşenleri]
         ReportingAI[Raporlama AI]:::integration
         InsightEngine[Eğitim İçgörüleri]:::integration
         UserAssistant[Kullanıcı Yardımcısı]:::integration
     end
-    
+
     %% Bağlantılar
     Client --> Vercel
     Vercel --> FE
     Vercel --> BE
-    
+
     FE --> BE
     BE --> Auth
     BE --> DB
     BE --> Caching
     BE --> Integrations
-    
+
     Auth --> DB
-    
+
     Caching --> DB
-    
+
     CICD --> Vercel
-    
+
     Security --> DB
     Security --> BE
-    
+
     AI --> DB
-    
+
     %% Özel bağlantılar
     NextJS --> UI
     NextJS --> PWA
     NextJS --> Analytics
     NextJS --> SentryFE
-    
+
     API --> AuthAPI
     API --> TenantAPI
     API --> SystemAPI
     API --> BackupAPI
     API --> WebhookAPI
     API --> SentryBE
-    
+
     SupabaseAuth --> NextAuth
     SupabaseAuth --> JWTHandler
     CustomAuth --> JWTHandler
-    
+
     Postgres --> PublicSchema
     Postgres --> ManagementSchema
     Postgres --> TenantSchemas
     Postgres --> Backups
-    
+
     Redis --> EdgeCache
     Redis --> SessionStore
-    
+
     CloudflareAPI --> Supabase
-    
+
     Supabase --> Postgres
     Supabase --> SupabaseAuth
 ```
@@ -155,13 +155,15 @@ flowchart TD
 ## 1. Ön yüz (Frontend) Bileşenleri
 
 ### Teknolojiler
+
 - **Next.js 15**: React framework, App Router, SSR ve SSG desteği
-- **TypeScript**: Tip güvenli kod geliştirme 
+- **TypeScript**: Tip güvenli kod geliştirme
 - **Tailwind CSS**: Utility-first CSS framework
 - **Shadcn/UI**: Erişilebilir ve özelleştirilebilir UI komponentleri
 - **PWA Desteği**: Mobil cihazlarda yerel uygulama deneyimi
 
 ### Ana Bileşenler
+
 - **Sayfa Bileşenleri**: Landing, Dashboard, Auth, Tenant-specific pages
 - **UI Komponentleri**: Form elemanları, tablolar, modeller, bildirimler
 - **İstemci Önbelleği**: SWR/React Query ile veri önbelleği
@@ -171,14 +173,16 @@ flowchart TD
 ## 2. Arka yüz (Backend) Servisleri
 
 ### Teknolojiler
+
 - **Next.js API Routes**: Sunucu taraflı API'ler
 - **Supabase**: BaaS (Backend as a Service) çözümü
 - **Node.js**: Sunucu ortamı
 - **TypeScript**: Tip güvenli kod
 
 ### Ana Servisler
-- **Auth API**: Kimlik doğrulama ve yetkilendirme 
-- **Tenant Yönetim API**: Okul/kurum kayıt ve yapılandırma 
+
+- **Auth API**: Kimlik doğrulama ve yetkilendirme
+- **Tenant Yönetim API**: Okul/kurum kayıt ve yapılandırma
 - **Domain Yönetim API**: Özel alan adı yönetimi ve doğrulama
 - **Kullanıcı Yönetim API**: Kullanıcı CRUD işlemleri
 - **Eğitim Verileri API**: Akademik veriler, notlar, devam durumu
@@ -190,15 +194,17 @@ flowchart TD
 ## 3. Veritabanı Mimarisi
 
 ### Teknolojiler
+
 - **PostgreSQL**: İlişkisel veritabanı
 - **Row Level Security (RLS)**: Tenant-seviyesinde veri izolasyonu
 - **Supabase**: Veritabanı yönetimi ve erişimi
 - **Redis**: Önbellek ve oturum yönetimi
 
 ### Şema Yapısı
+
 - **Public**: Ortak tablolar (users, sessions)
 - **Management**: Tenant yönetim tabloları (tenants, domains, subscriptions)
-- **Tenant_{id}**: Her tenant için özel şema
+- **Tenant\_{id}**: Her tenant için özel şema
   - `students`: Öğrenci kayıtları
   - `teachers`: Öğretmen kayıtları
   - `classes`: Sınıf kayıtları
@@ -213,6 +219,7 @@ flowchart TD
 ## 4. Üçüncü Taraf Entegrasyonlar
 
 ### Entegrasyonlar
+
 - **Ödeme İşlemcileri**:
   - Iyzico (Türkiye pazarı için)
   - Stripe (Uluslararası ödemeler için)
@@ -234,12 +241,14 @@ flowchart TD
 ## 5. Kimlik Doğrulama ve Yetkilendirme
 
 ### Teknolojiler
+
 - **Supabase Auth**: Temel kimlik doğrulama altyapısı
 - **NextAuth.js**: Çoklu kimlik doğrulama sağlayıcıları
 - **JWT**: JSON Web Token tabanlı oturum yönetimi
 - **RBAC**: Rol tabanlı erişim kontrolü
 
 ### Kullanıcı Rolleri
+
 - **Süper Admin**: Platform yöneticisi
 - **Tenant Admin**: Okul/kurum yöneticisi
 - **Öğretmen**: Ders, ödev, not yönetimi
@@ -250,6 +259,7 @@ flowchart TD
 ## 6. AI/Agent Bileşenleri
 
 ### Özellikleri
+
 - **Eğitim İçgörüleri**: Öğrenci performans analitiği
 - **Raporlama AI**: Otomatik rapor oluşturma
 - **İçerik Önerileri**: Kişiselleştirilmiş öğrenme materyalleri
@@ -259,7 +269,8 @@ flowchart TD
 ## 7. Ölçeklenebilirlik ve Yüksek Erişilebilirlik
 
 ### Stratejiler
-- **Vercel Edge Network**: Global CDN ve edge computing 
+
+- **Vercel Edge Network**: Global CDN ve edge computing
 - **Supabase Ölçeklendirme**: Veritabanı performans optimizasyonu
 - **Database Connection Pooling**: Veritabanı bağlantı yönetimi
 - **Redis Önbellek**: Yüksek trafik için veri önbelleği
@@ -269,6 +280,7 @@ flowchart TD
 ## 8. Güvenlik Katmanları
 
 ### Güvenlik Önlemleri
+
 - **Row Level Security (RLS)**: Veritabanı seviyesinde veri izolasyonu
 - **JWT Tabanlı Kimlik Doğrulama**: Güvenli oturum yönetimi
 - **HTTPS Zorlaması**: Tüm bağlantılar için SSL/TLS
@@ -282,6 +294,7 @@ flowchart TD
 ## 9. Deployment ve CI/CD Pipeline
 
 ### Araçlar ve Süreçler
+
 - **GitHub**: Kod deposu ve sürüm kontrolü
 - **GitHub Actions**: CI/CD otomasyonu
 - **Vercel**: Frontend deployment ve hosting
@@ -300,6 +313,7 @@ flowchart TD
 ## 10. İzleme ve Operasyonlar
 
 ### Araçlar
+
 - **Sentry**: Hata izleme ve performans analizi
 - **Vercel Analytics**: Kullanıcı davranışları
 - **Uptime Monitoring**: Sistem erişilebilirlik izleme
@@ -309,4 +323,4 @@ flowchart TD
 
 ---
 
-Bu mimari diyagram, Iqra Eğitim Portalı'nın teknik altyapısını ve bileşenlerini kapsamlı bir şekilde göstermektedir. Sistem, modern web teknolojileri kullanılarak çok kiracılı (multi-tenant) bir SaaS uygulaması olarak tasarlanmıştır ve Türkiye'deki eğitim kurumlarının ihtiyaçlarını karşılamayı hedeflemektedir. 
+Bu mimari diyagram, Iqra Eğitim Portalı'nın teknik altyapısını ve bileşenlerini kapsamlı bir şekilde göstermektedir. Sistem, modern web teknolojileri kullanılarak çok kiracılı (multi-tenant) bir SaaS uygulaması olarak tasarlanmıştır ve Türkiye'deki eğitim kurumlarının ihtiyaçlarını karşılamayı hedeflemektedir.

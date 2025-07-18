@@ -4,9 +4,9 @@
  * Referans: docs/architecture/domain-management.md, docs/architecture/domain-management-guide.md
  */
 
-import { env } from "@/env";
+import { env } from '@/env';
 
-const CLOUDFLARE_API_BASE = "https://api.cloudflare.com/client/v4";
+const CLOUDFLARE_API_BASE = 'https://api.cloudflare.com/client/v4';
 
 interface CloudflareDomainConfig {
   subdomain: string;
@@ -46,7 +46,7 @@ export async function createDnsRecord({
 
     // API isteği için gerekli headers
     const headers = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
     };
 
@@ -54,30 +54,27 @@ export async function createDnsRecord({
     const fullDomain = subdomain ? `${subdomain}.${rootDomain}` : rootDomain;
 
     // Vercel'in uygulama URL'i
-    const vercelDomain = env.VERCEL_URL || "i-ep.app";
+    const vercelDomain = env.VERCEL_URL || 'i-ep.app';
 
     // DNS kaydı oluşturma isteği gönder
-    const response = await fetch(
-      `${CLOUDFLARE_API_BASE}/zones/${zoneId}/dns_records`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          type: "CNAME",
-          name: fullDomain,
-          content: vercelDomain,
-          ttl,
-          priority,
-          proxied,
-        }),
-      }
-    );
+    const response = await fetch(`${CLOUDFLARE_API_BASE}/zones/${zoneId}/dns_records`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        type: 'CNAME',
+        name: fullDomain,
+        content: vercelDomain,
+        ttl,
+        priority,
+        proxied,
+      }),
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
       return {
         success: false,
-        errors: errorData.errors || [{ message: "API isteği başarısız oldu" }],
+        errors: errorData.errors || [{ message: 'API isteği başarısız oldu' }],
         messages: errorData.messages || [],
       };
     }
@@ -85,7 +82,7 @@ export async function createDnsRecord({
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Cloudflare API hatası:", error);
+    console.error('Cloudflare API hatası:', error);
     return {
       success: false,
       errors: [{ message: `API isteği sırasında hata: ${error}` }],
@@ -131,19 +128,16 @@ export async function deleteDnsRecord(
     }
 
     // DNS kaydını silme isteği gönder
-    const response = await fetch(
-      `${CLOUDFLARE_API_BASE}/zones/${zoneId}/dns_records/${recordId}`,
-      {
-        method: "DELETE",
-        headers,
-      }
-    );
+    const response = await fetch(`${CLOUDFLARE_API_BASE}/zones/${zoneId}/dns_records/${recordId}`, {
+      method: 'DELETE',
+      headers,
+    });
 
     if (!response.ok) {
       const errorData = await response.json();
       return {
         success: false,
-        errors: errorData.errors || [{ message: "API isteği başarısız oldu" }],
+        errors: errorData.errors || [{ message: 'API isteği başarısız oldu' }],
         messages: errorData.messages || [],
       };
     }
@@ -151,7 +145,7 @@ export async function deleteDnsRecord(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Cloudflare API hatası:", error);
+    console.error('Cloudflare API hatası:', error);
     return {
       success: false,
       errors: [{ message: `API isteği sırasında hata: ${error}` }],
@@ -165,17 +159,14 @@ export async function deleteDnsRecord(
  */
 async function getZoneId(domain: string): Promise<string | null> {
   try {
-    const response = await fetch(
-      `${CLOUDFLARE_API_BASE}/zones?name=${domain}`,
-      {
-        headers: {
-          Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
-        },
-      }
-    );
+    const response = await fetch(`${CLOUDFLARE_API_BASE}/zones?name=${domain}`, {
+      headers: {
+        Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
+      },
+    });
 
     if (!response.ok) {
-      console.error("Zone sorgusu başarısız oldu:", await response.text());
+      console.error('Zone sorgusu başarısız oldu:', await response.text());
       return null;
     }
 
@@ -186,7 +177,7 @@ async function getZoneId(domain: string): Promise<string | null> {
 
     return data.result[0].id;
   } catch (error) {
-    console.error("Zone ID alınamadı:", error);
+    console.error('Zone ID alınamadı:', error);
     return null;
   }
 }
@@ -194,10 +185,7 @@ async function getZoneId(domain: string): Promise<string | null> {
 /**
  * Belirtilen domain için DNS kaydının ID'sini bulur
  */
-async function getDnsRecordId(
-  zoneId: string,
-  domain: string
-): Promise<string | null> {
+async function getDnsRecordId(zoneId: string, domain: string): Promise<string | null> {
   try {
     const response = await fetch(
       `${CLOUDFLARE_API_BASE}/zones/${zoneId}/dns_records?name=${domain}`,
@@ -209,7 +197,7 @@ async function getDnsRecordId(
     );
 
     if (!response.ok) {
-      console.error("DNS kaydı sorgusu başarısız oldu:", await response.text());
+      console.error('DNS kaydı sorgusu başarısız oldu:', await response.text());
       return null;
     }
 
@@ -233,7 +221,7 @@ export async function setupTenantDomain(
   subdomain: string
 ): Promise<CloudflareResponse> {
   // Varsayılan root domain
-  const rootDomain = env.ROOT_DOMAIN || "i-ep.app";
+  const rootDomain = env.ROOT_DOMAIN || 'i-ep.app';
 
   // DNS kaydını oluştur
   const result = await createDnsRecord({
@@ -258,7 +246,7 @@ export async function removeTenantDomain(
   subdomain: string
 ): Promise<CloudflareResponse> {
   // Varsayılan root domain
-  const rootDomain = env.ROOT_DOMAIN || "i-ep.app";
+  const rootDomain = env.ROOT_DOMAIN || 'i-ep.app';
 
   // DNS kaydını sil
   const result = await deleteDnsRecord(subdomain, rootDomain);
@@ -283,11 +271,11 @@ export async function verifyCustomDomain(
     // Bu örnek basitleştirilmiştir, gerçek uygulamada daha kapsamlı olmalıdır
 
     // DNS sorgusu yapılır
-    const vercelDomain = env.VERCEL_URL || "i-ep.app";
-    
+    const vercelDomain = env.VERCEL_URL || 'i-ep.app';
+
     // Burada gerçek bir DNS sorgusu yapılmalıdır
     // Şimdilik basit bir simülasyon
-    const isValid = domain.includes(".");
+    const isValid = domain.includes('.');
 
     if (isValid) {
       return {
@@ -297,14 +285,14 @@ export async function verifyCustomDomain(
     } else {
       return {
         success: false,
-        error: "Geçersiz domain formatı",
+        error: 'Geçersiz domain formatı',
       };
     }
   } catch (error) {
-    console.error("Domain doğrulama hatası:", error);
+    console.error('Domain doğrulama hatası:', error);
     return {
       success: false,
       error: `Doğrulama sırasında hata: ${error}`,
     };
   }
-} 
+}

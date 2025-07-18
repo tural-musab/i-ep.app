@@ -5,16 +5,16 @@ import { Button } from '@/components/ui/button';
 // import { Input } from '@/components/ui/input'; // TODO: Input kullanılacak
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue 
+  SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  BarChart3, 
+import {
+  BarChart3,
   TrendingUp,
   TrendingDown,
   Users,
@@ -26,7 +26,7 @@ import {
   Award,
   AlertTriangle,
   CheckCircle,
-  Eye
+  Eye,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 
@@ -104,7 +104,13 @@ export default function ReportsPage() {
       studentNumber: '2024001',
       className: '9-A',
       subjects: [
-        { name: 'Matematik', grades: [85, 78, 92], average: 85, letterGrade: 'BA', status: 'passed' },
+        {
+          name: 'Matematik',
+          grades: [85, 78, 92],
+          average: 85,
+          letterGrade: 'BA',
+          status: 'passed',
+        },
         { name: 'Fizik', grades: [78, 82, 75], average: 78.3, letterGrade: 'BB', status: 'passed' },
         { name: 'Türkçe', grades: [90, 88, 95], average: 91, letterGrade: 'AA', status: 'passed' },
       ],
@@ -121,7 +127,13 @@ export default function ReportsPage() {
       studentNumber: '2024002',
       className: '9-A',
       subjects: [
-        { name: 'Matematik', grades: [92, 88, 95], average: 91.7, letterGrade: 'AA', status: 'passed' },
+        {
+          name: 'Matematik',
+          grades: [92, 88, 95],
+          average: 91.7,
+          letterGrade: 'AA',
+          status: 'passed',
+        },
         { name: 'Fizik', grades: [85, 90, 88], average: 87.7, letterGrade: 'BA', status: 'passed' },
         { name: 'Türkçe', grades: [95, 92, 98], average: 95, letterGrade: 'AA', status: 'passed' },
       ],
@@ -167,11 +179,51 @@ export default function ReportsPage() {
   ];
 
   const mockAttendanceReports: AttendanceReport[] = [
-    { date: '2024-12-09', totalStudents: 28, present: 26, absent: 2, late: 1, excused: 1, attendanceRate: 92.9 },
-    { date: '2024-12-10', totalStudents: 28, present: 27, absent: 1, late: 0, excused: 0, attendanceRate: 96.4 },
-    { date: '2024-12-11', totalStudents: 28, present: 25, absent: 3, late: 2, excused: 1, attendanceRate: 89.3 },
-    { date: '2024-12-12', totalStudents: 28, present: 28, absent: 0, late: 0, excused: 0, attendanceRate: 100 },
-    { date: '2024-12-13', totalStudents: 28, present: 26, absent: 2, late: 1, excused: 1, attendanceRate: 92.9 },
+    {
+      date: '2024-12-09',
+      totalStudents: 28,
+      present: 26,
+      absent: 2,
+      late: 1,
+      excused: 1,
+      attendanceRate: 92.9,
+    },
+    {
+      date: '2024-12-10',
+      totalStudents: 28,
+      present: 27,
+      absent: 1,
+      late: 0,
+      excused: 0,
+      attendanceRate: 96.4,
+    },
+    {
+      date: '2024-12-11',
+      totalStudents: 28,
+      present: 25,
+      absent: 3,
+      late: 2,
+      excused: 1,
+      attendanceRate: 89.3,
+    },
+    {
+      date: '2024-12-12',
+      totalStudents: 28,
+      present: 28,
+      absent: 0,
+      late: 0,
+      excused: 0,
+      attendanceRate: 100,
+    },
+    {
+      date: '2024-12-13',
+      totalStudents: 28,
+      present: 26,
+      absent: 2,
+      late: 1,
+      excused: 1,
+      attendanceRate: 92.9,
+    },
   ];
 
   useEffect(() => {
@@ -204,33 +256,33 @@ export default function ReportsPage() {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 w-1/4 rounded bg-gray-200"></div>
+          <div className="h-64 rounded bg-gray-200"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+      <div className="flex flex-col items-start justify-between space-y-4 sm:flex-row sm:items-center sm:space-y-0">
         <div>
           <h1 className="text-2xl font-bold">Raporlar ve Analizler</h1>
           <p className="text-gray-600">Akademik ve operasyonel raporları görüntüleyin</p>
         </div>
-        
+
         <div className="flex space-x-2">
           <Button variant="outline" onClick={() => exportReport('pdf')}>
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             PDF
           </Button>
           <Button variant="outline" onClick={() => exportReport('excel')}>
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Excel
           </Button>
           <Button onClick={generateReport}>
-            <FileText className="h-4 w-4 mr-2" />
+            <FileText className="mr-2 h-4 w-4" />
             Rapor Oluştur
           </Button>
         </div>
@@ -242,9 +294,9 @@ export default function ReportsPage() {
           <CardTitle>Rapor Filtreleri</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Rapor Türü</label>
+              <label className="mb-1 block text-sm font-medium">Rapor Türü</label>
               <Select value={reportType} onValueChange={setReportType}>
                 <SelectTrigger>
                   <SelectValue placeholder="Rapor türü seçin" />
@@ -260,7 +312,7 @@ export default function ReportsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Sınıf</label>
+              <label className="mb-1 block text-sm font-medium">Sınıf</label>
               <Select value={selectedClass} onValueChange={setSelectedClass}>
                 <SelectTrigger>
                   <SelectValue placeholder="Sınıf seçin" />
@@ -274,7 +326,7 @@ export default function ReportsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Ders</label>
+              <label className="mb-1 block text-sm font-medium">Ders</label>
               <Select value={selectedSubject} onValueChange={setSelectedSubject}>
                 <SelectTrigger>
                   <SelectValue placeholder="Ders seçin" />
@@ -289,7 +341,7 @@ export default function ReportsPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Dönem</label>
+              <label className="mb-1 block text-sm font-medium">Dönem</label>
               <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
                 <SelectTrigger>
                   <SelectValue placeholder="Dönem seçin" />
@@ -307,72 +359,72 @@ export default function ReportsPage() {
       </Card>
 
       {/* Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-blue-100 rounded-full">
+              <div className="rounded-full bg-blue-100 p-2">
                 <Users className="h-4 w-4 text-blue-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Toplam Öğrenci</p>
                 <p className="text-xl font-semibold">156</p>
-                <p className="text-xs text-green-600 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-1" />
+                <p className="flex items-center text-xs text-green-600">
+                  <TrendingUp className="mr-1 h-3 w-3" />
                   +5 bu ay
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-green-100 rounded-full">
+              <div className="rounded-full bg-green-100 p-2">
                 <BarChart3 className="h-4 w-4 text-green-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Ortalama Not</p>
                 <p className="text-xl font-semibold">82.5</p>
-                <p className="text-xs text-green-600 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-1" />
+                <p className="flex items-center text-xs text-green-600">
+                  <TrendingUp className="mr-1 h-3 w-3" />
                   +2.1 bu dönem
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-yellow-100 rounded-full">
+              <div className="rounded-full bg-yellow-100 p-2">
                 <Clock className="h-4 w-4 text-yellow-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Devam Oranı</p>
                 <p className="text-xl font-semibold">94.2%</p>
-                <p className="text-xs text-red-600 flex items-center">
-                  <TrendingDown className="h-3 w-3 mr-1" />
+                <p className="flex items-center text-xs text-red-600">
+                  <TrendingDown className="mr-1 h-3 w-3" />
                   -1.5% bu ay
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-purple-100 rounded-full">
+              <div className="rounded-full bg-purple-100 p-2">
                 <Award className="h-4 w-4 text-purple-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Başarı Oranı</p>
                 <p className="text-xl font-semibold">91.8%</p>
-                <p className="text-xs text-green-600 flex items-center">
-                  <TrendingUp className="h-3 w-3 mr-1" />
+                <p className="flex items-center text-xs text-green-600">
+                  <TrendingUp className="mr-1 h-3 w-3" />
                   +3.2% bu dönem
                 </p>
               </div>
@@ -401,7 +453,7 @@ export default function ReportsPage() {
             <span>Devam</span>
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="students" className="space-y-4">
           <Card>
             <CardHeader>
@@ -410,44 +462,50 @@ export default function ReportsPage() {
             <CardContent>
               <div className="space-y-4">
                 {mockStudentReports.map((student) => (
-                  <div key={student.studentId} className="border rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-4">
+                  <div key={student.studentId} className="rounded-lg border p-4">
+                    <div className="mb-4 flex items-start justify-between">
                       <div>
-                        <h3 className="font-semibold text-lg">{student.studentName}</h3>
-                        <p className="text-sm text-gray-600">{student.studentNumber} - {student.className}</p>
-                        <div className="flex items-center space-x-4 mt-2">
+                        <h3 className="text-lg font-semibold">{student.studentName}</h3>
+                        <p className="text-sm text-gray-600">
+                          {student.studentNumber} - {student.className}
+                        </p>
+                        <div className="mt-2 flex items-center space-x-4">
                           <Badge variant="default">Sıralama: {student.rank}</Badge>
-                          <Badge variant="outline">Genel Ort: {student.overallAverage.toFixed(1)}</Badge>
+                          <Badge variant="outline">
+                            Genel Ort: {student.overallAverage.toFixed(1)}
+                          </Badge>
                           <Badge variant="secondary">Devam: {student.attendanceRate}%</Badge>
                         </div>
                       </div>
                       <Button variant="outline" size="sm">
-                        <Eye className="h-4 w-4 mr-2" />
+                        <Eye className="mr-2 h-4 w-4" />
                         Detay
                       </Button>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                       {student.subjects.map((subject, index) => (
-                        <div key={index} className="bg-gray-50 p-3 rounded">
+                        <div key={index} className="rounded bg-gray-50 p-3">
                           <h4 className="font-medium">{subject.name}</h4>
-                          <div className="flex justify-between items-center mt-2">
-                            <span className="text-lg font-semibold">{subject.average.toFixed(1)}</span>
-                            <Badge 
+                          <div className="mt-2 flex items-center justify-between">
+                            <span className="text-lg font-semibold">
+                              {subject.average.toFixed(1)}
+                            </span>
+                            <Badge
                               variant={subject.status === 'passed' ? 'default' : 'destructive'}
                               className="text-xs"
                             >
                               {subject.letterGrade}
                             </Badge>
                           </div>
-                          <div className="text-xs text-gray-600 mt-1">
+                          <div className="mt-1 text-xs text-gray-600">
                             Notlar: {subject.grades.join(', ')}
                           </div>
                         </div>
                       ))}
                     </div>
-                    
-                    <div className="grid grid-cols-4 gap-4 mt-4 pt-4 border-t">
+
+                    <div className="mt-4 grid grid-cols-4 gap-4 border-t pt-4">
                       <div className="text-center">
                         <p className="text-sm text-gray-600">Devam Oranı</p>
                         <p className="font-semibold">{student.attendanceRate}%</p>
@@ -471,7 +529,7 @@ export default function ReportsPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="classes" className="space-y-4">
           <Card>
             <CardHeader>
@@ -480,10 +538,10 @@ export default function ReportsPage() {
             <CardContent>
               <div className="space-y-6">
                 {mockClassReports.map((classReport) => (
-                  <div key={classReport.classId} className="border rounded-lg p-6">
-                    <div className="flex justify-between items-start mb-6">
+                  <div key={classReport.classId} className="rounded-lg border p-6">
+                    <div className="mb-6 flex items-start justify-between">
                       <div>
-                        <h3 className="font-semibold text-xl">{classReport.className}</h3>
+                        <h3 className="text-xl font-semibold">{classReport.className}</h3>
                         <p className="text-gray-600">{classReport.totalStudents} öğrenci</p>
                       </div>
                       <div className="flex space-x-4">
@@ -501,50 +559,61 @@ export default function ReportsPage() {
                         </div>
                       </div>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                       <div>
-                        <h4 className="font-medium mb-3 flex items-center">
-                          <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                        <h4 className="mb-3 flex items-center font-medium">
+                          <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
                           En Başarılılar
                         </h4>
                         <div className="space-y-2">
                           {classReport.topPerformers.map((student, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-green-50 rounded">
+                            <div
+                              key={index}
+                              className="flex items-center justify-between rounded bg-green-50 p-2"
+                            >
                               <span className="text-sm">{student}</span>
                               <Badge variant="outline">#{index + 1}</Badge>
                             </div>
                           ))}
                         </div>
                       </div>
-                      
+
                       <div>
-                        <h4 className="font-medium mb-3 flex items-center">
-                          <AlertTriangle className="h-4 w-4 text-yellow-600 mr-2" />
+                        <h4 className="mb-3 flex items-center font-medium">
+                          <AlertTriangle className="mr-2 h-4 w-4 text-yellow-600" />
                           Dikkat Gereken
                         </h4>
                         <div className="space-y-2">
                           {classReport.needsAttention.map((student, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-yellow-50 rounded">
+                            <div
+                              key={index}
+                              className="flex items-center justify-between rounded bg-yellow-50 p-2"
+                            >
                               <span className="text-sm">{student}</span>
                               <Badge variant="secondary">Destek</Badge>
                             </div>
                           ))}
                         </div>
                       </div>
-                      
+
                       <div>
-                        <h4 className="font-medium mb-3 flex items-center">
-                          <BookOpen className="h-4 w-4 text-blue-600 mr-2" />
+                        <h4 className="mb-3 flex items-center font-medium">
+                          <BookOpen className="mr-2 h-4 w-4 text-blue-600" />
                           Ders Performansı
                         </h4>
                         <div className="space-y-2">
                           {classReport.subjectPerformance.map((subject, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-blue-50 rounded">
+                            <div
+                              key={index}
+                              className="flex items-center justify-between rounded bg-blue-50 p-2"
+                            >
                               <span className="text-sm">{subject.subject}</span>
                               <div className="text-right">
                                 <div className="text-sm font-semibold">{subject.average}</div>
-                                <div className="text-xs text-gray-600">{subject.passRate}% başarı</div>
+                                <div className="text-xs text-gray-600">
+                                  {subject.passRate}% başarı
+                                </div>
                               </div>
                             </div>
                           ))}
@@ -557,7 +626,7 @@ export default function ReportsPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="teachers" className="space-y-4">
           <Card>
             <CardHeader>
@@ -566,35 +635,35 @@ export default function ReportsPage() {
             <CardContent>
               <div className="space-y-4">
                 {mockTeacherReports.map((teacher) => (
-                  <div key={teacher.teacherId} className="border rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-4">
+                  <div key={teacher.teacherId} className="rounded-lg border p-4">
+                    <div className="mb-4 flex items-start justify-between">
                       <div>
-                        <h3 className="font-semibold text-lg">{teacher.teacherName}</h3>
+                        <h3 className="text-lg font-semibold">{teacher.teacherName}</h3>
                         <p className="text-sm text-gray-600">
                           {teacher.subjects.join(', ')} • {teacher.classes.join(', ')}
                         </p>
                         <p className="text-sm text-gray-600">{teacher.totalStudents} öğrenci</p>
                       </div>
                       <Button variant="outline" size="sm">
-                        <Eye className="h-4 w-4 mr-2" />
+                        <Eye className="mr-2 h-4 w-4" />
                         Detay
                       </Button>
                     </div>
-                    
+
                     <div className="grid grid-cols-4 gap-4">
-                      <div className="text-center p-3 bg-gray-50 rounded">
+                      <div className="rounded bg-gray-50 p-3 text-center">
                         <p className="text-sm text-gray-600">Sınıf Ortalaması</p>
                         <p className="text-lg font-semibold">{teacher.averageClassPerformance}</p>
                       </div>
-                      <div className="text-center p-3 bg-gray-50 rounded">
+                      <div className="rounded bg-gray-50 p-3 text-center">
                         <p className="text-sm text-gray-600">Not Girişi</p>
                         <p className="text-lg font-semibold">{teacher.gradingCompletion}%</p>
                       </div>
-                      <div className="text-center p-3 bg-gray-50 rounded">
+                      <div className="rounded bg-gray-50 p-3 text-center">
                         <p className="text-sm text-gray-600">Verilen Ödev</p>
                         <p className="text-lg font-semibold">{teacher.assignmentsGiven}</p>
                       </div>
-                      <div className="text-center p-3 bg-gray-50 rounded">
+                      <div className="rounded bg-gray-50 p-3 text-center">
                         <p className="text-sm text-gray-600">Veli İletişimi</p>
                         <p className="text-lg font-semibold">{teacher.parentCommunication}</p>
                       </div>
@@ -605,7 +674,7 @@ export default function ReportsPage() {
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="attendance" className="space-y-4">
           <Card>
             <CardHeader>
@@ -614,12 +683,21 @@ export default function ReportsPage() {
             <CardContent>
               <div className="space-y-4">
                 {mockAttendanceReports.map((report, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg border p-4"
+                  >
                     <div>
-                      <h4 className="font-medium">{new Date(report.date).toLocaleDateString('tr-TR', { weekday: 'long', day: 'numeric', month: 'long' })}</h4>
+                      <h4 className="font-medium">
+                        {new Date(report.date).toLocaleDateString('tr-TR', {
+                          weekday: 'long',
+                          day: 'numeric',
+                          month: 'long',
+                        })}
+                      </h4>
                       <p className="text-sm text-gray-600">{report.totalStudents} öğrenci</p>
                     </div>
-                    
+
                     <div className="flex space-x-6">
                       <div className="text-center">
                         <p className="text-sm text-gray-600">Mevcut</p>
@@ -639,16 +717,18 @@ export default function ReportsPage() {
                       </div>
                       <div className="text-center">
                         <p className="text-sm text-gray-600">Devam Oranı</p>
-                        <p className={`text-lg font-semibold ${report.attendanceRate >= 95 ? 'text-green-600' : report.attendanceRate >= 90 ? 'text-yellow-600' : 'text-red-600'}`}>
+                        <p
+                          className={`text-lg font-semibold ${report.attendanceRate >= 95 ? 'text-green-600' : report.attendanceRate >= 90 ? 'text-yellow-600' : 'text-red-600'}`}
+                        >
                           {report.attendanceRate.toFixed(1)}%
                         </p>
                       </div>
                     </div>
                   </div>
                 ))}
-                
-                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-                  <h4 className="font-medium text-blue-900 mb-2">Haftalık Özet</h4>
+
+                <div className="mt-6 rounded-lg bg-blue-50 p-4">
+                  <h4 className="mb-2 font-medium text-blue-900">Haftalık Özet</h4>
                   <div className="grid grid-cols-4 gap-4">
                     <div className="text-center">
                       <p className="text-sm text-blue-700">Ortalama Devam</p>

@@ -1,9 +1,9 @@
 /**
  * Super Admin Quick System Health Check
  * Sprint 7: Hızlı sistem sağlığı kontrolü
- * 
+ *
  * GET /api/super-admin/system-health/quick
- * 
+ *
  * Bu endpoint kritik bileşenlerin hızlı sağlık kontrolünü yapar:
  * - Database bağlantısı (ping)
  * - Redis bağlantısı (ping)
@@ -19,7 +19,9 @@ const logger = getLogger('super-admin-quick-health');
 /**
  * Super Admin yetki kontrolü
  */
-async function validateSuperAdminAccess(request: NextRequest): Promise<{ authorized: boolean; error?: string }> {
+async function validateSuperAdminAccess(
+  request: NextRequest
+): Promise<{ authorized: boolean; error?: string }> {
   try {
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -27,14 +29,17 @@ async function validateSuperAdminAccess(request: NextRequest): Promise<{ authori
     }
 
     const token = authHeader.split(' ')[1];
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabaseAdmin.auth.getUser(token);
+
     if (authError || !user) {
       return { authorized: false, error: 'Invalid or expired token' };
     }
 
     const { data: isSuperAdmin, error: roleError } = await supabaseAdmin.rpc('is_super_admin');
-    
+
     if (roleError || !isSuperAdmin) {
       return { authorized: false, error: 'Super admin access required' };
     }
@@ -49,7 +54,7 @@ async function validateSuperAdminAccess(request: NextRequest): Promise<{ authori
 /**
  * GET /api/super-admin/system-health/quick
  * Hızlı sistem sağlığı kontrolü
- * 
+ *
  * @swagger
  * /api/super-admin/system-health/quick:
  *   get:
@@ -89,16 +94,16 @@ async function validateSuperAdminAccess(request: NextRequest): Promise<{ authori
  */
 export async function GET(request: NextRequest) {
   const timestamp = new Date().toISOString();
-  
+
   try {
     // Super admin yetki kontrolü
     const { authorized, error: authError } = await validateSuperAdminAccess(request);
     if (!authorized) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: authError || 'Unauthorized', 
-          timestamp 
+        {
+          success: false,
+          error: authError || 'Unauthorized',
+          timestamp,
         },
         { status: 401 }
       );
@@ -107,23 +112,22 @@ export async function GET(request: NextRequest) {
     // Hızlı sağlık kontrolü
     logger.info('Performing quick system health check');
     const quickResult = await SystemHealthService.quickHealthCheck();
-    
+
     return NextResponse.json({
       success: true,
       data: quickResult,
-      timestamp
+      timestamp,
     });
-
   } catch (error) {
     logger.error('Quick health check failed:', error);
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Quick health check failed', 
-        timestamp 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Quick health check failed',
+        timestamp,
       },
       { status: 500 }
     );
   }
-} 
+}

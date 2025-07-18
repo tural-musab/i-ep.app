@@ -4,34 +4,31 @@ import { UploadOptions } from '@/types/storage';
 /**
  * Dosya için storage path oluşturur
  */
-export async function generateStoragePath(
-  file: File, 
-  options?: UploadOptions
-): Promise<string> {
+export async function generateStoragePath(file: File, options?: UploadOptions): Promise<string> {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
-  
+
   // Dosya adını temizle
   const cleanFileName = sanitizeFileName(file.name);
-  
+
   // Unique identifier ekle
   const timestamp = Date.now();
   const random = Math.random().toString(36).substring(2, 8);
   const uniqueId = `${timestamp}_${random}`;
-  
+
   // Dosya uzantısını al
   const extension = getFileExtension(cleanFileName);
   const nameWithoutExt = removeFileExtension(cleanFileName);
-  
+
   // Final dosya adı
   const finalFileName = `${nameWithoutExt}_${uniqueId}${extension}`;
-  
+
   // Folder path oluştur
   const basePath = options?.folder || 'uploads';
   const datePath = `${year}/${month}/${day}`;
-  
+
   // İlişkili entity varsa klasöre ekle
   let categoryPath = '';
   if (options?.related_to?.type) {
@@ -40,7 +37,7 @@ export async function generateStoragePath(
       categoryPath += `/${options.related_to.id}`;
     }
   }
-  
+
   return `${basePath}/${datePath}${categoryPath}/${finalFileName}`;
 }
 
@@ -82,11 +79,7 @@ export function removeFileExtension(fileName: string): string {
 /**
  * Public URL path oluşturur
  */
-export function generatePublicPath(
-  tenantId: string,
-  fileName: string,
-  folder?: string
-): string {
+export function generatePublicPath(tenantId: string, fileName: string, folder?: string): string {
   const basePath = folder || 'public';
   return `${tenantId}/${basePath}/${fileName}`;
 }
@@ -103,14 +96,12 @@ export function generateCdnUrl(
       // Cloudflare R2 CDN URL format
       const cdnDomain = process.env.CLOUDFLARE_R2_CDN_DOMAIN;
       return cdnDomain ? `https://${cdnDomain}/${storagePath}` : '';
-    
+
     case 'supabase':
     default:
       // Supabase Storage URL format
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       const projectId = supabaseUrl?.split('://')[1]?.split('.')[0];
-      return projectId 
-        ? `${supabaseUrl}/storage/v1/object/public/files/${storagePath}`
-        : '';
+      return projectId ? `${supabaseUrl}/storage/v1/object/public/files/${storagePath}` : '';
   }
 }

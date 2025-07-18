@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 // import * as Sentry from "@sentry/nextjs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { ClassForm } from "./ClassForm";
+} from '@/components/ui/dialog';
+import { ClassForm } from './ClassForm';
 
 interface Teacher {
   id: string;
@@ -70,30 +70,22 @@ export function ClassDetails({ classData, onUpdate }: ClassDetailsProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <div className="text-sm font-medium text-muted-foreground">
-                Sınıf Adı
-              </div>
+              <div className="text-muted-foreground text-sm font-medium">Sınıf Adı</div>
               <div className="mt-1">{classData.name}</div>
             </div>
             <div>
-              <div className="text-sm font-medium text-muted-foreground">
-                Sınıf Seviyesi
-              </div>
+              <div className="text-muted-foreground text-sm font-medium">Sınıf Seviyesi</div>
               <div className="mt-1">{classData.grade_level}. Sınıf</div>
             </div>
             <div>
-              <div className="text-sm font-medium text-muted-foreground">
-                Akademik Yıl
-              </div>
+              <div className="text-muted-foreground text-sm font-medium">Akademik Yıl</div>
               <div className="mt-1">{classData.academic_year}</div>
             </div>
             <div>
-              <div className="text-sm font-medium text-muted-foreground">
-                Durum
-              </div>
+              <div className="text-muted-foreground text-sm font-medium">Durum</div>
               <div className="mt-1">
-                <Badge variant={classData.is_active ? "default" : "secondary"}>
-                  {classData.is_active ? "Aktif" : "Pasif"}
+                <Badge variant={classData.is_active ? 'default' : 'secondary'}>
+                  {classData.is_active ? 'Aktif' : 'Pasif'}
                 </Badge>
               </div>
             </div>
@@ -106,40 +98,29 @@ export function ClassDetails({ classData, onUpdate }: ClassDetailsProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <div className="text-sm font-medium text-muted-foreground">
-                Kapasite
-              </div>
+              <div className="text-muted-foreground text-sm font-medium">Kapasite</div>
               <div className="mt-1">{classData.capacity} Öğrenci</div>
             </div>
             <div>
-              <div className="text-sm font-medium text-muted-foreground">
-                Mevcut Öğrenci Sayısı
-              </div>
+              <div className="text-muted-foreground text-sm font-medium">Mevcut Öğrenci Sayısı</div>
               <div className="mt-1">{classData.student_count} Öğrenci</div>
             </div>
             <div>
-              <div className="text-sm font-medium text-muted-foreground">
-                Öğretmen Sayısı
-              </div>
+              <div className="text-muted-foreground text-sm font-medium">Öğretmen Sayısı</div>
               <div className="mt-1">{classData.teacher_count} Öğretmen</div>
             </div>
             <div>
-              <div className="text-sm font-medium text-muted-foreground">
-                Sınıf Öğretmeni
-              </div>
+              <div className="text-muted-foreground text-sm font-medium">Sınıf Öğretmeni</div>
               <div className="mt-1">
                 {classData.homeroom_teacher ? (
                   <div>
-                    {classData.homeroom_teacher.first_name}{" "}
-                    {classData.homeroom_teacher.last_name}
-                    <div className="text-sm text-muted-foreground">
+                    {classData.homeroom_teacher.first_name} {classData.homeroom_teacher.last_name}
+                    <div className="text-muted-foreground text-sm">
                       {classData.homeroom_teacher.email}
                     </div>
                   </div>
                 ) : (
-                  <span className="text-muted-foreground">
-                    Sınıf öğretmeni atanmamış
-                  </span>
+                  <span className="text-muted-foreground">Sınıf öğretmeni atanmamış</span>
                 )}
               </div>
             </div>
@@ -148,4 +129,4 @@ export function ClassDetails({ classData, onUpdate }: ClassDetailsProps) {
       </div>
     </div>
   );
-} 
+}

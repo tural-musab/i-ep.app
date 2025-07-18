@@ -1,6 +1,6 @@
 /**
  * Custom Hook Template for İ-EP.APP
- * 
+ *
  * This template provides a standardized structure for custom React hooks
  * following the project's coding standards and best practices.
  */
@@ -17,22 +17,22 @@ interface HookOptions {
    * Whether to automatically fetch data on mount
    */
   autoFetch?: boolean;
-  
+
   /**
    * Polling interval in milliseconds
    */
   pollingInterval?: number;
-  
+
   /**
    * Whether to show toast notifications
    */
   showNotifications?: boolean;
-  
+
   /**
    * Custom error handler
    */
   onError?: (error: Error) => void;
-  
+
   /**
    * Custom success handler
    */
@@ -44,17 +44,17 @@ interface HookState<T> {
    * The data returned by the hook
    */
   data: T | null;
-  
+
   /**
    * Whether the hook is currently loading
    */
   isLoading: boolean;
-  
+
   /**
    * Any error that occurred
    */
   error: Error | null;
-  
+
   /**
    * Whether the hook has been initialized
    */
@@ -66,17 +66,17 @@ interface HookActions {
    * Manually trigger data fetching
    */
   fetch: () => Promise<void>;
-  
+
   /**
    * Refresh the data
    */
   refresh: () => Promise<void>;
-  
+
   /**
    * Clear all data and reset state
    */
   reset: () => void;
-  
+
   /**
    * Clear any errors
    */
@@ -91,13 +91,13 @@ type HookReturn<T> = HookState<T> & HookActions;
 
 /**
  * Custom hook for [brief description of functionality]
- * 
+ *
  * @param param1 - Description of parameter 1
  * @param param2 - Description of parameter 2
  * @param options - Configuration options for the hook
- * 
+ *
  * @returns Object containing state and actions
- * 
+ *
  * @example
  * ```tsx
  * const { data, isLoading, error, fetch, refresh } = useCustomHook(
@@ -123,40 +123,40 @@ export function useCustomHook<T = any>(
     onError,
     onSuccess,
   } = options;
-  
+
   // ========================================================================
   // STATE MANAGEMENT
   // ========================================================================
-  
+
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
-  
+
   // ========================================================================
   // REFS
   // ========================================================================
-  
+
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const mountedRef = useRef(true);
-  
+
   // ========================================================================
   // HOOKS
   // ========================================================================
-  
+
   const { toast } = useToast();
-  
+
   // ========================================================================
   // HELPER FUNCTIONS
   // ========================================================================
-  
+
   const clearPolling = useCallback(() => {
     if (pollingIntervalRef.current) {
       clearInterval(pollingIntervalRef.current);
       pollingIntervalRef.current = null;
     }
   }, []);
-  
+
   const startPolling = useCallback(() => {
     if (pollingInterval && pollingInterval > 0) {
       clearPolling();
@@ -165,34 +165,34 @@ export function useCustomHook<T = any>(
       }, pollingInterval);
     }
   }, [pollingInterval]);
-  
+
   // ========================================================================
   // CORE FUNCTIONS
   // ========================================================================
-  
+
   const fetchData = useCallback(async () => {
     if (!mountedRef.current) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // Simulate API call - replace with actual implementation
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Mock data - replace with actual API call
       const result = {
         id: param1,
         name: param2,
         timestamp: new Date().toISOString(),
       } as T;
-      
+
       if (mountedRef.current) {
         setData(result);
         setIsInitialized(true);
-        
+
         onSuccess?.(result);
-        
+
         if (showNotifications) {
           toast({
             title: 'Success',
@@ -202,12 +202,12 @@ export function useCustomHook<T = any>(
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error('An error occurred');
-      
+
       if (mountedRef.current) {
         setError(error);
-        
+
         onError?.(error);
-        
+
         if (showNotifications) {
           toast({
             title: 'Error',
@@ -222,11 +222,11 @@ export function useCustomHook<T = any>(
       }
     }
   }, [param1, param2, onSuccess, onError, showNotifications, toast]);
-  
+
   const refresh = useCallback(async () => {
     await fetchData();
   }, [fetchData]);
-  
+
   const reset = useCallback(() => {
     setData(null);
     setError(null);
@@ -234,33 +234,33 @@ export function useCustomHook<T = any>(
     setIsInitialized(false);
     clearPolling();
   }, [clearPolling]);
-  
+
   const clearError = useCallback(() => {
     setError(null);
   }, []);
-  
+
   // ========================================================================
   // EFFECTS
   // ========================================================================
-  
+
   // Auto-fetch on mount
   useEffect(() => {
     if (autoFetch && param1 && param2) {
       fetchData();
     }
   }, [autoFetch, param1, param2, fetchData]);
-  
+
   // Polling setup
   useEffect(() => {
     if (isInitialized && !isLoading && !error) {
       startPolling();
     }
-    
+
     return () => {
       clearPolling();
     };
   }, [isInitialized, isLoading, error, startPolling, clearPolling]);
-  
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -268,11 +268,11 @@ export function useCustomHook<T = any>(
       clearPolling();
     };
   }, [clearPolling]);
-  
+
   // ========================================================================
   // MEMOIZED VALUES
   // ========================================================================
-  
+
   const actions = useMemo(
     () => ({
       fetch: fetchData,
@@ -282,7 +282,7 @@ export function useCustomHook<T = any>(
     }),
     [fetchData, refresh, reset, clearError]
   );
-  
+
   const state = useMemo(
     () => ({
       data,
@@ -292,11 +292,11 @@ export function useCustomHook<T = any>(
     }),
     [data, isLoading, error, isInitialized]
   );
-  
+
   // ========================================================================
   // RETURN VALUE
   // ========================================================================
-  
+
   return {
     ...state,
     ...actions,
@@ -310,7 +310,9 @@ export function useCustomHook<T = any>(
 /**
  * Simplified version of the custom hook for basic use cases
  */
-export function useSimpleCustomHook<T = any>(param: string): {
+export function useSimpleCustomHook<T = any>(
+  param: string
+): {
   data: T | null;
   isLoading: boolean;
   error: Error | null;
@@ -320,7 +322,7 @@ export function useSimpleCustomHook<T = any>(param: string): {
     autoFetch: true,
     showNotifications: false,
   });
-  
+
   return { data, isLoading, error, fetch };
 }
 
@@ -339,107 +341,116 @@ export function useCustomMutations<T = any>(
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const { toast } = useToast();
-  
-  const create = useCallback(async (data: Partial<T>): Promise<T> => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const result = {
-        id: Date.now().toString(),
-        ...data,
-        createdAt: new Date().toISOString(),
-      } as T;
-      
-      toast({
-        title: 'Success',
-        description: 'Item created successfully',
-      });
-      
-      return result;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to create item');
-      setError(error);
-      
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-      
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [toast]);
-  
-  const update = useCallback(async (id: string, data: Partial<T>): Promise<T> => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const result = {
-        id,
-        ...data,
-        updatedAt: new Date().toISOString(),
-      } as T;
-      
-      toast({
-        title: 'Success',
-        description: 'Item updated successfully',
-      });
-      
-      return result;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to update item');
-      setError(error);
-      
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-      
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [toast]);
-  
-  const deleteItem = useCallback(async (id: string): Promise<void> => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: 'Success',
-        description: 'Item deleted successfully',
-      });
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Failed to delete item');
-      setError(error);
-      
-      toast({
-        title: 'Error',
-        description: error.message,
-        variant: 'destructive',
-      });
-      
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [toast]);
-  
+
+  const create = useCallback(
+    async (data: Partial<T>): Promise<T> => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        const result = {
+          id: Date.now().toString(),
+          ...data,
+          createdAt: new Date().toISOString(),
+        } as T;
+
+        toast({
+          title: 'Success',
+          description: 'Item created successfully',
+        });
+
+        return result;
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Failed to create item');
+        setError(error);
+
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [toast]
+  );
+
+  const update = useCallback(
+    async (id: string, data: Partial<T>): Promise<T> => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        const result = {
+          id,
+          ...data,
+          updatedAt: new Date().toISOString(),
+        } as T;
+
+        toast({
+          title: 'Success',
+          description: 'Item updated successfully',
+        });
+
+        return result;
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Failed to update item');
+        setError(error);
+
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [toast]
+  );
+
+  const deleteItem = useCallback(
+    async (id: string): Promise<void> => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        toast({
+          title: 'Success',
+          description: 'Item deleted successfully',
+        });
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Failed to delete item');
+        setError(error);
+
+        toast({
+          title: 'Error',
+          description: error.message,
+          variant: 'destructive',
+        });
+
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [toast]
+  );
+
   return {
     create,
     update,

@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from "next/server"
+import { NextRequest, NextResponse } from 'next/server';
 
 export interface SSLConfiguration {
-  enforceHttps: boolean
-  hstsMaxAge: number
-  hstsIncludeSubdomains: boolean
-  hstsPreload: boolean
-  tlsMinVersion: string
-  cipherSuites: string[]
-  certificateValidation: boolean
+  enforceHttps: boolean;
+  hstsMaxAge: number;
+  hstsIncludeSubdomains: boolean;
+  hstsPreload: boolean;
+  tlsMinVersion: string;
+  cipherSuites: string[];
+  certificateValidation: boolean;
 }
 
 export class SSLHardening {
@@ -16,132 +16,132 @@ export class SSLHardening {
     hstsMaxAge: 31536000, // 1 year
     hstsIncludeSubdomains: true,
     hstsPreload: true,
-    tlsMinVersion: "1.2",
+    tlsMinVersion: '1.2',
     cipherSuites: [
-      "TLS_AES_128_GCM_SHA256",
-      "TLS_AES_256_GCM_SHA384",
-      "TLS_CHACHA20_POLY1305_SHA256",
-      "ECDHE-RSA-AES128-GCM-SHA256",
-      "ECDHE-RSA-AES256-GCM-SHA384"
+      'TLS_AES_128_GCM_SHA256',
+      'TLS_AES_256_GCM_SHA384',
+      'TLS_CHACHA20_POLY1305_SHA256',
+      'ECDHE-RSA-AES128-GCM-SHA256',
+      'ECDHE-RSA-AES256-GCM-SHA384',
     ],
-    certificateValidation: true
-  }
+    certificateValidation: true,
+  };
 
   private static readonly DEVELOPMENT_SSL_CONFIG: SSLConfiguration = {
     enforceHttps: false,
     hstsMaxAge: 0,
     hstsIncludeSubdomains: false,
     hstsPreload: false,
-    tlsMinVersion: "1.2",
+    tlsMinVersion: '1.2',
     cipherSuites: [],
-    certificateValidation: false
-  }
+    certificateValidation: false,
+  };
 
   static getSSLConfig(): SSLConfiguration {
-    const isProduction = process.env.NODE_ENV === "production"
-    return isProduction ? this.PRODUCTION_SSL_CONFIG : this.DEVELOPMENT_SSL_CONFIG
+    const isProduction = process.env.NODE_ENV === 'production';
+    return isProduction ? this.PRODUCTION_SSL_CONFIG : this.DEVELOPMENT_SSL_CONFIG;
   }
 
   static enforceHTTPS(request: NextRequest): NextResponse | null {
-    const config = this.getSSLConfig()
-    
+    const config = this.getSSLConfig();
+
     if (!config.enforceHttps) {
-      return null
+      return null;
     }
 
-    const protocol = request.headers.get("x-forwarded-proto") || "https"
-    const host = request.headers.get("host")
-    
-    if (protocol !== "https" && host) {
-      const httpsUrl = `https://${host}${request.nextUrl.pathname}${request.nextUrl.search}`
-      return NextResponse.redirect(httpsUrl, 301)
+    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    const host = request.headers.get('host');
+
+    if (protocol !== 'https' && host) {
+      const httpsUrl = `https://${host}${request.nextUrl.pathname}${request.nextUrl.search}`;
+      return NextResponse.redirect(httpsUrl, 301);
     }
 
-    return null
+    return null;
   }
 
   static getHSTSHeader(): string {
-    const config = this.getSSLConfig()
-    
+    const config = this.getSSLConfig();
+
     if (config.hstsMaxAge === 0) {
-      return ""
+      return '';
     }
 
-    let header = `max-age=${config.hstsMaxAge}`
-    
+    let header = `max-age=${config.hstsMaxAge}`;
+
     if (config.hstsIncludeSubdomains) {
-      header += "; includeSubDomains"
-    }
-    
-    if (config.hstsPreload) {
-      header += "; preload"
+      header += '; includeSubDomains';
     }
 
-    return header
+    if (config.hstsPreload) {
+      header += '; preload';
+    }
+
+    return header;
   }
 
   static applySSLHeaders(response: NextResponse): NextResponse {
-    const config = this.getSSLConfig()
-    
+    const config = this.getSSLConfig();
+
     // Apply HSTS header
-    const hstsHeader = this.getHSTSHeader()
+    const hstsHeader = this.getHSTSHeader();
     if (hstsHeader) {
-      response.headers.set("Strict-Transport-Security", hstsHeader)
+      response.headers.set('Strict-Transport-Security', hstsHeader);
     }
 
     // Apply additional SSL-related headers
-    response.headers.set("X-Frame-Options", "DENY")
-    response.headers.set("X-Content-Type-Options", "nosniff")
-    response.headers.set("X-XSS-Protection", "1; mode=block")
-    
+    response.headers.set('X-Frame-Options', 'DENY');
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    response.headers.set('X-XSS-Protection', '1; mode=block');
+
     // Expect-CT header for Certificate Transparency
     if (config.certificateValidation) {
-      response.headers.set("Expect-CT", "max-age=86400, enforce")
+      response.headers.set('Expect-CT', 'max-age=86400, enforce');
     }
 
-    return response
+    return response;
   }
 
   static validateCertificate(request: NextRequest): {
-    valid: boolean
-    issues: string[]
+    valid: boolean;
+    issues: string[];
   } {
-    const issues: string[] = []
-    const config = this.getSSLConfig()
+    const issues: string[] = [];
+    const config = this.getSSLConfig();
 
     if (!config.certificateValidation) {
-      return { valid: true, issues: [] }
+      return { valid: true, issues: [] };
     }
 
     // Check if connection is secure
-    const protocol = request.headers.get("x-forwarded-proto")
-    if (protocol !== "https") {
-      issues.push("Connection is not using HTTPS")
+    const protocol = request.headers.get('x-forwarded-proto');
+    if (protocol !== 'https') {
+      issues.push('Connection is not using HTTPS');
     }
 
     // Check for proper SSL headers
-    const hstsHeader = request.headers.get("strict-transport-security")
+    const hstsHeader = request.headers.get('strict-transport-security');
     if (!hstsHeader) {
-      issues.push("Missing HSTS header")
+      issues.push('Missing HSTS header');
     }
 
     // Check for mixed content
-    const referer = request.headers.get("referer")
-    if (referer && referer.startsWith("http://")) {
-      issues.push("Mixed content detected - HTTP referer on HTTPS page")
+    const referer = request.headers.get('referer');
+    if (referer && referer.startsWith('http://')) {
+      issues.push('Mixed content detected - HTTP referer on HTTPS page');
     }
 
     return {
       valid: issues.length === 0,
-      issues
-    }
+      issues,
+    };
   }
 
   static generateCSPForSSL(): string {
-    const config = this.getSSLConfig()
-    
+    const config = this.getSSLConfig();
+
     if (!config.enforceHttps) {
-      return ""
+      return '';
     }
 
     const directives = [
@@ -156,79 +156,79 @@ export class SSLHardening {
       "base-uri 'self'",
       "form-action 'self'",
       "frame-ancestors 'none'",
-      "block-all-mixed-content",
-      "upgrade-insecure-requests"
-    ]
+      'block-all-mixed-content',
+      'upgrade-insecure-requests',
+    ];
 
-    return directives.join("; ")
+    return directives.join('; ');
   }
 
   static checkSSLConfiguration(): {
-    score: number
-    issues: string[]
-    recommendations: string[]
+    score: number;
+    issues: string[];
+    recommendations: string[];
   } {
-    const config = this.getSSLConfig()
-    const issues: string[] = []
-    const recommendations: string[] = []
-    let score = 100
+    const config = this.getSSLConfig();
+    const issues: string[] = [];
+    const recommendations: string[] = [];
+    let score = 100;
 
     // Check HTTPS enforcement
     if (!config.enforceHttps) {
-      issues.push("HTTPS is not enforced")
-      recommendations.push("Enable HTTPS enforcement in production")
-      score -= 30
+      issues.push('HTTPS is not enforced');
+      recommendations.push('Enable HTTPS enforcement in production');
+      score -= 30;
     }
 
     // Check HSTS configuration
     if (config.hstsMaxAge === 0) {
-      issues.push("HSTS is not configured")
-      recommendations.push("Configure HSTS with appropriate max-age")
-      score -= 20
+      issues.push('HSTS is not configured');
+      recommendations.push('Configure HSTS with appropriate max-age');
+      score -= 20;
     } else if (config.hstsMaxAge < 31536000) {
-      issues.push("HSTS max-age is too short")
-      recommendations.push("Set HSTS max-age to at least 1 year (31536000 seconds)")
-      score -= 10
+      issues.push('HSTS max-age is too short');
+      recommendations.push('Set HSTS max-age to at least 1 year (31536000 seconds)');
+      score -= 10;
     }
 
     // Check HSTS subdomains
     if (config.hstsMaxAge > 0 && !config.hstsIncludeSubdomains) {
-      issues.push("HSTS does not include subdomains")
-      recommendations.push("Enable HSTS includeSubDomains directive")
-      score -= 10
+      issues.push('HSTS does not include subdomains');
+      recommendations.push('Enable HSTS includeSubDomains directive');
+      score -= 10;
     }
 
     // Check HSTS preload
     if (config.hstsMaxAge > 0 && !config.hstsPreload) {
-      issues.push("HSTS preload is not enabled")
-      recommendations.push("Enable HSTS preload for better security")
-      score -= 5
+      issues.push('HSTS preload is not enabled');
+      recommendations.push('Enable HSTS preload for better security');
+      score -= 5;
     }
 
     // Check TLS version
-    if (config.tlsMinVersion < "1.2") {
-      issues.push("TLS version is too old")
-      recommendations.push("Use TLS 1.2 or higher")
-      score -= 25
+    if (config.tlsMinVersion < '1.2') {
+      issues.push('TLS version is too old');
+      recommendations.push('Use TLS 1.2 or higher');
+      score -= 25;
     }
 
     // Check cipher suites
     if (config.cipherSuites.length === 0) {
-      issues.push("No cipher suites configured")
-      recommendations.push("Configure strong cipher suites")
-      score -= 10
+      issues.push('No cipher suites configured');
+      recommendations.push('Configure strong cipher suites');
+      score -= 10;
     }
 
     return {
       score: Math.max(0, score),
       issues,
-      recommendations
-    }
+      recommendations,
+    };
   }
 
   static generateNginxSSLConfig(): string {
-    const config = this.getSSLConfig()
-    
+    const config = this.getSSLConfig();
+
     return `
 # SSL Configuration for production
 server {
@@ -272,12 +272,12 @@ server {
     server_name _;
     return 301 https://$host$request_uri;
 }
-`
+`;
   }
 
   static generateApacheSSLConfig(): string {
-    const config = this.getSSLConfig()
-    
+    const config = this.getSSLConfig();
+
     return `
 # SSL Configuration for production
 <VirtualHost *:443>
@@ -313,85 +313,87 @@ server {
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 </VirtualHost>
-`
+`;
   }
 }
 
 // SSL monitoring and alerting
 export class SSLMonitoring {
   static async checkCertificateExpiry(domain: string): Promise<{
-    valid: boolean
-    daysUntilExpiry: number
-    expiryDate: Date
-    issues: string[]
+    valid: boolean;
+    daysUntilExpiry: number;
+    expiryDate: Date;
+    issues: string[];
   }> {
-    const issues: string[] = []
-    
+    const issues: string[] = [];
+
     try {
       // In a real implementation, this would check the actual certificate
       // For now, we'll simulate the check
-      const mockExpiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days from now
-      const daysUntilExpiry = Math.floor((mockExpiryDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000))
-      
+      const mockExpiryDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+      const daysUntilExpiry = Math.floor(
+        (mockExpiryDate.getTime() - Date.now()) / (24 * 60 * 60 * 1000)
+      );
+
       if (daysUntilExpiry < 30) {
-        issues.push("Certificate expires within 30 days")
+        issues.push('Certificate expires within 30 days');
       }
-      
+
       if (daysUntilExpiry < 7) {
-        issues.push("Certificate expires within 7 days - URGENT")
+        issues.push('Certificate expires within 7 days - URGENT');
       }
-      
+
       if (daysUntilExpiry < 0) {
-        issues.push("Certificate has expired")
+        issues.push('Certificate has expired');
       }
 
       return {
         valid: daysUntilExpiry > 0,
         daysUntilExpiry,
         expiryDate: mockExpiryDate,
-        issues
-      }
+        issues,
+      };
     } catch (error) {
       return {
         valid: false,
         daysUntilExpiry: 0,
         expiryDate: new Date(),
-        issues: ["Failed to check certificate expiry"]
-      }
+        issues: ['Failed to check certificate expiry'],
+      };
     }
   }
 
   static generateSSLReport(): string {
-    const config = SSLHardening.getSSLConfig()
-    const configCheck = SSLHardening.checkSSLConfiguration()
-    
-    let report = `\n=== SSL/TLS SECURITY REPORT ===\n`
-    report += `Configuration Score: ${configCheck.score}/100\n\n`
-    
-    report += `CURRENT CONFIGURATION:\n`
-    report += `- HTTPS Enforcement: ${config.enforceHttps ? "✅ Enabled" : "❌ Disabled"}\n`
-    report += `- HSTS Max Age: ${config.hstsMaxAge} seconds\n`
-    report += `- HSTS Include Subdomains: ${config.hstsIncludeSubdomains ? "✅ Yes" : "❌ No"}\n`
-    report += `- HSTS Preload: ${config.hstsPreload ? "✅ Yes" : "❌ No"}\n`
-    report += `- TLS Min Version: ${config.tlsMinVersion}\n`
-    report += `- Certificate Validation: ${config.certificateValidation ? "✅ Enabled" : "❌ Disabled"}\n\n`
-    
+    const config = SSLHardening.getSSLConfig();
+    const configCheck = SSLHardening.checkSSLConfiguration();
+
+    let report = `\n=== SSL/TLS SECURITY REPORT ===\n`;
+    report += `Configuration Score: ${configCheck.score}/100\n\n`;
+
+    report += `CURRENT CONFIGURATION:\n`;
+    report += `- HTTPS Enforcement: ${config.enforceHttps ? '✅ Enabled' : '❌ Disabled'}\n`;
+    report += `- HSTS Max Age: ${config.hstsMaxAge} seconds\n`;
+    report += `- HSTS Include Subdomains: ${config.hstsIncludeSubdomains ? '✅ Yes' : '❌ No'}\n`;
+    report += `- HSTS Preload: ${config.hstsPreload ? '✅ Yes' : '❌ No'}\n`;
+    report += `- TLS Min Version: ${config.tlsMinVersion}\n`;
+    report += `- Certificate Validation: ${config.certificateValidation ? '✅ Enabled' : '❌ Disabled'}\n\n`;
+
     if (configCheck.issues.length > 0) {
-      report += `ISSUES FOUND:\n`
-      configCheck.issues.forEach(issue => {
-        report += `❌ ${issue}\n`
-      })
-      report += `\n`
+      report += `ISSUES FOUND:\n`;
+      configCheck.issues.forEach((issue) => {
+        report += `❌ ${issue}\n`;
+      });
+      report += `\n`;
     }
-    
+
     if (configCheck.recommendations.length > 0) {
-      report += `RECOMMENDATIONS:\n`
-      configCheck.recommendations.forEach(rec => {
-        report += `💡 ${rec}\n`
-      })
+      report += `RECOMMENDATIONS:\n`;
+      configCheck.recommendations.forEach((rec) => {
+        report += `💡 ${rec}\n`;
+      });
     }
-    
-    return report
+
+    return report;
   }
 }
 
@@ -399,19 +401,19 @@ export class SSLMonitoring {
 export function withSSLEnforcement() {
   return (request: NextRequest) => {
     // Check for HTTPS redirect
-    const httpsRedirect = SSLHardening.enforceHTTPS(request)
+    const httpsRedirect = SSLHardening.enforceHTTPS(request);
     if (httpsRedirect) {
-      return httpsRedirect
+      return httpsRedirect;
     }
 
     // Validate certificate
-    const certValidation = SSLHardening.validateCertificate(request)
+    const certValidation = SSLHardening.validateCertificate(request);
     if (!certValidation.valid) {
-      console.warn("SSL certificate validation issues:", certValidation.issues)
+      console.warn('SSL certificate validation issues:', certValidation.issues);
     }
 
     // Apply SSL headers
-    const response = NextResponse.next()
-    return SSLHardening.applySSLHeaders(response)
-  }
+    const response = NextResponse.next();
+    return SSLHardening.applySSLHeaders(response);
+  };
 }

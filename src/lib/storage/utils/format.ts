@@ -5,11 +5,11 @@
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
-  
+
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   const size = parseFloat((bytes / Math.pow(k, i)).toFixed(2));
   return `${size} ${sizes[i]}`;
 }
@@ -32,11 +32,13 @@ export function getFileTypeDescription(mimeType: string): string {
     // Documents
     'application/pdf': 'PDF Doküman',
     'application/msword': 'Word Doküman',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word Doküman (DOCX)',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+      'Word Doküman (DOCX)',
     'application/vnd.ms-excel': 'Excel Dosyası',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel Dosyası (XLSX)',
     'application/vnd.ms-powerpoint': 'PowerPoint Sunumu',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'PowerPoint Sunumu (PPTX)',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+      'PowerPoint Sunumu (PPTX)',
     'text/plain': 'Metin Dosyası',
     'text/csv': 'CSV Dosyası',
     'text/html': 'HTML Dosyası',
@@ -68,7 +70,7 @@ export function getFileTypeDescription(mimeType: string): string {
     'video/mov': 'MOV Video',
     'video/wmv': 'WMV Video',
     'video/flv': 'FLV Video',
-    'video/mkv': 'MKV Video'
+    'video/mkv': 'MKV Video',
   };
 
   return typeMap[mimeType] || getGenericTypeDescription(mimeType);
@@ -96,8 +98,10 @@ export function getFileTypeIcon(mimeType: string): string {
   if (mimeType === 'application/pdf') return 'file-pdf';
   if (mimeType.includes('word') || mimeType.includes('document')) return 'file-word';
   if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return 'file-excel';
-  if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) return 'file-powerpoint';
-  if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('tar')) return 'file-archive';
+  if (mimeType.includes('powerpoint') || mimeType.includes('presentation'))
+    return 'file-powerpoint';
+  if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('tar'))
+    return 'file-archive';
   if (mimeType.startsWith('text/')) return 'file-text';
   return 'file';
 }
@@ -107,13 +111,13 @@ export function getFileTypeIcon(mimeType: string): string {
  */
 export function formatDateTurkish(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  
+
   return d.toLocaleDateString('tr-TR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   });
 }
 
@@ -124,7 +128,7 @@ export function formatRelativeTime(date: Date | string): string {
   const d = typeof date === 'string' ? new Date(date) : date;
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
-  
+
   const seconds = Math.floor(diffMs / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
@@ -148,9 +152,9 @@ export function formatRelativeTime(date: Date | string): string {
  */
 export function formatAccessLevel(accessLevel: string): string {
   const accessMap: Record<string, string> = {
-    'private': 'Özel',
-    'tenant': 'Kurum İçi', 
-    'public': 'Herkese Açık'
+    private: 'Özel',
+    tenant: 'Kurum İçi',
+    public: 'Herkese Açık',
   };
 
   return accessMap[accessLevel] || accessLevel;
@@ -161,10 +165,10 @@ export function formatAccessLevel(accessLevel: string): string {
  */
 export function formatFileStatus(status: string): string {
   const statusMap: Record<string, string> = {
-    'active': 'Aktif',
-    'archived': 'Arşivlenmiş',
-    'deleted': 'Silinmiş',
-    'quarantined': 'Karantinada'
+    active: 'Aktif',
+    archived: 'Arşivlenmiş',
+    deleted: 'Silinmiş',
+    quarantined: 'Karantinada',
   };
 
   return statusMap[status] || status;
@@ -175,9 +179,9 @@ export function formatFileStatus(status: string): string {
  */
 export function formatStorageProvider(provider: string): string {
   const providerMap: Record<string, string> = {
-    'supabase': 'Supabase Storage',
-    'r2': 'Cloudflare R2',
-    's3': 'Amazon S3'
+    supabase: 'Supabase Storage',
+    r2: 'Cloudflare R2',
+    s3: 'Amazon S3',
   };
 
   return providerMap[provider] || provider;
@@ -208,7 +212,7 @@ export function generateShareUrl(fileId: string, token?: string): string {
 /**
  * Breadcrumb path'ini oluşturur
  */
-export function formatBreadcrumbPath(folderPath: string): Array<{name: string, path: string}> {
+export function formatBreadcrumbPath(folderPath: string): Array<{ name: string; path: string }> {
   if (!folderPath || folderPath === '/') {
     return [{ name: 'Ana Klasör', path: '/' }];
   }
@@ -217,11 +221,11 @@ export function formatBreadcrumbPath(folderPath: string): Array<{name: string, p
   const breadcrumbs = [{ name: 'Ana Klasör', path: '/' }];
 
   let currentPath = '';
-  parts.forEach(part => {
+  parts.forEach((part) => {
     currentPath += `/${part}`;
     breadcrumbs.push({
       name: part,
-      path: currentPath
+      path: currentPath,
     });
   });
 

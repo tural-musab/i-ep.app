@@ -5,11 +5,13 @@ Bu dokümantasyon, Süper Admin rolüne sahip kullanıcıların kullanabileceği
 ## Genel Bilgiler
 
 ### Base URL
+
 ```
 https://api.iqraedu.com/v1
 ```
 
 ### Kimlik Doğrulama
+
 Tüm API istekleri JWT token gerektirmektedir. Token, Authorization header'ında Bearer token olarak gönderilmelidir.
 
 ```http
@@ -17,23 +19,26 @@ Authorization: Bearer <jwt_token>
 ```
 
 ### Rate Limiting
+
 - Dakikada maksimum 100 istek
 - Saatte maksimum 1000 istek
 - Günde maksimum 10000 istek
 
 ### Hata Kodları
-| Kod | Açıklama |
-|-----|----------|
-| 400 | Geçersiz istek |
-| 401 | Yetkisiz erişim |
+
+| Kod | Açıklama          |
+| --- | ----------------- |
+| 400 | Geçersiz istek    |
+| 401 | Yetkisiz erişim   |
 | 403 | Erişim reddedildi |
 | 404 | Kaynak bulunamadı |
 | 429 | Rate limit aşıldı |
-| 500 | Sunucu hatası |
+| 500 | Sunucu hatası     |
 
 ## Tenant Yönetimi API'leri
 
 ### Tenant Listesi
+
 ```http
 GET /tenants
 ```
@@ -47,6 +52,7 @@ GET /tenants
 | search | string | İsim veya domain ile arama |
 
 **Başarılı Yanıt (200):**
+
 ```json
 {
   "data": [
@@ -72,11 +78,13 @@ GET /tenants
 ```
 
 ### Tenant Oluşturma
+
 ```http
 POST /tenants
 ```
 
 **İstek Gövdesi:**
+
 ```json
 {
   "name": "Yeni Okul",
@@ -91,6 +99,7 @@ POST /tenants
 ```
 
 **Başarılı Yanıt (201):**
+
 ```json
 {
   "id": "new_tenant_id",
@@ -106,11 +115,13 @@ POST /tenants
 ```
 
 ### Tenant Detayları
+
 ```http
 GET /tenants/{tenant_id}
 ```
 
 **Başarılı Yanıt (200):**
+
 ```json
 {
   "id": "tenant_id",
@@ -132,11 +143,13 @@ GET /tenants/{tenant_id}
 ```
 
 ### Tenant Güncelleme
+
 ```http
 PATCH /tenants/{tenant_id}
 ```
 
 **İstek Gövdesi:**
+
 ```json
 {
   "name": "Güncellenmiş Okul Adı",
@@ -151,11 +164,13 @@ PATCH /tenants/{tenant_id}
 ## Domain Yönetimi API'leri
 
 ### Domain Doğrulama
+
 ```http
 POST /tenants/{tenant_id}/domains/verify
 ```
 
 **İstek Gövdesi:**
+
 ```json
 {
   "domain": "okul.com"
@@ -163,6 +178,7 @@ POST /tenants/{tenant_id}/domains/verify
 ```
 
 **Başarılı Yanıt (200):**
+
 ```json
 {
   "status": "pending",
@@ -175,11 +191,13 @@ POST /tenants/{tenant_id}/domains/verify
 ```
 
 ### SSL Sertifika Durumu
+
 ```http
 GET /tenants/{tenant_id}/domains/ssl
 ```
 
 **Başarılı Yanıt (200):**
+
 ```json
 {
   "status": "active",
@@ -192,6 +210,7 @@ GET /tenants/{tenant_id}/domains/ssl
 ## Sistem Yönetimi API'leri
 
 ### Sistem Metrikleri
+
 ```http
 GET /system/metrics
 ```
@@ -204,6 +223,7 @@ GET /system/metrics
 | metrics | string[] | İstenen metrikler |
 
 **Başarılı Yanıt (200):**
+
 ```json
 {
   "timeRange": {
@@ -228,11 +248,13 @@ GET /system/metrics
 ```
 
 ### Sistem Durumu
+
 ```http
 GET /system/health
 ```
 
 **Başarılı Yanıt (200):**
+
 ```json
 {
   "status": "healthy",
@@ -256,11 +278,13 @@ GET /system/health
 ## Yedekleme ve Geri Yükleme API'leri
 
 ### Yedekleme Başlatma
+
 ```http
 POST /tenants/{tenant_id}/backups
 ```
 
 **İstek Gövdesi:**
+
 ```json
 {
   "type": "full",
@@ -269,6 +293,7 @@ POST /tenants/{tenant_id}/backups
 ```
 
 **Başarılı Yanıt (202):**
+
 ```json
 {
   "id": "backup_id",
@@ -278,11 +303,13 @@ POST /tenants/{tenant_id}/backups
 ```
 
 ### Yedekleme Durumu
+
 ```http
 GET /tenants/{tenant_id}/backups/{backup_id}
 ```
 
 **Başarılı Yanıt (200):**
+
 ```json
 {
   "id": "backup_id",
@@ -298,6 +325,7 @@ GET /tenants/{tenant_id}/backups/{backup_id}
 ## Güvenlik ve Denetim API'leri
 
 ### Denetim Logları
+
 ```http
 GET /audit-logs
 ```
@@ -311,6 +339,7 @@ GET /audit-logs
 | tenant | string | Tenant ID |
 
 **Başarılı Yanıt (200):**
+
 ```json
 {
   "logs": [
@@ -342,11 +371,13 @@ GET /audit-logs
 Sistem olaylarını dinlemek için webhook'lar kullanılabilir.
 
 ### Webhook Kaydetme
+
 ```http
 POST /webhooks
 ```
 
 **İstek Gövdesi:**
+
 ```json
 {
   "url": "https://example.com/webhook",
@@ -356,6 +387,7 @@ POST /webhooks
 ```
 
 **Başarılı Yanıt (201):**
+
 ```json
 {
   "id": "webhook_id",
@@ -368,6 +400,7 @@ POST /webhooks
 ## Webhook Event Örnekleri
 
 ### Tenant Oluşturuldu
+
 ```json
 {
   "event": "tenant.created",
@@ -381,6 +414,7 @@ POST /webhooks
 ```
 
 ### Yedekleme Tamamlandı
+
 ```json
 {
   "event": "backup.completed",
@@ -392,4 +426,4 @@ POST /webhooks
     "type": "full"
   }
 }
-``` 
+```

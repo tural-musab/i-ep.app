@@ -8,7 +8,7 @@ export enum UserRole {
   TEACHER = 'teacher',
   STUDENT = 'student',
   PARENT = 'parent',
-  GUEST = 'guest'
+  GUEST = 'guest',
 }
 
 /**
@@ -115,11 +115,14 @@ export interface AuthState {
   user: User | null;
   isLoading: boolean;
   error: string | null;
-  signIn: (email: string, password: string) => Promise<{ 
-    success: boolean; 
-    error?: string; 
-    user?: User 
+  signIn: (
+    email: string,
+    password: string
+  ) => Promise<{
+    success: boolean;
+    error?: string;
+    user?: User;
   }>;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<boolean>;
-} 
+}

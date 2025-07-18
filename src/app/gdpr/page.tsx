@@ -32,7 +32,7 @@ export default function GDPRDataDeletionPage() {
     type: 'soft',
     reason: '',
     exportDataBeforeDeletion: true,
-    confirmUnderstanding: false
+    confirmUnderstanding: false,
   });
 
   const deletionTypes = [
@@ -46,8 +46,8 @@ export default function GDPRDataDeletionPage() {
         '30 gün içinde hesabınızı geri yükleyebilirsiniz',
         'Verileriniz diğer kullanıcılar tarafından görülmez',
         'Sistem logları korunur',
-        'Yasal yükümlülükler için gerekli veriler saklanır'
-      ]
+        'Yasal yükümlülükler için gerekli veriler saklanır',
+      ],
     },
     {
       id: 'hard' as const,
@@ -59,8 +59,8 @@ export default function GDPRDataDeletionPage() {
         'Verileriniz tamamen ve geri dönüşü olmayan şekilde silinir',
         'Hesabınızı geri yükleyemezsiniz',
         'Yasal gereklilikler için minimal veri korunabilir',
-        'İşlem geri alınamaz'
-      ]
+        'İşlem geri alınamaz',
+      ],
     },
     {
       id: 'anonymize' as const,
@@ -72,19 +72,19 @@ export default function GDPRDataDeletionPage() {
         'Kişisel kimlik bilgileriniz silinir',
         'Anonim istatistiksel veriler korunur',
         'Hesabınıza erişim kaybedilir',
-        'İstatistiksel analizler için veriler kullanılabilir'
-      ]
-    }
+        'İstatistiksel analizler için veriler kullanılabilir',
+      ],
+    },
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!request.confirmUnderstanding) {
       toast({
         title: 'Onay Gerekli',
         description: 'Lütfen sonuçları anladığınızı onaylayın.',
-        variant: 'destructive'
+        variant: 'destructive',
       });
       return;
     }
@@ -100,8 +100,8 @@ export default function GDPRDataDeletionPage() {
           reason: request.reason,
           exportDataBeforeDeletion: request.exportDataBeforeDeletion,
           notifyUser: true,
-          notifyAdmin: true
-        })
+          notifyAdmin: true,
+        }),
       });
 
       if (response.ok) {
@@ -109,7 +109,7 @@ export default function GDPRDataDeletionPage() {
         toast({
           title: 'Talep Başarıyla Gönderildi',
           description: 'Veri silme talebiniz alındı ve işleme konacak.',
-          variant: 'default'
+          variant: 'default',
         });
       } else {
         const errorData = await response.json();
@@ -119,7 +119,7 @@ export default function GDPRDataDeletionPage() {
       toast({
         title: 'Hata',
         description: error instanceof Error ? error.message : 'Bir hata oluştu',
-        variant: 'destructive'
+        variant: 'destructive',
       });
     } finally {
       setIsSubmitting(false);
@@ -131,7 +131,7 @@ export default function GDPRDataDeletionPage() {
       const response = await fetch('/api/export', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ format: 'json' })
+        body: JSON.stringify({ format: 'json' }),
       });
 
       if (response.ok) {
@@ -148,47 +148,38 @@ export default function GDPRDataDeletionPage() {
         toast({
           title: 'Veri Dışa Aktarıldı',
           description: 'Verileriniz başarıyla indirildi.',
-          variant: 'default'
+          variant: 'default',
         });
       } else {
         throw new Error('Dışa aktarma işlemi başarısız oldu');
       }
-         } catch {
-       toast({
-         title: 'Hata',
-         description: 'Veri dışa aktarma işlemi başarısız oldu',
-         variant: 'destructive'
-       });
-     }
+    } catch {
+      toast({
+        title: 'Hata',
+        description: 'Veri dışa aktarma işlemi başarısız oldu',
+        variant: 'destructive',
+      });
+    }
   };
 
   if (showSuccess) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+        <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
+            <CheckCircle className="mx-auto mb-4 h-12 w-12 text-green-600" />
             <CardTitle className="text-green-900">Talep Alındı</CardTitle>
-            <CardDescription>
-              Veri silme talebiniz başarıyla gönderildi
-            </CardDescription>
+            <CardDescription>Veri silme talebiniz başarıyla gönderildi</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-center">
             <p className="text-sm text-gray-600">
               Talebiniz 48 saat içinde işleme konacak ve e-posta ile bilgilendirileceksiniz.
             </p>
             <div className="space-y-2">
-              <Button 
-                onClick={() => router.push('/')} 
-                className="w-full"
-              >
+              <Button onClick={() => router.push('/')} className="w-full">
                 Ana Sayfaya Dön
               </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => setShowSuccess(false)}
-                className="w-full"
-              >
+              <Button variant="outline" onClick={() => setShowSuccess(false)} className="w-full">
                 Yeni Talep Oluştur
               </Button>
             </div>
@@ -200,14 +191,13 @@ export default function GDPRDataDeletionPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Veri Silme Talebi
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            GDPR ve KVKK haklarınız kapsamında kişisel verilerinizin silinmesini talep edebilirsiniz.
+        <div className="mb-8 text-center">
+          <h1 className="mb-4 text-3xl font-bold text-gray-900">Veri Silme Talebi</h1>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600">
+            GDPR ve KVKK haklarınız kapsamında kişisel verilerinizin silinmesini talep
+            edebilirsiniz.
           </p>
         </div>
 
@@ -215,12 +205,13 @@ export default function GDPRDataDeletionPage() {
         <Alert className="mb-8 border-blue-200 bg-blue-50">
           <Shield className="h-4 w-4" />
           <AlertDescription>
-            <strong>Unutulma Hakkı (GDPR Madde 17):</strong> Kişisel verilerinizin silinmesini talep etme hakkınız bulunmaktadır. 
-            Bu işlem geri alınamaz olabileceği için dikkatli seçim yapmanızı öneririz.
+            <strong>Unutulma Hakkı (GDPR Madde 17):</strong> Kişisel verilerinizin silinmesini talep
+            etme hakkınız bulunmaktadır. Bu işlem geri alınamaz olabileceği için dikkatli seçim
+            yapmanızı öneririz.
           </AlertDescription>
         </Alert>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Ana Form */}
           <div className="lg:col-span-2">
             <Card>
@@ -238,31 +229,33 @@ export default function GDPRDataDeletionPage() {
                   {/* Silme Türü Seçimi */}
                   <RadioGroup
                     value={request.type}
-                    onValueChange={(value) => setRequest(prev => ({ ...prev, type: value as DeletionType }))}
+                    onValueChange={(value) =>
+                      setRequest((prev) => ({ ...prev, type: value as DeletionType }))
+                    }
                   >
                     {deletionTypes.map((type) => {
                       const Icon = type.icon;
                       return (
                         <div key={type.id} className="space-y-3">
-                          <div className="flex items-start space-x-3 p-4 border rounded-lg hover:bg-gray-50">
+                          <div className="flex items-start space-x-3 rounded-lg border p-4 hover:bg-gray-50">
                             <RadioGroupItem value={type.id} id={type.id} className="mt-1" />
                             <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
+                              <div className="mb-2 flex items-center gap-2">
                                 <Icon className="h-4 w-4" />
-                                <Label htmlFor={type.id} className="font-medium cursor-pointer">
+                                <Label htmlFor={type.id} className="cursor-pointer font-medium">
                                   {type.title}
                                 </Label>
                                 {type.recommended && (
-                                  <Badge variant="secondary" className="text-xs">Önerilen</Badge>
+                                  <Badge variant="secondary" className="text-xs">
+                                    Önerilen
+                                  </Badge>
                                 )}
                               </div>
-                              <p className="text-sm text-gray-600 mb-2">
-                                {type.description}
-                              </p>
-                              <ul className="text-xs text-gray-500 space-y-1">
+                              <p className="mb-2 text-sm text-gray-600">{type.description}</p>
+                              <ul className="space-y-1 text-xs text-gray-500">
                                 {type.details.map((detail, index) => (
                                   <li key={index} className="flex items-start gap-1">
-                                    <span className="inline-block w-1 h-1 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                                    <span className="mt-2 inline-block h-1 w-1 flex-shrink-0 rounded-full bg-gray-400"></span>
                                     {detail}
                                   </li>
                                 ))}
@@ -282,16 +275,20 @@ export default function GDPRDataDeletionPage() {
                       <Checkbox
                         id="exportData"
                         checked={request.exportDataBeforeDeletion}
-                        onCheckedChange={(checked) => 
-                          setRequest(prev => ({ ...prev, exportDataBeforeDeletion: checked as boolean }))
+                        onCheckedChange={(checked) =>
+                          setRequest((prev) => ({
+                            ...prev,
+                            exportDataBeforeDeletion: checked as boolean,
+                          }))
                         }
                       />
                       <Label htmlFor="exportData" className="text-sm">
                         Silmeden önce verilerimi indir
                       </Label>
                     </div>
-                    <p className="text-xs text-gray-500 ml-6">
-                      Bu seçenek işaretliyse, verileriniz silinmeden önce JSON formatında otomatik olarak indirilir.
+                    <p className="ml-6 text-xs text-gray-500">
+                      Bu seçenek işaretliyse, verileriniz silinmeden önce JSON formatında otomatik
+                      olarak indirilir.
                     </p>
                   </div>
 
@@ -302,32 +299,36 @@ export default function GDPRDataDeletionPage() {
                       id="reason"
                       placeholder="Verilerinizi neden silmek istediğinizi açıklayabilirsiniz..."
                       value={request.reason}
-                      onChange={(e) => setRequest(prev => ({ ...prev, reason: e.target.value }))}
+                      onChange={(e) => setRequest((prev) => ({ ...prev, reason: e.target.value }))}
                       rows={3}
                     />
                   </div>
 
                   {/* Onay */}
-                  <div className="space-y-3 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <div className="space-y-3 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
                     <div className="flex items-start space-x-2">
                       <Checkbox
                         id="confirm"
                         checked={request.confirmUnderstanding}
-                        onCheckedChange={(checked) => 
-                          setRequest(prev => ({ ...prev, confirmUnderstanding: checked as boolean }))
+                        onCheckedChange={(checked) =>
+                          setRequest((prev) => ({
+                            ...prev,
+                            confirmUnderstanding: checked as boolean,
+                          }))
                         }
                       />
                       <Label htmlFor="confirm" className="text-sm leading-relaxed">
-                        Bu işlemin sonuçlarını anladığımı ve verilerimin seçtiğim yönteme göre işleneceğini kabul ediyorum. 
-                        Bu işlemin geri alınamaz olabileceğini biliyorum.
+                        Bu işlemin sonuçlarını anladığımı ve verilerimin seçtiğim yönteme göre
+                        işleneceğini kabul ediyorum. Bu işlemin geri alınamaz olabileceğini
+                        biliyorum.
                       </Label>
                     </div>
                   </div>
 
                   {/* Submit Button */}
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
+                  <Button
+                    type="submit"
+                    className="w-full"
                     disabled={isSubmitting || !request.confirmUnderstanding}
                   >
                     {isSubmitting ? 'Gönderiliyor...' : 'Silme Talebini Gönder'}
@@ -346,20 +347,14 @@ export default function GDPRDataDeletionPage() {
                   <Download className="h-5 w-5" />
                   Verilerimi İndir
                 </CardTitle>
-                <CardDescription>
-                  Silme işlemi öncesi verilerinizi yedekleyin
-                </CardDescription>
+                <CardDescription>Silme işlemi öncesi verilerinizi yedekleyin</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="mb-4 text-sm text-gray-600">
                   Tüm kişisel verilerinizi JSON formatında indirebilirsiniz.
                 </p>
-                <Button 
-                  variant="outline" 
-                  onClick={handleDataExport}
-                  className="w-full"
-                >
-                  <Download className="h-4 w-4 mr-2" />
+                <Button variant="outline" onClick={handleDataExport} className="w-full">
+                  <Download className="mr-2 h-4 w-4" />
                   Verilerimi İndir
                 </Button>
               </CardContent>
@@ -373,10 +368,13 @@ export default function GDPRDataDeletionPage() {
                   Yasal Bilgiler
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-sm text-gray-600 space-y-3">
+              <CardContent className="space-y-3 text-sm text-gray-600">
                 <div>
                   <strong>GDPR Madde 17 - Unutulma Hakkı:</strong>
-                  <p>Belirli koşullar altında kişisel verilerinizin silinmesini talep etme hakkınız bulunmaktadır.</p>
+                  <p>
+                    Belirli koşullar altında kişisel verilerinizin silinmesini talep etme hakkınız
+                    bulunmaktadır.
+                  </p>
                 </div>
                 <div>
                   <strong>İşlem Süresi:</strong>
@@ -395,7 +393,7 @@ export default function GDPRDataDeletionPage() {
                 <CardTitle>Yardım mı Lazım?</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="mb-4 text-sm text-gray-600">
                   Veri koruma haklarınız hakkında sorularınız için bizimle iletişime geçin.
                 </p>
                 <Button variant="outline" size="sm" className="w-full">
@@ -408,4 +406,4 @@ export default function GDPRDataDeletionPage() {
       </div>
     </div>
   );
-} 
+}

@@ -1,9 +1,9 @@
 /**
  * İ-EP.APP Rate Limiter Integration Tests
- * 
+ *
  * Bu test suite rate limiter middleware'inin doğru çalıştığını kontrol eder:
  * - Tenant bazlı rate limiting
- * - Window reset işlevselliği  
+ * - Window reset işlevselliği
  * - 429 Too Many Requests yanıtları
  */
 
@@ -27,14 +27,14 @@ interface MockNextRequest {
 function mockNextRequest(url: string, tenantId?: string): MockNextRequest {
   return {
     nextUrl: {
-      pathname: new URL(url).pathname
+      pathname: new URL(url).pathname,
     },
     headers: {
       get: (key: string) => {
         if (key === 'x-tenant-id') return tenantId || null;
         return null;
-      }
-    }
+      },
+    },
   };
 }
 
@@ -42,12 +42,12 @@ describe('Rate Limiter Middleware Integration Tests', () => {
   beforeEach(() => {
     // Clear rate limit store before each test
     clearRateLimitStore();
-    
+
     // Set test environment variables
     process.env = {
       ...originalEnv,
       RATE_LIMIT_WINDOW_MS: '5000', // 5 seconds for faster testing
-      RATE_LIMIT_MAX: '3'          // 3 requests max for easier testing
+      RATE_LIMIT_MAX: '3', // 3 requests max for easier testing
     };
   });
 
@@ -59,8 +59,11 @@ describe('Rate Limiter Middleware Integration Tests', () => {
   describe('Rate Limiter Core Logic', () => {
     it('should track requests per tenant correctly', async () => {
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
-      
-      const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1') as unknown as NextRequest;
+
+      const request = mockNextRequest(
+        'http://localhost:3000/api/test',
+        'tenant-1'
+      ) as unknown as NextRequest;
 
       // First 3 requests should be allowed
       expect(rateLimiterMiddleware(request)).toBeNull();
@@ -75,7 +78,7 @@ describe('Rate Limiter Middleware Integration Tests', () => {
 
     it('should isolate rate limits between tenants', async () => {
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
-      
+
       const tenant1Request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1');
       const tenant2Request = mockNextRequest('http://localhost:3000/api/test', 'tenant-2');
 
@@ -95,7 +98,7 @@ describe('Rate Limiter Middleware Integration Tests', () => {
 
     it('should handle requests without tenant-id (use default)', async () => {
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
-      
+
       const request = mockNextRequest('http://localhost:3000/api/test'); // No tenant-id
 
       // Should work with default tenant
@@ -110,7 +113,7 @@ describe('Rate Limiter Middleware Integration Tests', () => {
 
     it('should skip rate limiting for non-API routes', async () => {
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
-      
+
       const request = mockNextRequest('http://localhost:3000/dashboard', 'tenant-1');
       const response = rateLimiterMiddleware(request);
       expect(response).toBeNull(); // Should skip rate limiting
@@ -118,7 +121,7 @@ describe('Rate Limiter Middleware Integration Tests', () => {
 
     it('should return proper 429 response with headers', async () => {
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
-      
+
       const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1');
 
       // Use up rate limit
@@ -164,7 +167,7 @@ describe('Rate Limiter Middleware Integration Tests', () => {
       delete process.env.RATE_LIMIT_MAX;
 
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
-      
+
       const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1');
       const response = rateLimiterMiddleware(request);
       expect(response).toBeNull(); // Should work with defaults
@@ -175,7 +178,7 @@ describe('Rate Limiter Middleware Integration Tests', () => {
       process.env.RATE_LIMIT_MAX = 'invalid';
 
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
-      
+
       const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1');
       const response = rateLimiterMiddleware(request);
       expect(response).toBeNull(); // Should handle gracefully
@@ -185,21 +188,21 @@ describe('Rate Limiter Middleware Integration Tests', () => {
   describe('Utility Functions', () => {
     it('should clear rate limit store', async () => {
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
-      
+
       const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1');
-      
+
       // Make some requests
       rateLimiterMiddleware(request);
       rateLimiterMiddleware(request);
-      
+
       // Verify tenant has some rate limit status
       const statusBefore = getRateLimitStatus('tenant-1');
       expect(statusBefore).not.toBeNull();
       expect(statusBefore?.count).toBe(2);
-      
+
       // Clear store
       clearRateLimitStore();
-      
+
       // Verify status is cleared
       const statusAfter = getRateLimitStatus('tenant-1');
       expect(statusAfter).toBeNull();
@@ -207,15 +210,15 @@ describe('Rate Limiter Middleware Integration Tests', () => {
 
     it('should track rate limit status correctly', async () => {
       const { rateLimiterMiddleware } = await import('../../middleware/rateLimiter');
-      
+
       const request = mockNextRequest('http://localhost:3000/api/test', 'tenant-1');
-      
+
       // Initial status should be null
       expect(getRateLimitStatus('tenant-1')).toBeNull();
-      
+
       // Make a request
       rateLimiterMiddleware(request);
-      
+
       // Status should show count
       const status = getRateLimitStatus('tenant-1');
       expect(status).not.toBeNull();
@@ -223,4 +226,4 @@ describe('Rate Limiter Middleware Integration Tests', () => {
       expect(typeof status?.windowStart).toBe('number');
     });
   });
-}); 
+});

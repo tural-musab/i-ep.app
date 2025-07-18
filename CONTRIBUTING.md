@@ -37,17 +37,20 @@ By participating in this project, you agree to abide by our Code of Conduct. Ple
 ### Initial Setup
 
 1. **Fork and Clone the Repository**
+
    ```bash
    git clone https://github.com/your-username/i-ep.app.git
    cd i-ep.app
    ```
 
 2. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set Up Environment Variables**
+
    ```bash
    cp .env.example .env.local
    # Edit .env.local with your configuration
@@ -82,6 +85,7 @@ By participating in this project, you agree to abide by our Code of Conduct. Ple
 ### Strict Type Safety
 
 **❌ DON'T:**
+
 ```typescript
 // Using 'any' type
 function processData(data: any) {
@@ -90,7 +94,7 @@ function processData(data: any) {
 
 // Implicit any
 function getData() {
-  return fetch('/api/data').then(res => res.json());
+  return fetch('/api/data').then((res) => res.json());
 }
 
 // Unsafe type assertion
@@ -98,6 +102,7 @@ const user = data as User;
 ```
 
 **✅ DO:**
+
 ```typescript
 // Use specific types
 interface UserData {
@@ -125,6 +130,7 @@ function isUser(data: unknown): data is User {
 ### Interface and Type Definitions
 
 **✅ Good practices:**
+
 ```typescript
 // Use interfaces for object shapes
 interface ClassProps {
@@ -167,6 +173,7 @@ type CreateUserData = Omit<User, 'id' | 'createdAt'>;
 ### Component Structure
 
 **✅ Recommended structure:**
+
 ```tsx
 'use client'; // Only if needed for client components
 
@@ -193,14 +200,17 @@ export function UserList({ users, onUserSelect, className }: UserListProps) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const { toast } = useToast();
 
-  const handleUserClick = useCallback((user: User) => {
-    setSelectedUser(user);
-    onUserSelect(user);
-  }, [onUserSelect]);
+  const handleUserClick = useCallback(
+    (user: User) => {
+      setSelectedUser(user);
+      onUserSelect(user);
+    },
+    [onUserSelect]
+  );
 
   if (users.length === 0) {
     return (
-      <div className="text-center py-8">
+      <div className="py-8 text-center">
         <p className="text-gray-500">No users found</p>
       </div>
     );
@@ -208,14 +218,12 @@ export function UserList({ users, onUserSelect, className }: UserListProps) {
 
   return (
     <div className={className}>
-      {users.map(user => (
+      {users.map((user) => (
         <Card key={user.id} className="mb-4">
           <CardContent>
             <h3>{user.name}</h3>
             <p>{user.email}</p>
-            <Button onClick={() => handleUserClick(user)}>
-              Select
-            </Button>
+            <Button onClick={() => handleUserClick(user)}>Select</Button>
           </CardContent>
         </Card>
       ))}
@@ -227,6 +235,7 @@ export function UserList({ users, onUserSelect, className }: UserListProps) {
 ### Hook Guidelines
 
 **✅ Proper hook usage:**
+
 ```tsx
 // useEffect with proper dependencies
 useEffect(() => {
@@ -240,11 +249,12 @@ const handleSubmit = useCallback((data: FormData) => {
 
 // useMemo for expensive calculations
 const filteredUsers = useMemo(() => {
-  return users.filter(user => user.isActive);
+  return users.filter((user) => user.isActive);
 }, [users]);
 ```
 
 **❌ Avoid:**
+
 ```tsx
 // Missing dependencies
 useEffect(() => {
@@ -252,7 +262,7 @@ useEffect(() => {
 }, []); // Missing fetchUsers dependency
 
 // Unnecessary inline functions
-<Button onClick={() => handleClick(id)}>Click</Button>
+<Button onClick={() => handleClick(id)}>Click</Button>;
 
 // Should use useCallback:
 const handleClick = useCallback((id: string) => {
@@ -263,6 +273,7 @@ const handleClick = useCallback((id: string) => {
 ### State Management
 
 **✅ Good practices:**
+
 ```tsx
 // Use specific state types
 const [loading, setLoading] = useState<boolean>(false);
@@ -310,22 +321,26 @@ src/
 ### Naming Conventions
 
 **Files and Directories:**
+
 - Use kebab-case for file names: `user-profile.tsx`
 - Use PascalCase for component files: `UserProfile.tsx`
 - Use camelCase for utility files: `formatDate.ts`
 
 **Variables and Functions:**
+
 - Use camelCase: `userName`, `handleSubmit`
 - Use PascalCase for components: `UserProfile`, `FormInput`
 - Use UPPER_SNAKE_CASE for constants: `API_BASE_URL`
 
 **Types and Interfaces:**
+
 - Use PascalCase: `UserProfile`, `ApiResponse`
 - Prefix interfaces with 'I' only when necessary to avoid conflicts
 
 ### Import Organization
 
 **✅ Proper import order:**
+
 ```tsx
 // 1. React and Next.js imports
 import React, { useState, useEffect } from 'react';
@@ -363,7 +378,7 @@ describe('UserProfile', () => {
 
   it('renders user information correctly', () => {
     render(<UserProfile user={mockUser} />);
-    
+
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('john@example.com')).toBeInTheDocument();
   });
@@ -371,7 +386,7 @@ describe('UserProfile', () => {
   it('handles user update', () => {
     const mockOnUpdate = jest.fn();
     render(<UserProfile user={mockUser} onUpdate={mockOnUpdate} />);
-    
+
     fireEvent.click(screen.getByText('Edit'));
     // Test edit functionality
   });
@@ -430,11 +445,13 @@ test: add unit tests for UserProfile
 ### Pull Request Process
 
 1. **Create Feature Branch**
+
    ```bash
    git checkout -b feature/user-profile
    ```
 
 2. **Make Changes and Test**
+
    ```bash
    npm run lint
    npm run test
@@ -442,12 +459,14 @@ test: add unit tests for UserProfile
    ```
 
 3. **Commit Changes**
+
    ```bash
    git add .
    git commit -m "feat: add user profile component"
    ```
 
 4. **Push and Create PR**
+
    ```bash
    git push origin feature/user-profile
    ```
@@ -471,22 +490,26 @@ test: add unit tests for UserProfile
 ### Review Checklist
 
 **Functionality:**
+
 - [ ] Code works as expected
 - [ ] Edge cases are handled
 - [ ] Error handling is appropriate
 
 **Code Quality:**
+
 - [ ] Code is readable and maintainable
 - [ ] No code duplication
 - [ ] Functions are focused and small
 - [ ] Names are descriptive
 
 **Performance:**
+
 - [ ] No unnecessary re-renders
 - [ ] Efficient algorithms used
 - [ ] Proper memoization where needed
 
 **Security:**
+
 - [ ] No security vulnerabilities
 - [ ] Input validation present
 - [ ] No sensitive data exposure
@@ -496,6 +519,7 @@ test: add unit tests for UserProfile
 ### 1. Using `any` Type
 
 **❌ DON'T:**
+
 ```typescript
 function processData(data: any) {
   return data.someProperty;
@@ -503,6 +527,7 @@ function processData(data: any) {
 ```
 
 **✅ DO:**
+
 ```typescript
 interface UserData {
   id: string;
@@ -517,6 +542,7 @@ function processUserData(data: UserData): string {
 ### 2. Unused Imports
 
 **❌ DON'T:**
+
 ```typescript
 import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
@@ -525,6 +551,7 @@ import { Card } from '@/components/ui/card';
 ```
 
 **✅ DO:**
+
 ```typescript
 import React from 'react';
 import { Button } from '@/components/ui/button';
@@ -534,6 +561,7 @@ import { Button } from '@/components/ui/button';
 ### 3. Missing Dependencies in useEffect
 
 **❌ DON'T:**
+
 ```typescript
 useEffect(() => {
   fetchData(userId);
@@ -541,6 +569,7 @@ useEffect(() => {
 ```
 
 **✅ DO:**
+
 ```typescript
 useEffect(() => {
   fetchData(userId);
@@ -550,39 +579,50 @@ useEffect(() => {
 ### 4. Inline Event Handlers
 
 **❌ DON'T:**
+
 ```tsx
-{items.map(item => (
-  <Button key={item.id} onClick={() => handleClick(item.id)}>
-    {item.name}
-  </Button>
-))}
+{
+  items.map((item) => (
+    <Button key={item.id} onClick={() => handleClick(item.id)}>
+      {item.name}
+    </Button>
+  ));
+}
 ```
 
 **✅ DO:**
-```tsx
-const handleItemClick = useCallback((id: string) => {
-  handleClick(id);
-}, [handleClick]);
 
-{items.map(item => (
-  <Button key={item.id} onClick={() => handleItemClick(item.id)}>
-    {item.name}
-  </Button>
-))}
+```tsx
+const handleItemClick = useCallback(
+  (id: string) => {
+    handleClick(id);
+  },
+  [handleClick]
+);
+
+{
+  items.map((item) => (
+    <Button key={item.id} onClick={() => handleItemClick(item.id)}>
+      {item.name}
+    </Button>
+  ));
+}
 ```
 
 ### 5. Using img Instead of Next.js Image
 
 **❌ DON'T:**
+
 ```tsx
 <img src="/logo.png" alt="Logo" />
 ```
 
 **✅ DO:**
+
 ```tsx
 import Image from 'next/image';
 
-<Image src="/logo.png" alt="Logo" width={100} height={50} />
+<Image src="/logo.png" alt="Logo" width={100} height={50} />;
 ```
 
 ## Best Practices

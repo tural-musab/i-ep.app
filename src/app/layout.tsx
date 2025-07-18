@@ -1,18 +1,19 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import AnalyticsClient from "../components/AnalyticsClient";
-import SpeedInsightsClient from "../components/SpeedInsightsClient";
-import { AuthProvider } from "@/lib/auth/auth-context";
-import { Toaster } from "@/components/ui/toaster";
-import { CookieConsentBanner } from "@/components/gdpr/cookie-consent-banner";
-import { PWAProvider } from "@/components/pwa/pwa-provider";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
+import AnalyticsClient from '../components/AnalyticsClient';
+import SpeedInsightsClient from '../components/SpeedInsightsClient';
+import { AuthProvider } from '@/lib/auth/auth-context';
+import { Toaster } from '@/components/ui/toaster';
+import { CookieConsentBanner } from '@/components/gdpr/cookie-consent-banner';
+import { PWAProvider } from '@/components/pwa/pwa-provider';
+import './globals.css';
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Iqra Eğitim Portalı",
-  description: "Türkiye'deki eğitim kurumları için çok kiracılı (multi-tenant) SaaS okul yönetim sistemi",
+  title: 'Iqra Eğitim Portalı',
+  description:
+    "Türkiye'deki eğitim kurumları için çok kiracılı (multi-tenant) SaaS okul yönetim sistemi",
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',

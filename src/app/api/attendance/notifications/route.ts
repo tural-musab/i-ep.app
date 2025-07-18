@@ -1,7 +1,7 @@
 /**
  * Attendance Notifications API Route
  * İ-EP.APP - Attendance Management System
- * 
+ *
  * Endpoints:
  * - GET /api/attendance/notifications - Get attendance notifications
  * - POST /api/attendance/notifications - Send attendance notifications
@@ -46,25 +46,25 @@ export async function GET(request: NextRequest) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Parse and validate query parameters
     const { searchParams } = new URL(request.url);
     const queryParams = Object.fromEntries(searchParams.entries());
-    
+
     const validatedQuery = NotificationQuerySchema.parse(queryParams);
-    
+
     // Initialize repository
     const attendanceRepo = new AttendanceRepository(supabase, tenantId);
-    
+
     // Get notifications
     const notifications = await attendanceRepo.getAttendanceNotifications({
       studentId: validatedQuery.studentId,
@@ -90,20 +90,19 @@ export async function GET(request: NextRequest) {
         total: totalCount,
         limit: validatedQuery.limit || 50,
         offset: validatedQuery.offset || 0,
-        hasMore: ((validatedQuery.offset || 0) + (validatedQuery.limit || 50)) < totalCount,
+        hasMore: (validatedQuery.offset || 0) + (validatedQuery.limit || 50) < totalCount,
       },
     });
-
   } catch (error) {
     console.error('Error fetching attendance notifications:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid query parameters', details: error.errors },
         { status: 400 }
       );
     }
-    
+
     return NextResponse.json(
       { error: 'Failed to fetch attendance notifications' },
       { status: 500 }
@@ -119,14 +118,14 @@ export async function POST(request: NextRequest) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -136,7 +135,7 @@ export async function POST(request: NextRequest) {
     if (body.classId && body.date) {
       // Bulk notification
       const validatedData = BulkNotificationSchema.parse(body);
-      
+
       // Get all attendance records for the class on the specified date
       const attendanceRecords = await attendanceRepo.getAttendanceRecords({
         classId: validatedData.classId,
@@ -152,7 +151,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Send notifications for each record
-      const notificationPromises = attendanceRecords.map(record => 
+      const notificationPromises = attendanceRecords.map((record) =>
         attendanceRepo.sendAttendanceNotification(
           record.id,
           validatedData.notificationType,
@@ -161,8 +160,8 @@ export async function POST(request: NextRequest) {
       );
 
       const results = await Promise.allSettled(notificationPromises);
-      const successful = results.filter(result => result.status === 'fulfilled').length;
-      const failed = results.filter(result => result.status === 'rejected').length;
+      const successful = results.filter((result) => result.status === 'fulfilled').length;
+      const failed = results.filter((result) => result.status === 'rejected').length;
 
       return NextResponse.json({
         success: true,
@@ -173,21 +172,17 @@ export async function POST(request: NextRequest) {
           failed,
         },
       });
-
     } else {
       // Single notification
       const validatedData = NotificationSendSchema.parse(body);
-      
+
       // Verify attendance record exists
       const attendanceRecord = await attendanceRepo.getAttendanceById(
         validatedData.attendanceRecordId
       );
-      
+
       if (!attendanceRecord) {
-        return NextResponse.json(
-          { error: 'Attendance record not found' },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: 'Attendance record not found' }, { status: 404 });
       }
 
       // Send notification
@@ -204,21 +199,17 @@ export async function POST(request: NextRequest) {
         message: 'Attendance notification sent successfully',
       });
     }
-
   } catch (error) {
     console.error('Error sending attendance notification:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to send attendance notification' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Failed to send attendance notification' }, { status: 500 });
   }
 }
 
@@ -230,14 +221,14 @@ export async function PUT(request: NextRequest) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication or webhook signature
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -253,7 +244,7 @@ export async function PUT(request: NextRequest) {
 
     // Initialize repository
     const attendanceRepo = new AttendanceRepository(supabase, tenantId);
-    
+
     // Update notification status
     const updatedNotification = await attendanceRepo.updateNotificationStatus(
       notificationId,
@@ -267,13 +258,9 @@ export async function PUT(request: NextRequest) {
       data: updatedNotification,
       message: 'Notification status updated successfully',
     });
-
   } catch (error) {
     console.error('Error updating notification status:', error);
-    
-    return NextResponse.json(
-      { error: 'Failed to update notification status' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Failed to update notification status' }, { status: 500 });
   }
 }

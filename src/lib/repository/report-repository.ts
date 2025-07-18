@@ -704,11 +704,13 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
     // Fetch student data
     const { data: student, error: studentError } = await this.supabase
       .from('students')
-      .select(`
+      .select(
+        `
         *,
         classes!inner(name, grade_level),
         users!inner(full_name, email, avatar_url)
-      `)
+      `
+      )
       .eq('id', studentId)
       .eq('tenant_id', this.tenantId)
       .single();
@@ -718,11 +720,13 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
     // Fetch grades data
     const { data: grades, error: gradesError } = await this.supabase
       .from('grades')
-      .select(`
+      .select(
+        `
         *,
         subjects!inner(name, teacher_id),
         teachers!inner(users!inner(full_name))
-      `)
+      `
+      )
       .eq('student_id', studentId)
       .eq('tenant_id', this.tenantId)
       .eq('academic_year', academicYear)
@@ -737,7 +741,10 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
       .eq('student_id', studentId)
       .eq('tenant_id', this.tenantId)
       .gte('date', `${academicYear}-09-01`)
-      .lte('date', semester === 1 ? `${academicYear}-01-31` : `${parseInt(academicYear) + 1}-06-30`);
+      .lte(
+        'date',
+        semester === 1 ? `${academicYear}-01-31` : `${parseInt(academicYear) + 1}-06-30`
+      );
 
     if (attendanceError) throw attendanceError;
 
@@ -774,7 +781,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
         generated_by: 'system', // This would be the current user ID
         generated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -793,11 +800,13 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
     // Fetch class data
     const { data: classData, error: classError } = await this.supabase
       .from('classes')
-      .select(`
+      .select(
+        `
         *,
         students!inner(id, student_number, users!inner(full_name)),
         teachers!inner(users!inner(full_name))
-      `)
+      `
+      )
       .eq('id', classId)
       .eq('tenant_id', this.tenantId)
       .single();
@@ -806,12 +815,12 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
 
     // Generate analytics for all students in class
     const studentIds = classData.students.map((s: any) => s.id);
-    
+
     // Fetch aggregated data
     const [gradesData, attendanceData, behaviorData] = await Promise.all([
       this.getClassGradesData(studentIds, academicYear, semester),
       this.getClassAttendanceData(studentIds, academicYear, semester),
-      this.getClassBehaviorData(studentIds, academicYear, semester)
+      this.getClassBehaviorData(studentIds, academicYear, semester),
     ]);
 
     // Compile report data
@@ -836,7 +845,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
         generated_by: 'system',
         generated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -853,7 +862,8 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
   ): Promise<AttendanceReport> {
     let attendanceQuery = this.supabase
       .from('attendance_records')
-      .select(`
+      .select(
+        `
         *,
         students!inner(
           id,
@@ -861,7 +871,8 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
           users!inner(full_name),
           classes!inner(name, grade_level)
         )
-      `)
+      `
+      )
       .eq('tenant_id', this.tenantId)
       .gte('date', dateRange.start_date)
       .lte('date', dateRange.end_date);
@@ -901,7 +912,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
         generated_by: 'system',
         generated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -919,7 +930,8 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
   ): Promise<GradeReport> {
     let gradesQuery = this.supabase
       .from('grades')
-      .select(`
+      .select(
+        `
         *,
         students!inner(
           id,
@@ -929,7 +941,8 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
         ),
         subjects!inner(name, teacher_id),
         teachers!inner(users!inner(full_name))
-      `)
+      `
+      )
       .eq('tenant_id', this.tenantId)
       .eq('academic_year', academicYear)
       .eq('semester', semester);
@@ -971,7 +984,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
         generated_by: 'system',
         generated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -981,15 +994,16 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
   }
 
   // Parent Communication Reports
-  async generateParentCommunicationReport(
-    reportPeriod: { start_date: string; end_date: string }
-  ): Promise<ParentCommunicationReport> {
+  async generateParentCommunicationReport(reportPeriod: {
+    start_date: string;
+    end_date: string;
+  }): Promise<ParentCommunicationReport> {
     // Fetch communication data
     const [messagesData, meetingsData, notificationsData, feedbackData] = await Promise.all([
       this.getParentMessagesData(reportPeriod),
       this.getParentMeetingsData(reportPeriod),
       this.getParentNotificationsData(reportPeriod),
-      this.getParentFeedbackData(reportPeriod)
+      this.getParentFeedbackData(reportPeriod),
     ]);
 
     // Compile communication report data
@@ -1011,7 +1025,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
         generated_by: 'system',
         generated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -1029,7 +1043,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
     const [paymentsData, expensesData, studentsData] = await Promise.all([
       this.getPaymentsData(reportPeriod),
       this.getExpensesData(reportPeriod),
-      this.getStudentsFinancialData(reportPeriod)
+      this.getStudentsFinancialData(reportPeriod),
     ]);
 
     // Compile financial report data
@@ -1052,7 +1066,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
         generated_by: 'system',
         generated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -1062,14 +1076,15 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
   }
 
   // System Usage Reports
-  async generateSystemUsageReport(
-    reportPeriod: { start_date: string; end_date: string }
-  ): Promise<SystemUsageReport> {
+  async generateSystemUsageReport(reportPeriod: {
+    start_date: string;
+    end_date: string;
+  }): Promise<SystemUsageReport> {
     // Fetch system usage data
     const [usageData, performanceData, errorData] = await Promise.all([
       this.getSystemUsageData(reportPeriod),
       this.getSystemPerformanceData(reportPeriod),
-      this.getSystemErrorData(reportPeriod)
+      this.getSystemErrorData(reportPeriod),
     ]);
 
     // Compile system usage report data
@@ -1090,7 +1105,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
         generated_by: 'system',
         generated_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -1101,7 +1116,10 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
 
   // Custom Report Templates
   async createCustomReportTemplate(
-    templateData: Omit<CustomReportTemplate, 'id' | 'tenant_id' | 'created_at' | 'updated_at' | 'usage_count' | 'last_generated'>
+    templateData: Omit<
+      CustomReportTemplate,
+      'id' | 'tenant_id' | 'created_at' | 'updated_at' | 'usage_count' | 'last_generated'
+    >
   ): Promise<CustomReportTemplate> {
     const { data: template, error: templateError } = await this.supabase
       .from('custom_report_templates')
@@ -1110,7 +1128,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
         tenant_id: this.tenantId,
         usage_count: 0,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -1119,10 +1137,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
     return template;
   }
 
-  async generateCustomReport(
-    templateId: string,
-    filters: Record<string, any>
-  ): Promise<any> {
+  async generateCustomReport(templateId: string, filters: Record<string, any>): Promise<any> {
     // Fetch template
     const { data: template, error: templateError } = await this.supabase
       .from('custom_report_templates')
@@ -1141,7 +1156,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
       .from('custom_report_templates')
       .update({
         usage_count: template.usage_count + 1,
-        last_generated: new Date().toISOString()
+        last_generated: new Date().toISOString(),
       })
       .eq('id', templateId)
       .eq('tenant_id', this.tenantId);
@@ -1177,7 +1192,7 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
         name: student.users.full_name,
         class: student.classes.name,
         number: student.student_number,
-        photo_url: student.users.avatar_url
+        photo_url: student.users.avatar_url,
       },
       // ... more data compilation logic
     };
@@ -1246,7 +1261,11 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
   }
 
   // Helper methods for data fetching
-  private async getClassGradesData(studentIds: string[], academicYear: string, semester: number): Promise<any[]> {
+  private async getClassGradesData(
+    studentIds: string[],
+    academicYear: string,
+    semester: number
+  ): Promise<any[]> {
     const { data, error } = await this.supabase
       .from('grades')
       .select('*')
@@ -1259,20 +1278,31 @@ export class ReportRepository extends BaseRepository<StudentPerformanceReport> {
     return data || [];
   }
 
-  private async getClassAttendanceData(studentIds: string[], academicYear: string, semester: number): Promise<any[]> {
+  private async getClassAttendanceData(
+    studentIds: string[],
+    academicYear: string,
+    semester: number
+  ): Promise<any[]> {
     const { data, error } = await this.supabase
       .from('attendance_records')
       .select('*')
       .in('student_id', studentIds)
       .eq('tenant_id', this.tenantId)
       .gte('date', `${academicYear}-09-01`)
-      .lte('date', semester === 1 ? `${academicYear}-01-31` : `${parseInt(academicYear) + 1}-06-30`);
+      .lte(
+        'date',
+        semester === 1 ? `${academicYear}-01-31` : `${parseInt(academicYear) + 1}-06-30`
+      );
 
     if (error) throw error;
     return data || [];
   }
 
-  private async getClassBehaviorData(studentIds: string[], academicYear: string, semester: number): Promise<any[]> {
+  private async getClassBehaviorData(
+    studentIds: string[],
+    academicYear: string,
+    semester: number
+  ): Promise<any[]> {
     const { data, error } = await this.supabase
       .from('student_behavior')
       .select('*')

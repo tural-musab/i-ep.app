@@ -11,12 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Calendar, 
-  Users, 
-  // Clock, 
+import {
+  TrendingUp,
+  TrendingDown,
+  Calendar,
+  Users,
+  // Clock,
   AlertCircle,
   // CheckCircle,
   XCircle,
@@ -27,7 +27,7 @@ import {
   Award,
   // UserCheck,
   UserX,
-  Timer
+  Timer,
 } from 'lucide-react';
 
 export function AttendanceAnalytics() {
@@ -40,7 +40,7 @@ export function AttendanceAnalytics() {
     chronicAbsentees: 8,
     perfectAttendance: 12,
     trendDirection: 'up',
-    trendValue: 2.1
+    trendValue: 2.1,
   };
 
   const monthlyTrends = [
@@ -48,7 +48,7 @@ export function AttendanceAnalytics() {
     { month: 'Ekim', attendanceRate: 94.8, absences: 89, lates: 22 },
     { month: 'Kasım', attendanceRate: 93.1, absences: 125, lates: 28 },
     { month: 'Aralık', attendanceRate: 91.7, absences: 156, lates: 35 },
-    { month: 'Ocak', attendanceRate: 94.2, absences: 98, lates: 18 }
+    { month: 'Ocak', attendanceRate: 94.2, absences: 98, lates: 18 },
   ];
 
   const classAnalytics = [
@@ -61,7 +61,7 @@ export function AttendanceAnalytics() {
       chronicAbsentees: 2,
       perfectAttendance: 4,
       trend: 'up',
-      trendValue: 1.8
+      trendValue: 1.8,
     },
     {
       class: '5-B',
@@ -72,7 +72,7 @@ export function AttendanceAnalytics() {
       chronicAbsentees: 3,
       perfectAttendance: 2,
       trend: 'down',
-      trendValue: -0.5
+      trendValue: -0.5,
     },
     {
       class: '6-A',
@@ -83,7 +83,7 @@ export function AttendanceAnalytics() {
       chronicAbsentees: 2,
       perfectAttendance: 3,
       trend: 'up',
-      trendValue: 2.3
+      trendValue: 2.3,
     },
     {
       class: '6-B',
@@ -94,8 +94,8 @@ export function AttendanceAnalytics() {
       chronicAbsentees: 1,
       perfectAttendance: 3,
       trend: 'stable',
-      trendValue: 0.1
-    }
+      trendValue: 0.1,
+    },
   ];
 
   const weeklyPatterns = [
@@ -104,7 +104,7 @@ export function AttendanceAnalytics() {
     { day: 'Çarşamba', attendanceRate: 96.3, absences: 6, lates: 3 },
     { day: 'Perşembe', attendanceRate: 94.8, absences: 8, lates: 5 },
     { day: 'Cuma', attendanceRate: 93.5, absences: 10, lates: 6 },
-    { day: 'Cumartesi', attendanceRate: 97.2, absences: 4, lates: 2 }
+    { day: 'Cumartesi', attendanceRate: 97.2, absences: 4, lates: 2 },
   ];
 
   const absenceReasons = [
@@ -112,7 +112,7 @@ export function AttendanceAnalytics() {
     { reason: 'Kişisel', count: 132, percentage: 24.3 },
     { reason: 'Aile', count: 89, percentage: 16.4 },
     { reason: 'Ulaşım', count: 45, percentage: 8.3 },
-    { reason: 'Diğer', count: 31, percentage: 5.8 }
+    { reason: 'Diğer', count: 31, percentage: 5.8 },
   ];
 
   const interventionResults = [
@@ -123,7 +123,7 @@ export function AttendanceAnalytics() {
       afterRate: 85.2,
       improvement: 20.2,
       interventionType: 'Veli Görüşmesi',
-      startDate: '2024-12-01'
+      startDate: '2024-12-01',
     },
     {
       student: 'Ahmet Çelik',
@@ -132,7 +132,7 @@ export function AttendanceAnalytics() {
       afterRate: 88.7,
       improvement: 16.2,
       interventionType: 'Destek Planı',
-      startDate: '2024-11-15'
+      startDate: '2024-11-15',
     },
     {
       student: 'Ayşe Kaya',
@@ -141,8 +141,8 @@ export function AttendanceAnalytics() {
       afterRate: 92.1,
       improvement: 13.8,
       interventionType: 'Rehberlik',
-      startDate: '2024-12-10'
-    }
+      startDate: '2024-12-10',
+    },
   ];
 
   const seasonalAnalysis = [
@@ -150,26 +150,26 @@ export function AttendanceAnalytics() {
       season: 'Sonbahar',
       attendanceRate: 94.7,
       commonReasons: ['Hastalık', 'Hava koşulları'],
-      recommendation: 'Sağlık önlemleri artırılmalı'
+      recommendation: 'Sağlık önlemleri artırılmalı',
     },
     {
       season: 'Kış',
       attendanceRate: 91.2,
       commonReasons: ['Grip', 'Kar', 'Tatil'],
-      recommendation: 'Ulaşım alternatifleri sağlanmalı'
+      recommendation: 'Ulaşım alternatifleri sağlanmalı',
     },
     {
       season: 'İlkbahar',
       attendanceRate: 95.8,
       commonReasons: ['Alerjiler', 'Kişisel'],
-      recommendation: 'Allerji önlemleri alınmalı'
+      recommendation: 'Allerji önlemleri alınmalı',
     },
     {
       season: 'Yaz',
       attendanceRate: 93.5,
       commonReasons: ['Tatil', 'Sıcak hava'],
-      recommendation: 'Esnek program düşünülebilir'
-    }
+      recommendation: 'Esnek program düşünülebilir',
+    },
   ];
 
   const getTrendIcon = (trend: string) => {
@@ -185,9 +185,12 @@ export function AttendanceAnalytics() {
 
   const getTrendColor = (trend: string) => {
     switch (trend) {
-      case 'up': return 'text-green-600';
-      case 'down': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'up':
+        return 'text-green-600';
+      case 'down':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
     }
   };
 
@@ -206,18 +209,21 @@ export function AttendanceAnalytics() {
   return (
     <div className="space-y-6">
       {/* Overall Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Genel Devamsızlık Oranı</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <Target className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">%{overallStats.averageAttendanceRate}</div>
-            <div className={`flex items-center text-xs ${getTrendColor(overallStats.trendDirection)}`}>
+            <div
+              className={`flex items-center text-xs ${getTrendColor(overallStats.trendDirection)}`}
+            >
               {getTrendIcon(overallStats.trendDirection)}
               <span className="ml-1">
-                {overallStats.trendDirection === 'up' ? '+' : ''}{overallStats.trendValue}% bu ay
+                {overallStats.trendDirection === 'up' ? '+' : ''}
+                {overallStats.trendValue}% bu ay
               </span>
             </div>
           </CardContent>
@@ -226,12 +232,13 @@ export function AttendanceAnalytics() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Kronik Devamsızlık</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
+            <AlertCircle className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{overallStats.chronicAbsentees}</div>
-            <p className="text-xs text-muted-foreground">
-              %{((overallStats.chronicAbsentees / overallStats.totalStudents) * 100).toFixed(1)} öğrenci
+            <p className="text-muted-foreground text-xs">
+              %{((overallStats.chronicAbsentees / overallStats.totalStudents) * 100).toFixed(1)}{' '}
+              öğrenci
             </p>
           </CardContent>
         </Card>
@@ -239,12 +246,13 @@ export function AttendanceAnalytics() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Mükemmel Devam</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <Award className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{overallStats.perfectAttendance}</div>
-            <p className="text-xs text-muted-foreground">
-              %{((overallStats.perfectAttendance / overallStats.totalStudents) * 100).toFixed(1)} öğrenci
+            <p className="text-muted-foreground text-xs">
+              %{((overallStats.perfectAttendance / overallStats.totalStudents) * 100).toFixed(1)}{' '}
+              öğrenci
             </p>
           </CardContent>
         </Card>
@@ -252,11 +260,11 @@ export function AttendanceAnalytics() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Toplam Devamsızlık</CardTitle>
-            <XCircle className="h-4 w-4 text-muted-foreground" />
+            <XCircle className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{overallStats.totalAbsences}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {overallStats.totalSchoolDays} okul günü
             </p>
           </CardContent>
@@ -282,19 +290,22 @@ export function AttendanceAnalytics() {
                 <LineChart className="h-5 w-5" />
                 Aylık Devamsızlık Trendi
               </CardTitle>
-              <CardDescription>
-                Son 5 ayın devamsızlık oranları ve değişimleri
-              </CardDescription>
+              <CardDescription>Son 5 ayın devamsızlık oranları ve değişimleri</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {monthlyTrends.map((month, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
                     <div className="flex items-center gap-4">
                       <div className="w-16 text-sm font-medium">{month.month}</div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`font-medium ${getAttendanceRateColor(month.attendanceRate)}`}>
+                        <div className="mb-1 flex items-center gap-2">
+                          <span
+                            className={`font-medium ${getAttendanceRateColor(month.attendanceRate)}`}
+                          >
                             %{month.attendanceRate}
                           </span>
                           <div className="w-32">
@@ -334,15 +345,16 @@ export function AttendanceAnalytics() {
                 {classAnalytics.map((classData, index) => (
                   <Card key={index}>
                     <CardHeader>
-                      <div className="flex justify-between items-start">
+                      <div className="flex items-start justify-between">
                         <div>
                           <CardTitle className="text-lg">{classData.class}</CardTitle>
-                          <CardDescription>
-                            {classData.students} öğrenci
-                          </CardDescription>
+                          <CardDescription>{classData.students} öğrenci</CardDescription>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className={getAttendanceRateBackground(classData.attendanceRate)}>
+                          <Badge
+                            variant="outline"
+                            className={getAttendanceRateBackground(classData.attendanceRate)}
+                          >
                             %{classData.attendanceRate}
                           </Badge>
                           {getTrendIcon(classData.trend)}
@@ -350,21 +362,29 @@ export function AttendanceAnalytics() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
                         <div className="text-center">
-                          <div className="text-2xl font-bold text-red-600">{classData.absences}</div>
+                          <div className="text-2xl font-bold text-red-600">
+                            {classData.absences}
+                          </div>
                           <div className="text-sm text-gray-600">Devamsızlık</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-2xl font-bold text-yellow-600">{classData.lates}</div>
+                          <div className="text-2xl font-bold text-yellow-600">
+                            {classData.lates}
+                          </div>
                           <div className="text-sm text-gray-600">Geç Kalma</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-2xl font-bold text-orange-600">{classData.chronicAbsentees}</div>
+                          <div className="text-2xl font-bold text-orange-600">
+                            {classData.chronicAbsentees}
+                          </div>
                           <div className="text-sm text-gray-600">Kronik</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-2xl font-bold text-green-600">{classData.perfectAttendance}</div>
+                          <div className="text-2xl font-bold text-green-600">
+                            {classData.perfectAttendance}
+                          </div>
                           <div className="text-sm text-gray-600">Mükemmel</div>
                         </div>
                         <div className="text-center">
@@ -391,19 +411,22 @@ export function AttendanceAnalytics() {
                 <Calendar className="h-5 w-5" />
                 Haftalık Devamsızlık Desenleri
               </CardTitle>
-              <CardDescription>
-                Haftanın günlerine göre devamsızlık dağılımı
-              </CardDescription>
+              <CardDescription>Haftanın günlerine göre devamsızlık dağılımı</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {weeklyPatterns.map((day, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
                     <div className="flex items-center gap-4">
                       <div className="w-20 text-sm font-medium">{day.day}</div>
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`font-medium ${getAttendanceRateColor(day.attendanceRate)}`}>
+                        <div className="mb-1 flex items-center gap-2">
+                          <span
+                            className={`font-medium ${getAttendanceRateColor(day.attendanceRate)}`}
+                          >
                             %{day.attendanceRate}
                           </span>
                           <div className="w-32">
@@ -436,15 +459,13 @@ export function AttendanceAnalytics() {
                 <PieChart className="h-5 w-5" />
                 Devamsızlık Nedenleri
               </CardTitle>
-              <CardDescription>
-                En yaygın devamsızlık nedenlerinin analizi
-              </CardDescription>
+              <CardDescription>En yaygın devamsızlık nedenlerinin analizi</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {absenceReasons.map((reason, index) => (
                   <div key={index} className="space-y-2">
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">{reason.reason}</span>
                       <div className="flex items-center gap-2">
                         <span className="text-sm text-gray-600">{reason.count} kez</span>
@@ -467,15 +488,13 @@ export function AttendanceAnalytics() {
                 <Target className="h-5 w-5" />
                 Müdahale Sonuçları
               </CardTitle>
-              <CardDescription>
-                Devamsızlık müdahalelerinin etkililiği
-              </CardDescription>
+              <CardDescription>Devamsızlık müdahalelerinin etkililiği</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {interventionResults.map((result, index) => (
-                  <div key={index} className="p-4 border rounded-lg bg-green-50">
-                    <div className="flex justify-between items-start mb-3">
+                  <div key={index} className="rounded-lg border bg-green-50 p-4">
+                    <div className="mb-3 flex items-start justify-between">
                       <div>
                         <h3 className="font-medium">{result.student}</h3>
                         <p className="text-sm text-gray-600">{result.class}</p>
@@ -484,8 +503,8 @@ export function AttendanceAnalytics() {
                         +{result.improvement}% iyileşme
                       </Badge>
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                       <div className="text-center">
                         <div className="text-lg font-bold text-red-600">%{result.beforeRate}</div>
                         <div className="text-sm text-gray-600">Önceki Oran</div>
@@ -495,11 +514,13 @@ export function AttendanceAnalytics() {
                         <div className="text-sm text-gray-600">Sonraki Oran</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-bold text-blue-600">{result.interventionType}</div>
+                        <div className="text-lg font-bold text-blue-600">
+                          {result.interventionType}
+                        </div>
                         <div className="text-sm text-gray-600">Müdahale Türü</div>
                       </div>
                     </div>
-                    
+
                     <div className="mt-3 text-sm text-gray-600">
                       Başlangıç: {new Date(result.startDate).toLocaleDateString('tr-TR')}
                     </div>
@@ -518,12 +539,10 @@ export function AttendanceAnalytics() {
                 <Calendar className="h-5 w-5" />
                 Mevsimsel Analiz
               </CardTitle>
-              <CardDescription>
-                Mevsimlere göre devamsızlık trendleri ve öneriler
-              </CardDescription>
+              <CardDescription>Mevsimlere göre devamsızlık trendleri ve öneriler</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {seasonalAnalysis.map((season, index) => (
                   <Card key={index}>
                     <CardHeader>
@@ -535,7 +554,7 @@ export function AttendanceAnalytics() {
                     <CardContent>
                       <div className="space-y-3">
                         <div>
-                          <h4 className="font-medium text-sm mb-2">Yaygın Nedenler</h4>
+                          <h4 className="mb-2 text-sm font-medium">Yaygın Nedenler</h4>
                           <div className="flex flex-wrap gap-1">
                             {season.commonReasons.map((reason, idx) => (
                               <Badge key={idx} variant="outline" className="text-xs">
@@ -544,15 +563,15 @@ export function AttendanceAnalytics() {
                             ))}
                           </div>
                         </div>
-                        
+
                         <div>
-                          <h4 className="font-medium text-sm mb-2">Öneri</h4>
+                          <h4 className="mb-2 text-sm font-medium">Öneri</h4>
                           <p className="text-sm text-gray-600">{season.recommendation}</p>
                         </div>
-                        
+
                         <div>
                           <Progress value={season.attendanceRate} className="h-2" />
-                          <div className="text-right text-sm text-gray-600 mt-1">
+                          <div className="mt-1 text-right text-sm text-gray-600">
                             %{season.attendanceRate}
                           </div>
                         </div>

@@ -15,7 +15,6 @@ Bu script, `management` şemasında bulunan tablolar ile API'mizin kullandığı
    - `schema_name` -> `subdomain`
    - `subscription_plan` -> `plan_type`
    - `status` -> `is_active`
-   
 2. **public.tenant_domains**
    - `management.domains` tablosunu yansıtır
    - `is_custom` -> `type` ('custom' veya 'subdomain')
@@ -39,7 +38,7 @@ Bu migration scriptlerini uygulamak için aşağıdaki adımları izleyin:
 4. Sonuçları kontrol edin
 
 > **Not:** Migration'ı geri almak gerekirse aşağıdaki komutu çalıştırabilirsiniz:
-> 
+>
 > ```sql
 > DROP VIEW IF EXISTS public.tenants CASCADE;
 > DROP VIEW IF EXISTS public.tenant_domains CASCADE;
@@ -51,4 +50,4 @@ Migration sırasında hata alırsanız aşağıdakileri kontrol edin:
 
 1. `management` şemasının ve ilgili tabloların varlığı
 2. Enum tipleri (`subscription_plan`, `tenant_status` vb.) doğru mu?
-3. `management.tenants` ve `management.domains` tablolarının yapısı beklenen şemaya uygun mu? 
+3. `management.tenants` ve `management.domains` tablolarının yapısı beklenen şemaya uygun mu?

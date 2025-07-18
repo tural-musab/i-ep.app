@@ -24,7 +24,7 @@ const MOCK_USER_TENANT_A = {
   email: 'admin@tenant-a.com',
   role: 'admin',
   is_active: true,
-  verification_status: 'verified'
+  verification_status: 'verified',
 };
 
 interface SecurityViolation {
@@ -41,13 +41,13 @@ const MOCK_SUPER_ADMIN = {
   email: 'super@i-ep.app',
   role: 'super_admin',
   is_active: true,
-  verification_status: 'verified'
+  verification_status: 'verified',
 };
 
 describe('Multi-Tenant Security Isolation Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Logger mock'larını sustur
     jest.spyOn(console, 'log').mockImplementation(() => {});
     jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -65,14 +65,14 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         eq: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
           data: null,
-          error: { message: 'Row Level Security policy violation' }
-        })
+          error: { message: 'Row Level Security policy violation' },
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockQueryBuilder);
       mockSupabaseClient.auth.getUser.mockResolvedValue({
         data: { user: MOCK_USER_TENANT_A },
-        error: null
+        error: null,
       });
 
       // Tenant A kullanıcısı olarak Tenant B kullanıcısını okumaya çalış
@@ -89,7 +89,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
       logger.info('Cross-tenant user access correctly blocked', {
         attemptingUser: MOCK_USER_TENANT_A.id,
         targetTenant: TENANT_B_ID,
-        result: 'BLOCKED'
+        result: 'BLOCKED',
       });
     });
 
@@ -99,21 +99,18 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
           data: [],
-          error: { message: 'Insufficient privileges' }
-        })
+          error: { message: 'Insufficient privileges' },
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockQueryBuilder);
       mockSupabaseClient.auth.getUser.mockResolvedValue({
         data: { user: { ...MOCK_USER_TENANT_A, role: 'teacher' } },
-        error: null
+        error: null,
       });
 
       // Teacher rolü ile management.tenants tablosuna erişim denemesi
-      const result = await mockSupabaseClient
-        .from('tenants')
-        .select('*')
-        .eq('id', TENANT_A_ID);
+      const result = await mockSupabaseClient.from('tenants').select('*').eq('id', TENANT_A_ID);
 
       expect(result.error).toBeTruthy();
       expect(result.data).toEqual([]);
@@ -121,7 +118,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
       logger.info('Unauthorized tenant management access blocked', {
         attemptingUser: MOCK_USER_TENANT_A.id,
         role: 'teacher',
-        result: 'BLOCKED'
+        result: 'BLOCKED',
       });
     });
 
@@ -129,25 +126,23 @@ describe('Multi-Tenant Security Isolation Tests', () => {
       // Super admin tüm tenant'lara erişebilmeli
       const mockTenants = [
         { id: TENANT_A_ID, name: 'Tenant A' },
-        { id: TENANT_B_ID, name: 'Tenant B' }
+        { id: TENANT_B_ID, name: 'Tenant B' },
       ];
 
       const mockQueryBuilder = {
         select: jest.fn().mockResolvedValue({
           data: mockTenants,
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockQueryBuilder);
       mockSupabaseClient.auth.getUser.mockResolvedValue({
         data: { user: MOCK_SUPER_ADMIN },
-        error: null
+        error: null,
       });
 
-      const result = await mockSupabaseClient
-        .from('tenants')
-        .select('*');
+      const result = await mockSupabaseClient.from('tenants').select('*');
 
       expect(result.error).toBeNull();
       expect(result.data).toHaveLength(2);
@@ -155,7 +150,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
 
       logger.info('Super admin access to all tenants confirmed', {
         user: MOCK_SUPER_ADMIN.id,
-        tenantsAccessed: mockTenants.length
+        tenantsAccessed: mockTenants.length,
       });
     });
 
@@ -166,14 +161,14 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         eq: jest.fn().mockReturnThis(),
         in: jest.fn().mockResolvedValue({
           data: [],
-          error: null // RLS policies ile filtrelenir, error değil boş array döner
-        })
+          error: null, // RLS policies ile filtrelenir, error değil boş array döner
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockQueryBuilder);
       mockSupabaseClient.auth.getUser.mockResolvedValue({
         data: { user: { ...MOCK_USER_TENANT_A, role: 'teacher' } },
-        error: null
+        error: null,
       });
 
       // Tenant A öğretmeni farklı tenant'taki öğrencileri görmeye çalışıyor
@@ -189,7 +184,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
       logger.info('Cross-tenant student data access blocked', {
         teacher: MOCK_USER_TENANT_A.id,
         targetTenant: TENANT_B_ID,
-        result: 'BLOCKED_BY_RLS'
+        result: 'BLOCKED_BY_RLS',
       });
     });
   });
@@ -200,14 +195,14 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
           data: [],
-          error: { message: 'Insufficient role privileges' }
-        })
+          error: { message: 'Insufficient role privileges' },
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockQueryBuilder);
       mockSupabaseClient.auth.getUser.mockResolvedValue({
         data: { user: { ...MOCK_USER_TENANT_A, role: 'student' } },
-        error: null
+        error: null,
       });
 
       // Öğrenci gradebook verilerine erişmeye çalışıyor
@@ -222,27 +217,27 @@ describe('Multi-Tenant Security Isolation Tests', () => {
       logger.info('Student access to teacher data blocked', {
         student: MOCK_USER_TENANT_A.id,
         attemptedResource: 'grades',
-        result: 'BLOCKED'
+        result: 'BLOCKED',
       });
     });
 
     it('should allow teachers to access their own class data', async () => {
       const mockClassData = [
-        { id: 'class-1', teacher_id: MOCK_USER_TENANT_A.id, name: 'Math 101' }
+        { id: 'class-1', teacher_id: MOCK_USER_TENANT_A.id, name: 'Math 101' },
       ];
 
       const mockQueryBuilder = {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
           data: mockClassData,
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockQueryBuilder);
       mockSupabaseClient.auth.getUser.mockResolvedValue({
         data: { user: { ...MOCK_USER_TENANT_A, role: 'teacher' } },
-        error: null
+        error: null,
       });
 
       const result = await mockSupabaseClient
@@ -255,7 +250,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
 
       logger.info('Teacher access to own class data allowed', {
         teacher: MOCK_USER_TENANT_A.id,
-        classesAccessed: mockClassData.length
+        classesAccessed: mockClassData.length,
       });
     });
 
@@ -265,14 +260,14 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         join: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
           data: [],
-          error: null // RLS ile filtrelenir
-        })
+          error: null, // RLS ile filtrelenir
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockQueryBuilder);
       mockSupabaseClient.auth.getUser.mockResolvedValue({
         data: { user: { ...MOCK_USER_TENANT_A, role: 'parent' } },
-        error: null
+        error: null,
       });
 
       // Veli, kendi çocuğu olmayan öğrencilerin notlarını görmeye çalışıyor
@@ -286,7 +281,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
 
       logger.info('Parent access to other students data blocked', {
         parent: MOCK_USER_TENANT_A.id,
-        result: 'BLOCKED_BY_RLS'
+        result: 'BLOCKED_BY_RLS',
       });
     });
   });
@@ -297,8 +292,8 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
           data: null,
-          error: { message: 'Invalid tenant context for token' }
-        })
+          error: { message: 'Invalid tenant context for token' },
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockQueryBuilder);
@@ -314,7 +309,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
 
       logger.info('Cross-tenant API token usage blocked', {
         targetTenant: TENANT_B_ID,
-        result: 'BLOCKED'
+        result: 'BLOCKED',
       });
     });
 
@@ -323,23 +318,20 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         id: 'token-1',
         tenant_id: TENANT_A_ID,
         scopes: ['read:users', 'write:classes'],
-        expires_at: new Date(Date.now() + 86400000) // 24 hours from now
+        expires_at: new Date(Date.now() + 86400000), // 24 hours from now
       };
 
       const mockQueryBuilder = {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
           data: mockToken,
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockQueryBuilder);
 
-      const result = await mockSupabaseClient
-        .from('api_tokens')
-        .select('*')
-        .eq('id', 'token-1');
+      const result = await mockSupabaseClient.from('api_tokens').select('*').eq('id', 'token-1');
 
       expect(result.error).toBeNull();
       expect(result.data.scopes).toContain('read:users');
@@ -348,7 +340,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
 
       logger.info('API token scope validation successful', {
         tokenId: mockToken.id,
-        scopes: mockToken.scopes
+        scopes: mockToken.scopes,
       });
     });
   });
@@ -359,14 +351,14 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         update: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
           data: null,
-          error: { message: 'RLS policy prevents modification' }
-        })
+          error: { message: 'RLS policy prevents modification' },
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockQueryBuilder);
       mockSupabaseClient.auth.getUser.mockResolvedValue({
         data: { user: { ...MOCK_USER_TENANT_A, role: 'student' } },
-        error: null
+        error: null,
       });
 
       // Öğrenci, notlarını değiştirmeye çalışıyor
@@ -381,7 +373,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
       logger.info('Unauthorized grade modification blocked', {
         student: MOCK_USER_TENANT_A.id,
         attempted: 'grade_modification',
-        result: 'BLOCKED'
+        result: 'BLOCKED',
       });
     });
 
@@ -390,14 +382,14 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         update: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
           data: [{ id: 'user-1', name: 'Updated Name' }],
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockQueryBuilder);
       mockSupabaseClient.auth.getUser.mockResolvedValue({
         data: { user: MOCK_USER_TENANT_A },
-        error: null
+        error: null,
       });
 
       // Admin, kendi tenant'ındaki kullanıcı bilgilerini güncelliyor
@@ -413,7 +405,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
       logger.info('Authorized admin modification allowed', {
         admin: MOCK_USER_TENANT_A.id,
         action: 'user_update',
-        result: 'ALLOWED'
+        result: 'ALLOWED',
       });
     });
   });
@@ -423,8 +415,8 @@ describe('Multi-Tenant Security Isolation Tests', () => {
       const mockAuditQueryBuilder = {
         insert: jest.fn().mockResolvedValue({
           data: [{ id: 'audit-1' }],
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabaseClient.from.mockImplementation((table) => {
@@ -434,28 +426,26 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         return {
           select: jest.fn().mockResolvedValue({
             data: null,
-            error: { message: 'Access denied' }
-          })
+            error: { message: 'Access denied' },
+          }),
         };
       });
 
       mockSupabaseClient.auth.getUser.mockResolvedValue({
         data: { user: MOCK_USER_TENANT_A },
-        error: null
+        error: null,
       });
 
       // İlk olarak yetkisiz erişim denemesi
       await mockSupabaseClient.from('tenants').select('*');
 
       // Audit log kaydının yapıldığını kontrol et
-      const auditResult = await mockSupabaseClient
-        .from('access_denied_logs')
-        .insert({
-          user_id: MOCK_USER_TENANT_A.id,
-          attempted_action: 'SELECT on tenants',
-          error_message: 'Access denied',
-          created_at: new Date().toISOString()
-        });
+      const auditResult = await mockSupabaseClient.from('access_denied_logs').insert({
+        user_id: MOCK_USER_TENANT_A.id,
+        attempted_action: 'SELECT on tenants',
+        error_message: 'Access denied',
+        created_at: new Date().toISOString(),
+      });
 
       expect(auditResult.error).toBeNull();
       expect(auditResult.data).toHaveLength(1);
@@ -463,7 +453,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
       logger.info('Security violation audit logged', {
         user: MOCK_USER_TENANT_A.id,
         violation: 'unauthorized_tenant_access',
-        audited: true
+        audited: true,
       });
     });
 
@@ -477,9 +467,9 @@ describe('Multi-Tenant Security Isolation Tests', () => {
           target_tenant_id: targetTenantId,
           attempted_at: new Date(),
           action: 'cross_tenant_data_access',
-          blocked: true
+          blocked: true,
         };
-        
+
         securityViolations.push(violation);
         return { success: false, violation };
       };
@@ -495,7 +485,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
 
       logger.info('Cross-tenant access attempt tracked', {
         violations: securityViolations.length,
-        latestViolation: securityViolations[0]
+        latestViolation: securityViolations[0],
       });
     });
   });
@@ -506,8 +496,8 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
           data: [],
-          error: null // No valid sessions found
-        })
+          error: null, // No valid sessions found
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockSessionQueryBuilder);
@@ -522,7 +512,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
 
       logger.info('Invalid tenant session access blocked', {
         requestedTenant: TENANT_B_ID,
-        result: 'NO_SESSIONS_FOUND'
+        result: 'NO_SESSIONS_FOUND',
       });
     });
 
@@ -532,7 +522,7 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         user_id: MOCK_USER_TENANT_A.id,
         tenant_id: TENANT_A_ID,
         expires_at: new Date(Date.now() + 3600000), // 1 hour from now
-        is_valid: true
+        is_valid: true,
       };
 
       const mockSessionQueryBuilder = {
@@ -540,8 +530,8 @@ describe('Multi-Tenant Security Isolation Tests', () => {
         eq: jest.fn().mockReturnThis(),
         single: jest.fn().mockResolvedValue({
           data: validSession,
-          error: null
-        })
+          error: null,
+        }),
       };
 
       mockSupabaseClient.from.mockReturnValue(mockSessionQueryBuilder);
@@ -560,8 +550,8 @@ describe('Multi-Tenant Security Isolation Tests', () => {
       logger.info('Valid session tenant context confirmed', {
         sessionId: validSession.id,
         userId: validSession.user_id,
-        tenantId: validSession.tenant_id
+        tenantId: validSession.tenant_id,
       });
     });
   });
-}); 
+});

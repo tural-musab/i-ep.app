@@ -14,6 +14,7 @@ Iqra Eğitim Portalı için backend veritabanı ve kimlik doğrulama altyapısı
 - PostgreSQL'in gelişmiş özelliklerinden (şemalar, RLS, JSON veri tipleri, vb.) yararlanma
 
 Backend ve veritabanı için aşağıdaki alternatifler değerlendirilmiştir:
+
 - Custom API + PostgreSQL
 - Firebase + Firestore
 - Supabase + PostgreSQL
@@ -63,18 +64,22 @@ Kabul Edildi
 ## Alternatifler
 
 ### Custom API + PostgreSQL
+
 - **Avantajlar**: Tam kontrol, özel ihtiyaçlara göre tasarım
 - **Dezavantajlar**: Geliştirme süresi uzun, auth ve diğer altyapıları sıfırdan oluşturma gereksinimi
 
 ### Firebase + Firestore
+
 - **Avantajlar**: Olgun BaaS, gerçek zamanlı yetenekler, entegre Google hizmetleri
 - **Dezavantajlar**: NoSQL tabanlı (ilişkisel veri için daha az uygun), daha yüksek maliyet potansiyeli
 
 ### AWS Amplify + DynamoDB
+
 - **Avantajlar**: AWS ekosistemi ile entegrasyon, ölçeklenebilirlik
 - **Dezavantajlar**: Öğrenme eğrisi dik, NoSQL tabanlı, uygulama kompleksitesi
 
 ### MongoDB Atlas + Express API
+
 - **Avantajlar**: Esnek NoSQL yapısı, yaygın ekosistem
 - **Dezavantajlar**: Auth ve diğer altyapılar için ek geliştirme, ilişkisel veri için daha az uygun
 
@@ -88,4 +93,4 @@ Kabul Edildi
 - [Supabase Resmi Dokümantasyonu](https://supabase.io/docs)
 - [PostgreSQL Dokümantasyonu](https://www.postgresql.org/docs/)
 - [Row Level Security (RLS)](https://supabase.io/docs/guides/auth/row-level-security)
-- [Supabase ile Multi-Tenant Uygulama Geliştirme](https://supabase.io/blog/2021/07/28/supabase-multi-tenant-applications) 
+- [Supabase ile Multi-Tenant Uygulama Geliştirme](https://supabase.io/blog/2021/07/28/supabase-multi-tenant-applications)

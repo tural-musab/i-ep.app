@@ -11,22 +11,14 @@ export {
   type BaseEntity,
   type QueryOptions,
   type QueryResult,
-  type Database
+  type Database,
 } from './base-repository';
 
 // Student Repository
-export {
-  StudentRepository,
-  type Student,
-  type StudentWithRelations
-} from './student-repository';
+export { StudentRepository, type Student, type StudentWithRelations } from './student-repository';
 
 // Class Repository
-export {
-  ClassRepository,
-  type Class,
-  type ClassWithRelations
-} from './class-repository';
+export { ClassRepository, type Class, type ClassWithRelations } from './class-repository';
 
 // Assignment Repository
 export {
@@ -34,7 +26,7 @@ export {
   AssignmentSubmissionRepository,
   type Assignment,
   type AssignmentWithRelations,
-  type AssignmentSubmission
+  type AssignmentSubmission,
 } from './assignment-repository';
 
 // Parent Repository
@@ -45,7 +37,7 @@ export {
   type Parent,
   type ParentWithRelations,
   type ParentCommunication,
-  type ParentMeeting
+  type ParentMeeting,
 } from './parent-repository';
 
 /**
@@ -135,7 +127,7 @@ export const RepositoryUtils = {
       total,
       totalPages,
       hasMore: page < totalPages,
-      hasPrevious: page > 1
+      hasPrevious: page > 1,
     };
   },
 
@@ -148,7 +140,7 @@ export const RepositoryUtils = {
       limit = 10,
       sortBy = 'created_at',
       sortOrder = 'desc',
-      filters = {}
+      filters = {},
     } = options;
 
     return {
@@ -156,9 +148,9 @@ export const RepositoryUtils = {
       limit: Math.min(100, Math.max(1, limit)),
       sortBy,
       sortOrder: sortOrder === 'asc' ? 'asc' : 'desc',
-      filters
+      filters,
     };
-  }
+  },
 };
 
 /**
@@ -178,23 +170,20 @@ export class RepositoryMiddleware {
     console.log(`[AUDIT] ${action} on ${repository.constructor.name}`, {
       entityId,
       data,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
   }
 
   /**
    * Performance monitoring middleware
    */
-  static async withPerformanceMonitoring<T>(
-    operation: string,
-    fn: () => Promise<T>
-  ): Promise<T> {
+  static async withPerformanceMonitoring<T>(operation: string, fn: () => Promise<T>): Promise<T> {
     const startTime = Date.now();
-    
+
     try {
       const result = await fn();
       const duration = Date.now() - startTime;
-      
+
       console.log(`[PERFORMANCE] ${operation} completed in ${duration}ms`);
       return result;
     } catch (error) {
@@ -207,11 +196,7 @@ export class RepositoryMiddleware {
   /**
    * Cache middleware
    */
-  static withCache<T>(
-    key: string,
-    ttl: number,
-    fn: () => Promise<T>
-  ): Promise<T> {
+  static withCache<T>(key: string, ttl: number, fn: () => Promise<T>): Promise<T> {
     // Implementation for caching
     // This would integrate with Redis or similar caching solution
     return fn();
@@ -233,7 +218,10 @@ export class RepositoryError extends Error {
 }
 
 export class ValidationError extends RepositoryError {
-  constructor(message: string, public field: string) {
+  constructor(
+    message: string,
+    public field: string
+  ) {
     super(message, 'VALIDATION_ERROR');
     this.name = 'ValidationError';
   }

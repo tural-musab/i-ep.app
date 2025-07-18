@@ -15,19 +15,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Download, 
-  FileText, 
-  Save, 
-  Send, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  FileText,
+  Save,
+  Send,
   Star,
   MessageSquare,
   CheckCircle,
   Clock,
   User,
-  Calendar
+  Calendar,
 } from 'lucide-react';
 
 interface Assignment {
@@ -57,17 +57,17 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
         id: '1',
         name: 'Ali Veli',
         number: '2025001',
-        email: 'ali.veli@ogrenci.com'
+        email: 'ali.veli@ogrenci.com',
       },
       submissionDate: '2025-01-18T10:30:00',
       files: [
         { name: 'matematik_odev.pdf', size: '2.5 MB', type: 'pdf' },
-        { name: 'cevaplar.docx', size: '1.2 MB', type: 'docx' }
+        { name: 'cevaplar.docx', size: '1.2 MB', type: 'docx' },
       ],
       status: 'submitted',
       score: null,
       feedback: '',
-      rubricScores: assignment.rubric.map(r => ({ criteria: r.criteria, score: 0 }))
+      rubricScores: assignment.rubric.map((r) => ({ criteria: r.criteria, score: 0 })),
     },
     {
       id: '2',
@@ -75,16 +75,14 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
         id: '2',
         name: 'Ayşe Yılmaz',
         number: '2025002',
-        email: 'ayse.yilmaz@ogrenci.com'
+        email: 'ayse.yilmaz@ogrenci.com',
       },
       submissionDate: '2025-01-19T14:15:00',
-      files: [
-        { name: 'matematik_cevaplar.pdf', size: '3.1 MB', type: 'pdf' }
-      ],
+      files: [{ name: 'matematik_cevaplar.pdf', size: '3.1 MB', type: 'pdf' }],
       status: 'submitted',
       score: null,
       feedback: '',
-      rubricScores: assignment.rubric.map(r => ({ criteria: r.criteria, score: 0 }))
+      rubricScores: assignment.rubric.map((r) => ({ criteria: r.criteria, score: 0 })),
     },
     {
       id: '3',
@@ -92,28 +90,27 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
         id: '3',
         name: 'Mehmet Kaya',
         number: '2025003',
-        email: 'mehmet.kaya@ogrenci.com'
+        email: 'mehmet.kaya@ogrenci.com',
       },
       submissionDate: '2025-01-17T16:45:00',
-      files: [
-        { name: 'odev_1.pdf', size: '1.8 MB', type: 'pdf' }
-      ],
+      files: [{ name: 'odev_1.pdf', size: '1.8 MB', type: 'pdf' }],
       status: 'graded',
       score: 85,
-      feedback: 'Güzel bir çalışma! Çoğu problem doğru çözülmüş. Sadece 5. soruda küçük bir hata var.',
-      rubricScores: assignment.rubric.map((r, i) => ({ 
-        criteria: r.criteria, 
-        score: i === 0 ? 35 : i === 1 ? 25 : 25 
-      }))
-    }
+      feedback:
+        'Güzel bir çalışma! Çoğu problem doğru çözülmüş. Sadece 5. soruda küçük bir hata var.',
+      rubricScores: assignment.rubric.map((r, i) => ({
+        criteria: r.criteria,
+        score: i === 0 ? 35 : i === 1 ? 25 : 25,
+      })),
+    },
   ]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentSubmission, setCurrentSubmission] = useState(submissions[0]);
   const [isGrading, setIsGrading] = useState(false);
 
-  const pendingSubmissions = submissions.filter(s => s.status === 'submitted');
-  const gradedSubmissions = submissions.filter(s => s.status === 'graded');
+  const pendingSubmissions = submissions.filter((s) => s.status === 'submitted');
+  const gradedSubmissions = submissions.filter((s) => s.status === 'graded');
 
   const handleNext = () => {
     if (currentIndex < submissions.length - 1) {
@@ -134,16 +131,16 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
   const handleRubricScoreChange = (criteria: string, score: number) => {
     setCurrentSubmission({
       ...currentSubmission,
-      rubricScores: currentSubmission.rubricScores.map(rs => 
+      rubricScores: currentSubmission.rubricScores.map((rs) =>
         rs.criteria === criteria ? { ...rs, score } : rs
-      )
+      ),
     });
   };
 
   const handleFeedbackChange = (feedback: string) => {
     setCurrentSubmission({
       ...currentSubmission,
-      feedback
+      feedback,
     });
   };
 
@@ -153,28 +150,27 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
 
   const saveGrade = async () => {
     setIsGrading(true);
-    
+
     try {
       const totalScore = calculateTotalScore();
-      
+
       // API call will be implemented here
       console.log('Saving grade:', {
         submissionId: currentSubmission.id,
         score: totalScore,
         feedback: currentSubmission.feedback,
-        rubricScores: currentSubmission.rubricScores
+        rubricScores: currentSubmission.rubricScores,
       });
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Update local state
       setCurrentSubmission({
         ...currentSubmission,
         score: totalScore,
-        status: 'graded'
+        status: 'graded',
       });
-      
     } catch (error) {
       console.error('Error saving grade:', error);
     } finally {
@@ -239,7 +235,7 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
                   month: 'long',
                   day: 'numeric',
                   hour: '2-digit',
-                  minute: '2-digit'
+                  minute: '2-digit',
                 })}
               </span>
               <Badge variant={currentSubmission.status === 'graded' ? 'secondary' : 'outline'}>
@@ -251,11 +247,11 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
         <CardContent>
           <div className="flex items-center justify-between">
             <div>
-              <Progress 
-                value={((gradedSubmissions.length) / submissions.length) * 100} 
-                className="w-64 h-2"
+              <Progress
+                value={(gradedSubmissions.length / submissions.length) * 100}
+                className="h-2 w-64"
               />
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="mt-1 text-sm text-gray-600">
                 {gradedSubmissions.length} / {submissions.length} tamamlandı
               </p>
             </div>
@@ -268,7 +264,7 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
       </Card>
 
       {/* Grading Interface */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Left Column - Submission Content */}
         <div className="space-y-4">
           {/* Files */}
@@ -282,7 +278,10 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
             <CardContent>
               <div className="space-y-3">
                 {currentSubmission.files.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{getFileIcon(file.type)}</span>
                       <div>
@@ -291,7 +290,7 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
                       </div>
                     </div>
                     <Button variant="outline" size="sm">
-                      <Download className="h-4 w-4 mr-2" />
+                      <Download className="mr-2 h-4 w-4" />
                       İndir
                     </Button>
                   </div>
@@ -306,11 +305,13 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
               <CardTitle>Dosya Önizleme</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
+              <div className="flex aspect-video items-center justify-center rounded-lg bg-gray-100">
                 <div className="text-center">
-                  <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <FileText className="mx-auto mb-4 h-16 w-16 text-gray-400" />
                   <p className="text-gray-600">Dosya önizlemesi burada görüntülenecek</p>
-                  <p className="text-sm text-gray-500 mt-2">PDF, Word, resim dosyaları desteklenir</p>
+                  <p className="mt-2 text-sm text-gray-500">
+                    PDF, Word, resim dosyaları desteklenir
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -333,10 +334,12 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
             <CardContent>
               <div className="space-y-4">
                 {assignment.rubric.map((criterion, index) => {
-                  const currentScore = currentSubmission.rubricScores.find(rs => rs.criteria === criterion.criteria)?.score || 0;
+                  const currentScore =
+                    currentSubmission.rubricScores.find((rs) => rs.criteria === criterion.criteria)
+                      ?.score || 0;
                   return (
                     <div key={index} className="space-y-2">
-                      <div className="flex justify-between items-center">
+                      <div className="flex items-center justify-between">
                         <Label className="font-medium">{criterion.criteria}</Label>
                         <span className="text-sm text-gray-600">{criterion.points} puan</span>
                       </div>
@@ -347,25 +350,38 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
                           min="0"
                           max={criterion.points}
                           value={currentScore}
-                          onChange={(e) => handleRubricScoreChange(criterion.criteria, parseInt(e.target.value) || 0)}
+                          onChange={(e) =>
+                            handleRubricScoreChange(
+                              criterion.criteria,
+                              parseInt(e.target.value) || 0
+                            )
+                          }
                           className="w-20"
                         />
                         <span className="text-sm">/ {criterion.points}</span>
-                        <div className="flex-1 ml-4">
-                          <Progress value={(currentScore / criterion.points) * 100} className="h-2" />
+                        <div className="ml-4 flex-1">
+                          <Progress
+                            value={(currentScore / criterion.points) * 100}
+                            className="h-2"
+                          />
                         </div>
                       </div>
                     </div>
                   );
                 })}
               </div>
-              
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-                <div className="flex justify-between items-center">
+
+              <div className="mt-6 rounded-lg bg-gray-50 p-4">
+                <div className="flex items-center justify-between">
                   <span className="font-medium">Toplam Puan:</span>
-                  <span className="text-2xl font-bold">{calculateTotalScore()} / {assignment.maxScore}</span>
+                  <span className="text-2xl font-bold">
+                    {calculateTotalScore()} / {assignment.maxScore}
+                  </span>
                 </div>
-                <Progress value={(calculateTotalScore() / assignment.maxScore) * 100} className="h-3 mt-2" />
+                <Progress
+                  value={(calculateTotalScore() / assignment.maxScore) * 100}
+                  className="mt-2 h-3"
+                />
               </div>
             </CardContent>
           </Card>
@@ -377,9 +393,7 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
                 <MessageSquare className="h-5 w-5" />
                 Geri Bildirim
               </CardTitle>
-              <CardDescription>
-                Öğrenciye yönelik geri bildirim yazın
-              </CardDescription>
+              <CardDescription>Öğrenciye yönelik geri bildirim yazın</CardDescription>
             </CardHeader>
             <CardContent>
               <Textarea
@@ -403,29 +417,25 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
                 >
                   {isGrading ? (
                     <>
-                      <Clock className="h-4 w-4 mr-2 animate-spin" />
+                      <Clock className="mr-2 h-4 w-4 animate-spin" />
                       Kaydediliyor...
                     </>
                   ) : (
                     <>
-                      <Save className="h-4 w-4 mr-2" />
+                      <Save className="mr-2 h-4 w-4" />
                       Kaydet
                     </>
                   )}
                 </Button>
-                <Button
-                  onClick={saveGrade}
-                  disabled={isGrading}
-                  className="flex-1"
-                >
+                <Button onClick={saveGrade} disabled={isGrading} className="flex-1">
                   {isGrading ? (
                     <>
-                      <Clock className="h-4 w-4 mr-2 animate-spin" />
+                      <Clock className="mr-2 h-4 w-4 animate-spin" />
                       Gönderiliyor...
                     </>
                   ) : (
                     <>
-                      <Send className="h-4 w-4 mr-2" />
+                      <Send className="mr-2 h-4 w-4" />
                       Notla & Gönder
                     </>
                   )}
@@ -440,16 +450,14 @@ export function AssignmentGradingInterface({ assignment }: AssignmentGradingInte
       <Card>
         <CardHeader>
           <CardTitle>Hızlı Geçiş</CardTitle>
-          <CardDescription>
-            Diğer öğrenci teslimlerine hızlıca geçiş yapın
-          </CardDescription>
+          <CardDescription>Diğer öğrenci teslimlerine hızlıca geçiş yapın</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
             {submissions.map((submission, index) => (
               <Button
                 key={submission.id}
-                variant={index === currentIndex ? "default" : "outline"}
+                variant={index === currentIndex ? 'default' : 'outline'}
                 onClick={() => {
                   setCurrentIndex(index);
                   setCurrentSubmission(submission);

@@ -8,23 +8,26 @@ export async function GET(request: Request) {
     if (!tenantId) {
       return NextResponse.json({ error: 'Tenant bulunamadı' }, { status: 404 });
     }
-    
+
     // Domain servisini başlat
     const domainService = new DomainService();
-    
+
     // Tenant'a ait domain listesini al
     const domains = await domainService.getTenantDomains(tenantId);
-    
+
     return NextResponse.json({
       success: true,
-      domains
+      domains,
     });
   } catch (error) {
     console.error('Domain listesi alınırken hata:', error);
-    
-    return NextResponse.json({
-      success: false,
-      message: 'Domain listesi alınırken bir hata oluştu'
-    }, { status: 500 });
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Domain listesi alınırken bir hata oluştu',
+      },
+      { status: 500 }
+    );
   }
-} 
+}

@@ -10,11 +10,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Users, 
-  // Clock, 
-  // CheckCircle, 
-  XCircle, 
+import {
+  Users,
+  // Clock,
+  // CheckCircle,
+  XCircle,
   AlertCircle,
   TrendingUp,
   TrendingDown,
@@ -25,7 +25,7 @@ import {
   Bell,
   Eye,
   Plus,
-  FileText
+  FileText,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -38,7 +38,7 @@ export function AttendanceDashboard() {
     lateToday: 3,
     attendanceRate: 94.7,
     weeklyTrend: 'up',
-    trendValue: 1.2
+    trendValue: 1.2,
   };
 
   const weeklyStats = {
@@ -46,7 +46,7 @@ export function AttendanceDashboard() {
     totalAbsences: 48,
     totalLates: 15,
     chronicAbsentees: 3,
-    perfectAttendance: 12
+    perfectAttendance: 12,
   };
 
   const recentAbsences = [
@@ -57,7 +57,7 @@ export function AttendanceDashboard() {
       date: '2025-01-15',
       reason: 'Hastalık',
       parentNotified: true,
-      consecutive: 2
+      consecutive: 2,
     },
     {
       id: '2',
@@ -66,7 +66,7 @@ export function AttendanceDashboard() {
       date: '2025-01-15',
       reason: 'Kişisel',
       parentNotified: false,
-      consecutive: 1
+      consecutive: 1,
     },
     {
       id: '3',
@@ -75,15 +75,15 @@ export function AttendanceDashboard() {
       date: '2025-01-15',
       reason: 'Geç kalma',
       parentNotified: true,
-      consecutive: 0
-    }
+      consecutive: 0,
+    },
   ];
 
   const classAttendance = [
     { class: '5-A', present: 28, absent: 2, rate: 93.3 },
     { class: '5-B', present: 26, absent: 2, rate: 92.9 },
     { class: '6-A', present: 30, absent: 2, rate: 93.8 },
-    { class: '6-B', present: 28, absent: 2, rate: 93.3 }
+    { class: '6-B', present: 28, absent: 2, rate: 93.3 },
   ];
 
   const upcomingAlerts = [
@@ -93,7 +93,7 @@ export function AttendanceDashboard() {
       student: 'Fatma Demir',
       class: '5-A',
       message: 'Kronik devamsızlık eşiğine yaklaşıyor',
-      priority: 'high'
+      priority: 'high',
     },
     {
       id: '2',
@@ -101,8 +101,8 @@ export function AttendanceDashboard() {
       student: 'Ahmet Çelik',
       class: '6-B',
       message: 'Veli bildirim gönderilemedi',
-      priority: 'medium'
-    }
+      priority: 'medium',
+    },
   ];
 
   const getTrendIcon = (trend: string) => {
@@ -121,10 +121,14 @@ export function AttendanceDashboard() {
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -136,13 +140,13 @@ export function AttendanceDashboard() {
         <div className="flex gap-2">
           <Link href="/dashboard/attendance">
             <Button variant="outline">
-              <Eye className="h-4 w-4 mr-2" />
+              <Eye className="mr-2 h-4 w-4" />
               Detaylı Görünüm
             </Button>
           </Link>
           <Link href="/dashboard/attendance/daily">
             <Button>
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Yoklama Al
             </Button>
           </Link>
@@ -150,11 +154,11 @@ export function AttendanceDashboard() {
       </div>
 
       {/* Today's Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bugün Mevcut</CardTitle>
-            <UserCheck className="h-4 w-4 text-muted-foreground" />
+            <UserCheck className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{todayStats.presentToday}</div>
@@ -167,7 +171,7 @@ export function AttendanceDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bugün Devamsız</CardTitle>
-            <UserX className="h-4 w-4 text-muted-foreground" />
+            <UserX className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{todayStats.absentToday}</div>
@@ -180,7 +184,7 @@ export function AttendanceDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bugün Oranı</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">%{todayStats.attendanceRate}</div>
@@ -194,11 +198,11 @@ export function AttendanceDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bekleyen Bildirim</CardTitle>
-            <Bell className="h-4 w-4 text-muted-foreground" />
+            <Bell className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {recentAbsences.filter(a => !a.parentNotified).length}
+              {recentAbsences.filter((a) => !a.parentNotified).length}
             </div>
             <div className="flex items-center gap-1 text-xs text-gray-600">
               <span>Veli bildirimi</span>
@@ -207,7 +211,7 @@ export function AttendanceDashboard() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Class Attendance Overview */}
         <Card>
           <CardHeader>
@@ -215,9 +219,7 @@ export function AttendanceDashboard() {
               <Users className="h-5 w-5" />
               Sınıf Devamsızlık Durumu
             </CardTitle>
-            <CardDescription>
-              Bugünkü sınıf bazlı devamsızlık oranları
-            </CardDescription>
+            <CardDescription>Bugünkü sınıf bazlı devamsızlık oranları</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -226,8 +228,10 @@ export function AttendanceDashboard() {
                   <div className="flex items-center gap-3">
                     <div className="w-12 text-sm font-medium">{classData.class}</div>
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`text-sm font-medium ${getAttendanceRateColor(classData.rate)}`}>
+                      <div className="mb-1 flex items-center gap-2">
+                        <span
+                          className={`text-sm font-medium ${getAttendanceRateColor(classData.rate)}`}
+                        >
                           %{classData.rate}
                         </span>
                         <div className="w-24">
@@ -241,7 +245,7 @@ export function AttendanceDashboard() {
                   </div>
                   <Link href={`/dashboard/attendance/daily?class=${classData.class.toLowerCase()}`}>
                     <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4 mr-2" />
+                      <Eye className="mr-2 h-4 w-4" />
                       Detay
                     </Button>
                   </Link>
@@ -258,14 +262,15 @@ export function AttendanceDashboard() {
               <XCircle className="h-5 w-5" />
               Son Devamsızlıklar
             </CardTitle>
-            <CardDescription>
-              Bugünkü devamsızlık ve geç kalma durumları
-            </CardDescription>
+            <CardDescription>Bugünkü devamsızlık ve geç kalma durumları</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {recentAbsences.map((absence) => (
-                <div key={absence.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div
+                  key={absence.id}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
                       {absence.reason === 'Geç kalma' ? (
@@ -296,7 +301,7 @@ export function AttendanceDashboard() {
                     </div>
                     {!absence.parentNotified && (
                       <Button variant="outline" size="sm">
-                        <Bell className="h-4 w-4 mr-2" />
+                        <Bell className="mr-2 h-4 w-4" />
                         Bildir
                       </Button>
                     )}
@@ -315,30 +320,34 @@ export function AttendanceDashboard() {
             <Calendar className="h-5 w-5" />
             Haftalık Özet
           </CardTitle>
-          <CardDescription>
-            Bu haftanın devamsızlık istatistikleri
-          </CardDescription>
+          <CardDescription>Bu haftanın devamsızlık istatistikleri</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">%{weeklyStats.averageAttendance}</div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
+            <div className="rounded-lg bg-blue-50 p-4 text-center">
+              <div className="text-2xl font-bold text-blue-600">
+                %{weeklyStats.averageAttendance}
+              </div>
               <div className="text-sm text-blue-800">Ortalama Devamsızlık</div>
             </div>
-            <div className="text-center p-4 bg-red-50 rounded-lg">
+            <div className="rounded-lg bg-red-50 p-4 text-center">
               <div className="text-2xl font-bold text-red-600">{weeklyStats.totalAbsences}</div>
               <div className="text-sm text-red-800">Toplam Devamsızlık</div>
             </div>
-            <div className="text-center p-4 bg-yellow-50 rounded-lg">
+            <div className="rounded-lg bg-yellow-50 p-4 text-center">
               <div className="text-2xl font-bold text-yellow-600">{weeklyStats.totalLates}</div>
               <div className="text-sm text-yellow-800">Toplam Geç Kalma</div>
             </div>
-            <div className="text-center p-4 bg-orange-50 rounded-lg">
-              <div className="text-2xl font-bold text-orange-600">{weeklyStats.chronicAbsentees}</div>
+            <div className="rounded-lg bg-orange-50 p-4 text-center">
+              <div className="text-2xl font-bold text-orange-600">
+                {weeklyStats.chronicAbsentees}
+              </div>
               <div className="text-sm text-orange-800">Kronik Devamsızlık</div>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{weeklyStats.perfectAttendance}</div>
+            <div className="rounded-lg bg-green-50 p-4 text-center">
+              <div className="text-2xl font-bold text-green-600">
+                {weeklyStats.perfectAttendance}
+              </div>
               <div className="text-sm text-green-800">Mükemmel Devam</div>
             </div>
           </div>
@@ -353,28 +362,34 @@ export function AttendanceDashboard() {
               <AlertCircle className="h-5 w-5" />
               Uyarılar ve Bildirimler
             </CardTitle>
-            <CardDescription>
-              Acil müdahale gerektiren durumlar
-            </CardDescription>
+            <CardDescription>Acil müdahale gerektiren durumlar</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {upcomingAlerts.map((alert) => (
-                <div key={alert.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div
+                  key={alert.id}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
                   <div className="flex items-center gap-3">
                     <AlertCircle className="h-4 w-4 text-orange-500" />
                     <div>
                       <h4 className="font-medium">{alert.student}</h4>
-                      <p className="text-sm text-gray-600">{alert.class} • {alert.message}</p>
+                      <p className="text-sm text-gray-600">
+                        {alert.class} • {alert.message}
+                      </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className={getPriorityColor(alert.priority)}>
-                      {alert.priority === 'high' ? 'Yüksek' : 
-                       alert.priority === 'medium' ? 'Orta' : 'Düşük'}
+                      {alert.priority === 'high'
+                        ? 'Yüksek'
+                        : alert.priority === 'medium'
+                          ? 'Orta'
+                          : 'Düşük'}
                     </Badge>
                     <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4 mr-2" />
+                      <Eye className="mr-2 h-4 w-4" />
                       İncele
                     </Button>
                   </div>
@@ -389,36 +404,34 @@ export function AttendanceDashboard() {
       <Card>
         <CardHeader>
           <CardTitle>Hızlı İşlemler</CardTitle>
-          <CardDescription>
-            Sık kullanılan devamsızlık işlemleri
-          </CardDescription>
+          <CardDescription>Sık kullanılan devamsızlık işlemleri</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Link href="/dashboard/attendance/daily">
               <Button variant="outline" className="w-full justify-start">
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Yoklama Al
               </Button>
             </Link>
-            
+
             <Link href="/dashboard/attendance?tab=absent">
               <Button variant="outline" className="w-full justify-start">
-                <XCircle className="h-4 w-4 mr-2" />
+                <XCircle className="mr-2 h-4 w-4" />
                 Devamsızları Görüntüle
               </Button>
             </Link>
-            
+
             <Link href="/dashboard/attendance?tab=notifications">
               <Button variant="outline" className="w-full justify-start">
-                <Bell className="h-4 w-4 mr-2" />
-                Veli Bildirimler ({recentAbsences.filter(a => !a.parentNotified).length})
+                <Bell className="mr-2 h-4 w-4" />
+                Veli Bildirimler ({recentAbsences.filter((a) => !a.parentNotified).length})
               </Button>
             </Link>
-            
+
             <Link href="/dashboard/attendance/reports">
               <Button variant="outline" className="w-full justify-start">
-                <FileText className="h-4 w-4 mr-2" />
+                <FileText className="mr-2 h-4 w-4" />
                 Raporlar
               </Button>
             </Link>

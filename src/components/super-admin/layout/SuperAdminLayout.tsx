@@ -1,7 +1,7 @@
 /**
  * Super Admin Layout Component
  * Sprint 7: Super Admin Paneli - Ana Layout Komponenti
- * 
+ *
  * Bu komponent super admin panelinin ana layout'unu sağlar:
  * - Navigation sidebar
  * - Header ve kullanıcı bilgileri
@@ -26,7 +26,7 @@ import {
   LogOut,
   User,
   ChevronDown,
-  Home
+  Home,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -47,38 +47,38 @@ const navigation: NavigationItem[] = [
     name: 'Dashboard',
     href: '/super-admin',
     icon: Home,
-    description: 'Genel bakış ve önemli metrikler'
+    description: 'Genel bakış ve önemli metrikler',
   },
   {
     name: 'System Health',
     href: '/super-admin/system-health',
     icon: Activity,
-    description: 'Sistem sağlığı ve performans izleme'
+    description: 'Sistem sağlığı ve performans izleme',
   },
   {
     name: 'Tenants',
     href: '/super-admin/tenants',
     icon: Users,
-    description: 'Tenant yönetimi ve kullanıcı metrikleri'
+    description: 'Tenant yönetimi ve kullanıcı metrikleri',
   },
   {
     name: 'Domains',
     href: '/super-admin/domains',
     icon: Globe,
-    description: 'Domain yönetimi ve SSL durumu'
+    description: 'Domain yönetimi ve SSL durumu',
   },
   {
     name: 'Analytics',
     href: '/super-admin/analytics',
     icon: BarChart3,
-    description: 'Platform analitiği ve raporlar'
+    description: 'Platform analitiği ve raporlar',
   },
   {
     name: 'Settings',
     href: '/super-admin/settings',
     icon: Settings,
-    description: 'Platform ayarları ve konfigürasyonlar'
-  }
+    description: 'Platform ayarları ve konfigürasyonlar',
+  },
 ];
 
 export function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
@@ -96,7 +96,7 @@ export function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
   const user = {
     name: 'Super Admin',
     email: 'admin@i-ep.app',
-    avatar: null
+    avatar: null,
   };
 
   const handleLogout = () => {
@@ -105,13 +105,10 @@ export function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
   };
 
   return (
-    <div className="h-screen flex bg-gray-50">
+    <div className="flex h-screen bg-gray-50">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        >
+        <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}>
           <div className="absolute inset-0 bg-gray-600 opacity-75" />
         </div>
       )}
@@ -119,20 +116,18 @@ export function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          'fixed inset-y-0 left-0 z-50 w-64 transform bg-white shadow-lg transition-transform duration-300 ease-in-out lg:static lg:inset-0 lg:translate-x-0',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
-        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
+        <div className="flex h-16 items-center justify-between border-b border-gray-200 px-6">
           <div className="flex items-center">
             <Shield className="h-8 w-8 text-blue-600" />
-            <span className="ml-2 text-xl font-bold text-gray-900">
-              Super Admin
-            </span>
+            <span className="ml-2 text-xl font-bold text-gray-900">Super Admin</span>
           </div>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 lg:hidden"
           >
             <X className="h-6 w-6" />
           </button>
@@ -141,40 +136,37 @@ export function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
         <nav className="mt-8 px-4">
           <div className="space-y-2">
             {navigation.map((item) => {
-              const isActive = pathname === item.href || 
+              const isActive =
+                pathname === item.href ||
                 (item.href !== '/super-admin' && pathname.startsWith(item.href));
-              
+
               return (
                 <a
                   key={item.name}
                   href={item.href}
                   className={cn(
-                    "group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors duration-200",
+                    'group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-colors duration-200',
                     isActive
-                      ? "bg-blue-50 text-blue-700 border-r-2 border-blue-700"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                      ? 'border-r-2 border-blue-700 bg-blue-50 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
                   )}
                 >
                   <item.icon
                     className={cn(
-                      "mr-3 h-5 w-5 flex-shrink-0",
-                      isActive
-                        ? "text-blue-700"
-                        : "text-gray-400 group-hover:text-gray-600"
+                      'mr-3 h-5 w-5 flex-shrink-0',
+                      isActive ? 'text-blue-700' : 'text-gray-400 group-hover:text-gray-600'
                     )}
                   />
                   <div className="flex-1">
                     <div className="flex items-center justify-between">
                       <span>{item.name}</span>
                       {item.badge && (
-                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <span className="ml-2 inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
                           {item.badge}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {item.description}
-                    </p>
+                    <p className="mt-0.5 text-xs text-gray-500">{item.description}</p>
                   </div>
                 </a>
               );
@@ -183,31 +175,34 @@ export function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
         </nav>
 
         {/* Bottom section */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
+        <div className="absolute right-0 bottom-0 left-0 border-t border-gray-200 p-4">
           <div className="flex items-center text-sm text-gray-600">
-            <Activity className="h-4 w-4 text-green-500 mr-2" />
+            <Activity className="mr-2 h-4 w-4 text-green-500" />
             <span>Sistem Sağlıklı</span>
           </div>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden">
         {/* Header */}
-        <header className="bg-white shadow-sm border-b border-gray-200">
-          <div className="flex items-center justify-between h-16 px-6">
+        <header className="border-b border-gray-200 bg-white shadow-sm">
+          <div className="flex h-16 items-center justify-between px-6">
             <div className="flex items-center">
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="lg:hidden text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 lg:hidden"
               >
                 <Menu className="h-6 w-6" />
               </button>
-              
+
               <div className="hidden lg:block">
                 <h1 className="text-xl font-semibold text-gray-900">
-                  {navigation.find(item => pathname === item.href || 
-                    (item.href !== '/super-admin' && pathname.startsWith(item.href)))?.name || 'Dashboard'}
+                  {navigation.find(
+                    (item) =>
+                      pathname === item.href ||
+                      (item.href !== '/super-admin' && pathname.startsWith(item.href))
+                  )?.name || 'Dashboard'}
                 </h1>
               </div>
             </div>
@@ -216,8 +211,8 @@ export function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
               {/* Notifications */}
               <button className="relative text-gray-400 hover:text-gray-600">
                 <Bell className="h-6 w-6" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center">
-                  <span className="text-xs text-white font-medium">3</span>
+                <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500">
+                  <span className="text-xs font-medium text-white">3</span>
                 </span>
               </button>
 
@@ -225,12 +220,12 @@ export function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
               <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center space-x-3 text-sm bg-white rounded-lg p-2 hover:bg-gray-50 transition-colors"
+                  className="flex items-center space-x-3 rounded-lg bg-white p-2 text-sm transition-colors hover:bg-gray-50"
                 >
-                  <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600">
                     <User className="h-4 w-4 text-white" />
                   </div>
-                  <div className="hidden md:block text-left">
+                  <div className="hidden text-left md:block">
                     <p className="font-medium text-gray-900">{user.name}</p>
                     <p className="text-gray-500">{user.email}</p>
                   </div>
@@ -238,25 +233,25 @@ export function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                    <div className="px-4 py-3 border-b border-gray-200">
+                  <div className="absolute right-0 z-50 mt-2 w-56 rounded-lg border border-gray-200 bg-white py-2 shadow-lg">
+                    <div className="border-b border-gray-200 px-4 py-3">
                       <p className="text-sm font-medium text-gray-900">{user.name}</p>
                       <p className="text-sm text-gray-500">{user.email}</p>
                     </div>
-                    
+
                     <button
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                      className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                     >
-                      <User className="h-4 w-4 mr-3" />
+                      <User className="mr-3 h-4 w-4" />
                       Profile Settings
                     </button>
-                    
+
                     <button
                       onClick={handleLogout}
-                      className="flex items-center w-full px-4 py-2 text-sm text-red-700 hover:bg-red-50"
+                      className="flex w-full items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50"
                     >
-                      <LogOut className="h-4 w-4 mr-3" />
+                      <LogOut className="mr-3 h-4 w-4" />
                       Sign Out
                     </button>
                   </div>
@@ -269,9 +264,7 @@ export function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
         {/* Main content area */}
         <main className="flex-1 overflow-y-auto bg-gray-50">
           <div className="py-6">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-              {children}
-            </div>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
           </div>
         </main>
       </div>
@@ -279,4 +272,4 @@ export function SuperAdminLayout({ children }: SuperAdminLayoutProps) {
   );
 }
 
-export default SuperAdminLayout; 
+export default SuperAdminLayout;

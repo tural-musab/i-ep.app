@@ -148,12 +148,12 @@ const config = {
         theme: { light: 'neutral', dark: 'forest' },
       },
     }),
-  
+
   markdown: {
     mermaid: true,
   },
-  
+
   plugins: [],
 };
 
-module.exports = config; 
+module.exports = config;

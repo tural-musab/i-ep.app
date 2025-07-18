@@ -16,7 +16,7 @@ export default function SuperAdminDashboardPage() {
     totalRegistrations: 0,
     securityEvents: 0,
     storageUsage: 0,
-    databaseSize: 0
+    databaseSize: 0,
   });
 
   useEffect(() => {
@@ -24,46 +24,46 @@ export default function SuperAdminDashboardPage() {
       setIsLoading(true);
       try {
         const supabase = createClientComponentClient();
-        
+
         // Tenant sayıları
         const { data: tenants, error: tenantsError } = await supabase
           .from('tenants')
           .select('id, is_active');
-          
+
         if (tenantsError) throw tenantsError;
-        
+
         const totalTenants = tenants.length;
-        const activeTenants = tenants.filter(t => t.is_active).length;
-        
+        const activeTenants = tenants.filter((t) => t.is_active).length;
+
         // Kullanıcı sayıları
         const { data: users, error: usersError } = await supabase
           .from('users')
           .select('id, is_active');
-          
+
         if (usersError) throw usersError;
-        
+
         const totalUsers = users.length;
-        const activeUsers = users.filter(u => u.is_active).length;
-        
+        const activeUsers = users.filter((u) => u.is_active).length;
+
         // Son 30 gün kayıt sayısı
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-        
+
         const { count: recentRegistrations, error: regError } = await supabase
           .from('users')
           .select('id', { count: 'exact' })
           .gte('created_at', thirtyDaysAgo.toISOString());
-          
+
         if (regError) throw regError;
-        
+
         // Denetim olayları
         const { data: auditLogs, error: auditError } = await supabase
           .from('audit.access_denied_logs')
           .select('id')
           .gte('timestamp', thirtyDaysAgo.toISOString());
-          
+
         if (auditError) throw auditError;
-        
+
         // İstatistikleri ayarla
         setStats({
           totalTenants,
@@ -73,7 +73,7 @@ export default function SuperAdminDashboardPage() {
           totalRegistrations: recentRegistrations || 0,
           securityEvents: auditLogs?.length || 0,
           storageUsage: Math.floor(Math.random() * 1000), // Örnek veri
-          databaseSize: Math.floor(Math.random() * 500) // Örnek veri
+          databaseSize: Math.floor(Math.random() * 500), // Örnek veri
         });
       } catch (error) {
         console.error('Dashboard verileri yüklenirken hata:', error);
@@ -81,19 +81,19 @@ export default function SuperAdminDashboardPage() {
         setIsLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
-  
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-black dark:text-white">Süper Admin Dashboard</h1>
-        <p className="text-gray-600 dark:text-gray-300">
-          Sistem geneli metrikler ve istatistikler
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight text-black dark:text-white">
+          Süper Admin Dashboard
+        </h1>
+        <p className="text-gray-600 dark:text-gray-300">Sistem geneli metrikler ve istatistikler</p>
       </div>
-      
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {isLoading ? (
           <MetricCardSkeleton count={4} />
@@ -105,21 +105,21 @@ export default function SuperAdminDashboardPage() {
               icon={<Building2 className="h-4 w-4" />}
               description={`${stats.activeTenants} aktif tenant`}
             />
-            
+
             <MetricCard
               title="Toplam Kullanıcı"
               value={stats.totalUsers}
               icon={<Users className="h-4 w-4" />}
               description={`${stats.activeUsers} aktif kullanıcı`}
             />
-            
+
             <MetricCard
               title="Son 30 Gün Kayıt"
               value={stats.totalRegistrations}
               icon={<History className="h-4 w-4" />}
               trend={12}
             />
-            
+
             <MetricCard
               title="Güvenlik Olayları"
               value={stats.securityEvents}
@@ -130,9 +130,9 @@ export default function SuperAdminDashboardPage() {
           </>
         )}
       </div>
-      
+
       <div className="grid gap-4 md:grid-cols-2">
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+        <Card className="border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
           <CardHeader>
             <CardTitle className="text-gray-900 dark:text-white">Depolama Kullanımı</CardTitle>
             <CardDescription className="text-gray-600 dark:text-gray-300">
@@ -141,12 +141,14 @@ export default function SuperAdminDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-8">
             {isLoading ? (
-              <div className="h-[200px] rounded-md bg-muted animate-pulse" />
+              <div className="bg-muted h-[200px] animate-pulse rounded-md" />
             ) : (
               <div className="flex items-center gap-4">
-                <Server className="h-14 w-14 text-primary" />
+                <Server className="text-primary h-14 w-14" />
                 <div>
-                  <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.storageUsage} MB</div>
+                  <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {stats.storageUsage} MB
+                  </div>
                   <div className="text-sm text-gray-600 dark:text-gray-300">
                     10 TB limiti içinde
                   </div>
@@ -155,8 +157,8 @@ export default function SuperAdminDashboardPage() {
             )}
           </CardContent>
         </Card>
-        
-        <Card className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+
+        <Card className="border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
           <CardHeader>
             <CardTitle className="text-gray-900 dark:text-white">Veritabanı Durumu</CardTitle>
             <CardDescription className="text-gray-600 dark:text-gray-300">
@@ -165,12 +167,14 @@ export default function SuperAdminDashboardPage() {
           </CardHeader>
           <CardContent className="space-y-8">
             {isLoading ? (
-              <div className="h-[200px] rounded-md bg-muted animate-pulse" />
+              <div className="bg-muted h-[200px] animate-pulse rounded-md" />
             ) : (
               <div className="flex items-center gap-4">
-                <Layers className="h-14 w-14 text-primary" />
+                <Layers className="text-primary h-14 w-14" />
                 <div>
-                  <div className="text-3xl font-bold text-gray-900 dark:text-white">{stats.databaseSize} MB</div>
+                  <div className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {stats.databaseSize} MB
+                  </div>
                   <div className="text-sm text-gray-600 dark:text-gray-300">
                     Tüm tenantlar ve tablolar dahil
                   </div>
@@ -182,4 +186,4 @@ export default function SuperAdminDashboardPage() {
       </div>
     </div>
   );
-} 
+}

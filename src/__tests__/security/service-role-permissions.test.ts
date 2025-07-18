@@ -13,12 +13,12 @@ jest.mock('@/lib/supabase/admin', () => ({
       admin: {
         inviteUserByEmail: jest.fn(),
         deleteUser: jest.fn(),
-        listUsers: jest.fn()
-      }
+        listUsers: jest.fn(),
+      },
     },
     rpc: jest.fn(),
-    from: jest.fn()
-  }
+    from: jest.fn(),
+  },
 }));
 
 describe('Service Role Permissions', () => {
@@ -30,7 +30,7 @@ describe('Service Role Permissions', () => {
     it('should allow user creation with service role', async () => {
       const mockInvite = jest.fn().mockResolvedValue({
         data: { id: 'new-user-id' },
-        error: null
+        error: null,
       });
 
       supabaseAdmin.auth.admin.inviteUserByEmail = mockInvite;
@@ -38,8 +38,8 @@ describe('Service Role Permissions', () => {
       const result = await supabaseAdmin.auth.admin.inviteUserByEmail('test@example.com', {
         data: {
           role: 'teacher',
-          tenant_id: 'test-tenant'
-        }
+          tenant_id: 'test-tenant',
+        },
       });
 
       expect(result.error).toBeNull();
@@ -50,7 +50,7 @@ describe('Service Role Permissions', () => {
     it('should allow user deletion with service role', async () => {
       const mockDelete = jest.fn().mockResolvedValue({
         data: { id: 'deleted-user-id' },
-        error: null
+        error: null,
       });
 
       supabaseAdmin.auth.admin.deleteUser = mockDelete;
@@ -66,9 +66,9 @@ describe('Service Role Permissions', () => {
       const mockList = jest.fn().mockResolvedValue({
         data: [
           { id: 'user-1', email: 'user1@example.com' },
-          { id: 'user-2', email: 'user2@example.com' }
+          { id: 'user-2', email: 'user2@example.com' },
         ],
-        error: null
+        error: null,
       });
 
       supabaseAdmin.auth.admin.listUsers = mockList;
@@ -85,11 +85,11 @@ describe('Service Role Permissions', () => {
     it('should allow bypassing RLS for data access', async () => {
       const mockSelect = jest.fn().mockResolvedValue({
         data: [{ id: 1, name: 'Test' }],
-        error: null
+        error: null,
       });
 
       supabaseAdmin.from = jest.fn().mockReturnValue({
-        select: mockSelect
+        select: mockSelect,
       });
 
       const result = await supabaseAdmin.from('users').select('*');
@@ -102,13 +102,13 @@ describe('Service Role Permissions', () => {
     it('should allow executing RPC functions', async () => {
       const mockRpc = jest.fn().mockResolvedValue({
         data: { success: true },
-        error: null
+        error: null,
       });
 
       supabaseAdmin.rpc = mockRpc;
 
       const result = await supabaseAdmin.rpc('test_function', {
-        arg1: 'value1'
+        arg1: 'value1',
       });
 
       expect(result.error).toBeNull();
@@ -126,7 +126,7 @@ describe('Service Role Permissions', () => {
 
       try {
         await supabaseAdmin.auth.admin.inviteUserByEmail('existing@example.com', {
-          data: { role: 'teacher' }
+          data: { role: 'teacher' },
         });
       } catch (error) {
         expect(error).toBeDefined();
@@ -137,11 +137,11 @@ describe('Service Role Permissions', () => {
     it('should handle database operation errors gracefully', async () => {
       const mockSelect = jest.fn().mockResolvedValue({
         data: null,
-        error: { message: 'Database error' }
+        error: { message: 'Database error' },
       });
 
       supabaseAdmin.from = jest.fn().mockReturnValue({
-        select: mockSelect
+        select: mockSelect,
       });
 
       const result = await supabaseAdmin.from('non_existent_table').select('*');
@@ -158,8 +158,8 @@ describe('Service Role Permissions', () => {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockResolvedValue({
           data: [{ id: 1, tenant_id: 'test-tenant' }],
-          error: null
-        })
+          error: null,
+        }),
       };
 
       supabaseAdmin.from = jest.fn().mockReturnValue(mockQueryBuilder);
@@ -176,13 +176,10 @@ describe('Service Role Permissions', () => {
       // Tenant ID olmadan sorgu
       mockQueryBuilder.eq.mockResolvedValueOnce({
         data: null,
-        error: { message: 'Tenant ID required' }
+        error: { message: 'Tenant ID required' },
       });
 
-      const invalidResult = await supabaseAdmin
-        .from('users')
-        .select('*')
-        .eq('tenant_id', null);
+      const invalidResult = await supabaseAdmin.from('users').select('*').eq('tenant_id', null);
 
       expect(invalidResult.error).toBeDefined();
       expect(invalidResult.error.message).toBe('Tenant ID required');
@@ -195,23 +192,20 @@ describe('Service Role Permissions', () => {
           if (field === 'role' && value === 'super_admin') {
             return Promise.resolve({
               data: null,
-              error: { message: 'Unauthorized role escalation' }
+              error: { message: 'Unauthorized role escalation' },
             });
           }
           return Promise.resolve({
             data: { id: 1, role: value },
-            error: null
+            error: null,
           });
-        })
+        }),
       };
 
       supabaseAdmin.from = jest.fn().mockReturnValue(mockQueryBuilder);
 
       // Normal rol güncellemesi
-      const validResult = await supabaseAdmin
-        .from('users')
-        .update({ role: 'teacher' })
-        .eq('id', 1);
+      const validResult = await supabaseAdmin.from('users').update({ role: 'teacher' }).eq('id', 1);
 
       expect(validResult.error).toBeNull();
       expect(validResult.data).toBeDefined();
@@ -219,7 +213,7 @@ describe('Service Role Permissions', () => {
       // Yetkisiz rol yükseltme denemesi
       mockQueryBuilder.eq.mockResolvedValueOnce({
         data: null,
-        error: { message: 'Unauthorized role escalation' }
+        error: { message: 'Unauthorized role escalation' },
       });
 
       const invalidResult = await supabaseAdmin
@@ -231,4 +225,4 @@ describe('Service Role Permissions', () => {
       expect(invalidResult.error.message).toBe('Unauthorized role escalation');
     });
   });
-}); 
+});

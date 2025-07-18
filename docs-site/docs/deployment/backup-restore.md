@@ -20,12 +20,14 @@ Yedekleme ve geri yükleme stratejimiz aşağıdaki prensiplere dayanmaktadır:
 Yedekleme stratejimiz, verileri aşağıdaki kategorilere ayırır:
 
 ### 1. Kritik Sistem Verileri
+
 - Tenant kayıtları ve yapılandırmaları
 - Kullanıcı hesapları ve kimlik doğrulama verileri
 - Abonelik ve ödeme bilgileri
 - Sistem yapılandırma verileri
 
 ### 2. Tenant-Spesifik Veriler
+
 - Öğrenci ve öğretmen kayıtları
 - Akademik veriler (sınıflar, dersler, notlar)
 - Ödevler ve değerlendirmeler
@@ -33,6 +35,7 @@ Yedekleme stratejimiz, verileri aşağıdaki kategorilere ayırır:
 - İletişim ve mesajlaşma verileri
 
 ### 3. Dosya ve Medya Verileri
+
 - Öğrenci ve personel fotoğrafları
 - Belgeler ve ödev teslim dosyaları
 - Ders materyalleri ve sunumlar
@@ -67,10 +70,10 @@ pg_dump -U postgres -F custom -f "$BACKUP_DIR/full_backup_$TIMESTAMP.dump" i-es_
 # Yedekleme başarılı mı kontrol et
 if [ $? -eq 0 ]; then
   echo "Tam yedekleme başarılı: full_backup_$TIMESTAMP.dump"
-  
+
   # Yedekleri S3'e yükle
   aws s3 cp "$BACKUP_DIR/full_backup_$TIMESTAMP.dump" "s3://$S3_BUCKET/postgres/full/"
-  
+
   # 30 günden eski yerel yedekleri temizle
   find "$BACKUP_DIR" -name "full_backup_*.dump" -mtime +30 -delete
 else
@@ -105,17 +108,17 @@ TENANT_IDS=$(psql -U postgres -d i-es_db -t -c "SELECT id FROM public.tenants WH
 for TENANT_ID in $TENANT_IDS; do
   TENANT_ID=$(echo $TENANT_ID | tr -d ' ')
   echo "Tenant yedekleniyor: $TENANT_ID"
-  
+
   # Tenant şemasını yedekle
   pg_dump -U postgres -F custom -n "tenant_$TENANT_ID" -f "$BACKUP_DIR/tenant_${TENANT_ID}_$TIMESTAMP.dump" i-es_db || handle_tenant_error $TENANT_ID
-  
+
   # Yedekleme başarılı mı kontrol et
   if [ $? -eq 0 ]; then
     echo "Tenant yedekleme başarılı: tenant_${TENANT_ID}_$TIMESTAMP.dump"
-    
+
     # Yedekleri S3'e yükle
     aws s3 cp "$BACKUP_DIR/tenant_${TENANT_ID}_$TIMESTAMP.dump" "s3://$S3_BUCKET/postgres/tenants/$TENANT_ID/"
-    
+
     # 14 günden eski yerel tenant yedeklerini temizle
     find "$BACKUP_DIR" -name "tenant_${TENANT_ID}_*.dump" -mtime +14 -delete
   else
@@ -145,7 +148,7 @@ S3_BUCKET="i-es-backups"
 # Yeni WAL dosyalarını bul ve S3'e yükle
 find "$ARCHIVE_DIR" -type f -name "*.wal" -mmin -60 | while read -r wal_file; do
   aws s3 cp "$wal_file" "s3://$S3_BUCKET/postgres/wal/"
-  
+
   # Başarılı yüklemeden sonra yerel dosyayı temizle (isteğe bağlı)
   # rm "$wal_file"
 done
@@ -158,6 +161,7 @@ done
 Bu kılavuz, tek bir tenant'ın acil durumda geri yüklenmesi için adım adım talimatları içerir.
 
 #### Ön Koşullar
+
 - Tenant ID
 - AWS S3 erişim kimlik bilgileri
 - PostgreSQL veritabanı erişimi
@@ -200,7 +204,7 @@ Bu kılavuz, tek bir tenant'ın acil durumda geri yüklenmesi için adım adım 
    ```bash
    # Tenant storage verilerini S3'ten indir
    aws s3 sync s3://i-es-backups/storage/tenant-TENANT_ID/YYYYMMDD_HHMMSS/ /tmp/restore-storage/
-   
+
    # Storage verilerini Supabase'e yükle (özel script kullanılır)
    node scripts/restore-storage.js --tenant=TENANT_ID --source=/tmp/restore-storage/
    ```
@@ -211,7 +215,7 @@ Bu kılavuz, tek bir tenant'ın acil durumda geri yüklenmesi için adım adım 
    # Tablolardaki kayıt sayılarını kontrol et
    psql -U postgres -d i-es_db -c "SELECT COUNT(*) FROM tenant_TENANT_ID.users;"
    psql -U postgres -d i-es_db -c "SELECT COUNT(*) FROM tenant_TENANT_ID.students;"
-   
+
    # Referans bütünlüğünü kontrol et
    # ...
    ```
@@ -227,42 +231,46 @@ Bu kılavuz, tek bir tenant'ın acil durumda geri yüklenmesi için adım adım 
 Iqra Eğitim Portalı SaaS platformu, Kişisel Verilerin Korunması Kanunu (KVKK) gereksinimlerini karşılamak için yedekleme ve geri yükleme süreçlerinde aşağıdaki önlemleri uygulamaktadır:
 
 1. **Veri Şifreleme**:
-   * Tüm yedekler, AES-256 algoritması kullanılarak şifrelenir
-   * AWS S3'de sunucu taraflı şifreleme (SSE) kullanılır
-   * Geri yükleme sırasında kimlik doğrulama ve yetkilendirme kontrolleri yapılır
+   - Tüm yedekler, AES-256 algoritması kullanılarak şifrelenir
+   - AWS S3'de sunucu taraflı şifreleme (SSE) kullanılır
+   - Geri yükleme sırasında kimlik doğrulama ve yetkilendirme kontrolleri yapılır
 
 2. **Veri Erişim Kontrolü**:
-   * Yedekleme ve geri yükleme işlemlerine sadece yetkili personel erişebilir
-   * Tüm yedekleme ve geri yükleme işlemleri loglanır
-   * IP kısıtlaması ve multi-factor authentication (MFA) uygulanır
+   - Yedekleme ve geri yükleme işlemlerine sadece yetkili personel erişebilir
+   - Tüm yedekleme ve geri yükleme işlemleri loglanır
+   - IP kısıtlaması ve multi-factor authentication (MFA) uygulanır
 
 3. **Veri Silme**:
-   * KVKK kapsamında silme talepleri için özel prosedürler
-   * Tenant'ın talebi üzerine kalıcı veri silme ve yedeklerden çıkarma
-   * Silme işlemlerinin dokümantasyonu ve belgelenmesi
+   - KVKK kapsamında silme talepleri için özel prosedürler
+   - Tenant'ın talebi üzerine kalıcı veri silme ve yedeklerden çıkarma
+   - Silme işlemlerinin dokümantasyonu ve belgelenmesi
 
 ## İyileştirme ve Yol Haritası
 
 ### Faz 1: Temel Yedekleme ve Geri Yükleme (MVP)
-* Günlük tam veritabanı yedeklemeleri
-* Temel tenant bazlı yedeklemeler
-* Manuel geri yükleme prosedürleri
-* Basit izleme ve bildirimler
+
+- Günlük tam veritabanı yedeklemeleri
+- Temel tenant bazlı yedeklemeler
+- Manuel geri yükleme prosedürleri
+- Basit izleme ve bildirimler
 
 ### Faz 2: Gelişmiş Yedekleme Stratejisi (MVP + 3 Ay)
-* Zamanlanmış tenant bazlı yedeklemeler
-* WAL arşivleme ile point-in-time recovery
-* Storage yedeklemeleri
-* Gelişmiş izleme ve bildirimler
+
+- Zamanlanmış tenant bazlı yedeklemeler
+- WAL arşivleme ile point-in-time recovery
+- Storage yedeklemeleri
+- Gelişmiş izleme ve bildirimler
 
 ### Faz 3: Tam Otomatikleştirilmiş Çözüm (MVP + 6 Ay)
-* Tam otomatik yedekleme ve doğrulama
-* Self-servis tenant veri dışa/içe aktarma
-* İleri düzey yedekleme analitiği ve raporlama
-* Otomatik test ve doğrulama süreçleri
+
+- Tam otomatik yedekleme ve doğrulama
+- Self-servis tenant veri dışa/içe aktarma
+- İleri düzey yedekleme analitiği ve raporlama
+- Otomatik test ve doğrulama süreçleri
 
 ## İlgili Kaynaklar
-* [Multi-Tenant Mimari Stratejisi](/docs/architecture/multi-tenant-strategy.md)
-* [Veri İzolasyon Stratejisi](/docs/deployment/data-isolation.md)
-* [Felaketten Kurtarma Planlaması](/docs/deployment/disaster-recovery.md)
-* [Teknoloji Yığını](/docs/architecture/tech-stack.md)
+
+- [Multi-Tenant Mimari Stratejisi](/docs/architecture/multi-tenant-strategy.md)
+- [Veri İzolasyon Stratejisi](/docs/deployment/data-isolation.md)
+- [Felaketten Kurtarma Planlaması](/docs/deployment/disaster-recovery.md)
+- [Teknoloji Yığını](/docs/architecture/tech-stack.md)

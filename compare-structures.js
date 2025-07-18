@@ -1,7 +1,7 @@
 // cursor: compare-structures
 //
 // Compare two proposed monorepo structures using the live project files:
-// 
+//
 // Structure A (Cursor AI’s full-detailed pattern):
 // - apps/ (web, admin, docs, mobile)
 // - packages/ (ui, shared, database, auth, tenant, eslint-config)
@@ -13,10 +13,10 @@
 // - tests/, .github/workflows/, .env.example, package.json, pnpm-workspace.yaml
 //
 // For each structure, evaluate:
-// 1. Fit & Complexity with the current codebase  
-// 2. Scalability & Maintainability  
-// 3. Migration Risk & Developer Experience  
+// 1. Fit & Complexity with the current codebase
+// 2. Scalability & Maintainability
+// 3. Migration Risk & Developer Experience
 //
 // Then:
-// - Recommend A, B, or a hybrid  
+// - Recommend A, B, or a hybrid
 // - Provide a step-by-step migration plan for the chosen model

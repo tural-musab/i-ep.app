@@ -17,19 +17,19 @@ SSL sertifika durumunu görüntüleyen ve yöneten komponent.
 interface SSLStatusProps {
   /** Domain adresi */
   domain: string;
-  
+
   /** Tenant ID */
   tenantId: string;
-  
+
   /** Yenileme yapıldığında çağrılır */
   onRenew?: () => void;
-  
+
   /** Hata durumunda çağrılır */
   onError?: (error: SSLError) => void;
-  
+
   /** Otomatik kontrol aralığı (ms) */
   checkInterval?: number;
-  
+
   /** Bildirim gösterme ayarı */
   showNotifications?: boolean;
 }
@@ -85,29 +85,21 @@ export default function DomainSSLPage() {
 ## Durum Gösterimi
 
 ### Geçerli Sertifika
+
 ```tsx
-<SSLBadge
-  status="valid"
-  expiresIn={30}
-  showDays
-/>
+<SSLBadge status="valid" expiresIn={30} showDays />
 ```
 
 ### Yakında Sona Erecek
+
 ```tsx
-<SSLBadge
-  status="expiring_soon"
-  expiresIn={7}
-  showWarning
-/>
+<SSLBadge status="expiring_soon" expiresIn={7} showWarning />
 ```
 
 ### Süresi Dolmuş
+
 ```tsx
-<SSLBadge
-  status="expired"
-  showError
-/>
+<SSLBadge status="expired" showError />
 ```
 
 ## API Entegrasyonu
@@ -121,18 +113,15 @@ const checkSSLStatus = async () => {
 
 // Sertifika yenileme
 const renewCertificate = async () => {
-  const response = await fetch(
-    `/api/tenants/${tenantId}/domains/${domain}/ssl/renew`,
-    { method: 'POST' }
-  );
+  const response = await fetch(`/api/tenants/${tenantId}/domains/${domain}/ssl/renew`, {
+    method: 'POST',
+  });
   return response.json();
 };
 
 // Sertifika detayları
 const getCertificateDetails = async () => {
-  const response = await fetch(
-    `/api/tenants/${tenantId}/domains/${domain}/ssl/details`
-  );
+  const response = await fetch(`/api/tenants/${tenantId}/domains/${domain}/ssl/details`);
   return response.json();
 };
 ```
@@ -149,7 +138,7 @@ useEffect(() => {
     try {
       const status = await checkSSLStatus();
       setCertificate(status);
-      
+
       if (status.status === 'expiring_soon') {
         showExpiryWarning(status.validUntil);
       }
@@ -172,12 +161,12 @@ useEffect(() => {
 ```typescript
 const showExpiryWarning = (expiryDate: string) => {
   const daysLeft = differenceInDays(new Date(expiryDate), new Date());
-  
+
   if (daysLeft <= 7) {
     showNotification({
       type: 'warning',
       title: 'SSL Sertifikası Sona Eriyor',
-      message: `Sertifikanız ${daysLeft} gün içinde sona erecek.`
+      message: `Sertifikanız ${daysLeft} gün içinde sona erecek.`,
     });
   }
 };
@@ -193,10 +182,10 @@ const showExpiryWarning = (expiryDate: string) => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 768px | Detaylı görünüm |
-| < 768px | Özet görünüm |
+| Ekran Boyutu | Davranış        |
+| ------------ | --------------- |
+| > 768px      | Detaylı görünüm |
+| < 768px      | Özet görünüm    |
 
 ## Test
 
@@ -209,7 +198,7 @@ describe('SSLStatus', () => {
         tenantId="tenant_123"
       />
     );
-    
+
     await waitFor(() => {
       expect(screen.getByText('SSL Sertifikası Geçerli')).toBeInTheDocument();
     });
@@ -224,7 +213,7 @@ describe('SSLStatus', () => {
         onRenew={onRenew}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Yenile'));
     expect(onRenew).toHaveBeenCalled();
   });
@@ -238,13 +227,13 @@ describe('SSLStatus', () => {
         showNotifications
       />
     );
-    
+
     // Simulate near expiry
     mockCertificateStatus({
       status: 'expiring_soon',
       validUntil: addDays(new Date(), 5)
     });
-    
+
     await waitFor(() => {
       expect(screen.getByText('5 gün içinde sona erecek')).toBeInTheDocument();
     });
@@ -308,7 +297,7 @@ Error.args = {
   customStyles={{
     valid: 'bg-green-50 text-green-700',
     warning: 'bg-yellow-50 text-yellow-700',
-    error: 'bg-red-50 text-red-700'
+    error: 'bg-red-50 text-red-700',
   }}
 />
 ```
@@ -319,4 +308,4 @@ Error.args = {
 2. Sertifika yaklaşan son kullanma tarihlerini izle
 3. Yenileme işlemlerini logla
 4. DNS değişikliklerini takip et
-5. Hata durumlarını detaylı raporla 
+5. Hata durumlarını detaylı raporla

@@ -21,7 +21,7 @@ Bu rehber, Iqra Eğitim Portalı SaaS projesi için kod yazım standartlarını 
 // Yanlış
 const getUser = (id) => {
   // ...
-}
+};
 
 // Doğru
 interface User {
@@ -103,12 +103,7 @@ return (
 
 // Çoklu props
 return (
-  <Button
-    variant="primary"
-    size="large"
-    onClick={handleClick}
-    disabled={isLoading}
-  >
+  <Button variant="primary" size="large" onClick={handleClick} disabled={isLoading}>
     Kaydet
   </Button>
 );
@@ -138,16 +133,7 @@ return (
 
 ```tsx
 // Tailwind sınıf sıralaması örneği
-<div className="
-  // Layout
-  flex flex-col items-center justify-between
-  // Boyut ve boşluk
-  w-full max-w-md p-4 my-6
-  // Görünüm (renkler, kenarlar vb.)
-  bg-white rounded-lg shadow-md
-  // Durum (hover, focus vb.)
-  hover:shadow-lg focus:outline-none
-">
+<div className="// Layout // Boyut ve boşluk // Görünüm (renkler, kenarlar vb.) // Durum (hover, focus vb.) my-6 flex w-full max-w-md flex-col items-center justify-between rounded-lg bg-white p-4 shadow-md hover:shadow-lg focus:outline-none">
   {/* İçerik */}
 </div>
 ```
@@ -218,6 +204,7 @@ Commit mesajları için [Conventional Commits](https://www.conventionalcommits.o
 ```
 
 Tip örnekleri:
+
 - feat: Yeni bir özellik
 - fix: Hata düzeltmesi
 - docs: Dokümantasyon değişiklikleri
@@ -227,6 +214,7 @@ Tip örnekleri:
 - chore: Derleme süreci veya yardımcı araç değişiklikleri
 
 Örnek:
+
 ```
 feat(auth): kullanıcı kaydı için e-posta doğrulama ekle
 
@@ -234,4 +222,4 @@ E-posta doğrulama akışı, Supabase Auth ile entegre edildi.
 Kullanıcı kaydı sonrası otomatik doğrulama e-postası gönderiliyor.
 
 Resolves: #123
-``` 
+```

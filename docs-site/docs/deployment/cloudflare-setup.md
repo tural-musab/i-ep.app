@@ -84,7 +84,7 @@ Cloudflare Dashboard'da aşağıdaki temel DNS kayıtlarını oluşturun:
 
 3. Wildcard subdomain için CNAME:
    - **Type**: CNAME
-   - **Name**: *
+   - **Name**: \*
    - **Target**: cname.vercel-dns.com
    - **TTL**: Auto
    - **Proxy status**: Proxied
@@ -106,7 +106,7 @@ Cloudflare Dashboard'da aşağıdaki temel DNS kayıtlarını oluşturun:
 
 ### 1. Subdomain Stratejisi
 
-Iqra Eğitim Portalı, her tenant için bir subdomain kullanır (örn. `okul-adi.i-ep.app`). Tüm subdomain'ler, wildcard DNS kaydı (*.i-ep.app) sayesinde otomatik olarak Vercel'e yönlendirilir.
+Iqra Eğitim Portalı, her tenant için bir subdomain kullanır (örn. `okul-adi.i-ep.app`). Tüm subdomain'ler, wildcard DNS kaydı (\*.i-ep.app) sayesinde otomatik olarak Vercel'e yönlendirilir.
 
 ### 2. Otomatik Subdomain Oluşturma
 
@@ -130,18 +130,31 @@ function getCloudflareConfig(): CloudflareConfig {
   };
 }
 
-export async function validateSubdomain(subdomain: string): Promise<{ valid: boolean; message?: string }> {
+export async function validateSubdomain(
+  subdomain: string
+): Promise<{ valid: boolean; message?: string }> {
   // Subdomain format kontrolü (a-z, 0-9, ve tire)
   const subdomainRegex = /^[a-z0-9][a-z0-9\-]{1,61}[a-z0-9]$/;
   if (!subdomainRegex.test(subdomain)) {
     return {
       valid: false,
-      message: 'Subdomain yalnızca küçük harf, rakam ve tire içerebilir ve 2-63 karakter uzunluğunda olmalıdır.',
+      message:
+        'Subdomain yalnızca küçük harf, rakam ve tire içerebilir ve 2-63 karakter uzunluğunda olmalıdır.',
     };
   }
 
   // Yasaklı subdomain'ler (rezerve edilmiş kelimeler)
-  const reservedSubdomains = ['www', 'api', 'admin', 'app', 'auth', 'billing', 'dashboard', 'docs', 'support'];
+  const reservedSubdomains = [
+    'www',
+    'api',
+    'admin',
+    'app',
+    'auth',
+    'billing',
+    'dashboard',
+    'docs',
+    'support',
+  ];
   if (reservedSubdomains.includes(subdomain)) {
     return {
       valid: false,
@@ -163,35 +176,35 @@ Bir tenant özel domain eklemek istediğinde, domain sahipliğini doğrulamalıs
 
 ```typescript
 // src/lib/cloudflare/domains.ts
-export async function verifyCustomDomain(domain: string): Promise<{ 
-  success: boolean; 
+export async function verifyCustomDomain(domain: string): Promise<{
+  success: boolean;
   validationRecord?: string;
-  error?: string 
+  error?: string;
 }> {
   try {
     const cf = getCloudflareConfig();
-    const vercelDomain = env.VERCEL_URL || "i-ep.app";
-    
+    const vercelDomain = env.VERCEL_URL || 'i-ep.app';
+
     // Domain formatını kontrol et
     if (!domain.match(/^([a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,}$/)) {
-      return { 
-        success: false, 
-        error: 'Geçersiz domain formatı' 
+      return {
+        success: false,
+        error: 'Geçersiz domain formatı',
       };
     }
-    
+
     // Doğrulama için gerekli DNS kaydı
     const validationRecord = `${domain} CNAME ${vercelDomain}`;
-    
-    return { 
+
+    return {
       success: true,
-      validationRecord 
+      validationRecord,
     };
   } catch (error) {
     console.error('Domain doğrulama hatası:', error);
-    return { 
-      success: false, 
-      error: 'Domain doğrulama işlemi sırasında bir hata oluştu' 
+    return {
+      success: false,
+      error: 'Domain doğrulama işlemi sırasında bir hata oluştu',
     };
   }
 }
@@ -216,9 +229,12 @@ Kullanıcı DNS kayıtlarını yapılandırdıktan sonra, özel domaini tenant'a
 
 ```typescript
 // src/lib/cloudflare/domains.ts
-export async function attachCustomDomain(tenantId: string, domain: string): Promise<{ 
-  success: boolean; 
-  error?: string 
+export async function attachCustomDomain(
+  tenantId: string,
+  domain: string
+): Promise<{
+  success: boolean;
+  error?: string;
 }> {
   try {
     // Özel domaini tenant kayıtlarına ekle
@@ -226,18 +242,18 @@ export async function attachCustomDomain(tenantId: string, domain: string): Prom
       .from('tenants')
       .update({ custom_domain: domain })
       .eq('id', tenantId);
-      
+
     if (error) throw error;
-    
+
     // Özel domain kontrolünü zamanla
     await scheduleCustomDomainVerification(tenantId, domain);
-    
+
     return { success: true };
   } catch (error) {
     console.error('Özel domain bağlama hatası:', error);
-    return { 
-      success: false, 
-      error: 'Özel domain bağlama işlemi sırasında bir hata oluştu' 
+    return {
+      success: false,
+      error: 'Özel domain bağlama işlemi sırasında bir hata oluştu',
     };
   }
 }
@@ -279,7 +295,9 @@ export interface CloudflareDNSRecord {
   proxied: boolean;
 }
 
-export async function createDNSRecord(record: CloudflareDNSRecord): Promise<{ success: boolean; id?: string; error?: string }> {
+export async function createDNSRecord(
+  record: CloudflareDNSRecord
+): Promise<{ success: boolean; id?: string; error?: string }> {
   try {
     const response = await fetch(
       `https://api.cloudflare.com/client/v4/zones/${env.CLOUDFLARE_ZONE_ID}/dns_records`,
@@ -287,7 +305,7 @@ export async function createDNSRecord(record: CloudflareDNSRecord): Promise<{ su
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
+          Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
         },
         body: JSON.stringify(record),
       }
@@ -299,27 +317,27 @@ export async function createDNSRecord(record: CloudflareDNSRecord): Promise<{ su
       throw new Error(data.errors[0]?.message || 'DNS kaydı oluşturma hatası');
     }
 
-    return { 
-      success: true, 
-      id: data.result.id 
+    return {
+      success: true,
+      id: data.result.id,
     };
   } catch (error) {
     console.error('Cloudflare DNS kaydı oluşturma hatası:', error);
-    return { 
-      success: false, 
-      error: error.message 
+    return {
+      success: false,
+      error: error.message,
     };
   }
 }
 
-export async function getDNSRecords(parameters: { type?: string; name?: string; }): Promise<{ 
-  success: boolean; 
-  records?: CloudflareDNSRecord[]; 
-  error?: string 
+export async function getDNSRecords(parameters: { type?: string; name?: string }): Promise<{
+  success: boolean;
+  records?: CloudflareDNSRecord[];
+  error?: string;
 }> {
   try {
     let url = `https://api.cloudflare.com/client/v4/zones/${env.CLOUDFLARE_ZONE_ID}/dns_records`;
-    
+
     // URL parametreleri ekleme
     if (parameters.type || parameters.name) {
       const params = new URLSearchParams();
@@ -327,12 +345,12 @@ export async function getDNSRecords(parameters: { type?: string; name?: string; 
       if (parameters.name) params.append('name', parameters.name);
       url += `?${params.toString()}`;
     }
-    
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
+        Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
       },
     });
 
@@ -342,22 +360,25 @@ export async function getDNSRecords(parameters: { type?: string; name?: string; 
       throw new Error(data.errors[0]?.message || 'DNS kayıtlarını getirme hatası');
     }
 
-    return { 
-      success: true, 
-      records: data.result 
+    return {
+      success: true,
+      records: data.result,
     };
   } catch (error) {
     console.error('Cloudflare DNS kayıtlarını getirme hatası:', error);
-    return { 
-      success: false, 
-      error: error.message 
+    return {
+      success: false,
+      error: error.message,
     };
   }
 }
 
-export async function updateDNSRecord(recordId: string, record: Partial<CloudflareDNSRecord>): Promise<{ 
-  success: boolean; 
-  error?: string 
+export async function updateDNSRecord(
+  recordId: string,
+  record: Partial<CloudflareDNSRecord>
+): Promise<{
+  success: boolean;
+  error?: string;
 }> {
   try {
     const response = await fetch(
@@ -366,7 +387,7 @@ export async function updateDNSRecord(recordId: string, record: Partial<Cloudfla
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
+          Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
         },
         body: JSON.stringify(record),
       }
@@ -381,16 +402,16 @@ export async function updateDNSRecord(recordId: string, record: Partial<Cloudfla
     return { success: true };
   } catch (error) {
     console.error('Cloudflare DNS kaydı güncelleme hatası:', error);
-    return { 
-      success: false, 
-      error: error.message 
+    return {
+      success: false,
+      error: error.message,
     };
   }
 }
 
-export async function deleteDNSRecord(recordId: string): Promise<{ 
-  success: boolean; 
-  error?: string 
+export async function deleteDNSRecord(recordId: string): Promise<{
+  success: boolean;
+  error?: string;
 }> {
   try {
     const response = await fetch(
@@ -398,7 +419,7 @@ export async function deleteDNSRecord(recordId: string): Promise<{
       {
         method: 'DELETE',
         headers: {
-          'Authorization': `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
+          Authorization: `Bearer ${env.CLOUDFLARE_API_TOKEN}`,
         },
       }
     );
@@ -412,9 +433,9 @@ export async function deleteDNSRecord(recordId: string): Promise<{
     return { success: true };
   } catch (error) {
     console.error('Cloudflare DNS kaydı silme hatası:', error);
-    return { 
-      success: false, 
-      error: error.message 
+    return {
+      success: false,
+      error: error.message,
     };
   }
 }
@@ -531,30 +552,30 @@ Cloudflare Workers, edge'de çalışan JavaScript fonksiyonlarıdır ve çeşitl
 
 ```javascript
 // Örnek: Tenant subdomain'lerine göre yönlendirme
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request))
-})
+addEventListener('fetch', (event) => {
+  event.respondWith(handleRequest(event.request));
+});
 
 async function handleRequest(request) {
-  const url = new URL(request.url)
-  const hostname = url.hostname
-  
+  const url = new URL(request.url);
+  const hostname = url.hostname;
+
   // Subdomain'i ayıkla
-  const domainParts = hostname.split('.')
+  const domainParts = hostname.split('.');
   if (domainParts.length > 2 && !hostname.startsWith('www.')) {
-    const subdomain = domainParts[0]
-    
+    const subdomain = domainParts[0];
+
     // Özel işlemler veya yönlendirmeler
     if (subdomain === 'status') {
       // Örn: Status sayfasına yönlendir
-      return Response.redirect('https://status.i-ep.app', 301)
+      return Response.redirect('https://status.i-ep.app', 301);
     }
-    
+
     // Buradan tenant bilgilerini kontrol edebilir veya özel başlıklar ekleyebilirsiniz
   }
-  
+
   // Normal işleme devam et
-  return fetch(request)
+  return fetch(request);
 }
 ```
 
@@ -580,26 +601,26 @@ Tenant bilgilerini önbelleğe almak için KV (Key-Value) depolama kullanabilirs
 
 ```javascript
 async function handleRequest(request) {
-  const url = new URL(request.url)
-  const hostname = url.hostname
-  
+  const url = new URL(request.url);
+  const hostname = url.hostname;
+
   // Subdomain'i ayıkla
-  const domainParts = hostname.split('.')
+  const domainParts = hostname.split('.');
   if (domainParts.length > 2 && !hostname.startsWith('www.')) {
-    const subdomain = domainParts[0]
-    
+    const subdomain = domainParts[0];
+
     // KV'den tenant verilerini al
-    const tenantData = await TENANT_DATA.get(subdomain, { type: "json" })
-    
+    const tenantData = await TENANT_DATA.get(subdomain, { type: 'json' });
+
     if (tenantData) {
       // Tenant verilerine göre işlem yap
-      const modifiedRequest = new Request(request)
-      modifiedRequest.headers.set('X-Tenant-ID', tenantData.id)
-      return fetch(modifiedRequest)
+      const modifiedRequest = new Request(request);
+      modifiedRequest.headers.set('X-Tenant-ID', tenantData.id);
+      return fetch(modifiedRequest);
     }
   }
-  
-  return fetch(request)
+
+  return fetch(request);
 }
 ```
 
@@ -638,4 +659,4 @@ Kullanıcılar özel domain bağlamada sorun yaşıyorsa:
 - [Next.js ile Cloudflare Entegrasyonu](https://developers.cloudflare.com/pages/framework-guides/deploy-a-nextjs-site)
 - [Cloudflare Workers Dokümantasyonu](https://developers.cloudflare.com/workers)
 - [Multi-Tenant DNS Yapılandırması](../architecture/multi-tenant-strategy.md)
-- [Felaketten Kurtarma Planı](./disaster-recovery.md) 
+- [Felaketten Kurtarma Planı](./disaster-recovery.md)

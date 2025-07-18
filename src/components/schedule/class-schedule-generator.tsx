@@ -11,18 +11,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  BookOpen, 
-  User, 
+import {
+  Calendar,
+  Clock,
+  Users,
+  BookOpen,
+  User,
   School,
   FileText,
   Download,
@@ -113,9 +119,13 @@ import {
   VolumeDown,
   VolumeUp,
   Mute,
-  Unmute
+  Unmute,
 } from 'lucide-react';
-import { ScheduleRepository, ClassSchedule, ScheduleConflict } from '@/lib/repository/schedule-repository';
+import {
+  ScheduleRepository,
+  ClassSchedule,
+  ScheduleConflict,
+} from '@/lib/repository/schedule-repository';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
@@ -125,10 +135,10 @@ interface ClassScheduleGeneratorProps {
   semester?: 1 | 2;
 }
 
-export function ClassScheduleGenerator({ 
-  classId, 
+export function ClassScheduleGenerator({
+  classId,
   academicYear = '2024-2025',
-  semester = 1
+  semester = 1,
 }: ClassScheduleGeneratorProps) {
   const [schedule, setSchedule] = useState<ClassSchedule | null>(null);
   const [conflicts, setConflicts] = useState<ScheduleConflict[]>([]);
@@ -137,10 +147,14 @@ export function ClassScheduleGenerator({
   const [selectedClass, setSelectedClass] = useState<string>(classId || '');
   const [selectedYear, setSelectedYear] = useState<string>(academicYear);
   const [selectedSemester, setSelectedSemester] = useState<1 | 2>(semester);
-  const [generationMode, setGenerationMode] = useState<'automatic' | 'manual' | 'template'>('automatic');
+  const [generationMode, setGenerationMode] = useState<'automatic' | 'manual' | 'template'>(
+    'automatic'
+  );
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [viewMode, setViewMode] = useState<'weekly' | 'daily' | 'conflicts'>('weekly');
-  const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set(['monday', 'tuesday', 'wednesday', 'thursday', 'friday']));
+  const [expandedDays, setExpandedDays] = useState<Set<string>>(
+    new Set(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'])
+  );
 
   const scheduleRepository = new ScheduleRepository();
 
@@ -149,14 +163,14 @@ export function ClassScheduleGenerator({
     { id: '1', name: '5-A', teacher: 'Ahmet Öğretmen', studentCount: 28, gradeLevel: 5 },
     { id: '2', name: '5-B', teacher: 'Ayşe Öğretmen', studentCount: 26, gradeLevel: 5 },
     { id: '3', name: '6-A', teacher: 'Mehmet Öğretmen', studentCount: 30, gradeLevel: 6 },
-    { id: '4', name: '6-B', teacher: 'Fatma Öğretmen', studentCount: 29, gradeLevel: 6 }
+    { id: '4', name: '6-B', teacher: 'Fatma Öğretmen', studentCount: 29, gradeLevel: 6 },
   ];
 
   const mockTemplates = [
     { id: '1', name: 'Standart İlkokul Programı', type: 'class', gradeLevel: 5 },
     { id: '2', name: 'Yoğun Matematik Programı', type: 'class', gradeLevel: 5 },
     { id: '3', name: 'Sanat Ağırlıklı Program', type: 'class', gradeLevel: 6 },
-    { id: '4', name: 'Spor Ağırlıklı Program', type: 'class', gradeLevel: 6 }
+    { id: '4', name: 'Spor Ağırlıklı Program', type: 'class', gradeLevel: 6 },
   ];
 
   const academicYears = ['2024-2025', '2023-2024', '2022-2023'];
@@ -167,7 +181,7 @@ export function ClassScheduleGenerator({
     thursday: 'Perşembe',
     friday: 'Cuma',
     saturday: 'Cumartesi',
-    sunday: 'Pazar'
+    sunday: 'Pazar',
   };
 
   const generateSchedule = async () => {
@@ -186,16 +200,15 @@ export function ClassScheduleGenerator({
         selectedSemester,
         generationMode === 'template' ? selectedTemplate : undefined
       );
-      
+
       setSchedule(generatedSchedule);
-      
+
       // Detect conflicts
       const detectedConflicts = await scheduleRepository.detectScheduleConflicts(
         generatedSchedule.id,
         'class'
       );
       setConflicts(detectedConflicts);
-      
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Program oluşturulurken bir hata oluştu');
     } finally {
@@ -209,11 +222,14 @@ export function ClassScheduleGenerator({
     setLoading(true);
     try {
       const exportData = await scheduleRepository.exportSchedule(schedule.id, format);
-      
-      const blob = new Blob([exportData], { 
-        type: format === 'pdf' ? 'application/pdf' : 
-              format === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' :
-              'text/calendar'
+
+      const blob = new Blob([exportData], {
+        type:
+          format === 'pdf'
+            ? 'application/pdf'
+            : format === 'excel'
+              ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+              : 'text/calendar',
       });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -240,21 +256,31 @@ export function ClassScheduleGenerator({
 
   const getConflictColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'bg-red-100 text-red-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'critical':
+        return 'bg-red-100 text-red-800';
+      case 'high':
+        return 'bg-orange-100 text-orange-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getConflictIcon = (type: string) => {
     switch (type) {
-      case 'teacher_overlap': return <User className="h-4 w-4" />;
-      case 'classroom_overlap': return <School className="h-4 w-4" />;
-      case 'student_overlap': return <Users className="h-4 w-4" />;
-      case 'resource_conflict': return <BookOpen className="h-4 w-4" />;
-      default: return <AlertTriangle className="h-4 w-4" />;
+      case 'teacher_overlap':
+        return <User className="h-4 w-4" />;
+      case 'classroom_overlap':
+        return <School className="h-4 w-4" />;
+      case 'student_overlap':
+        return <Users className="h-4 w-4" />;
+      case 'resource_conflict':
+        return <BookOpen className="h-4 w-4" />;
+      default:
+        return <AlertTriangle className="h-4 w-4" />;
     }
   };
 
@@ -276,15 +302,15 @@ export function ClassScheduleGenerator({
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">
-                    {day.periods.length > 0 ? 
-                      `${day.periods[0].start_time} - ${day.periods[day.periods.length - 1].end_time}` : 
-                      'Boş'
-                    }
+                    {day.periods.length > 0
+                      ? `${day.periods[0].start_time} - ${day.periods[day.periods.length - 1].end_time}`
+                      : 'Boş'}
                   </span>
-                  {expandedDays.has(day.day) ? 
-                    <ChevronDown className="h-4 w-4" /> : 
+                  {expandedDays.has(day.day) ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
                     <ChevronRight className="h-4 w-4" />
-                  }
+                  )}
                 </div>
               </div>
             </CardHeader>
@@ -292,7 +318,10 @@ export function ClassScheduleGenerator({
               <CardContent>
                 <div className="space-y-3">
                   {day.periods.map((period, periodIndex) => (
-                    <div key={periodIndex} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div
+                      key={periodIndex}
+                      className="flex items-center justify-between rounded-lg border p-4"
+                    >
                       <div className="flex items-center gap-4">
                         <div className="text-center">
                           <div className="text-lg font-bold">{period.period_number}</div>
@@ -346,10 +375,12 @@ export function ClassScheduleGenerator({
       return (
         <Card>
           <CardContent className="pt-6">
-            <div className="text-center py-8">
-              <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Çakışma Bulunamadı</h3>
-              <p className="text-gray-600">Ders programında herhangi bir çakışma tespit edilmedi.</p>
+            <div className="py-8 text-center">
+              <CheckCircle className="mx-auto mb-4 h-12 w-12 text-green-500" />
+              <h3 className="mb-2 text-lg font-semibold">Çakışma Bulunamadı</h3>
+              <p className="text-gray-600">
+                Ders programında herhangi bir çakışma tespit edilmedi.
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -373,17 +404,22 @@ export function ClassScheduleGenerator({
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                   <div>
-                    <h4 className="font-medium mb-2">Çakışma Zamanı</h4>
+                    <h4 className="mb-2 font-medium">Çakışma Zamanı</h4>
                     <div className="text-sm text-gray-600">
-                      <div>{dayNames[conflict.conflict_details.time_slot.day as keyof typeof dayNames]}</div>
+                      <div>
+                        {dayNames[conflict.conflict_details.time_slot.day as keyof typeof dayNames]}
+                      </div>
                       <div>{conflict.conflict_details.time_slot.period}. Saat</div>
-                      <div>{conflict.conflict_details.time_slot.start_time} - {conflict.conflict_details.time_slot.end_time}</div>
+                      <div>
+                        {conflict.conflict_details.time_slot.start_time} -{' '}
+                        {conflict.conflict_details.time_slot.end_time}
+                      </div>
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-medium mb-2">Etkilenen Programlar</h4>
+                    <h4 className="mb-2 font-medium">Etkilenen Programlar</h4>
                     <div className="space-y-1">
                       {conflict.conflict_details.conflicting_schedules.map((schedule, idx) => (
                         <div key={idx} className="text-sm text-gray-600">
@@ -393,30 +429,38 @@ export function ClassScheduleGenerator({
                     </div>
                   </div>
                   <div>
-                    <h4 className="font-medium mb-2">Durum</h4>
+                    <h4 className="mb-2 font-medium">Durum</h4>
                     <Badge variant={conflict.status === 'resolved' ? 'default' : 'secondary'}>
-                      {conflict.status === 'pending' ? 'Beklemede' : 
-                       conflict.status === 'resolved' ? 'Çözüldü' : 'Göz Ardı Edildi'}
+                      {conflict.status === 'pending'
+                        ? 'Beklemede'
+                        : conflict.status === 'resolved'
+                          ? 'Çözüldü'
+                          : 'Göz Ardı Edildi'}
                     </Badge>
                   </div>
                 </div>
 
                 <div>
-                  <h4 className="font-medium mb-2">Çözüm Önerileri</h4>
+                  <h4 className="mb-2 font-medium">Çözüm Önerileri</h4>
                   <div className="space-y-2">
                     {conflict.resolution_options.map((option, idx) => (
-                      <div key={idx} className="p-3 border rounded-lg">
-                        <div className="flex items-center justify-between mb-2">
+                      <div key={idx} className="rounded-lg border p-3">
+                        <div className="mb-2 flex items-center justify-between">
                           <span className="font-medium">{option.description}</span>
-                          <Badge variant="outline" className={
-                            option.impact_level === 'high' ? 'border-red-300 text-red-700' :
-                            option.impact_level === 'medium' ? 'border-yellow-300 text-yellow-700' :
-                            'border-green-300 text-green-700'
-                          }>
+                          <Badge
+                            variant="outline"
+                            className={
+                              option.impact_level === 'high'
+                                ? 'border-red-300 text-red-700'
+                                : option.impact_level === 'medium'
+                                  ? 'border-yellow-300 text-yellow-700'
+                                  : 'border-green-300 text-green-700'
+                            }
+                          >
                             {option.impact_level} etki
                           </Badge>
                         </div>
-                        <div className="text-sm text-gray-600 mb-2">
+                        <div className="mb-2 text-sm text-gray-600">
                           Tahmini süre: {option.estimated_time} dakika
                         </div>
                         <div className="space-y-1">
@@ -449,15 +493,15 @@ export function ClassScheduleGenerator({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Ders Programı Oluşturucu</h2>
-          <p className="text-gray-600 mt-1">Otomatik ders programı oluşturma ve yönetimi</p>
+          <p className="mt-1 text-gray-600">Otomatik ders programı oluşturma ve yönetimi</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => window.location.reload()}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Yenile
           </Button>
           <Button variant="outline">
-            <Settings className="h-4 w-4 mr-2" />
+            <Settings className="mr-2 h-4 w-4" />
             Ayarlar
           </Button>
         </div>
@@ -476,7 +520,7 @@ export function ClassScheduleGenerator({
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-2">
                 <Label htmlFor="class">Sınıf</Label>
                 <Select value={selectedClass} onValueChange={setSelectedClass}>
@@ -511,7 +555,10 @@ export function ClassScheduleGenerator({
 
               <div className="space-y-2">
                 <Label htmlFor="semester">Dönem</Label>
-                <Select value={selectedSemester.toString()} onValueChange={(value) => setSelectedSemester(parseInt(value) as 1 | 2)}>
+                <Select
+                  value={selectedSemester.toString()}
+                  onValueChange={(value) => setSelectedSemester(parseInt(value) as 1 | 2)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -524,7 +571,10 @@ export function ClassScheduleGenerator({
 
               <div className="space-y-2">
                 <Label htmlFor="mode">Oluşturma Modu</Label>
-                <Select value={generationMode} onValueChange={(value) => setGenerationMode(value as any)}>
+                <Select
+                  value={generationMode}
+                  onValueChange={(value) => setGenerationMode(value as any)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -556,19 +606,19 @@ export function ClassScheduleGenerator({
             )}
 
             <div className="flex items-center justify-between">
-              <Button 
-                onClick={generateSchedule} 
+              <Button
+                onClick={generateSchedule}
                 disabled={loading || !selectedClass}
                 className="w-auto"
               >
                 {loading ? (
                   <>
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                     Oluşturuluyor...
                   </>
                 ) : (
                   <>
-                    <Zap className="h-4 w-4 mr-2" />
+                    <Zap className="mr-2 h-4 w-4" />
                     Program Oluştur
                   </>
                 )}
@@ -577,23 +627,23 @@ export function ClassScheduleGenerator({
               {schedule && (
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => exportSchedule('pdf')}>
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     PDF
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => exportSchedule('excel')}>
-                    <Download className="h-4 w-4 mr-2" />
+                    <Download className="mr-2 h-4 w-4" />
                     Excel
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => exportSchedule('ical')}>
-                    <Calendar className="h-4 w-4 mr-2" />
+                    <Calendar className="mr-2 h-4 w-4" />
                     iCal
                   </Button>
                   <Button variant="outline" size="sm">
-                    <Print className="h-4 w-4 mr-2" />
+                    <Print className="mr-2 h-4 w-4" />
                     Yazdır
                   </Button>
                   <Button variant="outline" size="sm">
-                    <Share2 className="h-4 w-4 mr-2" />
+                    <Share2 className="mr-2 h-4 w-4" />
                     Paylaş
                   </Button>
                 </div>
@@ -627,7 +677,7 @@ export function ClassScheduleGenerator({
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-blue-600">
                     {schedule.schedule_data.class_info.name}
@@ -670,19 +720,19 @@ export function ClassScheduleGenerator({
                 )}
               </TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="weekly" className="mt-6">
               {renderWeeklyView()}
             </TabsContent>
-            
+
             <TabsContent value="daily" className="mt-6">
-              <div className="text-center py-8">
-                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Günlük Görünüm</h3>
+              <div className="py-8 text-center">
+                <Calendar className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                <h3 className="mb-2 text-lg font-semibold">Günlük Görünüm</h3>
                 <p className="text-gray-600">Günlük görünüm yakında eklenecek.</p>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="conflicts" className="mt-6">
               {renderConflictsView()}
             </TabsContent>

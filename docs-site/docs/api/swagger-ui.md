@@ -38,4 +38,4 @@ API'yi test etmek için demo tenant'ı kullanabilirsiniz:
 
 ### Postman Collection
 
-API endpoint'lerini Postman'de test etmek için [Postman collection'ımızı](/postman-collection.json) indirebilirsiniz. 
+API endpoint'lerini Postman'de test etmek için [Postman collection'ımızı](/postman-collection.json) indirebilirsiniz.

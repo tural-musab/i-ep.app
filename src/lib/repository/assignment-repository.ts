@@ -71,60 +71,71 @@ export interface AssignmentSubmission extends BaseEntity {
 }
 
 export class AssignmentRepository extends BaseRepository<Assignment> {
-  constructor(tenantId: string) {
+  constructor(tenantId: string = 'default-tenant') {
     super('assignments', tenantId);
   }
 
   /**
    * Find assignments by class ID
    */
-  async findByClassId(classId: string, options: QueryOptions = {}): Promise<QueryResult<Assignment>> {
+  async findByClassId(
+    classId: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Assignment>> {
     return this.findAll({
       ...options,
-      filters: { class_id: classId }
+      filters: { class_id: classId },
     });
   }
 
   /**
    * Find assignments by teacher ID
    */
-  async findByTeacherId(teacherId: string, options: QueryOptions = {}): Promise<QueryResult<Assignment>> {
+  async findByTeacherId(
+    teacherId: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Assignment>> {
     return this.findAll({
       ...options,
-      filters: { teacher_id: teacherId }
+      filters: { teacher_id: teacherId },
     });
   }
 
   /**
    * Find assignments by type
    */
-  async findByType(type: Assignment['type'], options: QueryOptions = {}): Promise<QueryResult<Assignment>> {
+  async findByType(
+    type: Assignment['type'],
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Assignment>> {
     return this.findAll({
       ...options,
-      filters: { type }
+      filters: { type },
     });
   }
 
   /**
    * Find assignments by subject
    */
-  async findBySubject(subject: string, options: QueryOptions = {}): Promise<QueryResult<Assignment>> {
+  async findBySubject(
+    subject: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Assignment>> {
     return this.findAll({
       ...options,
-      filters: { subject }
+      filters: { subject },
     });
   }
 
   /**
    * Find assignments due within date range
    */
-  async findByDueDateRange(startDate: string, endDate: string, options: QueryOptions = {}): Promise<QueryResult<Assignment>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'due_date',
-      sortOrder = 'asc'
-    } = options;
+  async findByDueDateRange(
+    startDate: string,
+    endDate: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Assignment>> {
+    const { page = 1, limit = 10, sortBy = 'due_date', sortOrder = 'asc' } = options;
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -147,14 +158,17 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
   /**
    * Find upcoming assignments
    */
-  async findUpcoming(daysAhead: number = 7, options: QueryOptions = {}): Promise<QueryResult<Assignment>> {
+  async findUpcoming(
+    daysAhead: number = 7,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Assignment>> {
     const startDate = new Date().toISOString();
     const endDate = new Date(Date.now() + daysAhead * 24 * 60 * 60 * 1000).toISOString();
 
@@ -165,12 +179,7 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
    * Find overdue assignments
    */
   async findOverdue(options: QueryOptions = {}): Promise<QueryResult<Assignment>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'due_date',
-      sortOrder = 'desc'
-    } = options;
+    const { page = 1, limit = 10, sortBy = 'due_date', sortOrder = 'desc' } = options;
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -194,20 +203,18 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
   /**
    * Search assignments by title
    */
-  async searchByTitle(searchTerm: string, options: QueryOptions = {}): Promise<QueryResult<Assignment>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'created_at',
-      sortOrder = 'desc'
-    } = options;
+  async searchByTitle(
+    searchTerm: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Assignment>> {
+    const { page = 1, limit = 10, sortBy = 'created_at', sortOrder = 'desc' } = options;
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -229,7 +236,7 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
@@ -239,7 +246,8 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
   async findWithRelations(id: string): Promise<AssignmentWithRelations | null> {
     const { data, error } = await this.supabase
       .from('assignments')
-      .select(`
+      .select(
+        `
         *,
         class:classes!class_id (
           id,
@@ -253,7 +261,8 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
           email,
           subject
         )
-      `)
+      `
+      )
       .eq('id', id)
       .eq('tenant_id', this.tenantId)
       .single();
@@ -281,27 +290,32 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
   }> {
     const { data, error } = await this.supabase.rpc('get_assignment_statistics', {
       assignment_id: assignmentId,
-      tenant_id: this.tenantId
+      tenant_id: this.tenantId,
     });
 
     if (error) {
       throw new Error(`Repository error: ${error.message}`);
     }
 
-    return data || {
-      totalSubmissions: 0,
-      gradedSubmissions: 0,
-      averageScore: 0,
-      completionRate: 0,
-      onTimeSubmissions: 0,
-      lateSubmissions: 0
-    };
+    return (
+      data || {
+        totalSubmissions: 0,
+        gradedSubmissions: 0,
+        averageScore: 0,
+        completionRate: 0,
+        onTimeSubmissions: 0,
+        lateSubmissions: 0,
+      }
+    );
   }
 
   /**
    * Update assignment status
    */
-  async updateStatus(assignmentId: string, status: Assignment['status']): Promise<Assignment | null> {
+  async updateStatus(
+    assignmentId: string,
+    status: Assignment['status']
+  ): Promise<Assignment | null> {
     return this.update(assignmentId, { status });
   }
 
@@ -329,13 +343,11 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
   /**
    * Get assignments for student
    */
-  async findForStudent(studentId: string, options: QueryOptions = {}): Promise<QueryResult<Assignment>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'due_date',
-      sortOrder = 'asc'
-    } = options;
+  async findForStudent(
+    studentId: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Assignment>> {
+    const { page = 1, limit = 10, sortBy = 'due_date', sortOrder = 'asc' } = options;
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -370,7 +382,7 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
@@ -380,9 +392,9 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
   async bulkUpdateClass(assignmentIds: string[], classId: string): Promise<boolean> {
     const { error } = await this.supabase
       .from('assignments')
-      .update({ 
+      .update({
         class_id: classId,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .in('id', assignmentIds)
       .eq('tenant_id', this.tenantId);
@@ -409,7 +421,7 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
       ...assignmentData,
       title: `${assignmentData.title} (Copy)`,
       status: 'draft' as const,
-      ...updates
+      ...updates,
     };
 
     return this.create(clonedAssignment);
@@ -420,34 +432,43 @@ export class AssignmentRepository extends BaseRepository<Assignment> {
  * Assignment Submission Repository
  */
 export class AssignmentSubmissionRepository extends BaseRepository<AssignmentSubmission> {
-  constructor(tenantId: string) {
+  constructor(tenantId: string = 'default-tenant') {
     super('assignment_submissions', tenantId);
   }
 
   /**
    * Find submissions by assignment ID
    */
-  async findByAssignmentId(assignmentId: string, options: QueryOptions = {}): Promise<QueryResult<AssignmentSubmission>> {
+  async findByAssignmentId(
+    assignmentId: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<AssignmentSubmission>> {
     return this.findAll({
       ...options,
-      filters: { assignment_id: assignmentId }
+      filters: { assignment_id: assignmentId },
     });
   }
 
   /**
    * Find submissions by student ID
    */
-  async findByStudentId(studentId: string, options: QueryOptions = {}): Promise<QueryResult<AssignmentSubmission>> {
+  async findByStudentId(
+    studentId: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<AssignmentSubmission>> {
     return this.findAll({
       ...options,
-      filters: { student_id: studentId }
+      filters: { student_id: studentId },
     });
   }
 
   /**
    * Find submission by assignment and student
    */
-  async findByAssignmentAndStudent(assignmentId: string, studentId: string): Promise<AssignmentSubmission | null> {
+  async findByAssignmentAndStudent(
+    assignmentId: string,
+    studentId: string
+  ): Promise<AssignmentSubmission | null> {
     const { data, error } = await this.getBaseQuery()
       .eq('assignment_id', assignmentId)
       .eq('student_id', studentId)
@@ -466,13 +487,18 @@ export class AssignmentSubmissionRepository extends BaseRepository<AssignmentSub
   /**
    * Grade submission
    */
-  async grade(submissionId: string, score: number, feedback?: string, gradedBy?: string): Promise<AssignmentSubmission | null> {
+  async grade(
+    submissionId: string,
+    score: number,
+    feedback?: string,
+    gradedBy?: string
+  ): Promise<AssignmentSubmission | null> {
     return this.update(submissionId, {
       score,
       feedback,
       graded_by: gradedBy,
       graded_at: new Date().toISOString(),
-      status: 'graded'
+      status: 'graded',
     });
   }
 
@@ -489,7 +515,7 @@ export class AssignmentSubmissionRepository extends BaseRepository<AssignmentSub
   async findUngraded(options: QueryOptions = {}): Promise<QueryResult<AssignmentSubmission>> {
     return this.findAll({
       ...options,
-      filters: { status: 'submitted' }
+      filters: { status: 'submitted' },
     });
   }
 }

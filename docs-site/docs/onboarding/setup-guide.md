@@ -64,6 +64,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 Eğer yerel PostgreSQL kullanmak istiyorsanız:
 
 1. PostgreSQL veritabanı oluşturun:
+
    ```bash
    createdb i_ep_app
    ```
@@ -122,11 +123,11 @@ Bu komut, veritabanınızda yeni bir tenant oluşturacak ve ilgili şemaları ve
 
 İ-EP.APP, farklı ortamlar için farklı env dosyaları kullanmaktadır:
 
-| Komut | Ortam | Açıklama |
-|-------|-------|----------|
-| `npm run dev` | Development | Yerel geliştirme ortamı |
-| `npm run dev:staging` | Staging | Staging ortamı konfigürasyonu |
-| `npm run dev:local-remote` | Hibrit | Yerel frontend + uzak backend |
+| Komut                      | Ortam       | Açıklama                      |
+| -------------------------- | ----------- | ----------------------------- |
+| `npm run dev`              | Development | Yerel geliştirme ortamı       |
+| `npm run dev:staging`      | Staging     | Staging ortamı konfigürasyonu |
+| `npm run dev:local-remote` | Hibrit      | Yerel frontend + uzak backend |
 
 ## Yaygın Sorunlar ve Çözümleri
 
@@ -137,6 +138,7 @@ Error: Failed to connect to Supabase
 ```
 
 **Çözüm:**
+
 - `.env.local` dosyasındaki Supabase URL ve anahtarlarının doğru olduğundan emin olun
 - Supabase projenizin aktif olduğunu kontrol edin
 - Ağ bağlantınızı kontrol edin
@@ -148,6 +150,7 @@ Error: Please define the NEXT_PUBLIC_SUPABASE_URL environment variable
 ```
 
 **Çözüm:**
+
 - `.env.local` dosyasının doğru konumda olduğundan emin olun
 - Geliştirme sunucusunu yeniden başlatın
 - Tüm gerekli çevre değişkenlerinin tanımlandığını kontrol edin
@@ -159,6 +162,7 @@ Error: Redis connection failed
 ```
 
 **Çözüm:**
+
 - Redis sunucusunun çalıştığından emin olun
 - `.env.local` dosyasındaki Redis bağlantı bilgilerini kontrol edin
 
@@ -168,12 +172,14 @@ Yerel geliştirme ortamınızı başarıyla kurduktan sonra, şunları yapabilir
 
 1. [Mimari Özet](./architecture-overview.md) dokümanını inceleyerek projenin yapısını anlayabilirsiniz
 2. [Kod Standartları](./code-standards.md) dokümanını okuyarak geliştirme standartlarını öğrenebilirsiniz
-3. [Multi-tenant Mimarisi Test Rehberi](../testing/multi-tenant-testing.md) ile tenant izolasyonu test süreçlerini anlayabilirsiniz 
+3. [Multi-tenant Mimarisi Test Rehberi](../testing/multi-tenant-testing.md) ile tenant izolasyonu test süreçlerini anlayabilirsiniz
 
 ---
 
 ## Notion MCP Nedir?
+
 Notion MCP, Notion’daki doküman, görev ve bilgileri doğrudan kod editörüne veya AI asistanına entegre eden bir araçtır. Böylece:
+
 - Notion’daki dokümanları editöründe arayabilir, okuyabilir ve kullanabilirsin.
 - Kod ile dokümantasyon arasında hızlı geçiş yapabilirsin.
 - Takım içi bilgi akışını hızlandırırsın.
@@ -183,6 +189,7 @@ Notion MCP, Notion’daki doküman, görev ve bilgileri doğrudan kod editörün
 ## Kurulum Adımları
 
 ### 1. Notion MCP Paketini Kur
+
 Terminalde projenin kök dizininde aşağıdaki komutu çalıştır:
 
 ```sh
@@ -194,6 +201,7 @@ Terminalde projenin kök dizininde aşağıdaki komutu çalıştır:
 ---
 
 ### 2. Notion API Entegrasyonu için Token Al
+
 - [Notion Developers](https://www.notion.so/my-integrations) sayfasına git.
 - Yeni bir “integration” oluştur ve “Internal Integration Token” al.
 - Bu token’ı bir yere kaydet.
@@ -201,6 +209,7 @@ Terminalde projenin kök dizininde aşağıdaki komutu çalıştır:
 ---
 
 ### 3. Notion MCP’yi Editörüne Tanıt
+
 `.cursor/mcp.json` dosyasına aşağıdaki gibi bir blok ekle:
 
 ```json
@@ -213,11 +222,13 @@ Terminalde projenin kök dizininde aşağıdaki komutu çalıştır:
   }
 }
 ```
+
 > Eğer başka MCP sunucuların varsa, bu bloğu mevcut `"mcpServers"` objesine ekle.
 
 ---
 
 ### 4. Notion Token’ını Tanımla
+
 İlk çalıştırmada veya kurulum sırasında senden Notion API token’ını girmen istenebilir.  
 Eğer istenmezse, terminalde aşağıdaki gibi bir ortam değişkeniyle başlatabilirsin:
 
@@ -229,6 +240,7 @@ npx @agentdeskai/notion-mcp@latest
 ---
 
 ### 5. Editöründe MCP Sunucusunu Aktif Et
+
 - Cursor veya kullandığın editörde MCP sunucularını yenile.
 - “notion-mcp” sunucusunun bağlı olduğundan emin ol.
 
@@ -239,4 +251,4 @@ npx @agentdeskai/notion-mcp@latest
 Öncelikle Notion MCP sunucusunu başlatacağım. Eğer Notion API token’ını biliyorsan, bana iletebilir veya ilk çalıştırmada terminale girebilirsin.  
 Başlatmamı onaylıyor musun? Eğer token’ı bana iletmek istemiyorsan, ilk çalıştırmada kendin de girebilirsin.
 
-Onay verirsen hemen başlatıyorum! 
+Onay verirsen hemen başlatıyorum!

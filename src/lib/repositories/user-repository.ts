@@ -35,11 +35,7 @@ export class UserRepository {
    */
   async getById(id: string): Promise<User | null> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabase.from('users').select('*').eq('id', id).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -58,11 +54,7 @@ export class UserRepository {
    */
   async getByEmail(email: string): Promise<User | null> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('email', email)
-      .single();
+    const { data, error } = await supabase.from('users').select('*').eq('email', email).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -100,11 +92,7 @@ export class UserRepository {
    */
   async create(user: InsertUser): Promise<User> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    const { data, error } = await supabase
-      .from('users')
-      .insert(user)
-      .select()
-      .single();
+    const { data, error } = await supabase.from('users').insert(user).select().single();
 
     if (error) {
       console.error('Kullanıcı oluşturulurken hata oluştu:', error);
@@ -155,10 +143,7 @@ export class UserRepository {
    */
   async delete(id: string): Promise<void> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    const { error } = await supabase
-      .from('users')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('users').delete().eq('id', id);
 
     if (error) {
       console.error('Kullanıcı silinirken hata oluştu:', error);
@@ -182,4 +167,4 @@ export class UserRepository {
 
     return count || 0;
   }
-} 
+}

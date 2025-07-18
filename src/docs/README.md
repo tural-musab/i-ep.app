@@ -96,4 +96,4 @@ Dokümantasyona katkıda bulunmak için lütfen şu adımları izleyin:
 2. Yukarıda açıklanan formatı takip edin.
 3. Değişikliklerinizi bir pull request ile gönderin.
 
-Dokümantasyon kalitesi, projenin başarısı için kritik öneme sahiptir. Katkınız için teşekkür ederiz! 
+Dokümantasyon kalitesi, projenin başarısı için kritik öneme sahiptir. Katkınız için teşekkür ederiz!

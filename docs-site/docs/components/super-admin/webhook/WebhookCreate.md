@@ -18,25 +18,25 @@ Yeni webhook oluşturmak için kullanılan form komponenti.
 interface WebhookCreateProps {
   /** Tenant ID */
   tenantId?: string;
-  
+
   /** Başlangıç değerleri */
   initialValues?: Partial<WebhookConfig>;
-  
+
   /** Form gönderildiğinde çağrılır */
   onSubmit?: (config: WebhookConfig) => Promise<void>;
-  
+
   /** İptal edildiğinde çağrılır */
   onCancel?: () => void;
-  
+
   /** Test yapıldığında çağrılır */
   onTest?: (config: WebhookConfig) => Promise<TestResult>;
-  
+
   /** Kullanılabilir eventler */
   availableEvents?: WebhookEvent[];
-  
+
   /** Şablonlar */
   templates?: WebhookTemplate[];
-  
+
   /** Form durumu */
   status?: 'idle' | 'validating' | 'testing' | 'submitting' | 'success' | 'error';
 }
@@ -132,8 +132,8 @@ export default function CreateWebhookPage() {
         method: 'POST',
         retry: {
           enabled: true,
-          maxAttempts: 3
-        }
+          maxAttempts: 3,
+        },
       }}
       onSubmit={handleSubmit}
       onTest={handleTest}
@@ -147,15 +147,13 @@ export default function CreateWebhookPage() {
 ## Form Bölümleri
 
 ### Temel Bilgiler
+
 ```tsx
-<BasicInfoSection
-  values={values}
-  errors={errors}
-  onChange={handleChange}
-/>
+<BasicInfoSection values={values} errors={errors} onChange={handleChange} />
 ```
 
 ### Event Seçimi
+
 ```tsx
 <EventSelector
   events={availableEvents}
@@ -166,6 +164,7 @@ export default function CreateWebhookPage() {
 ```
 
 ### Güvenlik Ayarları
+
 ```tsx
 <SecuritySettings
   type={values.security.type}
@@ -181,7 +180,7 @@ export default function CreateWebhookPage() {
 const createWebhook = async (config: WebhookConfig) => {
   const response = await fetch('/api/webhooks', {
     method: 'POST',
-    body: JSON.stringify(config)
+    body: JSON.stringify(config),
   });
   return response.json();
 };
@@ -190,7 +189,7 @@ const createWebhook = async (config: WebhookConfig) => {
 const testWebhook = async (config: WebhookConfig) => {
   const response = await fetch('/api/webhooks/test', {
     method: 'POST',
-    body: JSON.stringify(config)
+    body: JSON.stringify(config),
   });
   return response.json();
 };
@@ -206,37 +205,23 @@ const fetchEvents = async () => {
 
 ```typescript
 const validationSchema = yup.object().shape({
-  name: yup
-    .string()
-    .required('Webhook adı zorunludur')
-    .min(3, 'En az 3 karakter olmalıdır'),
-  url: yup
-    .string()
-    .required('URL zorunludur')
-    .url('Geçerli bir URL giriniz'),
-  events: yup
-    .array()
-    .of(yup.string())
-    .min(1, 'En az bir event seçilmelidir'),
+  name: yup.string().required('Webhook adı zorunludur').min(3, 'En az 3 karakter olmalıdır'),
+  url: yup.string().required('URL zorunludur').url('Geçerli bir URL giriniz'),
+  events: yup.array().of(yup.string()).min(1, 'En az bir event seçilmelidir'),
   security: yup.object().shape({
     type: yup.string().required('Güvenlik tipi seçilmelidir'),
     secret: yup.string().when('type', {
       is: 'hmac',
-      then: yup.string().required('Secret zorunludur')
-    })
-  })
+      then: yup.string().required('Secret zorunludur'),
+    }),
+  }),
 });
 ```
 
 ## Test Aracı
 
 ```tsx
-<WebhookTester
-  config={values}
-  onTest={handleTest}
-  showResponse
-  showLatency
-/>
+<WebhookTester config={values} onTest={handleTest} showResponse showLatency />
 ```
 
 ## Erişilebilirlik
@@ -249,11 +234,11 @@ const validationSchema = yup.object().shape({
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Yan yana form grupları |
-| 768px - 1024px | Tek kolon form |
-| < 768px | Basitleştirilmiş görünüm |
+| Ekran Boyutu   | Davranış                 |
+| -------------- | ------------------------ |
+| > 1024px       | Yan yana form grupları   |
+| 768px - 1024px | Tek kolon form           |
+| < 768px        | Basitleştirilmiş görünüm |
 
 ## Test
 
@@ -261,7 +246,7 @@ const validationSchema = yup.object().shape({
 describe('WebhookCreate', () => {
   it('validates required fields', async () => {
     render(<WebhookCreate />);
-    
+
     await userEvent.click(screen.getByText('Oluştur'));
     expect(screen.getByText('Webhook adı zorunludur')).toBeInTheDocument();
   });
@@ -274,10 +259,10 @@ describe('WebhookCreate', () => {
         ]}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Event Seç'));
     await userEvent.click(screen.getByText('Kullanıcı Oluşturuldu'));
-    
+
     expect(screen.getByText('1 event seçildi')).toBeInTheDocument();
   });
 
@@ -286,13 +271,13 @@ describe('WebhookCreate', () => {
       success: true,
       statusCode: 200
     });
-    
+
     render(
       <WebhookCreate
         onTest={onTest}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Test Et'));
     expect(screen.getByText('Test başarılı')).toBeInTheDocument();
   });
@@ -312,10 +297,10 @@ describe('WebhookCreate', () => {
         ]}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Şablon Kullan'));
     await userEvent.click(screen.getByText('Slack Notification'));
-    
+
     expect(screen.getByDisplayValue('https://hooks.slack.com/...'))
       .toBeInTheDocument();
   });
@@ -392,8 +377,8 @@ WithError.args = {
     section: 'border rounded-lg p-4',
     test: {
       success: 'bg-green-50',
-      error: 'bg-red-50'
-    }
+      error: 'bg-red-50',
+    },
   }}
 />
 ```
@@ -404,4 +389,4 @@ WithError.args = {
 2. Güvenlik bilgilerini koru
 3. Test sonuçlarını logla
 4. Retry mekanizması ekle
-5. Event filtrelerini optimize et 
+5. Event filtrelerini optimize et

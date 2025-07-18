@@ -47,4 +47,4 @@ if (typeof global.AbortController === 'undefined') {
 // MockDocumentType to prevent jsdom warnings
 if (typeof global.DocumentType === 'undefined') {
   global.DocumentType = class DocumentType {};
-} 
+}

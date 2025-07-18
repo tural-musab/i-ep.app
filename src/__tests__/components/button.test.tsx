@@ -13,7 +13,7 @@ describe('Button Component', () => {
   it('handles click events', () => {
     const handleClick = jest.fn();
     render(<Button onClick={handleClick}>Click me</Button>);
-    
+
     fireEvent.click(screen.getByText('Click me'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -21,7 +21,7 @@ describe('Button Component', () => {
   it('applies default variant and size classes', () => {
     render(<Button>Default Button</Button>);
     const button = screen.getByText('Default Button');
-    
+
     expect(button).toHaveClass('bg-primary');
     expect(button).toHaveClass('h-9');
   });
@@ -35,7 +35,9 @@ describe('Button Component', () => {
       ['ghost', 'hover:bg-accent'],
       ['link', 'text-primary'],
     ])('renders %s variant with correct class', (variant, expectedClass) => {
-      render(<Button variant={variant as VariantProps<typeof buttonVariants>['variant']}>Button</Button>);
+      render(
+        <Button variant={variant as VariantProps<typeof buttonVariants>['variant']}>Button</Button>
+      );
       expect(screen.getByText('Button')).toHaveClass(expectedClass);
     });
   });
@@ -58,7 +60,7 @@ describe('Button Component', () => {
         <Link href="/test">Link Button</Link>
       </Button>
     );
-    
+
     const link = screen.getByRole('link');
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute('href', '/test');
@@ -67,7 +69,7 @@ describe('Button Component', () => {
   it('is disabled when disabled prop is true', () => {
     render(<Button disabled>Disabled Button</Button>);
     const button = screen.getByText('Disabled Button');
-    
+
     expect(button).toBeDisabled();
     expect(button).toHaveClass('disabled:opacity-50');
   });
@@ -78,9 +80,13 @@ describe('Button Component', () => {
   });
 
   it('forwards additional props', () => {
-    render(<Button data-testid="test-button" type="submit">Submit</Button>);
+    render(
+      <Button data-testid="test-button" type="submit">
+        Submit
+      </Button>
+    );
     const button = screen.getByTestId('test-button');
-    
+
     expect(button).toHaveAttribute('type', 'submit');
   });
 });

@@ -1,7 +1,7 @@
 /**
  * System Health Dashboard Component
  * Sprint 7: Super Admin Paneli - Sistem Sağlığı Dashboard'u
- * 
+ *
  * Bu komponent sistem sağlığı bilgilerini gösterir:
  * - Database durumu
  * - Redis cache durumu
@@ -13,14 +13,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { 
-  Database, 
-  Server, 
-  Shield, 
-  AlertTriangle, 
-  CheckCircle, 
+import {
+  Database,
+  Server,
+  Shield,
+  AlertTriangle,
+  CheckCircle,
   Clock,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -85,8 +85,8 @@ const SystemHealthDashboard: React.FC = () => {
     try {
       const response = await fetch('/api/super-admin/system-health', {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('auth_token')}` // Gerçek implementasyonda güvenli auth
-        }
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`, // Gerçek implementasyonda güvenli auth
+        },
       });
 
       if (!response.ok) {
@@ -163,7 +163,7 @@ const SystemHealthDashboard: React.FC = () => {
     const days = Math.floor(seconds / 86400);
     const hours = Math.floor((seconds % 86400) / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    
+
     if (days > 0) {
       return `${days}d ${hours}h ${minutes}m`;
     } else if (hours > 0) {
@@ -184,11 +184,11 @@ const SystemHealthDashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="animate-pulse space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white p-6 rounded-lg shadow-sm border">
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-              <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+            <div key={i} className="rounded-lg border bg-white p-6 shadow-sm">
+              <div className="mb-4 h-4 w-3/4 rounded bg-gray-200"></div>
+              <div className="h-8 w-1/2 rounded bg-gray-200"></div>
             </div>
           ))}
         </div>
@@ -198,15 +198,15 @@ const SystemHealthDashboard: React.FC = () => {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+      <div className="rounded-lg border border-red-200 bg-red-50 p-6">
         <div className="flex items-center">
-          <AlertTriangle className="h-6 w-6 text-red-600 mr-3" />
+          <AlertTriangle className="mr-3 h-6 w-6 text-red-600" />
           <div>
             <h3 className="text-lg font-medium text-red-900">System Health Check Failed</h3>
-            <p className="text-red-700 mt-1">{error}</p>
+            <p className="mt-1 text-red-700">{error}</p>
             <button
               onClick={fetchHealthData}
-              className="mt-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700"
             >
               Retry
             </button>
@@ -224,11 +224,9 @@ const SystemHealthDashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">System Health</h2>
-          <p className="text-gray-600 mt-1">
-            Last updated: {lastUpdate.toLocaleTimeString()}
-          </p>
+          <p className="mt-1 text-gray-600">Last updated: {lastUpdate.toLocaleTimeString()}</p>
         </div>
-        
+
         <div className="flex items-center space-x-4">
           <label className="flex items-center">
             <input
@@ -239,22 +237,24 @@ const SystemHealthDashboard: React.FC = () => {
             />
             <span className="ml-2 text-sm text-gray-700">Auto-refresh</span>
           </label>
-          
+
           <button
             onClick={fetchHealthData}
-            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex items-center rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
           >
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </button>
         </div>
       </div>
 
       {/* Overall Status */}
-      <div className={cn(
-        "bg-white border-2 rounded-lg p-6",
-        getStatusColor(healthData.overall.status)
-      )}>
+      <div
+        className={cn(
+          'rounded-lg border-2 bg-white p-6',
+          getStatusColor(healthData.overall.status)
+        )}
+      >
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             {getStatusIcon(healthData.overall.status)}
@@ -263,53 +263,61 @@ const SystemHealthDashboard: React.FC = () => {
                 System {healthData.overall.status}
               </h3>
               <p className="text-sm opacity-75">
-                Uptime: {formatUptime(healthData.overall.uptime)} • 
-                Version {healthData.overall.version} • 
-                {healthData.overall.environment}
+                Uptime: {formatUptime(healthData.overall.uptime)} • Version{' '}
+                {healthData.overall.version} •{healthData.overall.environment}
               </p>
             </div>
           </div>
-          
+
           <div className="text-right">
             <div className="text-2xl font-bold">
-              {healthData.overall.status === 'healthy' ? '✓' : 
-               healthData.overall.status === 'degraded' ? '⚠' : '✗'}
+              {healthData.overall.status === 'healthy'
+                ? '✓'
+                : healthData.overall.status === 'degraded'
+                  ? '⚠'
+                  : '✗'}
             </div>
           </div>
         </div>
       </div>
 
       {/* Component Status Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
         {/* Database Health */}
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <div className="flex items-center mb-4">
-            <div className={cn(
-              "p-2 rounded-lg",
-              healthData.database.connection ? "bg-green-100" : "bg-red-100"
-            )}>
-              <Database className={cn(
-                "h-6 w-6",
-                healthData.database.connection ? "text-green-600" : "text-red-600"
-              )} />
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
+          <div className="mb-4 flex items-center">
+            <div
+              className={cn(
+                'rounded-lg p-2',
+                healthData.database.connection ? 'bg-green-100' : 'bg-red-100'
+              )}
+            >
+              <Database
+                className={cn(
+                  'h-6 w-6',
+                  healthData.database.connection ? 'text-green-600' : 'text-red-600'
+                )}
+              />
             </div>
             <div className="ml-3">
               <h3 className="text-lg font-semibold text-gray-900">Database</h3>
               <p className="text-sm text-gray-600">PostgreSQL via Supabase</p>
             </div>
           </div>
-          
+
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Status</span>
-              <span className={cn(
-                "text-sm font-medium",
-                healthData.database.connection ? "text-green-600" : "text-red-600"
-              )}>
+              <span
+                className={cn(
+                  'text-sm font-medium',
+                  healthData.database.connection ? 'text-green-600' : 'text-red-600'
+                )}
+              >
                 {healthData.database.connection ? 'Connected' : 'Disconnected'}
               </span>
             </div>
-            
+
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Response Time</span>
               <span className="text-sm font-medium text-gray-900">
@@ -329,34 +337,40 @@ const SystemHealthDashboard: React.FC = () => {
         </div>
 
         {/* Redis Health */}
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <div className="flex items-center mb-4">
-            <div className={cn(
-              "p-2 rounded-lg",
-              healthData.redis.connection ? "bg-green-100" : "bg-red-100"
-            )}>
-              <Server className={cn(
-                "h-6 w-6",
-                healthData.redis.connection ? "text-green-600" : "text-red-600"
-              )} />
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
+          <div className="mb-4 flex items-center">
+            <div
+              className={cn(
+                'rounded-lg p-2',
+                healthData.redis.connection ? 'bg-green-100' : 'bg-red-100'
+              )}
+            >
+              <Server
+                className={cn(
+                  'h-6 w-6',
+                  healthData.redis.connection ? 'text-green-600' : 'text-red-600'
+                )}
+              />
             </div>
             <div className="ml-3">
               <h3 className="text-lg font-semibold text-gray-900">Redis Cache</h3>
               <p className="text-sm text-gray-600">In-memory data store</p>
             </div>
           </div>
-          
+
           <div className="space-y-3">
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Status</span>
-              <span className={cn(
-                "text-sm font-medium",
-                healthData.redis.connection ? "text-green-600" : "text-red-600"
-              )}>
+              <span
+                className={cn(
+                  'text-sm font-medium',
+                  healthData.redis.connection ? 'text-green-600' : 'text-red-600'
+                )}
+              >
                 {healthData.redis.connection ? 'Connected' : 'Disconnected'}
               </span>
             </div>
-            
+
             <div className="flex justify-between">
               <span className="text-sm text-gray-600">Response Time</span>
               <span className="text-sm font-medium text-gray-900">
@@ -375,20 +389,21 @@ const SystemHealthDashboard: React.FC = () => {
 
             {healthData.redis.memoryUsage && (
               <div>
-                <div className="flex justify-between mb-1">
+                <div className="mb-1 flex justify-between">
                   <span className="text-sm text-gray-600">Memory Usage</span>
                   <span className="text-sm font-medium text-gray-900">
                     {healthData.redis.memoryUsage.percentage.toFixed(1)}%
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-blue-600 h-2 rounded-full" 
+                <div className="h-2 w-full rounded-full bg-gray-200">
+                  <div
+                    className="h-2 rounded-full bg-blue-600"
                     style={{ width: `${healthData.redis.memoryUsage.percentage}%` }}
                   ></div>
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  {formatBytes(healthData.redis.memoryUsage.used)} / {formatBytes(healthData.redis.memoryUsage.max)}
+                <div className="mt-1 text-xs text-gray-500">
+                  {formatBytes(healthData.redis.memoryUsage.used)} /{' '}
+                  {formatBytes(healthData.redis.memoryUsage.max)}
                 </div>
               </div>
             )}
@@ -396,9 +411,9 @@ const SystemHealthDashboard: React.FC = () => {
         </div>
 
         {/* SSL Status Summary */}
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <div className="flex items-center mb-4">
-            <div className="p-2 rounded-lg bg-blue-100">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
+          <div className="mb-4 flex items-center">
+            <div className="rounded-lg bg-blue-100 p-2">
               <Shield className="h-6 w-6 text-blue-600" />
             </div>
             <div className="ml-3">
@@ -406,34 +421,32 @@ const SystemHealthDashboard: React.FC = () => {
               <p className="text-sm text-gray-600">{healthData.ssl.length} domains monitored</p>
             </div>
           </div>
-          
+
           <div className="space-y-2">
             {healthData.ssl.slice(0, 3).map((ssl, index) => (
-              <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+              <div
+                key={index}
+                className="flex items-center justify-between border-b border-gray-100 py-2 last:border-b-0"
+              >
                 <div className="flex items-center">
                   {getStatusIcon(ssl.status)}
-                  <span className="ml-2 text-sm text-gray-900 truncate max-w-[150px]">
+                  <span className="ml-2 max-w-[150px] truncate text-sm text-gray-900">
                     {ssl.domain}
                   </span>
                 </div>
                 <div className="text-right">
-                  <div className={cn(
-                    "text-xs px-2 py-1 rounded-full",
-                    getStatusColor(ssl.status)
-                  )}>
+                  <div className={cn('rounded-full px-2 py-1 text-xs', getStatusColor(ssl.status))}>
                     {ssl.status}
                   </div>
                   {ssl.daysUntilExpiry && (
-                    <div className="text-xs text-gray-500 mt-1">
-                      {ssl.daysUntilExpiry}d left
-                    </div>
+                    <div className="mt-1 text-xs text-gray-500">{ssl.daysUntilExpiry}d left</div>
                   )}
                 </div>
               </div>
             ))}
-            
+
             {healthData.ssl.length > 3 && (
-              <div className="text-center pt-2">
+              <div className="pt-2 text-center">
                 <button className="text-sm text-blue-600 hover:text-blue-800">
                   View all {healthData.ssl.length} certificates →
                 </button>
@@ -444,20 +457,17 @@ const SystemHealthDashboard: React.FC = () => {
       </div>
 
       {/* Recent Health Checks */}
-      <div className="bg-white rounded-lg shadow-sm border">
-        <div className="px-6 py-4 border-b border-gray-200">
+      <div className="rounded-lg border bg-white shadow-sm">
+        <div className="border-b border-gray-200 px-6 py-4">
           <h3 className="text-lg font-semibold text-gray-900">Recent Health Checks</h3>
         </div>
-        
+
         <div className="p-6">
           <div className="space-y-4">
             {healthData.overall.checks.map((check, index) => (
               <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className={cn(
-                    "p-1.5 rounded-full mr-3",
-                    getStatusColor(check.status)
-                  )}>
+                  <div className={cn('mr-3 rounded-full p-1.5', getStatusColor(check.status))}>
                     {getStatusIcon(check.status)}
                   </div>
                   <div>
@@ -465,7 +475,7 @@ const SystemHealthDashboard: React.FC = () => {
                     <p className="text-sm text-gray-600">{check.message}</p>
                   </div>
                 </div>
-                
+
                 <div className="text-right">
                   <div className="text-sm text-gray-900">{check.duration}ms</div>
                   <div className="text-xs text-gray-500">
@@ -481,4 +491,4 @@ const SystemHealthDashboard: React.FC = () => {
   );
 };
 
-export default SystemHealthDashboard; 
+export default SystemHealthDashboard;

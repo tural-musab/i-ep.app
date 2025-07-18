@@ -7,7 +7,7 @@ describe('Logger Tests', () => {
   beforeEach(() => {
     // Process.env'i mock'la
     process.env = { ...originalEnv };
-    
+
     // Logger modülünü temizle
     jest.resetModules();
   });
@@ -22,10 +22,10 @@ describe('Logger Tests', () => {
       // Arrange
       process.env.LOG_LEVEL = 'debug';
       process.env.NODE_ENV = 'test';
-      
+
       // Act
       const logger = (await import('@/lib/logger')).default;
-      
+
       // Assert
       expect(logger.level).toBe('debug');
     });
@@ -34,10 +34,10 @@ describe('Logger Tests', () => {
       // Arrange
       delete process.env.LOG_LEVEL;
       process.env.NODE_ENV = 'test';
-      
+
       // Act
       const logger = (await import('@/lib/logger')).default;
-      
+
       // Assert
       expect(logger.level).toBe('info');
     });
@@ -45,10 +45,10 @@ describe('Logger Tests', () => {
     it('should use pretty transport in development', async () => {
       // Arrange
       process.env.NODE_ENV = 'development';
-      
+
       // Act
       const logger = (await import('@/lib/logger')).default;
-      
+
       // Assert
       // Pino'da transport bilgisini doğrudan kontrol etmek zor
       // Bu nedenle logger'ın çalıştığını test edeceğiz
@@ -60,10 +60,10 @@ describe('Logger Tests', () => {
     it('should not use pretty transport in production', async () => {
       // Arrange
       process.env.NODE_ENV = 'production';
-      
+
       // Act
       const logger = (await import('@/lib/logger')).default;
-      
+
       // Assert
       expect(logger).toBeDefined();
       expect(typeof logger.info).toBe('function');
@@ -75,10 +75,10 @@ describe('Logger Tests', () => {
     it('should have all required logging methods', async () => {
       // Arrange
       process.env.NODE_ENV = 'test';
-      
+
       // Act
       const logger = (await import('@/lib/logger')).default;
-      
+
       // Assert
       expect(typeof logger.info).toBe('function');
       expect(typeof logger.error).toBe('function');
@@ -90,13 +90,13 @@ describe('Logger Tests', () => {
       // Arrange
       process.env.NODE_ENV = 'test';
       const logger = (await import('@/lib/logger')).default;
-      
+
       // Spy on logger write method
       const writeSpy = jest.spyOn(logger, 'info');
-      
+
       // Act
       logger.info({ userId: '123', action: 'login' }, 'User logged in');
-      
+
       // Assert
       expect(writeSpy).toHaveBeenCalledWith({ userId: '123', action: 'login' }, 'User logged in');
     });
@@ -147,10 +147,10 @@ describe('Request Logger Middleware', () => {
     const { createRequestLogger } = await import('@/middleware/logger');
     const logger = (await import('@/lib/logger')).default;
     const logSpy = jest.spyOn(logger, 'info');
-    
+
     // Act
     createRequestLogger(mockReq);
-    
+
     // Assert
     expect(logSpy).toHaveBeenCalledWith(
       {
@@ -168,18 +168,18 @@ describe('Request Logger Middleware', () => {
     const { createRequestLogger } = await import('@/middleware/logger');
     const logger = (await import('@/lib/logger')).default;
     const logSpy = jest.spyOn(logger, 'info');
-    
+
     // Act
     const requestLogger = createRequestLogger(mockReq);
-    
+
     // Simulate some time passing
-    await new Promise(resolve => setTimeout(resolve, 10));
-    
+    await new Promise((resolve) => setTimeout(resolve, 10));
+
     requestLogger.finish(mockRes);
-    
+
     // Assert
     expect(logSpy).toHaveBeenCalledTimes(2); // Start and finish
-    
+
     const finishCall = logSpy.mock.calls[1];
     expect(finishCall[0]).toEqual(
       expect.objectContaining({
@@ -208,11 +208,11 @@ describe('Request Logger Middleware', () => {
     const { createRequestLogger } = await import('@/middleware/logger');
     const logger = (await import('@/lib/logger')).default;
     const logSpy = jest.spyOn(logger, 'info');
-    
+
     // Act
     const requestLogger = createRequestLogger(mockReqNoHeaders);
     requestLogger.finish(mockRes);
-    
+
     // Assert
     const startCall = logSpy.mock.calls[0];
     expect(startCall[0]).toEqual(
@@ -224,4 +224,4 @@ describe('Request Logger Middleware', () => {
       })
     );
   });
-}); 
+});

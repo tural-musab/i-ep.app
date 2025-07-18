@@ -10,22 +10,22 @@ Iqra Eğitim Portalı, eğitim kurumlarının kritik verilerini barındıran bir
 
 Yedekleme stratejimiz, abonelik planlarına göre farklılaşan dört ana yedekleme tipini içerir:
 
-| Yedekleme Türü | Sıklık | Saklama Süresi | Kapsam |
-|----------------|--------|----------------|--------|
-| Tam Yedekleme | Günlük (gece) | 30 gün | Tüm tenant verileri ve şemalar |
-| Artımlı Yedekleme | Saatlik | 7 gün | Değişen veriler |
-| Anlık Yedekleme (Snapshot) | Haftalık | 90 gün | Tam sistem durumu |
-| Tenant Özel Yedekleme | Manuel/İstek üzerine | 30 gün | Tek bir tenant'ın verileri |
+| Yedekleme Türü             | Sıklık               | Saklama Süresi | Kapsam                         |
+| -------------------------- | -------------------- | -------------- | ------------------------------ |
+| Tam Yedekleme              | Günlük (gece)        | 30 gün         | Tüm tenant verileri ve şemalar |
+| Artımlı Yedekleme          | Saatlik              | 7 gün          | Değişen veriler                |
+| Anlık Yedekleme (Snapshot) | Haftalık             | 90 gün         | Tam sistem durumu              |
+| Tenant Özel Yedekleme      | Manuel/İstek üzerine | 30 gün         | Tek bir tenant'ın verileri     |
 
 ### 2.1. Abonelik Planlarına Göre RPO (Kurtarma Noktası Hedefi)
 
 Yedekleme sıklıkları ve RPO (Recovery Point Objective) abonelik planlarına göre şu şekilde ayarlanmıştır:
 
-| Abonelik Planı | RPO |
-|----------------|-----|
-| Free | 24 saat |
-| Standard | 6 saat |
-| Premium | 1 saat |
+| Abonelik Planı | RPO     |
+| -------------- | ------- |
+| Free           | 24 saat |
+| Standard       | 6 saat  |
+| Premium        | 1 saat  |
 
 ## 3. Tenant Bazlı Yedekleme Yaklaşımı
 
@@ -43,6 +43,7 @@ pg_dump -h ${DB_HOST} -U ${DB_USER} -d ${DB_NAME} -n tenant_${TENANT_ID} -f tena
 ### 3.2. Yedeklemeler için Tenant İzolasyonunun Korunması
 
 Yedekleme sırasında tenant izolasyonu şu şekilde sağlanır:
+
 - Her tenant şeması ayrı dosyalarda yedeklenir
 - Yedeklemeler tenant ID'si ile adlandırılır
 - Geri yükleme işlemleri sadece ilgili tenant şemasını etkiler
@@ -67,6 +68,7 @@ function encryptBackup(data: Buffer, encryptionKey: string): Buffer {
 ### 4.2. Yedekleme Doğrulama
 
 Her yedekleme sonrası bütünlük kontrolü yapılır:
+
 - SHA-256 hash değeri hesaplanır ve saklanır
 - Geri yükleme öncesi hash doğrulaması yapılır
 - Periyodik olarak rastgele yedeklemeler test ortamına geri yüklenerek test edilir
@@ -76,6 +78,7 @@ Her yedekleme sonrası bütünlük kontrolü yapılır:
 ### 5.1. Çoklu Lokasyon Depolama
 
 Yedeklemeler aşağıdaki lokasyonlarda depolanır:
+
 1. Birincil veritabanı sunucusu (geçici)
 2. Yerel yedekleme sunucusu
 3. Bulut depolama (AWS S3 / Azure Blob Storage)
@@ -84,6 +87,7 @@ Yedeklemeler aşağıdaki lokasyonlarda depolanır:
 ### 5.2. Yedekleme Rotasyonu
 
 Yedekleme dosyaları aşağıdaki stratejiye göre yönetilir:
+
 - Son 7 günün tam yedeklemeleri hızlı erişilebilir depolamada tutulur
 - 7-30 gün arası yedeklemeler standart depolamada tutulur
 - 30-90 gün arası yedeklemeler soğuk depolamada tutulur
@@ -157,4 +161,4 @@ Yedekleme sisteminin düzenli olarak test edilmesi için:
 
 - [Felaket Kurtarma Planı](disaster-recovery.md)
 - [Veri İzolasyon Stratejisi](data-isolation.md)
-- [Multi-tenant Mimari Stratejisi](multi-tenant-strategy.md) 
+- [Multi-tenant Mimari Stratejisi](multi-tenant-strategy.md)

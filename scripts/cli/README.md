@@ -56,6 +56,7 @@ i-ep tenant:create
 ```
 
 Bu komut, size aşağıdaki bilgileri soracak:
+
 - Tenant adı
 - Subdomain
 - Admin e-posta adresi
@@ -81,6 +82,7 @@ i-ep tenant:get 123e4567-e89b-12d3-a456-426614174999
 ```
 
 Bu komut, tenant'ın aşağıdaki bilgilerini gösterecek:
+
 - Temel bilgiler (ID, ad, subdomain, vb.)
 - Durum ve abonelik planı
 - Özellikler
@@ -94,6 +96,7 @@ i-ep tenant:update 123e4567-e89b-12d3-a456-426614174999
 ```
 
 Bu komut, tenant'ın mevcut değerlerini göstererek güncellemenize olanak tanır:
+
 - Tenant adı
 - Durum (aktif, pasif, deneme)
 - Abonelik planı
@@ -115,6 +118,7 @@ i-ep db:schema-generate 123e4567-e89b-12d3-a456-426614174999
 ```
 
 Bu komut, belirtilen tenant için PostgreSQL şeması ve temel tabloları oluşturur:
+
 - Kullanıcılar tablosu
 - Öğrenciler tablosu
 - Sınıflar tablosu
@@ -153,4 +157,4 @@ Hata: ID'si "123..." olan tenant bulunamadı
 2. Yeni bir özellik dalı oluşturun: `git checkout -b my-new-feature`
 3. Değişikliklerinizi commit edin: `git commit -am 'Add some feature'`
 4. Dalınızı uzak sunucuya gönderin: `git push origin my-new-feature`
-5. Pull Request açın 
+5. Pull Request açın

@@ -7,34 +7,34 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  
+
   // Performance optimizations
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons', 'react-icons'],
     webpackBuildWorker: true,
   },
-  
+
   // Swagger UI ve testlerde sorun çıkaran ESM paketleri için transpile seçeneği
   transpilePackages: ['swagger-ui-react', '@supabase/realtime-js', '@supabase/supabase-js', 'msw'],
   // Vercel'de dağıtım sorunları nedeniyle standalone modunu devre dışı bırakıyoruz
   // output: 'standalone',
   serverExternalPackages: [],
-  
+
   // Webpack optimizations
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Bundle analyzer configuration
     if (process.env.ANALYZE === 'true') {
-      const BundleAnalyzerPlugin = require('@next/bundle-analyzer')()
-      config.plugins.push(new BundleAnalyzerPlugin())
+      const BundleAnalyzerPlugin = require('@next/bundle-analyzer')();
+      config.plugins.push(new BundleAnalyzerPlugin());
     }
-    
+
     // Tree shaking optimization
     config.optimization = {
       ...config.optimization,
       usedExports: true,
       sideEffects: false,
-    }
-    
+    };
+
     // Code splitting optimization
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
@@ -70,16 +70,15 @@ const nextConfig = {
             chunks: 'all',
           },
         },
-      }
+      };
     }
-    
-    return config
+
+    return config;
   },
-  
+
   // Compression
   compress: true,
-  
-  
+
   // Compiler optimizations
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',

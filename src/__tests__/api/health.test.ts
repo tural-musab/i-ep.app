@@ -44,7 +44,7 @@ describe('Health Check API', () => {
 
   it('should have correct response headers', async () => {
     const response = await GET();
-    
+
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toContain('application/json');
   });

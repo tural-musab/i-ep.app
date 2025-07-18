@@ -44,7 +44,7 @@ Bu teknik rehber, İ-EP.APP çok kiracılı (multi-tenant) platformunda domain y
 
 ## Domain Tipleri
 
-### Subdomain (*.i-ep.app)
+### Subdomain (\*.i-ep.app)
 
 - Otomatik yapılandırılan ve hızlıca oluşturulan alt alan adları
 - Format: `{tenant-name}.i-ep.app`
@@ -98,11 +98,13 @@ Bu teknik rehber, İ-EP.APP çok kiracılı (multi-tenant) platformunda domain y
 ### DNS Yapılandırması
 
 **Subdomain Yapılandırması**:
+
 ```
 {tenant-name}.i-ep.app   CNAME   i-ep.app
 ```
 
 **Özel Domain Yapılandırması**:
+
 ```
 example.com              CNAME   i-ep.app
 *.example.com           CNAME   i-ep.app (wildcard için)
@@ -139,9 +141,9 @@ module.exports = {
         ],
         destination: '/api/resolve-domain?domain=:customDomain&path=:path*',
       },
-    ]
-  }
-}
+    ];
+  },
+};
 ```
 
 ### Supabase Tenant İzolasyonu
@@ -164,7 +166,7 @@ CREATE TABLE public.domains (
 -- Domain bazlı erişim kontrolü için RLS politikaları
 CREATE POLICY tenant_isolation_policy
   ON schema_name.table_name
-  USING (tenant_id = (SELECT tenant_id FROM public.domains 
+  USING (tenant_id = (SELECT tenant_id FROM public.domains
                      WHERE domain = current_setting('request.headers')::json->>'host'));
 ```
 
@@ -172,20 +174,21 @@ CREATE POLICY tenant_isolation_policy
 
 ### Domain Yönetim API'leri
 
-| Endpoint | Metod | Açıklama |
-|----------|-------|----------|
-| `/api/domains` | GET | Tenant'a ait tüm domainleri listeler |
-| `/api/domains` | POST | Yeni domain ekler |
-| `/api/domains/:id` | GET | Domain detaylarını getirir |
-| `/api/domains/:id` | PATCH | Domain bilgilerini günceller |
-| `/api/domains/:id` | DELETE | Domain'i siler |
-| `/api/domains/:id/verify` | POST | Domain doğrulamasını başlatır |
-| `/api/domains/:id/set-primary` | POST | Domain'i primary olarak ayarlar |
-| `/api/domains/:id/renew-ssl` | POST | SSL sertifikasını yeniler |
+| Endpoint                       | Metod  | Açıklama                             |
+| ------------------------------ | ------ | ------------------------------------ |
+| `/api/domains`                 | GET    | Tenant'a ait tüm domainleri listeler |
+| `/api/domains`                 | POST   | Yeni domain ekler                    |
+| `/api/domains/:id`             | GET    | Domain detaylarını getirir           |
+| `/api/domains/:id`             | PATCH  | Domain bilgilerini günceller         |
+| `/api/domains/:id`             | DELETE | Domain'i siler                       |
+| `/api/domains/:id/verify`      | POST   | Domain doğrulamasını başlatır        |
+| `/api/domains/:id/set-primary` | POST   | Domain'i primary olarak ayarlar      |
+| `/api/domains/:id/renew-ssl`   | POST   | SSL sertifikasını yeniler            |
 
 ### API Kullanım Örnekleri
 
 **Yeni Domain Ekleme**:
+
 ```javascript
 // Örnek istek
 const response = await fetch('/api/domains', {
@@ -225,6 +228,7 @@ const response = await fetch('/api/domains', {
 **Sorun**: Domain doğrulama işlemi başarısız oluyor.
 
 **Çözüm**:
+
 ```bash
 # DNS kayıtlarını kontrol et
 dig CNAME example.com
@@ -245,6 +249,7 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/{zone_id}/ssl/verificat
 **Sorun**: SSL sertifikası oluşturulmuyor veya hatalar alınıyor.
 
 **Çözüm**:
+
 ```bash
 # SSL durumunu kontrol et
 curl -X GET "https://api.cloudflare.com/client/v4/zones/{zone_id}/ssl/certificate_packs" \
@@ -302,4 +307,4 @@ i-ep-cli domain:sync-dns --tenant=<tenant-id>
 - [Cloudflare API Dokümantasyonu](https://developers.cloudflare.com/api/)
 - [Let's Encrypt Dokümantasyonu](https://letsencrypt.org/docs/)
 - [Next.js Rewrites ve Headers Rehberi](https://nextjs.org/docs/api-reference/next.config.js/rewrites)
-- [Multi-tenant Mimari En İyi Uygulamaları](/docs/architecture/multi-tenant-best-practices.md) 
+- [Multi-tenant Mimari En İyi Uygulamaları](/docs/architecture/multi-tenant-best-practices.md)

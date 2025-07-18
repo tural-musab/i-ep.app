@@ -12,11 +12,17 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Calendar, 
-  Clock, 
+import {
+  Calendar,
+  Clock,
   AlertCircle,
   UserCheck,
   UserX,
@@ -25,20 +31,20 @@ import {
   Download,
   Send,
   Eye,
-  Edit
+  Edit,
 } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function AttendancePage() {
   const session = await getServerSession(authOptions);
-  
+
   if (!session) {
     redirect('/auth/giris');
   }
 
   // Mock data - gerçek uygulamada repository'den gelecek
   // const todayDate = new Date().toISOString().split('T')[0];
-  
+
   const attendanceStats = {
     totalStudents: 150,
     presentToday: 142,
@@ -47,7 +53,7 @@ export default async function AttendancePage() {
     attendanceRate: 94.7,
     weeklyAverage: 93.2,
     monthlyAverage: 94.1,
-    trend: 'up' as const
+    trend: 'up' as const,
   };
 
   const classAttendance = [
@@ -60,7 +66,7 @@ export default async function AttendancePage() {
       late: 1,
       attendanceRate: 93.3,
       lastMarked: '2025-01-15T08:30:00',
-      markedBy: 'Ahmet Öğretmen'
+      markedBy: 'Ahmet Öğretmen',
     },
     {
       classId: '5-b',
@@ -71,7 +77,7 @@ export default async function AttendancePage() {
       late: 0,
       attendanceRate: 92.9,
       lastMarked: '2025-01-15T08:45:00',
-      markedBy: 'Ayşe Öğretmen'
+      markedBy: 'Ayşe Öğretmen',
     },
     {
       classId: '6-a',
@@ -82,8 +88,8 @@ export default async function AttendancePage() {
       late: 0,
       attendanceRate: 93.8,
       lastMarked: '2025-01-15T09:00:00',
-      markedBy: 'Mehmet Öğretmen'
-    }
+      markedBy: 'Mehmet Öğretmen',
+    },
   ];
 
   const absentStudents = [
@@ -96,7 +102,7 @@ export default async function AttendancePage() {
       lastSeen: '2025-01-14',
       parentNotified: false,
       consecutiveAbsences: 2,
-      reason: null
+      reason: null,
     },
     {
       id: '2',
@@ -107,7 +113,7 @@ export default async function AttendancePage() {
       lastSeen: '2025-01-13',
       parentNotified: true,
       consecutiveAbsences: 3,
-      reason: 'Hastalık'
+      reason: 'Hastalık',
     },
     {
       id: '3',
@@ -118,8 +124,8 @@ export default async function AttendancePage() {
       lastSeen: '2025-01-15',
       parentNotified: true,
       consecutiveAbsences: 0,
-      reason: 'Geç kalma'
-    }
+      reason: 'Geç kalma',
+    },
   ];
 
   const chronicAbsentees = [
@@ -131,7 +137,7 @@ export default async function AttendancePage() {
       absenceRate: 28.5,
       totalAbsences: 12,
       consecutiveAbsences: 5,
-      lastAttendance: '2025-01-10'
+      lastAttendance: '2025-01-10',
     },
     {
       id: '2',
@@ -141,20 +147,32 @@ export default async function AttendancePage() {
       absenceRate: 22.3,
       totalAbsences: 9,
       consecutiveAbsences: 3,
-      lastAttendance: '2025-01-12'
-    }
+      lastAttendance: '2025-01-12',
+    },
   ];
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'present':
-        return <Badge variant="default" className="bg-green-100 text-green-800">Mevcut</Badge>;
+        return (
+          <Badge variant="default" className="bg-green-100 text-green-800">
+            Mevcut
+          </Badge>
+        );
       case 'absent':
         return <Badge variant="destructive">Devamsız</Badge>;
       case 'late':
-        return <Badge variant="outline" className="bg-yellow-100 text-yellow-800">Geç</Badge>;
+        return (
+          <Badge variant="outline" className="bg-yellow-100 text-yellow-800">
+            Geç
+          </Badge>
+        );
       case 'sick':
-        return <Badge variant="outline" className="bg-blue-100 text-blue-800">Hasta</Badge>;
+        return (
+          <Badge variant="outline" className="bg-blue-100 text-blue-800">
+            Hasta
+          </Badge>
+        );
       case 'excused':
         return <Badge variant="secondary">Mazeret</Badge>;
       default:
@@ -171,10 +189,10 @@ export default async function AttendancePage() {
   return (
     <div className="container mx-auto p-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Devamsızlık Yönetimi</h1>
-          <p className="text-gray-600 mt-2">Öğrenci devamsızlığını takip edin ve yönetin</p>
+          <p className="mt-2 text-gray-600">Öğrenci devamsızlığını takip edin ve yönetin</p>
         </div>
         <div className="flex gap-2">
           <Link href="/dashboard/attendance/daily">
@@ -193,15 +211,15 @@ export default async function AttendancePage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bugün Mevcut</CardTitle>
-            <UserCheck className="h-4 w-4 text-muted-foreground" />
+            <UserCheck className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{attendanceStats.presentToday}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {attendanceStats.totalStudents} öğrenciden
             </p>
           </CardContent>
@@ -210,25 +228,23 @@ export default async function AttendancePage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bugün Devamsız</CardTitle>
-            <UserX className="h-4 w-4 text-muted-foreground" />
+            <UserX className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{attendanceStats.absentToday}</div>
-            <p className="text-xs text-muted-foreground">
-              {attendanceStats.lateToday} geç kalma
-            </p>
+            <p className="text-muted-foreground text-xs">{attendanceStats.lateToday} geç kalma</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Devamsızlık Oranı</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">%{attendanceStats.attendanceRate}</div>
             <div className="flex items-center text-xs text-green-600">
-              <TrendingUp className="h-3 w-3 mr-1" />
+              <TrendingUp className="mr-1 h-3 w-3" />
               +0.9% bu hafta
             </div>
           </CardContent>
@@ -237,11 +253,11 @@ export default async function AttendancePage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Aylık Ortalama</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Calendar className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">%{attendanceStats.monthlyAverage}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Haftalık: %{attendanceStats.weeklyAverage}
             </p>
           </CardContent>
@@ -260,49 +276,58 @@ export default async function AttendancePage() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Today's Summary */}
             <Card>
               <CardHeader>
                 <CardTitle>Bugünkü Özet</CardTitle>
                 <CardDescription>
-                  {new Date().toLocaleDateString('tr-TR', { 
-                    weekday: 'long', 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
+                  {new Date().toLocaleDateString('tr-TR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
                   })}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Toplam Öğrenci</span>
                     <span className="text-2xl font-bold">{attendanceStats.totalStudents}</span>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Mevcut</span>
                       <span>{attendanceStats.presentToday}</span>
                     </div>
-                    <Progress value={(attendanceStats.presentToday / attendanceStats.totalStudents) * 100} className="h-2" />
+                    <Progress
+                      value={(attendanceStats.presentToday / attendanceStats.totalStudents) * 100}
+                      className="h-2"
+                    />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Devamsız</span>
                       <span>{attendanceStats.absentToday}</span>
                     </div>
-                    <Progress value={(attendanceStats.absentToday / attendanceStats.totalStudents) * 100} className="h-2" />
+                    <Progress
+                      value={(attendanceStats.absentToday / attendanceStats.totalStudents) * 100}
+                      className="h-2"
+                    />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>Geç Kalma</span>
                       <span>{attendanceStats.lateToday}</span>
                     </div>
-                    <Progress value={(attendanceStats.lateToday / attendanceStats.totalStudents) * 100} className="h-2" />
+                    <Progress
+                      value={(attendanceStats.lateToday / attendanceStats.totalStudents) * 100}
+                      className="h-2"
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -312,9 +337,7 @@ export default async function AttendancePage() {
             <Card>
               <CardHeader>
                 <CardTitle>Haftalık Trend</CardTitle>
-                <CardDescription>
-                  Son 7 günün devamsızlık oranları
-                </CardDescription>
+                <CardDescription>Son 7 günün devamsızlık oranları</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -325,7 +348,7 @@ export default async function AttendancePage() {
                     { day: 'Perşembe', rate: 92.5 },
                     { day: 'Cuma', rate: 94.7 },
                     { day: 'Cumartesi', rate: 96.1 },
-                    { day: 'Pazar', rate: 0 }
+                    { day: 'Pazar', rate: 0 },
                   ].map((item, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <span className="text-sm">{item.day}</span>
@@ -333,7 +356,7 @@ export default async function AttendancePage() {
                         <div className="w-24">
                           <Progress value={item.rate} className="h-2" />
                         </div>
-                        <span className="text-sm font-medium w-12">
+                        <span className="w-12 text-sm font-medium">
                           {item.rate > 0 ? `%${item.rate}` : '-'}
                         </span>
                       </div>
@@ -350,24 +373,26 @@ export default async function AttendancePage() {
           <Card>
             <CardHeader>
               <CardTitle>Sınıf Bazlı Devamsızlık</CardTitle>
-              <CardDescription>
-                Her sınıfın bugünkü devamsızlık durumu
-              </CardDescription>
+              <CardDescription>Her sınıfın bugünkü devamsızlık durumu</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {classAttendance.map((classData) => (
                   <Card key={classData.classId}>
                     <CardHeader>
-                      <div className="flex justify-between items-start">
+                      <div className="flex items-start justify-between">
                         <div>
                           <CardTitle className="text-lg">{classData.className}</CardTitle>
                           <CardDescription>
-                            Son yoklama: {new Date(classData.lastMarked).toLocaleTimeString('tr-TR')} - {classData.markedBy}
+                            Son yoklama:{' '}
+                            {new Date(classData.lastMarked).toLocaleTimeString('tr-TR')} -{' '}
+                            {classData.markedBy}
                           </CardDescription>
                         </div>
                         <div className="text-right">
-                          <div className={`text-2xl font-bold ${getAttendanceRateColor(classData.attendanceRate)}`}>
+                          <div
+                            className={`text-2xl font-bold ${getAttendanceRateColor(classData.attendanceRate)}`}
+                          >
                             %{classData.attendanceRate}
                           </div>
                           <div className="text-sm text-gray-600">devamsızlık oranı</div>
@@ -375,9 +400,11 @@ export default async function AttendancePage() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                         <div className="text-center">
-                          <div className="text-2xl font-bold text-green-600">{classData.present}</div>
+                          <div className="text-2xl font-bold text-green-600">
+                            {classData.present}
+                          </div>
                           <div className="text-sm text-gray-600">Mevcut</div>
                         </div>
                         <div className="text-center">
@@ -396,13 +423,13 @@ export default async function AttendancePage() {
                       <div className="mt-4 flex gap-2">
                         <Link href={`/dashboard/attendance/daily?class=${classData.classId}`}>
                           <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4 mr-2" />
+                            <Eye className="mr-2 h-4 w-4" />
                             Detay
                           </Button>
                         </Link>
                         <Link href={`/dashboard/attendance/mark?class=${classData.classId}`}>
                           <Button size="sm">
-                            <Edit className="h-4 w-4 mr-2" />
+                            <Edit className="mr-2 h-4 w-4" />
                             Yoklama Al
                           </Button>
                         </Link>
@@ -420,18 +447,21 @@ export default async function AttendancePage() {
           <Card>
             <CardHeader>
               <CardTitle>Bugün Devamsız Öğrenciler</CardTitle>
-              <CardDescription>
-                Bugün devamsızlığı bulunan öğrenciler ve durumları
-              </CardDescription>
+              <CardDescription>Bugün devamsızlığı bulunan öğrenciler ve durumları</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {absentStudents.map((student) => (
-                  <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={student.id}
+                    className="flex items-center justify-between rounded-lg border p-4"
+                  >
                     <div className="flex items-center gap-4">
                       <div>
                         <h3 className="font-medium">{student.name}</h3>
-                        <p className="text-sm text-gray-600">#{student.number} • {student.class}</p>
+                        <p className="text-sm text-gray-600">
+                          #{student.number} • {student.class}
+                        </p>
                       </div>
                       <div className="flex items-center gap-2">
                         {getStatusBadge(student.status)}
@@ -454,12 +484,12 @@ export default async function AttendancePage() {
                       <div className="flex gap-2">
                         {!student.parentNotified && (
                           <Button variant="outline" size="sm">
-                            <Send className="h-4 w-4 mr-2" />
+                            <Send className="mr-2 h-4 w-4" />
                             Bildir
                           </Button>
                         )}
                         <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-2" />
+                          <Eye className="mr-2 h-4 w-4" />
                           Detay
                         </Button>
                       </div>
@@ -483,23 +513,27 @@ export default async function AttendancePage() {
             <CardContent>
               <div className="space-y-4">
                 {chronicAbsentees.map((student) => (
-                  <div key={student.id} className="p-4 border rounded-lg border-red-200 bg-red-50">
-                    <div className="flex justify-between items-start">
+                  <div key={student.id} className="rounded-lg border border-red-200 bg-red-50 p-4">
+                    <div className="flex items-start justify-between">
                       <div>
                         <h3 className="font-medium text-red-900">{student.name}</h3>
-                        <p className="text-sm text-red-700">#{student.number} • {student.class}</p>
+                        <p className="text-sm text-red-700">
+                          #{student.number} • {student.class}
+                        </p>
                       </div>
-                      <Badge variant="destructive">
-                        %{student.absenceRate} devamsızlık
-                      </Badge>
+                      <Badge variant="destructive">%{student.absenceRate} devamsızlık</Badge>
                     </div>
-                    <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-3">
                       <div className="text-center">
-                        <div className="text-lg font-bold text-red-600">{student.totalAbsences}</div>
+                        <div className="text-lg font-bold text-red-600">
+                          {student.totalAbsences}
+                        </div>
                         <div className="text-sm text-red-700">Toplam devamsızlık</div>
                       </div>
                       <div className="text-center">
-                        <div className="text-lg font-bold text-red-600">{student.consecutiveAbsences}</div>
+                        <div className="text-lg font-bold text-red-600">
+                          {student.consecutiveAbsences}
+                        </div>
                         <div className="text-sm text-red-700">Ardışık devamsızlık</div>
                       </div>
                       <div className="text-center">
@@ -511,11 +545,11 @@ export default async function AttendancePage() {
                     </div>
                     <div className="mt-4 flex gap-2">
                       <Button variant="outline" size="sm">
-                        <AlertCircle className="h-4 w-4 mr-2" />
+                        <AlertCircle className="mr-2 h-4 w-4" />
                         Müdahale Planı
                       </Button>
                       <Button variant="outline" size="sm">
-                        <Send className="h-4 w-4 mr-2" />
+                        <Send className="mr-2 h-4 w-4" />
                         Veli Görüşmesi
                       </Button>
                     </div>
@@ -531,16 +565,14 @@ export default async function AttendancePage() {
           <Card>
             <CardHeader>
               <CardTitle>Veli Bildirimleri</CardTitle>
-              <CardDescription>
-                Devamsızlık bildirimlerini yönetin
-              </CardDescription>
+              <CardDescription>Devamsızlık bildirimlerini yönetin</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
                     <div className="relative">
-                      <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                      <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
                       <Input placeholder="Öğrenci ara..." className="pl-8" />
                     </div>
                   </div>
@@ -556,35 +588,42 @@ export default async function AttendancePage() {
                     </SelectContent>
                   </Select>
                   <Button>
-                    <Send className="h-4 w-4 mr-2" />
+                    <Send className="mr-2 h-4 w-4" />
                     Toplu Bildir
                   </Button>
                 </div>
 
                 <div className="space-y-4">
-                  {absentStudents.filter(s => !s.parentNotified).map((student) => (
-                    <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center gap-4">
-                        <div>
-                          <h3 className="font-medium">{student.name}</h3>
-                          <p className="text-sm text-gray-600">#{student.number} • {student.class}</p>
+                  {absentStudents
+                    .filter((s) => !s.parentNotified)
+                    .map((student) => (
+                      <div
+                        key={student.id}
+                        className="flex items-center justify-between rounded-lg border p-4"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div>
+                            <h3 className="font-medium">{student.name}</h3>
+                            <p className="text-sm text-gray-600">
+                              #{student.number} • {student.class}
+                            </p>
+                          </div>
+                          <Badge variant="outline" className="bg-amber-100 text-amber-800">
+                            Bildirim Bekliyor
+                          </Badge>
                         </div>
-                        <Badge variant="outline" className="bg-amber-100 text-amber-800">
-                          Bildirim Bekliyor
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
-                          <p className="text-sm font-medium">SMS + E-posta</p>
-                          <p className="text-sm text-gray-600">Devamsızlık bildirimi</p>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="text-sm font-medium">SMS + E-posta</p>
+                            <p className="text-sm text-gray-600">Devamsızlık bildirimi</p>
+                          </div>
+                          <Button size="sm">
+                            <Send className="mr-2 h-4 w-4" />
+                            Gönder
+                          </Button>
                         </div>
-                        <Button size="sm">
-                          <Send className="h-4 w-4 mr-2" />
-                          Gönder
-                        </Button>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             </CardContent>

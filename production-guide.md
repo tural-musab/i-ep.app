@@ -1,17 +1,20 @@
 # İ-EP.APP Production Guide
 
 ## Overview
+
 This guide provides comprehensive information for deploying and maintaining İ-EP.APP in production environment.
 
 ## System Architecture
 
 ### Frontend
+
 - **Framework**: Next.js 15.2.2 with App Router
 - **Styling**: Tailwind CSS 4 with shadcn/ui components
 - **State Management**: React hooks and context
 - **Authentication**: NextAuth.js with Supabase integration
 
 ### Backend
+
 - **Database**: PostgreSQL with Supabase
 - **Authentication**: Supabase Auth
 - **Storage**: Supabase Storage (R2 migration ready)
@@ -19,6 +22,7 @@ This guide provides comprehensive information for deploying and maintaining İ-E
 - **API**: Next.js API routes
 
 ### Infrastructure
+
 - **Hosting**: Vercel
 - **Database**: Supabase PostgreSQL
 - **Cache**: Upstash Redis
@@ -29,6 +33,7 @@ This guide provides comprehensive information for deploying and maintaining İ-E
 ## Deployment Process
 
 ### 1. Pre-Deployment Preparation
+
 ```bash
 # 1. Run all tests
 npm run test:ci
@@ -42,6 +47,7 @@ npm run validate:env
 ```
 
 ### 2. Database Migration
+
 ```bash
 # 1. Connect to production database
 npx supabase link --project-ref YOUR_PROJECT_REF
@@ -54,6 +60,7 @@ npx supabase db diff
 ```
 
 ### 3. Vercel Deployment
+
 ```bash
 # 1. Deploy to staging
 vercel --prod --target staging
@@ -68,6 +75,7 @@ vercel --prod --target production
 ## Environment Configuration
 
 ### Production Environment Variables
+
 ```bash
 # Application
 NODE_ENV=production
@@ -105,66 +113,68 @@ SMTP_PASSWORD=your-app-password
 ## Security Configuration
 
 ### 1. Security Headers
+
 ```typescript
 // next.config.js
 const securityHeaders = [
   {
     key: 'X-DNS-Prefetch-Control',
-    value: 'on'
+    value: 'on',
   },
   {
     key: 'Strict-Transport-Security',
-    value: 'max-age=63072000; includeSubDomains; preload'
+    value: 'max-age=63072000; includeSubDomains; preload',
   },
   {
     key: 'X-XSS-Protection',
-    value: '1; mode=block'
+    value: '1; mode=block',
   },
   {
     key: 'X-Frame-Options',
-    value: 'SAMEORIGIN'
+    value: 'SAMEORIGIN',
   },
   {
     key: 'X-Content-Type-Options',
-    value: 'nosniff'
+    value: 'nosniff',
   },
   {
     key: 'Referrer-Policy',
-    value: 'origin-when-cross-origin'
-  }
+    value: 'origin-when-cross-origin',
+  },
 ];
 ```
 
 ### 2. Rate Limiting
+
 - API endpoints: 100 requests/minute
 - Authentication: 5 attempts/minute
 - File uploads: 10 uploads/minute
 
 ### 3. CORS Configuration
+
 ```typescript
 // Allowed origins
-const allowedOrigins = [
-  'https://i-ep.app',
-  'https://www.i-ep.app',
-  'https://admin.i-ep.app'
-];
+const allowedOrigins = ['https://i-ep.app', 'https://www.i-ep.app', 'https://admin.i-ep.app'];
 ```
 
 ## Performance Optimization
 
 ### 1. Caching Strategy
+
 - **Static Assets**: CDN caching (1 year)
 - **API Responses**: Redis caching (5 minutes)
 - **Database Queries**: Connection pooling
 - **Images**: Next.js Image optimization
 
 ### 2. Performance Targets
+
 - **First Contentful Paint**: <1.5s
 - **Largest Contentful Paint**: <2.5s
 - **Cumulative Layout Shift**: <0.1
 - **First Input Delay**: <100ms
 
 ### 3. Bundle Optimization
+
 - Code splitting by route
 - Tree shaking enabled
 - Compression enabled
@@ -173,6 +183,7 @@ const allowedOrigins = [
 ## Monitoring and Alerting
 
 ### 1. Application Monitoring
+
 ```typescript
 // Health check endpoint
 export async function GET() {
@@ -182,20 +193,22 @@ export async function GET() {
     services: {
       database: await checkDatabase(),
       redis: await checkRedis(),
-      storage: await checkStorage()
-    }
+      storage: await checkStorage(),
+    },
   };
-  
+
   return Response.json(health);
 }
 ```
 
 ### 2. Error Tracking
+
 - **Sentry**: Automatic error capture
 - **Custom Logging**: Application-specific logs
 - **Performance Monitoring**: Request tracing
 
 ### 3. Uptime Monitoring
+
 - **External Service**: Pingdom/UptimeRobot
 - **Check Frequency**: 1-minute intervals
 - **Alert Threshold**: 2 failed checks
@@ -203,6 +216,7 @@ export async function GET() {
 ## Backup and Recovery
 
 ### 1. Database Backup
+
 ```bash
 # Daily automated backup
 pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql
@@ -212,11 +226,13 @@ pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql
 ```
 
 ### 2. File Storage Backup
+
 - **Assets**: Daily backup to S3
 - **Configuration**: Version controlled
 - **Recovery Time**: 15 minutes
 
 ### 3. Disaster Recovery
+
 1. **Primary Failure**: Auto-failover to secondary
 2. **Database Failure**: Restore from backup
 3. **Complete Outage**: Full system restoration
@@ -226,6 +242,7 @@ pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql
 ### 1. Common Issues
 
 #### Database Connection Issues
+
 ```bash
 # Check database status
 npx supabase status
@@ -238,11 +255,12 @@ SELECT * FROM pg_stat_activity;
 ```
 
 #### Performance Issues
+
 ```bash
 # Check slow queries
-SELECT query, mean_exec_time 
-FROM pg_stat_statements 
-ORDER BY mean_exec_time DESC 
+SELECT query, mean_exec_time
+FROM pg_stat_statements
+ORDER BY mean_exec_time DESC
 LIMIT 10;
 
 # Monitor memory usage
@@ -253,6 +271,7 @@ redis-cli info memory
 ```
 
 #### Authentication Issues
+
 ```bash
 # Check Supabase auth status
 npx supabase functions logs --project-ref YOUR_REF
@@ -264,6 +283,7 @@ npx supabase functions logs --project-ref YOUR_REF
 ### 2. Emergency Procedures
 
 #### Service Outage
+
 1. **Immediate Response**: Check monitoring dashboard
 2. **Identify Issue**: Review error logs
 3. **Communicate**: Update status page
@@ -271,6 +291,7 @@ npx supabase functions logs --project-ref YOUR_REF
 5. **Post-Incident**: Conduct review
 
 #### Security Incident
+
 1. **Assess Impact**: Determine scope
 2. **Contain**: Isolate affected systems
 3. **Investigate**: Analyze security logs
@@ -280,18 +301,21 @@ npx supabase functions logs --project-ref YOUR_REF
 ## Maintenance
 
 ### 1. Regular Maintenance
+
 - **Daily**: Monitor dashboard review
 - **Weekly**: Performance analysis
 - **Monthly**: Security audit
 - **Quarterly**: Architecture review
 
 ### 2. Updates
+
 - **Dependencies**: Monthly security updates
 - **Framework**: Quarterly major updates
 - **Database**: Annual major updates
 - **Infrastructure**: As needed
 
 ### 3. Capacity Planning
+
 - **User Growth**: Monitor monthly
 - **Database Size**: Track growth trends
 - **Performance**: Analyze bottlenecks
@@ -300,24 +324,28 @@ npx supabase functions logs --project-ref YOUR_REF
 ## Team Responsibilities
 
 ### 1. DevOps Team
+
 - Infrastructure maintenance
 - Deployment management
 - Monitoring and alerting
 - Security updates
 
 ### 2. Development Team
+
 - Code quality
 - Feature development
 - Bug fixes
 - Testing
 
 ### 3. Support Team
+
 - User support
 - Issue triage
 - Documentation
 - Training
 
 ## Contact Information
+
 - **DevOps**: devops@i-ep.app
 - **Development**: dev@i-ep.app
 - **Support**: support@i-ep.app

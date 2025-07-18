@@ -1,7 +1,7 @@
 /**
  * Grade Repository - Enhanced
  * İ-EP.APP - Grade Management System
- * 
+ *
  * Comprehensive grade repository with Turkish education system support
  * Database integration with PostgreSQL functions and stored procedures
  * Enterprise-grade features with multi-tenant architecture
@@ -229,23 +229,27 @@ export class GradeRepository extends BaseRepository<Grade> {
   /**
    * Update an existing grade record
    */
-  async updateGrade(id: string, data: {
-    gradeValue?: number;
-    maxGrade?: number;
-    weight?: number;
-    examName?: string;
-    description?: string;
-    gradeDate?: Date;
-  }): Promise<Grade> {
+  async updateGrade(
+    id: string,
+    data: {
+      gradeValue?: number;
+      maxGrade?: number;
+      weight?: number;
+      examName?: string;
+      description?: string;
+      gradeDate?: Date;
+    }
+  ): Promise<Grade> {
     const updateData: any = {};
-    
+
     if (data.gradeValue !== undefined) updateData.grade_value = data.gradeValue;
     if (data.maxGrade !== undefined) updateData.max_grade = data.maxGrade;
     if (data.weight !== undefined) updateData.weight = data.weight;
     if (data.examName !== undefined) updateData.exam_name = data.examName;
     if (data.description !== undefined) updateData.description = data.description;
-    if (data.gradeDate !== undefined) updateData.grade_date = data.gradeDate.toISOString().split('T')[0];
-    
+    if (data.gradeDate !== undefined)
+      updateData.grade_date = data.gradeDate.toISOString().split('T')[0];
+
     const { data: result, error } = await this.supabase
       .from('grades')
       .update(updateData)
@@ -274,20 +278,25 @@ export class GradeRepository extends BaseRepository<Grade> {
   /**
    * Get grade by ID with optional details
    */
-  async getGradeById(id: string, options: {
-    includeComments?: boolean;
-    includeCalculations?: boolean;
-    includeStudent?: boolean;
-  } = {}): Promise<Grade | null> {
+  async getGradeById(
+    id: string,
+    options: {
+      includeComments?: boolean;
+      includeCalculations?: boolean;
+      includeStudent?: boolean;
+    } = {}
+  ): Promise<Grade | null> {
     let query = this.supabase
       .from('grades')
-      .select(`
+      .select(
+        `
         *,
         ${options.includeStudent ? 'students(name, student_number),' : ''}
         subjects(name),
         classes(name),
         users(name)
-      `)
+      `
+      )
       .eq('id', id)
       .eq('tenant_id', this.tenantId);
 
@@ -313,13 +322,15 @@ export class GradeRepository extends BaseRepository<Grade> {
   async getGrades(options: GradeQueryOptions): Promise<Grade[]> {
     let query = this.supabase
       .from('grades')
-      .select(`
+      .select(
+        `
         *,
         ${options.includeStudent ? 'students(name, student_number),' : ''}
         subjects(name),
         classes(name),
         users(name)
-      `)
+      `
+      )
       .eq('tenant_id', this.tenantId);
 
     // Apply filters
@@ -330,14 +341,17 @@ export class GradeRepository extends BaseRepository<Grade> {
     if (options.gradeType) query = query.eq('grade_type', options.gradeType);
     if (options.semester) query = query.eq('semester', options.semester);
     if (options.academicYear) query = query.eq('academic_year', options.academicYear);
-    if (options.startDate) query = query.gte('grade_date', options.startDate.toISOString().split('T')[0]);
-    if (options.endDate) query = query.lte('grade_date', options.endDate.toISOString().split('T')[0]);
+    if (options.startDate)
+      query = query.gte('grade_date', options.startDate.toISOString().split('T')[0]);
+    if (options.endDate)
+      query = query.lte('grade_date', options.endDate.toISOString().split('T')[0]);
     if (options.minGrade) query = query.gte('percentage', options.minGrade);
     if (options.maxGrade) query = query.lte('percentage', options.maxGrade);
 
     // Apply pagination
     if (options.limit) query = query.limit(options.limit);
-    if (options.offset) query = query.range(options.offset, (options.offset + (options.limit || 50)) - 1);
+    if (options.offset)
+      query = query.range(options.offset, options.offset + (options.limit || 50) - 1);
 
     // Order by grade date descending
     query = query.order('grade_date', { ascending: false });
@@ -345,8 +359,8 @@ export class GradeRepository extends BaseRepository<Grade> {
     const { data, error } = await query;
 
     if (error) throw new Error(`Failed to get grades: ${error.message}`);
-    
-    const grades = (data || []).map(grade => this.transformGrade(grade));
+
+    const grades = (data || []).map((grade) => this.transformGrade(grade));
 
     // Include comments if requested
     if (options.includeComments) {
@@ -375,8 +389,10 @@ export class GradeRepository extends BaseRepository<Grade> {
     if (options.gradeType) query = query.eq('grade_type', options.gradeType);
     if (options.semester) query = query.eq('semester', options.semester);
     if (options.academicYear) query = query.eq('academic_year', options.academicYear);
-    if (options.startDate) query = query.gte('grade_date', options.startDate.toISOString().split('T')[0]);
-    if (options.endDate) query = query.lte('grade_date', options.endDate.toISOString().split('T')[0]);
+    if (options.startDate)
+      query = query.gte('grade_date', options.startDate.toISOString().split('T')[0]);
+    if (options.endDate)
+      query = query.lte('grade_date', options.endDate.toISOString().split('T')[0]);
     if (options.minGrade) query = query.gte('percentage', options.minGrade);
     if (options.maxGrade) query = query.lte('percentage', options.maxGrade);
 
@@ -412,7 +428,7 @@ export class GradeRepository extends BaseRepository<Grade> {
       description?: string;
     }[]
   ): Promise<Grade[]> {
-    const gradeRecords = grades.map(grade => ({
+    const gradeRecords = grades.map((grade) => ({
       tenant_id: this.tenantId,
       student_id: grade.studentId,
       class_id: classId,
@@ -429,13 +445,10 @@ export class GradeRepository extends BaseRepository<Grade> {
       grade_date: gradeConfig.gradeDate.toISOString().split('T')[0],
     }));
 
-    const { data, error } = await this.supabase
-      .from('grades')
-      .insert(gradeRecords)
-      .select();
+    const { data, error } = await this.supabase.from('grades').insert(gradeRecords).select();
 
     if (error) throw new Error(`Failed to create bulk grades: ${error.message}`);
-    return (data || []).map(grade => this.transformGrade(grade));
+    return (data || []).map((grade) => this.transformGrade(grade));
   }
 
   // ============================================================================
@@ -445,13 +458,16 @@ export class GradeRepository extends BaseRepository<Grade> {
   /**
    * Get student grades with optional subject filtering
    */
-  async getStudentGrades(studentId: string, options: {
-    subjectId?: string;
-    semester?: number;
-    academicYear?: string;
-    includeComments?: boolean;
-    includeCalculations?: boolean;
-  } = {}): Promise<Grade[]> {
+  async getStudentGrades(
+    studentId: string,
+    options: {
+      subjectId?: string;
+      semester?: number;
+      academicYear?: string;
+      includeComments?: boolean;
+      includeCalculations?: boolean;
+    } = {}
+  ): Promise<Grade[]> {
     return this.getGrades({
       studentId,
       ...options,
@@ -461,7 +477,12 @@ export class GradeRepository extends BaseRepository<Grade> {
   /**
    * Get class grades with optional subject filtering
    */
-  async getClassGrades(classId: string, subjectId?: string, semester?: number, academicYear?: string): Promise<Grade[]> {
+  async getClassGrades(
+    classId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<Grade[]> {
     return this.getGrades({
       classId,
       subjectId,
@@ -473,7 +494,12 @@ export class GradeRepository extends BaseRepository<Grade> {
   /**
    * Get subject grades with optional class filtering
    */
-  async getSubjectGrades(subjectId: string, classId?: string, semester?: number, academicYear?: string): Promise<Grade[]> {
+  async getSubjectGrades(
+    subjectId: string,
+    classId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<Grade[]> {
     return this.getGrades({
       subjectId,
       classId,
@@ -541,13 +567,17 @@ export class GradeRepository extends BaseRepository<Grade> {
     const { data, error } = await query;
 
     if (error) throw new Error(`Failed to get grade calculations: ${error.message}`);
-    return (data || []).map(calc => this.transformGradeCalculation(calc));
+    return (data || []).map((calc) => this.transformGradeCalculation(calc));
   }
 
   /**
    * Calculate student GPA
    */
-  async calculateStudentGPA(studentId: string, semester?: number, academicYear?: string): Promise<number> {
+  async calculateStudentGPA(
+    studentId: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<number> {
     const { data, error } = await this.supabase.rpc('calculate_student_gpa', {
       p_student_id: studentId,
       p_semester: semester,
@@ -570,8 +600,10 @@ export class GradeRepository extends BaseRepository<Grade> {
     force: boolean = false
   ): Promise<{ calculationsTriggered: number; calculationsUpdated: number }> {
     // Get all subjects for the student if not specified
-    const subjects = subjectId ? [subjectId] : await this.getStudentSubjects(studentId, semester, academicYear);
-    
+    const subjects = subjectId
+      ? [subjectId]
+      : await this.getStudentSubjects(studentId, semester, academicYear);
+
     let calculationsTriggered = 0;
     let calculationsUpdated = 0;
 
@@ -618,7 +650,7 @@ export class GradeRepository extends BaseRepository<Grade> {
     });
 
     if (error) throw new Error(`Failed to get grade analytics: ${error.message}`);
-    
+
     return {
       totalGrades: data?.total_count || 0,
       averageGrade: data?.average_grade || 0,
@@ -684,13 +716,16 @@ export class GradeRepository extends BaseRepository<Grade> {
   /**
    * Add comment to grade
    */
-  async addGradeComment(gradeId: string, comment: {
-    commentText: string;
-    commentType: GradeComment['commentType'];
-    isVisibleToStudent: boolean;
-    isVisibleToParent: boolean;
-    teacherId: string;
-  }): Promise<GradeComment> {
+  async addGradeComment(
+    gradeId: string,
+    comment: {
+      commentText: string;
+      commentType: GradeComment['commentType'];
+      isVisibleToStudent: boolean;
+      isVisibleToParent: boolean;
+      teacherId: string;
+    }
+  ): Promise<GradeComment> {
     const { data, error } = await this.supabase
       .from('grade_comments')
       .insert({
@@ -721,7 +756,7 @@ export class GradeRepository extends BaseRepository<Grade> {
       .order('created_at', { ascending: false });
 
     if (error) throw new Error(`Failed to get grade comments: ${error.message}`);
-    return (data || []).map(comment => this.transformGradeComment(comment));
+    return (data || []).map((comment) => this.transformGradeComment(comment));
   }
 
   // ============================================================================
@@ -731,7 +766,11 @@ export class GradeRepository extends BaseRepository<Grade> {
   /**
    * Verify user has permission to grade students in a class and subject
    */
-  async verifyGradingPermission(classId: string, subjectId: string, userId: string): Promise<boolean> {
+  async verifyGradingPermission(
+    classId: string,
+    subjectId: string,
+    userId: string
+  ): Promise<boolean> {
     // Check if user is teacher for this class and subject
     const { data, error } = await this.supabase
       .from('class_subjects')
@@ -768,8 +807,10 @@ export class GradeRepository extends BaseRepository<Grade> {
   /**
    * Update grade configurations
    */
-  async updateGradeConfigurations(configurations: Omit<GradeConfiguration, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>[]): Promise<GradeConfiguration[]> {
-    const configRecords = configurations.map(config => ({
+  async updateGradeConfigurations(
+    configurations: Omit<GradeConfiguration, 'id' | 'tenantId' | 'createdAt' | 'updatedAt'>[]
+  ): Promise<GradeConfiguration[]> {
+    const configRecords = configurations.map((config) => ({
       tenant_id: this.tenantId,
       subject_id: config.subjectId,
       class_id: config.classId,
@@ -793,7 +834,7 @@ export class GradeRepository extends BaseRepository<Grade> {
       .select();
 
     if (error) throw new Error(`Failed to update grade configurations: ${error.message}`);
-    return (data || []).map(config => this.transformGradeConfiguration(config));
+    return (data || []).map((config) => this.transformGradeConfiguration(config));
   }
 
   /**
@@ -818,7 +859,11 @@ export class GradeRepository extends BaseRepository<Grade> {
   /**
    * Get subjects for a student
    */
-  private async getStudentSubjects(studentId: string, semester?: number, academicYear?: string): Promise<string[]> {
+  private async getStudentSubjects(
+    studentId: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<string[]> {
     let query = this.supabase
       .from('grades')
       .select('subject_id')
@@ -831,7 +876,7 @@ export class GradeRepository extends BaseRepository<Grade> {
     const { data, error } = await query;
 
     if (error) throw new Error(`Failed to get student subjects: ${error.message}`);
-    return [...new Set((data || []).map(item => item.subject_id))];
+    return [...new Set((data || []).map((item) => item.subject_id))];
   }
 
   /**
@@ -853,20 +898,24 @@ export class GradeRepository extends BaseRepository<Grade> {
       };
     }
 
-    const percentages = grades.map(grade => grade.percentage);
+    const percentages = grades.map((grade) => grade.percentage);
     const sortedPercentages = percentages.sort((a, b) => a - b);
     const average = percentages.reduce((sum, p) => sum + p, 0) / percentages.length;
     const median = sortedPercentages[Math.floor(sortedPercentages.length / 2)];
-    const variance = percentages.reduce((sum, p) => sum + Math.pow(p - average, 2), 0) / percentages.length;
+    const variance =
+      percentages.reduce((sum, p) => sum + Math.pow(p - average, 2), 0) / percentages.length;
     const standardDeviation = Math.sqrt(variance);
 
-    const passingGrades = grades.filter(grade => grade.percentage >= 50).length;
+    const passingGrades = grades.filter((grade) => grade.percentage >= 50).length;
     const passingPercentage = (passingGrades / grades.length) * 100;
 
-    const letterGradeDistribution = grades.reduce((dist, grade) => {
-      dist[grade.letterGrade] = (dist[grade.letterGrade] || 0) + 1;
-      return dist;
-    }, {} as Record<string, number>);
+    const letterGradeDistribution = grades.reduce(
+      (dist, grade) => {
+        dist[grade.letterGrade] = (dist[grade.letterGrade] || 0) + 1;
+        return dist;
+      },
+      {} as Record<string, number>
+    );
 
     return {
       totalGrades: grades.length,
@@ -1021,59 +1070,125 @@ export class GradeRepository extends BaseRepository<Grade> {
   }
 
   // Additional placeholder methods for analytics API
-  async getStudentGradeDistribution(studentId: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getStudentGradeDistribution(
+    studentId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getStudentClassRankings(studentId: string, semester?: number, academicYear?: string): Promise<any> {
+  async getStudentClassRankings(
+    studentId: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getStudentSubjectComparisons(studentId: string, semester?: number, academicYear?: string): Promise<any> {
+  async getStudentSubjectComparisons(
+    studentId: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getClassGradeDistribution(classId: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getClassGradeDistribution(
+    classId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getClassTopPerformers(classId: string, subjectId?: string, semester?: number, academicYear?: string, limit?: number): Promise<any[]> {
+  async getClassTopPerformers(
+    classId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string,
+    limit?: number
+  ): Promise<any[]> {
     return [];
   }
 
-  async getClassStrugglingStudents(classId: string, subjectId?: string, semester?: number, academicYear?: string, limit?: number): Promise<any[]> {
+  async getClassStrugglingStudents(
+    classId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string,
+    limit?: number
+  ): Promise<any[]> {
     return [];
   }
 
-  async getClassSubjectBreakdown(classId: string, semester?: number, academicYear?: string): Promise<any> {
+  async getClassSubjectBreakdown(
+    classId: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getSubjectGradeDistribution(subjectId: string, classId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getSubjectGradeDistribution(
+    subjectId: string,
+    classId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getSubjectGradeTypeBreakdown(subjectId: string, classId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getSubjectGradeTypeBreakdown(
+    subjectId: string,
+    classId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getSubjectClassComparisons(subjectId: string, semester?: number, academicYear?: string): Promise<any> {
+  async getSubjectClassComparisons(
+    subjectId: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getTeacherGradeStatistics(teacherId: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getTeacherGradeStatistics(
+    teacherId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getTeacherGradingPatterns(teacherId: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getTeacherGradingPatterns(
+    teacherId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getTeacherClassBreakdown(teacherId: string, semester?: number, academicYear?: string): Promise<any> {
+  async getTeacherClassBreakdown(
+    teacherId: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getTeacherSubjectBreakdown(teacherId: string, semester?: number, academicYear?: string): Promise<any> {
+  async getTeacherSubjectBreakdown(
+    teacherId: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
@@ -1085,145 +1200,328 @@ export class GradeRepository extends BaseRepository<Grade> {
     return {};
   }
 
-  async getGradeDistribution(classId?: string, subjectId?: string, gradeType?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getGradeDistribution(
+    classId?: string,
+    subjectId?: string,
+    gradeType?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getLetterGradeDistribution(classId?: string, subjectId?: string, gradeType?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getLetterGradeDistribution(
+    classId?: string,
+    subjectId?: string,
+    gradeType?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getPercentileRanges(classId?: string, subjectId?: string, gradeType?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getPercentileRanges(
+    classId?: string,
+    subjectId?: string,
+    gradeType?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getClassComparisons(semester?: number, academicYear?: string, subjectId?: string): Promise<any> {
+  async getClassComparisons(
+    semester?: number,
+    academicYear?: string,
+    subjectId?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getSubjectComparisons(classId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getSubjectComparisons(
+    classId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getHistoricalComparisons(classId?: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getHistoricalComparisons(
+    classId?: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
   // Report generation methods
-  async getGradeSummary(classId?: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getGradeSummary(
+    classId?: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getDetailedGradeReport(classId?: string, subjectId?: string, studentId?: string, semester?: number, academicYear?: string, gradeTypes?: string[], includeComments?: boolean): Promise<any[]> {
+  async getDetailedGradeReport(
+    classId?: string,
+    subjectId?: string,
+    studentId?: string,
+    semester?: number,
+    academicYear?: string,
+    gradeTypes?: string[],
+    includeComments?: boolean
+  ): Promise<any[]> {
     return [];
   }
 
-  async getGradeBreakdown(classId?: string, subjectId?: string, studentId?: string, semester?: number, academicYear?: string, gradeTypes?: string[]): Promise<any> {
+  async getGradeBreakdown(
+    classId?: string,
+    subjectId?: string,
+    studentId?: string,
+    semester?: number,
+    academicYear?: string,
+    gradeTypes?: string[]
+  ): Promise<any> {
     return {};
   }
 
-  async getClassStudentSummaries(classId: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any[]> {
+  async getClassStudentSummaries(
+    classId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any[]> {
     return [];
   }
 
-  async getStudentProgress(studentId: string, subjectId?: string, startDate?: Date, endDate?: Date): Promise<any> {
+  async getStudentProgress(
+    studentId: string,
+    subjectId?: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<any> {
     return {};
   }
 
-  async getStudentGradeTrends(studentId: string, subjectId?: string, startDate?: Date, endDate?: Date): Promise<any> {
+  async getStudentGradeTrends(
+    studentId: string,
+    subjectId?: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<any> {
     return {};
   }
 
-  async getStudentAnalytics(studentId: string, subjectId?: string, startDate?: Date, endDate?: Date): Promise<any> {
+  async getStudentAnalytics(
+    studentId: string,
+    subjectId?: string,
+    startDate?: Date,
+    endDate?: Date
+  ): Promise<any> {
     return {};
   }
 
-  async getClassOverallStatistics(classId: string, semester?: number, academicYear?: string): Promise<any> {
+  async getClassOverallStatistics(
+    classId: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getClassAnalytics(classId: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getClassAnalytics(
+    classId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getSubjectAnalytics(subjectId: string, classId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getSubjectAnalytics(
+    subjectId: string,
+    classId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getComparativeData(classId?: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any[]> {
+  async getComparativeData(
+    classId?: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any[]> {
     return [];
   }
 
-  async getGradeBenchmarks(classId?: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getGradeBenchmarks(
+    classId?: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getComparativeAnalytics(classId?: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getComparativeAnalytics(
+    classId?: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
   // Calculation methods
-  async recalculateStudentGrades(studentId: string, subjectId?: string, semester?: number, academicYear?: string): Promise<void> {
+  async recalculateStudentGrades(
+    studentId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<void> {
     // TODO: Implement student grade recalculation
   }
 
-  async recalculateClassGrades(classId: string, subjectId?: string, semester?: number, academicYear?: string): Promise<void> {
+  async recalculateClassGrades(
+    classId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<void> {
     // TODO: Implement class grade recalculation
   }
 
-  async recalculateSubjectGrades(subjectId: string, classId?: string, semester?: number, academicYear?: string): Promise<void> {
+  async recalculateSubjectGrades(
+    subjectId: string,
+    classId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<void> {
     // TODO: Implement subject grade recalculation
   }
 
-  async recalculateBulkGrades(classId?: string, subjectId?: string, semester?: number, academicYear?: string): Promise<void> {
+  async recalculateBulkGrades(
+    classId?: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<void> {
     // TODO: Implement bulk grade recalculation
   }
 
-  async getStudentCalculationDetails(studentId: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getStudentCalculationDetails(
+    studentId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getClassCalculationDetails(classId: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getClassCalculationDetails(
+    classId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getSubjectCalculationDetails(subjectId: string, classId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getSubjectCalculationDetails(
+    subjectId: string,
+    classId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getBulkCalculationDetails(classId?: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getBulkCalculationDetails(
+    classId?: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async getClassGradeCalculations(classId: string, semester?: number, academicYear?: string, subjectId?: string): Promise<GradeCalculation[]> {
+  async getClassGradeCalculations(
+    classId: string,
+    semester?: number,
+    academicYear?: string,
+    subjectId?: string
+  ): Promise<GradeCalculation[]> {
     return [];
   }
 
-  async getSubjectGradeCalculations(subjectId: string, classId?: string, semester?: number, academicYear?: string): Promise<GradeCalculation[]> {
+  async getSubjectGradeCalculations(
+    subjectId: string,
+    classId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<GradeCalculation[]> {
     return [];
   }
 
-  async getBulkGradeCalculations(classId?: string, subjectId?: string, semester?: number, academicYear?: string): Promise<GradeCalculation[]> {
+  async getBulkGradeCalculations(
+    classId?: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<GradeCalculation[]> {
     return [];
   }
 
-  async getBulkGradeStatistics(classId?: string, subjectId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async getBulkGradeStatistics(
+    classId?: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 
-  async triggerClassCalculations(classId: string, subjectId?: string, semester?: number, academicYear?: string, force?: boolean): Promise<any> {
+  async triggerClassCalculations(
+    classId: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string,
+    force?: boolean
+  ): Promise<any> {
     return {};
   }
 
-  async triggerSubjectCalculations(subjectId: string, classId?: string, semester?: number, academicYear?: string, force?: boolean): Promise<any> {
+  async triggerSubjectCalculations(
+    subjectId: string,
+    classId?: string,
+    semester?: number,
+    academicYear?: string,
+    force?: boolean
+  ): Promise<any> {
     return {};
   }
 
-  async triggerBulkCalculations(classId?: string, subjectId?: string, semester?: number, academicYear?: string, force?: boolean): Promise<any> {
+  async triggerBulkCalculations(
+    classId?: string,
+    subjectId?: string,
+    semester?: number,
+    academicYear?: string,
+    force?: boolean
+  ): Promise<any> {
     return {};
   }
 
-  async triggerRecalculationForConfiguration(subjectId: string, classId?: string, semester?: number, academicYear?: string): Promise<any> {
+  async triggerRecalculationForConfiguration(
+    subjectId: string,
+    classId?: string,
+    semester?: number,
+    academicYear?: string
+  ): Promise<any> {
     return {};
   }
 }

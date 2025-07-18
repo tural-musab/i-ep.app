@@ -43,4 +43,4 @@
 
 ## Kaynaklar
 
-[Karar için referans olarak kullanılan kaynaklar, belgeler, makaleler, vb.] 
+[Karar için referans olarak kullanılan kaynaklar, belgeler, makaleler, vb.]

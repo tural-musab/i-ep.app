@@ -1,6 +1,6 @@
 /**
  * Tenant İşlemleri Hata Yönetimi
- * 
+ *
  * Bu modül, tenant işlemlerine özel hata sınıflarını içerir.
  */
 
@@ -36,10 +36,7 @@ export class TenantCreationError extends TenantError {
  */
 export class TenantNotFoundError extends TenantError {
   constructor(tenantIdentifier: string) {
-    super(
-      'tenant_not_found',
-      `Tenant bulunamadı: ${tenantIdentifier}`
-    );
+    super('tenant_not_found', `Tenant bulunamadı: ${tenantIdentifier}`);
     this.name = 'TenantNotFoundError';
   }
 }
@@ -63,11 +60,7 @@ export class TenantDomainError extends TenantError {
  */
 export class TenantSubdomainConflictError extends TenantDomainError {
   constructor(subdomain: string) {
-    super(
-      subdomain,
-      `Bu subdomain zaten kullanılıyor: ${subdomain}`,
-      'subdomain_conflict'
-    );
+    super(subdomain, `Bu subdomain zaten kullanılıyor: ${subdomain}`, 'subdomain_conflict');
     this.name = 'TenantSubdomainConflictError';
   }
 }
@@ -149,10 +142,7 @@ export class TenantAccessDeniedError extends TenantError {
 // Tenant güncelleme hatası
 export class TenantUpdateError extends TenantError {
   constructor(tenantId: string, message?: string) {
-    super(
-      'TENANT_UPDATE_ERROR',
-      message || `Tenant güncellenirken bir hata oluştu: ${tenantId}`
-    );
+    super('TENANT_UPDATE_ERROR', message || `Tenant güncellenirken bir hata oluştu: ${tenantId}`);
     this.name = 'TenantUpdateError';
   }
 }
@@ -160,10 +150,7 @@ export class TenantUpdateError extends TenantError {
 // Fonksiyonel izolasyon ihlali hatası - tenant veri erişimi sırasında algılanan ihlaller için
 export class TenantIsolationBreachError extends TenantError {
   constructor(reason: string) {
-    super(
-      'TENANT_ISOLATION_BREACH',
-      `Tenant izolasyon ihlali tespit edildi: ${reason}`
-    );
+    super('TENANT_ISOLATION_BREACH', `Tenant izolasyon ihlali tespit edildi: ${reason}`);
     this.name = 'TenantIsolationBreachError';
   }
-} 
+}

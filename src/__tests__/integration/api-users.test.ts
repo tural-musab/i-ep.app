@@ -16,9 +16,9 @@ describe('User API Entegrasyon Testleri', () => {
       json: async () => ({
         data: [
           { id: 1, name: 'Test User 1', email: 'test1@example.com' },
-          { id: 2, name: 'Test User 2', email: 'test2@example.com' }
-        ]
-      })
+          { id: 2, name: 'Test User 2', email: 'test2@example.com' },
+        ],
+      }),
     };
 
     mockFetch.mockResolvedValueOnce(mockResponse);
@@ -29,7 +29,7 @@ describe('User API Entegrasyon Testleri', () => {
     expect(users[0]).toMatchObject({
       id: 1,
       name: 'Test User 1',
-      email: 'test1@example.com'
+      email: 'test1@example.com',
     });
     expect(mockFetch).toHaveBeenCalledTimes(1);
   });
@@ -38,14 +38,14 @@ describe('User API Entegrasyon Testleri', () => {
     const mockErrorResponse = {
       ok: false,
       status: 400,
-      json: async () => ({ error: 'Validation failed' })
+      json: async () => ({ error: 'Validation failed' }),
     };
 
     mockFetch.mockResolvedValueOnce(mockErrorResponse);
 
     const newUser = {
       name: '',
-      email: 'invalid-email'
+      email: 'invalid-email',
     };
 
     await expect(createUser(newUser)).rejects.toThrow('Validation failed');
@@ -54,15 +54,13 @@ describe('User API Entegrasyon Testleri', () => {
 
   it('should handle response with different structure', async () => {
     const mockData: Record<string, unknown> = {
-      users: [
-        { id: 1, username: 'testuser' }
-      ],
-      total: 1
+      users: [{ id: 1, username: 'testuser' }],
+      total: 1,
     };
 
     const mockResponse = {
       ok: true,
-      json: async () => mockData
+      json: async () => mockData,
     };
 
     mockFetch.mockResolvedValueOnce(mockResponse);

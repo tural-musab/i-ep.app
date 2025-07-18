@@ -17,19 +17,19 @@ Domain doğrulama sürecini yöneten ve görselleştiren komponent.
 interface DomainVerificationProps {
   /** Tenant ID */
   tenantId: string;
-  
+
   /** Domain adresi */
   domain: string;
-  
+
   /** Doğrulama tamamlandığında çağrılır */
   onVerified?: () => void;
-  
+
   /** Doğrulama başarısız olduğunda çağrılır */
   onError?: (error: VerificationError) => void;
-  
+
   /** Otomatik kontrol aralığı (ms) */
   checkInterval?: number;
-  
+
   /** Maksimum deneme sayısı */
   maxAttempts?: number;
 }
@@ -85,33 +85,28 @@ export default function VerifyDomainPage() {
 ## Doğrulama Adımları
 
 ### 1. DNS Kaydı Oluşturma
+
 ```tsx
 <DNSInstructions
   record={{
     type: 'TXT',
     name: '_iqraedu-verify.example.com',
-    value: 'iqraedu-verify=abc123'
+    value: 'iqraedu-verify=abc123',
   }}
   onCopy={() => copyToClipboard(record.value)}
 />
 ```
 
 ### 2. Propagasyon Bekleme
+
 ```tsx
-<PropagationStatus
-  startTime={startTime}
-  expectedTime={300000}
-  currentStatus={status}
-/>
+<PropagationStatus startTime={startTime} expectedTime={300000} currentStatus={status} />
 ```
 
 ### 3. SSL Sertifika Oluşturma
+
 ```tsx
-<SSLStatus
-  status={sslStatus}
-  domain={domain}
-  onRetry={handleRetry}
-/>
+<SSLStatus status={sslStatus} domain={domain} onRetry={handleRetry} />
 ```
 
 ## API Entegrasyonu
@@ -121,7 +116,7 @@ export default function VerifyDomainPage() {
 const checkDomainStatus = async () => {
   const response = await fetch(`/api/tenants/${tenantId}/domains/verify`, {
     method: 'POST',
-    body: JSON.stringify({ domain })
+    body: JSON.stringify({ domain }),
   });
   return response.json();
 };
@@ -141,15 +136,15 @@ const [status, setStatus] = useState<VerificationStatus>({
   dnsRecord: {
     type: 'TXT',
     name: `_iqraedu-verify.${domain}`,
-    value: generateVerificationToken()
-  }
+    value: generateVerificationToken(),
+  },
 });
 
 useEffect(() => {
   const interval = setInterval(async () => {
     const newStatus = await checkDomainStatus();
     setStatus(newStatus);
-    
+
     if (newStatus.status === 'verified') {
       clearInterval(interval);
       onVerified?.();
@@ -186,16 +181,16 @@ const handleVerificationError = (error: VerificationError) => {
   steps={[
     {
       label: 'DNS Kaydı',
-      status: dnsVerified ? 'complete' : 'pending'
+      status: dnsVerified ? 'complete' : 'pending',
     },
     {
       label: 'Propagasyon',
-      status: propagated ? 'complete' : dnsVerified ? 'current' : 'waiting'
+      status: propagated ? 'complete' : dnsVerified ? 'current' : 'waiting',
     },
     {
       label: 'SSL Sertifika',
-      status: sslReady ? 'complete' : propagated ? 'current' : 'waiting'
-    }
+      status: sslReady ? 'complete' : propagated ? 'current' : 'waiting',
+    },
   ]}
 />
 ```
@@ -210,11 +205,11 @@ const handleVerificationError = (error: VerificationError) => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Yan yana adımlar |
-| 768px - 1024px | Dikey adımlar |
-| < 768px | Basitleştirilmiş görünüm |
+| Ekran Boyutu   | Davranış                 |
+| -------------- | ------------------------ |
+| > 1024px       | Yan yana adımlar         |
+| 768px - 1024px | Dikey adımlar            |
+| < 768px        | Basitleştirilmiş görünüm |
 
 ## Test
 
@@ -228,7 +223,7 @@ describe('DomainVerification', () => {
   it('updates status periodically', async () => {
     jest.useFakeTimers();
     render(<DomainVerification domain="example.com" checkInterval={1000} />);
-    
+
     jest.advanceTimersByTime(1000);
     await waitFor(() => {
       expect(screen.getByText('Kontrol Ediliyor')).toBeInTheDocument();
@@ -243,7 +238,7 @@ describe('DomainVerification', () => {
         onVerified={onVerified}
       />
     );
-    
+
     // Simulate verification
     await waitFor(() => {
       expect(onVerified).toHaveBeenCalled();
@@ -308,7 +303,7 @@ Success.args = {
 
 ```tsx
 <DomainVerification
-  className="max-w-3xl mx-auto"
+  className="mx-auto max-w-3xl"
   stepClassName="verification-step"
   recordClassName="dns-record"
   buttonClassName="verify-button"
@@ -321,4 +316,4 @@ Success.args = {
 2. Propagasyon süresini belirt
 3. Otomatik yenileme durumunu göster
 4. Hata mesajlarını detaylandır
-5. SSL durumunu takip et 
+5. SSL durumunu takip et

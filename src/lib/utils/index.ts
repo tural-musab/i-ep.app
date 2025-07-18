@@ -22,7 +22,7 @@ export function truncateText(text: string, maxLength: number): string {
  */
 export function formatDate(date: Date | string, locale: string = 'tr-TR'): string {
   const d = typeof date === 'string' ? new Date(date) : date;
-  
+
   return d.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'long',
@@ -33,7 +33,11 @@ export function formatDate(date: Date | string, locale: string = 'tr-TR'): strin
 /**
  * Para birimini biçimlendirir
  */
-export function formatCurrency(amount: number, currency: string = 'TRY', locale: string = 'tr-TR'): string {
+export function formatCurrency(
+  amount: number,
+  currency: string = 'TRY',
+  locale: string = 'tr-TR'
+): string {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,
@@ -45,4 +49,4 @@ export function formatCurrency(amount: number, currency: string = 'TRY', locale:
  */
 export function generateUniqueId(prefix: string = ''): string {
   return `${prefix}${Date.now().toString(36)}${Math.random().toString(36).substring(2, 9)}`;
-} 
+}

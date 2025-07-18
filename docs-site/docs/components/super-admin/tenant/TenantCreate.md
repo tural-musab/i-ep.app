@@ -17,16 +17,16 @@ Yeni tenant oluşturmak için kullanılan form komponenti.
 interface TenantCreateProps {
   /** Form gönderildiğinde çağrılır */
   onSubmit?: (data: TenantCreateData) => Promise<void>;
-  
+
   /** İptal edildiğinde çağrılır */
   onCancel?: () => void;
-  
+
   /** Başlangıç değerleri */
   initialValues?: Partial<TenantCreateData>;
-  
+
   /** Form durumu */
   status?: 'idle' | 'submitting' | 'success' | 'error';
-  
+
   /** Özel validasyon kuralları */
   validationRules?: ValidationRules;
 }
@@ -79,7 +79,7 @@ export default function CreateTenantPage() {
       onSubmit={handleSubmit}
       onCancel={() => router.back()}
       initialValues={{
-        plan: 'premium'
+        plan: 'premium',
       }}
     />
   );
@@ -89,21 +89,25 @@ export default function CreateTenantPage() {
 ## Form Adımları
 
 ### 1. Temel Bilgiler
+
 - Tenant adı
 - Subdomain
 - Plan seçimi
 
 ### 2. Admin Kullanıcı
+
 - E-posta
 - Ad
 - Soyad
 
 ### 3. Özellikler
+
 - Feature flag seçimi
 - Özel domain (opsiyonel)
 - Ek ayarlar
 
 ### 4. Onay
+
 - Özet bilgiler
 - Kullanım koşulları
 - Oluşturma onayı
@@ -115,7 +119,7 @@ export default function CreateTenantPage() {
 const checkDomain = async (domain: string) => {
   const response = await fetch('/api/domains/check', {
     method: 'POST',
-    body: JSON.stringify({ domain })
+    body: JSON.stringify({ domain }),
   });
   return response.json();
 };
@@ -124,7 +128,7 @@ const checkDomain = async (domain: string) => {
 const createTenant = async (data: TenantCreateData) => {
   const response = await fetch('/api/tenants', {
     method: 'POST',
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
   return response.json();
 };
@@ -138,31 +142,31 @@ const validationRules = {
     required: 'Tenant adı zorunludur',
     minLength: {
       value: 3,
-      message: 'En az 3 karakter olmalıdır'
+      message: 'En az 3 karakter olmalıdır',
     },
     pattern: {
       value: /^[a-zA-Z0-9-]+$/,
-      message: 'Sadece harf, rakam ve tire kullanılabilir'
-    }
+      message: 'Sadece harf, rakam ve tire kullanılabilir',
+    },
   },
   domain: {
     required: 'Domain zorunludur',
     pattern: {
       value: /^[a-z0-9-]+$/,
-      message: 'Sadece küçük harf, rakam ve tire kullanılabilir'
+      message: 'Sadece küçük harf, rakam ve tire kullanılabilir',
     },
     validate: async (value) => {
       const { available } = await checkDomain(value);
       return available || 'Bu domain kullanımda';
-    }
+    },
   },
   email: {
     required: 'E-posta zorunludur',
     pattern: {
       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-      message: 'Geçerli bir e-posta adresi giriniz'
-    }
-  }
+      message: 'Geçerli bir e-posta adresi giriniz',
+    },
+  },
 };
 ```
 
@@ -175,10 +179,10 @@ const {
   register,
   handleSubmit,
   watch,
-  formState: { errors, isSubmitting }
+  formState: { errors, isSubmitting },
 } = useForm<TenantCreateData>({
   defaultValues: initialValues,
-  resolver: yupResolver(schema)
+  resolver: yupResolver(schema),
 });
 ```
 
@@ -190,7 +194,7 @@ const {
     { label: 'Temel Bilgiler', completed: step > 1 },
     { label: 'Admin Kullanıcı', completed: step > 2 },
     { label: 'Özellikler', completed: step > 3 },
-    { label: 'Onay', completed: step > 4 }
+    { label: 'Onay', completed: step > 4 },
   ]}
   currentStep={step}
 />
@@ -206,11 +210,11 @@ const {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Yan yana form grupları |
-| 768px - 1024px | Tek kolon form |
-| < 768px | Basitleştirilmiş görünüm |
+| Ekran Boyutu   | Davranış                 |
+| -------------- | ------------------------ |
+| > 1024px       | Yan yana form grupları   |
+| 768px - 1024px | Tek kolon form           |
+| < 768px        | Basitleştirilmiş görünüm |
 
 ## Hata Yönetimi
 
@@ -219,17 +223,17 @@ const handleError = (error: any) => {
   if (error.code === 'DOMAIN_TAKEN') {
     setError('domain', {
       type: 'manual',
-      message: 'Bu domain zaten kullanımda'
+      message: 'Bu domain zaten kullanımda',
     });
   } else if (error.code === 'INVALID_PLAN') {
     setError('plan', {
       type: 'manual',
-      message: 'Geçersiz plan seçimi'
+      message: 'Geçersiz plan seçimi',
     });
   } else {
     setError('root', {
       type: 'manual',
-      message: 'Bir hata oluştu'
+      message: 'Bir hata oluştu',
     });
   }
 };
@@ -300,7 +304,7 @@ WithInitialValues.args = {
 
 ```tsx
 <TenantCreate
-  className="max-w-2xl mx-auto"
+  className="mx-auto max-w-2xl"
   formClassName="space-y-6"
   fieldClassName="form-field"
   buttonClassName="btn-primary"
@@ -313,4 +317,4 @@ WithInitialValues.args = {
 2. Adımlar arası veriyi sakla
 3. Input debouncing kullan
 4. Async validasyon cache'le
-5. Progress otomatik kaydet 
+5. Progress otomatik kaydet

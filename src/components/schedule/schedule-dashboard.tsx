@@ -13,12 +13,12 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  Calendar, 
-  Clock, 
-  Users, 
-  BookOpen, 
-  User, 
+import {
+  Calendar,
+  Clock,
+  Users,
+  BookOpen,
+  User,
   School,
   Target,
   Activity,
@@ -1685,9 +1685,14 @@ import {
   Septupled2,
   Octupled2,
   Nonupled2,
-  Decupled2
+  Decupled2,
 } from 'lucide-react';
-import { ScheduleRepository, ClassSchedule, TeacherSchedule, ScheduleConflict } from '@/lib/repository/schedule-repository';
+import {
+  ScheduleRepository,
+  ClassSchedule,
+  TeacherSchedule,
+  ScheduleConflict,
+} from '@/lib/repository/schedule-repository';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
@@ -1696,7 +1701,9 @@ export function ScheduleDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month'>('week');
-  const [viewMode, setViewMode] = useState<'overview' | 'classes' | 'teachers' | 'conflicts'>('overview');
+  const [viewMode, setViewMode] = useState<'overview' | 'classes' | 'teachers' | 'conflicts'>(
+    'overview'
+  );
 
   const scheduleRepository = new ScheduleRepository();
 
@@ -1717,13 +1724,13 @@ export function ScheduleDashboard() {
           total_periods: 144,
           active_schedules: 22,
           conflicts: 3,
-          completion_rate: 92
+          completion_rate: 92,
         },
         today_schedule: {
           ongoing_classes: 8,
           upcoming_classes: 12,
           completed_classes: 6,
-          cancelled_classes: 1
+          cancelled_classes: 1,
         },
         recent_conflicts: [
           {
@@ -1731,21 +1738,21 @@ export function ScheduleDashboard() {
             type: 'teacher_overlap',
             description: 'Matematik öğretmeni çakışması',
             severity: 'high',
-            time: '2 saat önce'
+            time: '2 saat önce',
           },
           {
             id: '2',
             type: 'classroom_overlap',
             description: 'A-101 sınıfı çakışması',
             severity: 'medium',
-            time: '4 saat önce'
-          }
+            time: '4 saat önce',
+          },
         ],
         schedule_performance: {
           utilization_rate: 85,
           teacher_workload: 78,
           classroom_usage: 92,
-          student_satisfaction: 88
+          student_satisfaction: 88,
         },
         upcoming_events: [
           {
@@ -1753,21 +1760,23 @@ export function ScheduleDashboard() {
             title: 'Matematik Sınavı',
             class: '5-A',
             time: '10:00',
-            teacher: 'Ayşe Matematik'
+            teacher: 'Ayşe Matematik',
           },
           {
             id: '2',
             title: 'Beden Eğitimi',
             class: '6-B',
             time: '11:00',
-            teacher: 'Hasan Beden'
-          }
-        ]
+            teacher: 'Hasan Beden',
+          },
+        ],
       };
 
       setDashboardData(mockData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Dashboard verileri yüklenirken bir hata oluştu');
+      setError(
+        err instanceof Error ? err.message : 'Dashboard verileri yüklenirken bir hata oluştu'
+      );
     } finally {
       setLoading(false);
     }
@@ -1782,19 +1791,27 @@ export function ScheduleDashboard() {
 
   const getConflictIcon = (type: string) => {
     switch (type) {
-      case 'teacher_overlap': return <User className="h-4 w-4 text-orange-500" />;
-      case 'classroom_overlap': return <School className="h-4 w-4 text-red-500" />;
-      case 'student_overlap': return <Users className="h-4 w-4 text-blue-500" />;
-      default: return <AlertTriangle className="h-4 w-4 text-gray-500" />;
+      case 'teacher_overlap':
+        return <User className="h-4 w-4 text-orange-500" />;
+      case 'classroom_overlap':
+        return <School className="h-4 w-4 text-red-500" />;
+      case 'student_overlap':
+        return <Users className="h-4 w-4 text-blue-500" />;
+      default:
+        return <AlertTriangle className="h-4 w-4 text-gray-500" />;
     }
   };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -1829,11 +1846,11 @@ export function ScheduleDashboard() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Ders Programı Dashboard</h2>
-          <p className="text-gray-600 mt-1">Genel bakış ve sistem performansı</p>
+          <p className="mt-1 text-gray-600">Genel bakış ve sistem performansı</p>
         </div>
         <div className="flex gap-2">
-          <select 
-            className="px-3 py-2 border rounded-md"
+          <select
+            className="rounded-md border px-3 py-2"
             value={selectedPeriod}
             onChange={(e) => setSelectedPeriod(e.target.value as any)}
           >
@@ -1842,18 +1859,18 @@ export function ScheduleDashboard() {
             <option value="month">Bu Ay</option>
           </select>
           <Button variant="outline" onClick={loadDashboardData}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Yenile
           </Button>
           <Button variant="outline">
-            <Settings className="h-4 w-4 mr-2" />
+            <Settings className="mr-2 h-4 w-4" />
             Ayarlar
           </Button>
         </div>
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-6">
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
@@ -1907,7 +1924,9 @@ export function ScheduleDashboard() {
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
-              <div className={`text-2xl font-bold ${getPerformanceColor(dashboardData?.statistics.completion_rate)}`}>
+              <div
+                className={`text-2xl font-bold ${getPerformanceColor(dashboardData?.statistics.completion_rate)}`}
+              >
                 %{dashboardData?.statistics.completion_rate}
               </div>
               <div className="text-sm text-gray-600">Tamamlanma</div>
@@ -1933,7 +1952,7 @@ export function ScheduleDashboard() {
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Today's Schedule */}
             <Card>
               <CardHeader>
@@ -1946,31 +1965,39 @@ export function ScheduleDashboard() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <div className="h-3 w-3 rounded-full bg-blue-500"></div>
                       <span className="text-sm">Devam Eden Dersler</span>
                     </div>
-                    <span className="font-semibold">{dashboardData?.today_schedule.ongoing_classes}</span>
+                    <span className="font-semibold">
+                      {dashboardData?.today_schedule.ongoing_classes}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <div className="h-3 w-3 rounded-full bg-green-500"></div>
                       <span className="text-sm">Yaklaşan Dersler</span>
                     </div>
-                    <span className="font-semibold">{dashboardData?.today_schedule.upcoming_classes}</span>
+                    <span className="font-semibold">
+                      {dashboardData?.today_schedule.upcoming_classes}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                      <div className="h-3 w-3 rounded-full bg-gray-500"></div>
                       <span className="text-sm">Tamamlanan Dersler</span>
                     </div>
-                    <span className="font-semibold">{dashboardData?.today_schedule.completed_classes}</span>
+                    <span className="font-semibold">
+                      {dashboardData?.today_schedule.completed_classes}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <div className="h-3 w-3 rounded-full bg-red-500"></div>
                       <span className="text-sm">İptal Edilen Dersler</span>
                     </div>
-                    <span className="font-semibold">{dashboardData?.today_schedule.cancelled_classes}</span>
+                    <span className="font-semibold">
+                      {dashboardData?.today_schedule.cancelled_classes}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -1987,32 +2014,52 @@ export function ScheduleDashboard() {
               <CardContent>
                 <div className="space-y-4">
                   <div>
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="mb-2 flex items-center justify-between">
                       <span className="text-sm">Kullanım Oranı</span>
-                      <span className="font-semibold">%{dashboardData?.schedule_performance.utilization_rate}</span>
+                      <span className="font-semibold">
+                        %{dashboardData?.schedule_performance.utilization_rate}
+                      </span>
                     </div>
-                    <Progress value={dashboardData?.schedule_performance.utilization_rate} className="h-2" />
+                    <Progress
+                      value={dashboardData?.schedule_performance.utilization_rate}
+                      className="h-2"
+                    />
                   </div>
                   <div>
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="mb-2 flex items-center justify-between">
                       <span className="text-sm">Öğretmen İş Yükü</span>
-                      <span className="font-semibold">%{dashboardData?.schedule_performance.teacher_workload}</span>
+                      <span className="font-semibold">
+                        %{dashboardData?.schedule_performance.teacher_workload}
+                      </span>
                     </div>
-                    <Progress value={dashboardData?.schedule_performance.teacher_workload} className="h-2" />
+                    <Progress
+                      value={dashboardData?.schedule_performance.teacher_workload}
+                      className="h-2"
+                    />
                   </div>
                   <div>
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="mb-2 flex items-center justify-between">
                       <span className="text-sm">Sınıf Kullanımı</span>
-                      <span className="font-semibold">%{dashboardData?.schedule_performance.classroom_usage}</span>
+                      <span className="font-semibold">
+                        %{dashboardData?.schedule_performance.classroom_usage}
+                      </span>
                     </div>
-                    <Progress value={dashboardData?.schedule_performance.classroom_usage} className="h-2" />
+                    <Progress
+                      value={dashboardData?.schedule_performance.classroom_usage}
+                      className="h-2"
+                    />
                   </div>
                   <div>
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="mb-2 flex items-center justify-between">
                       <span className="text-sm">Öğrenci Memnuniyeti</span>
-                      <span className="font-semibold">%{dashboardData?.schedule_performance.student_satisfaction}</span>
+                      <span className="font-semibold">
+                        %{dashboardData?.schedule_performance.student_satisfaction}
+                      </span>
                     </div>
-                    <Progress value={dashboardData?.schedule_performance.student_satisfaction} className="h-2" />
+                    <Progress
+                      value={dashboardData?.schedule_performance.student_satisfaction}
+                      className="h-2"
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -2029,7 +2076,10 @@ export function ScheduleDashboard() {
               <CardContent>
                 <div className="space-y-3">
                   {dashboardData?.recent_conflicts.map((conflict: any) => (
-                    <div key={conflict.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={conflict.id}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div className="flex items-center gap-3">
                         {getConflictIcon(conflict.type)}
                         <div>
@@ -2057,7 +2107,10 @@ export function ScheduleDashboard() {
               <CardContent>
                 <div className="space-y-3">
                   {dashboardData?.upcoming_events.map((event: any) => (
-                    <div key={event.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={event.id}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div className="flex items-center gap-3">
                         <div className="text-center">
                           <div className="font-bold">{event.time}</div>
@@ -2065,7 +2118,9 @@ export function ScheduleDashboard() {
                         </div>
                         <div>
                           <div className="font-medium">{event.title}</div>
-                          <div className="text-sm text-gray-600">{event.class} - {event.teacher}</div>
+                          <div className="text-sm text-gray-600">
+                            {event.class} - {event.teacher}
+                          </div>
                         </div>
                       </div>
                       <Button variant="ghost" size="sm">
@@ -2086,12 +2141,14 @@ export function ScheduleDashboard() {
               <CardDescription>Tüm sınıfların ders programlarını görüntüleyin</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <School className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Sınıf Programları</h3>
-                <p className="text-gray-600 mb-4">Detaylı sınıf programları için Class Schedule Generator'ı kullanın</p>
+              <div className="py-8 text-center">
+                <School className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                <h3 className="mb-2 text-lg font-semibold">Sınıf Programları</h3>
+                <p className="mb-4 text-gray-600">
+                  Detaylı sınıf programları için Class Schedule Generator'ı kullanın
+                </p>
                 <Button>
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="mr-2 h-4 w-4" />
                   Yeni Program Oluştur
                 </Button>
               </div>
@@ -2106,12 +2163,14 @@ export function ScheduleDashboard() {
               <CardDescription>Tüm öğretmenlerin ders programlarını yönetin</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Öğretmen Programları</h3>
-                <p className="text-gray-600 mb-4">Detaylı öğretmen programları için Teacher Schedule Manager'ı kullanın</p>
+              <div className="py-8 text-center">
+                <User className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                <h3 className="mb-2 text-lg font-semibold">Öğretmen Programları</h3>
+                <p className="mb-4 text-gray-600">
+                  Detaylı öğretmen programları için Teacher Schedule Manager'ı kullanın
+                </p>
                 <Button>
-                  <Plus className="h-4 w-4 mr-2" />
+                  <Plus className="mr-2 h-4 w-4" />
                   Öğretmen Programı Yönet
                 </Button>
               </div>
@@ -2123,15 +2182,19 @@ export function ScheduleDashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Çakışma Yönetimi</CardTitle>
-              <CardDescription>Ders programı çakışmalarını tespit edin ve çözümleyin</CardDescription>
+              <CardDescription>
+                Ders programı çakışmalarını tespit edin ve çözümleyin
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <AlertTriangle className="h-12 w-12 text-orange-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Çakışma Çözümleyici</h3>
-                <p className="text-gray-600 mb-4">Detaylı çakışma analizi için Conflict Resolver'ı kullanın</p>
+              <div className="py-8 text-center">
+                <AlertTriangle className="mx-auto mb-4 h-12 w-12 text-orange-400" />
+                <h3 className="mb-2 text-lg font-semibold">Çakışma Çözümleyici</h3>
+                <p className="mb-4 text-gray-600">
+                  Detaylı çakışma analizi için Conflict Resolver'ı kullanın
+                </p>
                 <Button>
-                  <Zap className="h-4 w-4 mr-2" />
+                  <Zap className="mr-2 h-4 w-4" />
                   Çakışmaları Çözümle
                 </Button>
               </div>
@@ -2146,32 +2209,32 @@ export function ScheduleDashboard() {
           <CardTitle>Hızlı İşlemler</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Button variant="outline" className="w-full justify-start h-auto p-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Button variant="outline" className="h-auto w-full justify-start p-4">
               <div className="flex flex-col items-center gap-2">
                 <Plus className="h-6 w-6 text-blue-500" />
                 <span className="text-sm font-medium">Yeni Program</span>
                 <span className="text-xs text-gray-600">Sınıf programı oluştur</span>
               </div>
             </Button>
-            
-            <Button variant="outline" className="w-full justify-start h-auto p-4">
+
+            <Button variant="outline" className="h-auto w-full justify-start p-4">
               <div className="flex flex-col items-center gap-2">
                 <Edit className="h-6 w-6 text-green-500" />
                 <span className="text-sm font-medium">Program Düzenle</span>
                 <span className="text-xs text-gray-600">Mevcut programı güncelle</span>
               </div>
             </Button>
-            
-            <Button variant="outline" className="w-full justify-start h-auto p-4">
+
+            <Button variant="outline" className="h-auto w-full justify-start p-4">
               <div className="flex flex-col items-center gap-2">
                 <Zap className="h-6 w-6 text-orange-500" />
                 <span className="text-sm font-medium">Çakışma Çözümle</span>
                 <span className="text-xs text-gray-600">Otomatik çözüm önerisi</span>
               </div>
             </Button>
-            
-            <Button variant="outline" className="w-full justify-start h-auto p-4">
+
+            <Button variant="outline" className="h-auto w-full justify-start p-4">
               <div className="flex flex-col items-center gap-2">
                 <Download className="h-6 w-6 text-purple-500" />
                 <span className="text-sm font-medium">Rapor İndir</span>

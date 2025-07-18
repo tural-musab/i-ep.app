@@ -14,6 +14,7 @@ Multi-tenant mimarinin tasarımında aşağıdaki gereksinimler ve kısıtlamala
 - **Maliyet Etkinliği**: Altyapı kaynaklarının optimum kullanımı ile maliyet kontrolü sağlanmalıdır
 
 Multi-tenant veri izolasyonu için farklı yaklaşımlar değerlendirilmiştir:
+
 1. **Tenant Başına Ayrı Veritabanı**: Her tenant için tamamen ayrı bir veritabanı
 2. **Şema Bazlı İzolasyon**: Aynı veritabanında tenant başına ayrı şemalar
 3. **Tablo Bazlı İzolasyon**: Her tablonun tenant başına ayrı kopyası
@@ -24,7 +25,7 @@ Multi-tenant veri izolasyonu için farklı yaklaşımlar değerlendirilmiştir:
 Iqra Eğitim Portalı için **Hibrit İzolasyon** yaklaşımı benimsenmiştir. Bu yaklaşım aşağıdaki bileşenlerden oluşmaktadır:
 
 1. **Şema Bazlı İzolasyon** (birincil yaklaşım):
-   - Her tenant için PostgreSQL veritabanında ayrı bir şema oluşturulacaktır (tenant_{tenant_id} şeklinde)
+   - Her tenant için PostgreSQL veritabanında ayrı bir şema oluşturulacaktır (tenant\_{tenant_id} şeklinde)
    - Tenant-specific veriler (öğrenciler, öğretmenler, sınıflar, notlar, vb.) bu şemalarda tutulacaktır
 
 2. **Satır Bazlı İzolasyon** (tamamlayıcı yaklaşım):
@@ -66,14 +67,17 @@ Kabul Edildi
 ## Alternatifler
 
 ### Tenant Başına Ayrı Veritabanı
+
 - **Avantajlar**: En yüksek düzeyde izolasyon, bağımsız yedekleme/geri yükleme, tenant başına özelleştirme
 - **Dezavantajlar**: Yüksek kaynak kullanımı, veritabanı bağlantı sayısı sınırlamaları, yönetim zorluğu
 
 ### Tek Şema, Tablo Bazlı İzolasyon (Tablo Adı Prefix'i)
+
 - **Avantajlar**: Şema sınırlamalarını aşma, tenant bazında tablo özelleştirme
 - **Dezavantajlar**: Veritabanı nesne sayısının hızla artması, sorgu karmaşıklığı
 
 ### Tek Şema, Satır Bazlı İzolasyon (RLS)
+
 - **Avantajlar**: Basit yapı, kolay yönetim, cross-tenant sorgulama kolaylığı
 - **Dezavantajlar**: Daha düşük izolasyon seviyesi, tüm sorgularda tenant filtresi gereksinimi, performans etkileri
 
@@ -87,4 +91,4 @@ Kabul Edildi
 - [PostgreSQL Şema Dokümantasyonu](https://www.postgresql.org/docs/current/ddl-schemas.html)
 - [PostgreSQL Row Level Security (RLS)](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)
 - [Multi-Tenant Data Architecture (Microsoft)](https://docs.microsoft.com/en-us/azure/architecture/guide/multitenant/considerations/data-isolation)
-- [SaaS Multi-Tenant Veri Mimarisi Kalıpları](https://aws.amazon.com/blogs/apn/multi-tenant-storage-strategies-for-saas-applications/) 
+- [SaaS Multi-Tenant Veri Mimarisi Kalıpları](https://aws.amazon.com/blogs/apn/multi-tenant-storage-strategies-for-saas-applications/)

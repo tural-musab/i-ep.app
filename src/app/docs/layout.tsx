@@ -1,14 +1,10 @@
 import Link from 'next/link';
 
-export default function DocsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DocsLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-primary text-white p-4 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
+      <header className="bg-primary p-4 text-white shadow-md">
+        <div className="container mx-auto flex items-center justify-between">
           <Link href="/" className="text-2xl font-bold">
             Iqra Eğitim Portalı
           </Link>
@@ -38,14 +34,12 @@ export default function DocsLayout({
           </nav>
         </div>
       </header>
-      
-      <main className="container mx-auto py-8 px-4">
-        {children}
-      </main>
-      
-      <footer className="bg-gray-800 text-white p-6">
+
+      <main className="container mx-auto px-4 py-8">{children}</main>
+
+      <footer className="bg-gray-800 p-6 text-white">
         <div className="container mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center">
+          <div className="flex flex-col items-center justify-between md:flex-row">
             <div className="mb-4 md:mb-0">
               <p>&copy; {new Date().getFullYear()} Iqra Eğitim Portalı. Tüm hakları saklıdır.</p>
             </div>
@@ -62,7 +56,12 @@ export default function DocsLayout({
                   </Link>
                 </li>
                 <li>
-                  <a href="https://github.com/i-es" target="_blank" rel="noreferrer" className="hover:underline">
+                  <a
+                    href="https://github.com/i-es"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:underline"
+                  >
                     GitHub
                   </a>
                 </li>
@@ -73,4 +72,4 @@ export default function DocsLayout({
       </footer>
     </div>
   );
-} 
+}

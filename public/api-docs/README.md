@@ -62,6 +62,7 @@ API'yi test etmek için Postman veya Insomnia gibi araçlar kullanabilirsiniz. S
 Bu API çok kiracılı (multi-tenant) bir SaaS platformu için tasarlanmıştır. API istekleri her zaman bir tenant bağlamında yapılmalıdır. Bu, URL'deki subdomain (veya özel domain) ile belirlenir.
 
 Örneğin:
+
 - `https://tenant1.i-ep.app/api/users`
 - `https://ozel-domain.com/api/users`
 
@@ -80,4 +81,4 @@ API kullanırken karşılaşabileceğiniz yaygın hata kodları ve çözümleri 
 
 ## SSL ve Domain Yapılandırması
 
-Tenant'lar için SSL ve özel domain yapılandırması ile ilgili bilgiler için [Domain Yönetimi ve SSL Rehberi](/docs/domain-management-guide.md) dokümanına bakınız. 
+Tenant'lar için SSL ve özel domain yapılandırması ile ilgili bilgiler için [Domain Yönetimi ve SSL Rehberi](/docs/domain-management-guide.md) dokümanına bakınız.

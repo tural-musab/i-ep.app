@@ -2,7 +2,10 @@ import { describe, it, expect } from '@jest/globals';
 
 // Simple error classes for testing
 class AppError extends Error {
-  constructor(message: string, public statusCode: number = 500) {
+  constructor(
+    message: string,
+    public statusCode: number = 500
+  ) {
     super(message);
     this.name = 'AppError';
   }
@@ -21,7 +24,7 @@ function handleError(error: Error): { message: string; statusCode: number; type:
     return {
       message: error.message,
       statusCode: error.statusCode,
-      type: 'AppError'
+      type: 'AppError',
     };
   }
 
@@ -29,25 +32,25 @@ function handleError(error: Error): { message: string; statusCode: number; type:
     return {
       message: error.message,
       statusCode: 400,
-      type: 'ValidationError'
+      type: 'ValidationError',
     };
   }
 
   return {
     message: 'Internal Server Error',
     statusCode: 500,
-    type: 'UnknownError'
+    type: 'UnknownError',
   };
 }
 
 // Format error message
 function formatErrorMessage(message: string, context?: Record<string, unknown>): string {
   if (!context) return message;
-  
+
   const contextStr = Object.entries(context)
     .map(([key, value]) => `${key}: ${value}`)
     .join(', ');
-  
+
   return `${message} (Context: ${contextStr})`;
 }
 
@@ -157,4 +160,4 @@ describe('Error Handler Tests', () => {
       expect(result).toBe(false);
     });
   });
-}); 
+});

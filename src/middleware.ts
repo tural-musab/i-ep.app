@@ -11,39 +11,35 @@ const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 async function resolveTenantOptimized(hostname: string) {
   const cacheKey = `tenant_${hostname}`;
   const cached = tenantCache.get(cacheKey);
-  
+
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return { data: cached.data, fromCache: true };
   }
-  
+
   const tenantInfo = await resolveTenantFromDomain(hostname);
-  
+
   // Cache the result
   tenantCache.set(cacheKey, {
     data: tenantInfo,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   });
-  
+
   return { data: tenantInfo, fromCache: false };
 }
 
 // Pre-compiled protected paths for faster lookup
-const PROTECTED_PATHS = new Set([
-  '/dashboard',
-  '/admin', 
-  '/super-admin',
-  '/profile',
-  '/settings'
-]);
+const PROTECTED_PATHS = new Set(['/dashboard', '/admin', '/super-admin', '/profile', '/settings']);
 
 // Optimized path checking
 function isProtectedPath(pathname: string): boolean {
-  return PROTECTED_PATHS.has(pathname) || 
-         pathname.startsWith('/dashboard/') ||
-         pathname.startsWith('/admin/') ||
-         pathname.startsWith('/super-admin/') ||
-         pathname.startsWith('/api/admin/') ||
-         pathname.startsWith('/api/super-admin/');
+  return (
+    PROTECTED_PATHS.has(pathname) ||
+    pathname.startsWith('/dashboard/') ||
+    pathname.startsWith('/admin/') ||
+    pathname.startsWith('/super-admin/') ||
+    pathname.startsWith('/api/admin/') ||
+    pathname.startsWith('/api/super-admin/')
+  );
 }
 
 /**
@@ -53,40 +49,42 @@ function isProtectedPath(pathname: string): boolean {
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const hostname = request.headers.get('host') || '';
-  
+
   // Early return for static assets
-  if (pathname.startsWith('/_next/') || 
-      pathname.startsWith('/static/') ||
-      pathname.startsWith('/favicon.ico') ||
-      pathname.startsWith('/logo.') ||
-      pathname.startsWith('/auth/')) {
+  if (
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/static/') ||
+    pathname.startsWith('/favicon.ico') ||
+    pathname.startsWith('/logo.') ||
+    pathname.startsWith('/auth/')
+  ) {
     return NextResponse.next();
   }
-  
+
   // Localhost kontrolü - geliştirme ortamı için basit response
   if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
     return addTenantHeadersInDevelopment(request);
   }
-  
+
   // Create supabase client for auth
   const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() });
-  
+
   // Parallel operations for better performance
   const [tenantInfo, session] = await Promise.all([
     resolveTenantOptimized(hostname),
-    supabase.auth.getSession().then(({ data: { session } }) => session)
+    supabase.auth.getSession().then(({ data: { session } }) => session),
   ]);
-  
+
   let finalResponse = NextResponse.next();
-  
+
   // Apply security headers
   finalResponse = withSecurityHeaders()(request);
-  
+
   // Set essential headers only
   if (tenantInfo.data?.id) {
     finalResponse.headers.set('x-tenant-id', tenantInfo.data.id);
   }
-  
+
   // Super-admin sayfaları için özel kontrol
   if (pathname.startsWith('/super-admin')) {
     if (!session) {
@@ -94,61 +92,68 @@ export async function middleware(request: NextRequest) {
       loginUrl.searchParams.set('callbackUrl', request.url);
       return NextResponse.redirect(loginUrl);
     }
-    
+
     const isSuperAdmin = session.user.app_metadata?.role === 'super_admin';
     if (!isSuperAdmin) {
       return NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
     }
-    
+
     return NextResponse.next();
   }
-  
+
   // Sistem yönetimi ve auth gibi genel pathler için izolasyon kontrolü yok
   if (isPublicPath(pathname)) {
     return NextResponse.next();
   }
-  
+
   // Ana domain (ve www subdomain) üzerindeki lansman sayfaları için tenant kontrolü yok
   const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app';
   if (isBaseDomain(hostname, BASE_DOMAIN)) {
     return handleBaseDomainRequest(request, pathname);
   }
-  
+
   // Domain bilgisinden tenant ID'sini tespit et
   const currentTenant = await resolveTenantFromDomain(hostname);
-  
+
   // Tenant bulunamadı veya aktif değil
   if (!currentTenant) {
     return NextResponse.redirect(new URL(`https://${BASE_DOMAIN}`, request.url));
   }
-  
+
   // Tenant okumak için header'a tenant bilgisi ekle
   finalResponse.headers.set('x-tenant-id', currentTenant.id);
   finalResponse.headers.set('x-tenant-hostname', hostname);
   finalResponse.headers.set('x-tenant-name', currentTenant.name || '');
-  
+
   // Auth headerlarını ekle
   if (session) {
     finalResponse.headers.set('x-auth-user-id', session.user.id);
     finalResponse.headers.set('x-auth-user-email', session.user.email || '');
     finalResponse.headers.set('x-auth-user-role', session.user.app_metadata?.role || 'user');
-    
+
     // Kullanıcının erişebileceği tenant'lar
     const allowedTenants = session.user.user_metadata?.allowed_tenants || '[]';
-    finalResponse.headers.set('x-auth-allowed-tenants', typeof allowedTenants === 'string' ? allowedTenants : JSON.stringify(allowedTenants));
-    
+    finalResponse.headers.set(
+      'x-auth-allowed-tenants',
+      typeof allowedTenants === 'string' ? allowedTenants : JSON.stringify(allowedTenants)
+    );
+
     // Tenant erişim kontrolü
     const isSuperAdmin = session.user.app_metadata?.role === 'super_admin';
-    const allowedTenantsArray = typeof allowedTenants === 'string' 
-      ? JSON.parse(allowedTenants) 
-      : (Array.isArray(allowedTenants) ? allowedTenants : []);
-    
+    const allowedTenantsArray =
+      typeof allowedTenants === 'string'
+        ? JSON.parse(allowedTenants)
+        : Array.isArray(allowedTenants)
+          ? allowedTenants
+          : [];
+
     // Super admin'ler tüm tenant'lara erişebilir
     // Normal kullanıcılar sadece izin verilen tenant'lara erişebilir
-    const canAccessTenant = isSuperAdmin || 
+    const canAccessTenant =
+      isSuperAdmin ||
       session.user.user_metadata?.tenant_id === currentTenant.id ||
       allowedTenantsArray.includes(currentTenant.id);
-    
+
     // Kullanıcının bu tenant'a erişim yetkisi yoksa ve koruma altındaki bir sayfaya erişmeye çalışıyorsa
     if (!canAccessTenant && isProtectedPath(pathname)) {
       return NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
@@ -159,7 +164,7 @@ export async function middleware(request: NextRequest) {
     loginUrl.searchParams.set('callbackUrl', request.url);
     return NextResponse.redirect(loginUrl);
   }
-  
+
   return finalResponse;
 }
 
@@ -168,12 +173,12 @@ export async function middleware(request: NextRequest) {
  */
 function addTenantHeadersInDevelopment(request: NextRequest): NextResponse {
   const response = NextResponse.next();
-  
+
   // Varsayılan test tenant'ı
   response.headers.set('x-tenant-id', 'test-tenant');
   response.headers.set('x-tenant-hostname', 'test-tenant.localhost');
   response.headers.set('x-tenant-name', 'Test Tenant');
-  
+
   return response;
 }
 
@@ -197,16 +202,17 @@ function isPublicPath(pathname: string): boolean {
   );
 }
 
-
 /**
  * Domain'in ana domain olup olmadığını kontrol eder
  */
 function isBaseDomain(hostname: string, baseDomain: string): boolean {
-  return hostname === baseDomain || 
-         hostname === `www.${baseDomain}` ||
-         hostname === `staging.${baseDomain}` ||
-         hostname === `test.${baseDomain}` ||
-         hostname === `dev.${baseDomain}`;
+  return (
+    hostname === baseDomain ||
+    hostname === `www.${baseDomain}` ||
+    hostname === `staging.${baseDomain}` ||
+    hostname === `test.${baseDomain}` ||
+    hostname === `dev.${baseDomain}`
+  );
 }
 
 /**
@@ -227,7 +233,7 @@ function handleBaseDomainRequest(request: NextRequest, pathname: string): NextRe
   ) {
     return NextResponse.next();
   }
-  
+
   // Ana domaine gelen tenant-specific istekler ana sayfaya yönlendirilir
   return NextResponse.redirect(new URL('/', request.url));
 }
@@ -238,4 +244,4 @@ export const config = {
     // Sistem dosyalarını hariç tut
     '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
-}; 
+};

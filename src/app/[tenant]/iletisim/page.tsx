@@ -6,31 +6,31 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/ui/data-table';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue 
+  SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Search, 
-  Trash2, 
+import {
+  Search,
+  Trash2,
   Send,
-  MessageSquare, 
+  MessageSquare,
   Bell,
   Megaphone,
   Eye,
-  CheckCircle
+  CheckCircle,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 
@@ -71,7 +71,13 @@ interface Announcement {
 
 interface Notification {
   id: string;
-  type: 'grade_entered' | 'assignment_due' | 'absence_alert' | 'announcement' | 'message' | 'system';
+  type:
+    | 'grade_entered'
+    | 'assignment_due'
+    | 'absence_alert'
+    | 'announcement'
+    | 'message'
+    | 'system';
   title: string;
   message: string;
   recipientId: string;
@@ -142,7 +148,11 @@ const messageColumns = [
     header: 'Gönderilme',
     cell: ({ row }: { row: { getValue: (key: string) => string } }) => {
       const date = new Date(row.getValue('sentAt'));
-      return date.toLocaleDateString('tr-TR') + ' ' + date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+      return (
+        date.toLocaleDateString('tr-TR') +
+        ' ' +
+        date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+      );
     },
   },
   {
@@ -201,7 +211,9 @@ const announcementColumns = [
         students: 'Öğrenciler',
         class_specific: 'Belirli Sınıflar',
       };
-      return <Badge variant="secondary">{audienceLabels[audience as keyof typeof audienceLabels]}</Badge>;
+      return (
+        <Badge variant="secondary">{audienceLabels[audience as keyof typeof audienceLabels]}</Badge>
+      );
     },
   },
   {
@@ -231,7 +243,7 @@ const announcementColumns = [
     header: 'Okunma',
     cell: ({ row }: { row: { getValue: (key: string) => string[] } }) => {
       const readBy = row.getValue('readBy');
-      return <span className="text-blue-600 font-semibold">{readBy.length} kişi</span>;
+      return <span className="font-semibold text-blue-600">{readBy.length} kişi</span>;
     },
   },
 ];
@@ -253,97 +265,107 @@ export default function CommunicationPage() {
   // const [selectedAnnouncement, setSelectedAnnouncement] = useState<Announcement | null>(null);
 
   // Mock data
-  const mockMessages = useMemo(() => [
-    {
-      id: '1',
-      senderId: 'teacher1',
-      senderName: 'Mehmet Öztürk',
-      senderRole: 'teacher',
-      recipientId: 'parent1',
-      recipientName: 'Fatma Yılmaz',
-      recipientRole: 'parent',
-      subject: 'Ahmet\'in Matematik Başarısı',
-      content: 'Merhaba, Ahmet matematik dersinde çok başarılı. Tebrikler.',
-      sentAt: '2024-12-10T14:30:00',
-      readAt: '2024-12-10T16:45:00',
-      status: 'read',
-      priority: 'normal',
-      tenantId: currentTenantId || 'demo-school',
-    },
-    {
-      id: '2',
-      senderId: 'admin1',
-      senderName: 'Okul Müdürü',
-      senderRole: 'admin',
-      recipientId: 'teacher1',
-      recipientName: 'Mehmet Öztürk',
-      recipientRole: 'teacher',
-      subject: 'Veli Toplantısı Hatırlatması',
-      content: 'Yarın saat 19:00\'da veli toplantısı olduğunu hatırlatırım.',
-      sentAt: '2024-12-11T10:15:00',
-      status: 'delivered',
-      priority: 'high',
-      tenantId: currentTenantId || 'demo-school',
-    },
-  ], [currentTenantId]);
+  const mockMessages = useMemo(
+    () => [
+      {
+        id: '1',
+        senderId: 'teacher1',
+        senderName: 'Mehmet Öztürk',
+        senderRole: 'teacher',
+        recipientId: 'parent1',
+        recipientName: 'Fatma Yılmaz',
+        recipientRole: 'parent',
+        subject: "Ahmet'in Matematik Başarısı",
+        content: 'Merhaba, Ahmet matematik dersinde çok başarılı. Tebrikler.',
+        sentAt: '2024-12-10T14:30:00',
+        readAt: '2024-12-10T16:45:00',
+        status: 'read',
+        priority: 'normal',
+        tenantId: currentTenantId || 'demo-school',
+      },
+      {
+        id: '2',
+        senderId: 'admin1',
+        senderName: 'Okul Müdürü',
+        senderRole: 'admin',
+        recipientId: 'teacher1',
+        recipientName: 'Mehmet Öztürk',
+        recipientRole: 'teacher',
+        subject: 'Veli Toplantısı Hatırlatması',
+        content: "Yarın saat 19:00'da veli toplantısı olduğunu hatırlatırım.",
+        sentAt: '2024-12-11T10:15:00',
+        status: 'delivered',
+        priority: 'high',
+        tenantId: currentTenantId || 'demo-school',
+      },
+    ],
+    [currentTenantId]
+  );
 
-  const mockAnnouncements = useMemo(() => [
-    {
-      id: '1',
-      title: 'Karne Dağıtım Tarihi',
-      content: 'Karne dağıtımı 25 Aralık Çarşamba günü saat 14:00\'te yapılacaktır. Tüm velilerimizi bekliyoruz.',
-      authorId: 'admin1',
-      authorName: 'Okul Müdürü',
-      targetAudience: 'parents',
-      priority: 'high',
-      publishDate: '2024-12-15',
-      expiryDate: '2024-12-25',
-      status: 'published',
-      readBy: ['parent1', 'parent2'],
-      tenantId: currentTenantId || 'demo-school',
-    },
-    {
-      id: '2',
-      title: 'Yılsonu Etkinlikleri',
-      content: 'Yılsonu etkinlikleri planlanmaktadır. Detaylar yakında duyurulacaktır.',
-      authorId: 'admin1',
-      authorName: 'Okul Müdürü',
-      targetAudience: 'all',
-      priority: 'normal',
-      publishDate: '2024-12-20',
-      status: 'published',
-      readBy: ['teacher1', 'parent1'],
-      tenantId: currentTenantId || 'demo-school',
-    },
-  ], [currentTenantId]);
+  const mockAnnouncements = useMemo(
+    () => [
+      {
+        id: '1',
+        title: 'Karne Dağıtım Tarihi',
+        content:
+          "Karne dağıtımı 25 Aralık Çarşamba günü saat 14:00'te yapılacaktır. Tüm velilerimizi bekliyoruz.",
+        authorId: 'admin1',
+        authorName: 'Okul Müdürü',
+        targetAudience: 'parents',
+        priority: 'high',
+        publishDate: '2024-12-15',
+        expiryDate: '2024-12-25',
+        status: 'published',
+        readBy: ['parent1', 'parent2'],
+        tenantId: currentTenantId || 'demo-school',
+      },
+      {
+        id: '2',
+        title: 'Yılsonu Etkinlikleri',
+        content: 'Yılsonu etkinlikleri planlanmaktadır. Detaylar yakında duyurulacaktır.',
+        authorId: 'admin1',
+        authorName: 'Okul Müdürü',
+        targetAudience: 'all',
+        priority: 'normal',
+        publishDate: '2024-12-20',
+        status: 'published',
+        readBy: ['teacher1', 'parent1'],
+        tenantId: currentTenantId || 'demo-school',
+      },
+    ],
+    [currentTenantId]
+  );
 
-  const mockNotifications = useMemo(() => [
-    {
-      id: '1',
-      type: 'grade_entered',
-      title: 'Yeni Not Girişi',
-      message: 'Ahmet Yılmaz\'a Matematik dersi için not girildi.',
-      recipientId: 'parent1',
-      recipientRole: 'parent',
-      sentAt: '2024-12-10T15:30:00',
-      readAt: '2024-12-10T16:00:00',
-      priority: 'normal',
-      status: 'read',
-      tenantId: currentTenantId || 'demo-school',
-    },
-    {
-      id: '2',
-      type: 'absence_alert',
-      title: 'Devamsızlık Uyarısı',
-      message: 'Ayşe Demir bugün derse gelmedi.',
-      recipientId: 'parent2',
-      recipientRole: 'parent',
-      sentAt: '2024-12-11T08:30:00',
-      priority: 'high',
-      status: 'sent',
-      tenantId: currentTenantId || 'demo-school',
-    },
-  ], [currentTenantId]);
+  const mockNotifications = useMemo(
+    () => [
+      {
+        id: '1',
+        type: 'grade_entered',
+        title: 'Yeni Not Girişi',
+        message: "Ahmet Yılmaz'a Matematik dersi için not girildi.",
+        recipientId: 'parent1',
+        recipientRole: 'parent',
+        sentAt: '2024-12-10T15:30:00',
+        readAt: '2024-12-10T16:00:00',
+        priority: 'normal',
+        status: 'read',
+        tenantId: currentTenantId || 'demo-school',
+      },
+      {
+        id: '2',
+        type: 'absence_alert',
+        title: 'Devamsızlık Uyarısı',
+        message: 'Ayşe Demir bugün derse gelmedi.',
+        recipientId: 'parent2',
+        recipientRole: 'parent',
+        sentAt: '2024-12-11T08:30:00',
+        priority: 'high',
+        status: 'sent',
+        tenantId: currentTenantId || 'demo-school',
+      },
+    ],
+    [currentTenantId]
+  );
 
   useEffect(() => {
     const loadCommunicationData = async () => {
@@ -366,27 +388,30 @@ export default function CommunicationPage() {
     }
   }, [currentTenantId, mockMessages, mockAnnouncements, mockNotifications]);
 
-  const filteredMessages = messages.filter(message => {
-    const matchesSearch = 
+  const filteredMessages = messages.filter((message) => {
+    const matchesSearch =
       message.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
       message.senderName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       message.recipientName.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || message.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || message.priority === priorityFilter;
-    const matchesRole = roleFilter === 'all' || message.senderRole === roleFilter || message.recipientRole === roleFilter;
-    
+    const matchesRole =
+      roleFilter === 'all' ||
+      message.senderRole === roleFilter ||
+      message.recipientRole === roleFilter;
+
     return matchesSearch && matchesStatus && matchesPriority && matchesRole;
   });
 
-  const filteredAnnouncements = announcements.filter(announcement => {
-    const matchesSearch = 
+  const filteredAnnouncements = announcements.filter((announcement) => {
+    const matchesSearch =
       announcement.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       announcement.content.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || announcement.status === statusFilter;
     const matchesPriority = priorityFilter === 'all' || announcement.priority === priorityFilter;
-    
+
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
@@ -394,7 +419,7 @@ export default function CommunicationPage() {
     <form className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Alıcı</label>
+          <label className="mb-1 block text-sm font-medium">Alıcı</label>
           <Select>
             <SelectTrigger>
               <SelectValue placeholder="Alıcı seçin" />
@@ -407,7 +432,7 @@ export default function CommunicationPage() {
           </Select>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Öncelik</label>
+          <label className="mb-1 block text-sm font-medium">Öncelik</label>
           <Select defaultValue="normal">
             <SelectTrigger>
               <SelectValue placeholder="Öncelik seçin" />
@@ -423,30 +448,21 @@ export default function CommunicationPage() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Konu</label>
-        <Input 
-          placeholder="Mesaj konusu"
-        />
+        <label className="mb-1 block text-sm font-medium">Konu</label>
+        <Input placeholder="Mesaj konusu" />
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Mesaj</label>
-        <Textarea 
-          placeholder="Mesajınızı yazın..."
-          rows={6}
-        />
+        <label className="mb-1 block text-sm font-medium">Mesaj</label>
+        <Textarea placeholder="Mesajınızı yazın..." rows={6} />
       </div>
 
       <div className="flex justify-end space-x-2 pt-4">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={() => setIsMessageDialogOpen(false)}
-        >
+        <Button type="button" variant="outline" onClick={() => setIsMessageDialogOpen(false)}>
           İptal
         </Button>
         <Button type="submit">
-          <Send className="h-4 w-4 mr-2" />
+          <Send className="mr-2 h-4 w-4" />
           Gönder
         </Button>
       </div>
@@ -456,8 +472,8 @@ export default function CommunicationPage() {
   const AnnouncementForm = () => (
     <form className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1">Başlık</label>
-        <Input 
+        <label className="mb-1 block text-sm font-medium">Başlık</label>
+        <Input
           placeholder="Duyuru başlığı"
           // defaultValue={selectedAnnouncement?.title} // This line was removed as per the new_code
         />
@@ -465,7 +481,7 @@ export default function CommunicationPage() {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Hedef Kitle</label>
+          <label className="mb-1 block text-sm font-medium">Hedef Kitle</label>
           <Select defaultValue="all">
             <SelectTrigger>
               <SelectValue placeholder="Hedef kitle seçin" />
@@ -480,7 +496,7 @@ export default function CommunicationPage() {
           </Select>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Öncelik</label>
+          <label className="mb-1 block text-sm font-medium">Öncelik</label>
           <Select defaultValue="normal">
             <SelectTrigger>
               <SelectValue placeholder="Öncelik seçin" />
@@ -497,15 +513,15 @@ export default function CommunicationPage() {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Yayın Tarihi</label>
-          <Input 
+          <label className="mb-1 block text-sm font-medium">Yayın Tarihi</label>
+          <Input
             type="date"
             // defaultValue={selectedAnnouncement?.publishDate} // This line was removed as per the new_code
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Son Tarih (Opsiyonel)</label>
-          <Input 
+          <label className="mb-1 block text-sm font-medium">Son Tarih (Opsiyonel)</label>
+          <Input
             type="date"
             // defaultValue={selectedAnnouncement?.expiryDate} // This line was removed as per the new_code
           />
@@ -513,8 +529,8 @@ export default function CommunicationPage() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">İçerik</label>
-        <Textarea 
+        <label className="mb-1 block text-sm font-medium">İçerik</label>
+        <Textarea
           placeholder="Duyuru içeriği..."
           rows={8}
           // defaultValue={selectedAnnouncement?.content} // This line was removed as per the new_code
@@ -522,18 +538,14 @@ export default function CommunicationPage() {
       </div>
 
       <div className="flex justify-end space-x-2 pt-4">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={() => setIsAnnouncementDialogOpen(false)}
-        >
+        <Button type="button" variant="outline" onClick={() => setIsAnnouncementDialogOpen(false)}>
           İptal
         </Button>
         <Button type="submit" variant="outline">
           Taslak Kaydet
         </Button>
         <Button type="submit">
-          <Megaphone className="h-4 w-4 mr-2" />
+          <Megaphone className="mr-2 h-4 w-4" />
           Yayınla
         </Button>
       </div>
@@ -544,27 +556,27 @@ export default function CommunicationPage() {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 w-1/4 rounded bg-gray-200"></div>
+          <div className="h-64 rounded bg-gray-200"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+      <div className="flex flex-col items-start justify-between space-y-4 sm:flex-row sm:items-center sm:space-y-0">
         <div>
           <h1 className="text-2xl font-bold">İletişim Merkezi</h1>
           <p className="text-gray-600">Mesajlar, duyurular ve bildirimler</p>
         </div>
-        
+
         <div className="flex space-x-2">
           <Dialog open={isMessageDialogOpen} onOpenChange={setIsMessageDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline">
-                <MessageSquare className="h-4 w-4 mr-2" />
+                <MessageSquare className="mr-2 h-4 w-4" />
                 Mesaj Gönder
               </Button>
             </DialogTrigger>
@@ -575,15 +587,15 @@ export default function CommunicationPage() {
               <MessageForm />
             </DialogContent>
           </Dialog>
-          
+
           <Dialog open={isAnnouncementDialogOpen} onOpenChange={setIsAnnouncementDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Megaphone className="h-4 w-4 mr-2" />
+                <Megaphone className="mr-2 h-4 w-4" />
                 Duyuru Oluştur
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Yeni Duyuru</DialogTitle>
               </DialogHeader>
@@ -594,11 +606,11 @@ export default function CommunicationPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-blue-100 rounded-full">
+              <div className="rounded-full bg-blue-100 p-2">
                 <MessageSquare className="h-4 w-4 text-blue-600" />
               </div>
               <div>
@@ -608,49 +620,49 @@ export default function CommunicationPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-green-100 rounded-full">
+              <div className="rounded-full bg-green-100 p-2">
                 <CheckCircle className="h-4 w-4 text-green-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Okundu</p>
                 <p className="text-xl font-semibold">
-                  {messages.filter(m => m.status === 'read').length}
+                  {messages.filter((m) => m.status === 'read').length}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-yellow-100 rounded-full">
+              <div className="rounded-full bg-yellow-100 p-2">
                 <Megaphone className="h-4 w-4 text-yellow-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Aktif Duyuru</p>
                 <p className="text-xl font-semibold">
-                  {announcements.filter(a => a.status === 'published').length}
+                  {announcements.filter((a) => a.status === 'published').length}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-red-100 rounded-full">
+              <div className="rounded-full bg-red-100 p-2">
                 <Bell className="h-4 w-4 text-red-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Okunmamış Bildirim</p>
                 <p className="text-xl font-semibold">
-                  {notifications.filter(n => n.status === 'sent').length}
+                  {notifications.filter((n) => n.status === 'sent').length}
                 </p>
               </div>
             </div>
@@ -674,16 +686,16 @@ export default function CommunicationPage() {
             <span>Bildirimler</span>
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="messages" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Mesajlar</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
+              <div className="mb-4 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <Input
                     placeholder="Mesaj ara"
                     value={searchTerm}
@@ -691,7 +703,7 @@ export default function CommunicationPage() {
                     className="pl-10"
                   />
                 </div>
-                
+
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Durum filtrele" />
@@ -703,7 +715,7 @@ export default function CommunicationPage() {
                     <SelectItem value="read">Okundu</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select value={priorityFilter} onValueChange={setPriorityFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Öncelik filtrele" />
@@ -716,7 +728,7 @@ export default function CommunicationPage() {
                     <SelectItem value="urgent">Acil</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select value={roleFilter} onValueChange={setRoleFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Rol filtrele" />
@@ -731,23 +743,20 @@ export default function CommunicationPage() {
                 </Select>
               </div>
 
-              <DataTable
-                columns={messageColumns}
-                data={filteredMessages}
-              />
+              <DataTable columns={messageColumns} data={filteredMessages} />
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="announcements" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Duyurular</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
+              <div className="mb-4 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <Input
                     placeholder="Duyuru ara"
                     value={searchTerm}
@@ -755,7 +764,7 @@ export default function CommunicationPage() {
                     className="pl-10"
                   />
                 </div>
-                
+
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Durum filtrele" />
@@ -767,7 +776,7 @@ export default function CommunicationPage() {
                     <SelectItem value="expired">Süresi Doldu</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select value={priorityFilter} onValueChange={setPriorityFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Öncelik filtrele" />
@@ -782,14 +791,11 @@ export default function CommunicationPage() {
                 </Select>
               </div>
 
-              <DataTable
-                columns={announcementColumns}
-                data={filteredAnnouncements}
-              />
+              <DataTable columns={announcementColumns} data={filteredAnnouncements} />
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="notifications" className="space-y-4">
           <Card>
             <CardHeader>
@@ -798,27 +804,47 @@ export default function CommunicationPage() {
             <CardContent>
               <div className="space-y-4">
                 {notifications.map((notification) => (
-                  <div 
-                    key={notification.id} 
-                    className={`p-4 border rounded-lg ${notification.status === 'sent' ? 'bg-blue-50 border-blue-200' : 'bg-gray-50'}`}
+                  <div
+                    key={notification.id}
+                    className={`rounded-lg border p-4 ${notification.status === 'sent' ? 'border-blue-200 bg-blue-50' : 'bg-gray-50'}`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start space-x-3">
-                        <div className={`p-2 rounded-full ${notification.status === 'sent' ? 'bg-blue-100' : 'bg-gray-100'}`}>
-                          <Bell className={`h-4 w-4 ${notification.status === 'sent' ? 'text-blue-600' : 'text-gray-600'}`} />
+                        <div
+                          className={`rounded-full p-2 ${notification.status === 'sent' ? 'bg-blue-100' : 'bg-gray-100'}`}
+                        >
+                          <Bell
+                            className={`h-4 w-4 ${notification.status === 'sent' ? 'text-blue-600' : 'text-gray-600'}`}
+                          />
                         </div>
                         <div className="flex-1">
                           <h4 className="font-medium">{notification.title}</h4>
-                          <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
-                          <div className="flex items-center space-x-4 mt-2">
+                          <p className="mt-1 text-sm text-gray-600">{notification.message}</p>
+                          <div className="mt-2 flex items-center space-x-4">
                             <span className="text-xs text-gray-500">
-                              {new Date(notification.sentAt).toLocaleDateString('tr-TR')} {new Date(notification.sentAt).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(notification.sentAt).toLocaleDateString('tr-TR')}{' '}
+                              {new Date(notification.sentAt).toLocaleTimeString('tr-TR', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
                             </span>
-                            <Badge 
-                              variant={notification.priority === 'urgent' ? 'destructive' : notification.priority === 'high' ? 'default' : 'secondary'}
+                            <Badge
+                              variant={
+                                notification.priority === 'urgent'
+                                  ? 'destructive'
+                                  : notification.priority === 'high'
+                                    ? 'default'
+                                    : 'secondary'
+                              }
                               className="text-xs"
                             >
-                              {notification.priority === 'urgent' ? 'Acil' : notification.priority === 'high' ? 'Yüksek' : notification.priority === 'normal' ? 'Normal' : 'Düşük'}
+                              {notification.priority === 'urgent'
+                                ? 'Acil'
+                                : notification.priority === 'high'
+                                  ? 'Yüksek'
+                                  : notification.priority === 'normal'
+                                    ? 'Normal'
+                                    : 'Düşük'}
                             </Badge>
                           </div>
                         </div>

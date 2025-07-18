@@ -18,25 +18,25 @@ Sistem denetim loglarını görüntüleyen ve analiz eden komponent.
 interface AuditLogsProps {
   /** Tenant ID */
   tenantId?: string;
-  
+
   /** Sayfa başına kayıt sayısı */
   pageSize?: number;
-  
+
   /** Varsayılan filtreler */
   defaultFilters?: AuditLogFilters;
-  
+
   /** Varsayılan sıralama */
   defaultSort?: SortConfig;
-  
+
   /** Gerçek zamanlı takip aktif mi */
   liveTracking?: boolean;
-  
+
   /** Log seçildiğinde çağrılır */
   onLogSelect?: (log: AuditLogEntry) => void;
-  
+
   /** Alarm durumunda çağrılır */
   onAlert?: (alert: LogAlert) => void;
-  
+
   /** Görünüm tipi */
   viewType?: 'table' | 'timeline' | 'grid';
 }
@@ -103,11 +103,11 @@ export default function AuditLogsPage() {
       pageSize={50}
       defaultFilters={{
         dateRange: [subDays(new Date(), 7), new Date()],
-        severity: ['error', 'critical']
+        severity: ['error', 'critical'],
       }}
       defaultSort={{
         field: 'timestamp',
-        direction: 'desc'
+        direction: 'desc',
       }}
       liveTracking={true}
       onLogSelect={handleLogSelect}
@@ -126,43 +126,32 @@ const columns: Column<AuditLogEntry>[] = [
     id: 'timestamp',
     header: 'Zaman',
     cell: (row) => format(new Date(row.timestamp), 'dd.MM.yyyy HH:mm:ss'),
-    sortable: true
+    sortable: true,
   },
   {
     id: 'severity',
     header: 'Önem',
     cell: (row) => <SeverityBadge severity={row.severity} />,
-    sortable: true
+    sortable: true,
   },
   {
     id: 'action',
     header: 'İşlem',
     cell: (row) => row.action,
-    sortable: true
+    sortable: true,
   },
   {
     id: 'actor',
     header: 'Aktör',
-    cell: (row) => (
-      <ActorInfo
-        name={row.actor.name}
-        type={row.actor.type}
-        role={row.actor.role}
-      />
-    ),
-    sortable: true
+    cell: (row) => <ActorInfo name={row.actor.name} type={row.actor.type} role={row.actor.role} />,
+    sortable: true,
   },
   {
     id: 'target',
     header: 'Hedef',
-    cell: (row) => (
-      <TargetInfo
-        name={row.target.name}
-        type={row.target.type}
-      />
-    ),
-    sortable: true
-  }
+    cell: (row) => <TargetInfo name={row.target.name} type={row.target.type} />,
+    sortable: true,
+  },
 ];
 ```
 
@@ -177,8 +166,8 @@ const fetchLogs = async (params: ListParams) => {
       page: params.page,
       limit: params.pageSize,
       sort: `${params.sort.field}:${params.sort.direction}`,
-      ...params.filters
-    }
+      ...params.filters,
+    },
   });
   return response.json();
 };
@@ -186,7 +175,7 @@ const fetchLogs = async (params: ListParams) => {
 // Gerçek zamanlı log takibi
 const subscribeToLogs = (callback: (log: AuditLogEntry) => void) => {
   const ws = new WebSocket('wss://api.iqraedu.com/audit-logs/stream');
-  
+
   ws.onmessage = (event) => {
     const log = JSON.parse(event.data);
     callback(log);
@@ -199,7 +188,7 @@ const subscribeToLogs = (callback: (log: AuditLogEntry) => void) => {
 const exportLogs = async (format: 'csv' | 'json', filters: AuditLogFilters) => {
   const response = await fetch('/api/audit-logs/export', {
     method: 'POST',
-    body: JSON.stringify({ format, filters })
+    body: JSON.stringify({ format, filters }),
   });
   return response.blob();
 };
@@ -220,12 +209,7 @@ const exportLogs = async (format: 'csv' | 'json', filters: AuditLogFilters) => {
 ## İstatistik Görünümü
 
 ```tsx
-<AuditLogStats
-  data={logs}
-  groupBy="category"
-  timeRange={filters.dateRange}
-  showChart
-/>
+<AuditLogStats data={logs} groupBy="category" timeRange={filters.dateRange} showChart />
 ```
 
 ## Erişilebilirlik
@@ -238,11 +222,11 @@ const exportLogs = async (format: 'csv' | 'json', filters: AuditLogFilters) => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1200px | Tam tablo görünümü |
+| Ekran Boyutu   | Davranış           |
+| -------------- | ------------------ |
+| > 1200px       | Tam tablo görünümü |
 | 768px - 1200px | Gizlenmiş kolonlar |
-| < 768px | Liste görünümü |
+| < 768px        | Liste görünümü     |
 
 ## Test
 
@@ -255,7 +239,7 @@ describe('AuditLogs', () => {
         defaultSort={{ field: 'timestamp', direction: 'desc' }}
       />
     );
-    
+
     await waitFor(() => {
       expect(screen.getByRole('table')).toBeInTheDocument();
     });
@@ -263,10 +247,10 @@ describe('AuditLogs', () => {
 
   it('handles filtering', async () => {
     render(<AuditLogs />);
-    
+
     await userEvent.click(screen.getByText('Filtrele'));
     await userEvent.click(screen.getByText('Kritik'));
-    
+
     expect(screen.getByText('1 filtre aktif')).toBeInTheDocument();
   });
 
@@ -277,7 +261,7 @@ describe('AuditLogs', () => {
         onLogSelect={onLogSelect}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Detaylar'));
     expect(onLogSelect).toHaveBeenCalled();
   });
@@ -288,13 +272,13 @@ describe('AuditLogs', () => {
         liveTracking={true}
       />
     );
-    
+
     // Simulate new log
     mockWebSocket.emit('message', {
       action: 'user.login',
       severity: 'info'
     });
-    
+
     await waitFor(() => {
       expect(screen.getByText('user.login')).toBeInTheDocument();
     });
@@ -359,13 +343,13 @@ LiveTracking.args = {
   rowClassName={(log) =>
     clsx('log-row', {
       'bg-red-50': log.severity === 'critical',
-      'bg-yellow-50': log.severity === 'warning'
+      'bg-yellow-50': log.severity === 'warning',
     })
   }
   customStyles={{
     header: 'bg-gray-50',
     filters: 'border-b border-gray-200',
-    stats: 'bg-white shadow-sm'
+    stats: 'bg-white shadow-sm',
   }}
 />
 ```
@@ -376,4 +360,4 @@ LiveTracking.args = {
 2. Filtreleri URL'de tut
 3. Kritik logları vurgula
 4. Log detaylarını önbelleğe al
-5. Gerçek zamanlı takibi optimize et 
+5. Gerçek zamanlı takibi optimize et

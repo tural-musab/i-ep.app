@@ -6,33 +6,33 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/ui/data-table';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog';
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue 
+  SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Plus, 
-  Search, 
-  Edit, 
-  Trash2, 
-  BookOpen, 
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  BookOpen,
   CheckCircle,
   AlertCircle,
   FileText,
   Download,
-  Upload
+  Upload,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth/auth-context';
 
@@ -122,9 +122,9 @@ const assignmentColumns = [
       const date = new Date(row.getValue('dueDate'));
       const today = new Date();
       const isOverdue = date < today;
-      
+
       return (
-        <span className={isOverdue ? 'text-red-600 font-semibold' : ''}>
+        <span className={isOverdue ? 'font-semibold text-red-600' : ''}>
           {date.toLocaleDateString('tr-TR')}
         </span>
       );
@@ -231,108 +231,116 @@ export default function AssignmentsPage() {
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
 
   // Mock data
-  const mockAssignments: Assignment[] = useMemo(() => [
-    {
-      id: '1',
-      title: 'Fonksiyonlar Konusu Ödev 1',
-      description: 'Fonksiyonların tanımı ve özellikleri üzerine problemler',
-      classId: 'class1',
-      className: '9-A',
-      subjectId: 'math',
-      subjectName: 'Matematik',
-      teacherId: 'teacher1',
-      teacherName: 'Mehmet Öztürk',
-      type: 'homework',
-      assignedDate: '2024-12-01',
-      dueDate: '2024-12-15',
-      maxPoints: 100,
-      instructions: 'Kitabın 45-50 sayfalarındaki problemleri çözünüz. Çözümleri düzenli ve okunaklı şekilde yazınız.',
-      status: 'active',
-      tenantId: currentTenantId || 'demo-school',
-    },
-    {
-      id: '2',
-      title: 'Elektrik Devre Projesi',
-      description: 'Basit elektrik devresi tasarımı ve uygulaması',
-      classId: 'class1',
-      className: '9-A',
-      subjectId: 'physics',
-      subjectName: 'Fizik',
-      teacherId: 'teacher2',
-      teacherName: 'Ayşe Demir',
-      type: 'project',
-      assignedDate: '2024-11-20',
-      dueDate: '2024-12-20',
-      maxPoints: 150,
-      instructions: 'Seri ve paralel bağlı LED devreleri tasarlayın. Malzeme listesi ve çizimler dahil edilmelidir.',
-      status: 'active',
-      tenantId: currentTenantId || 'demo-school',
-    },
-    {
-      id: '3',
-      title: 'Çevre Kirliliği Kompozisyonu',
-      description: 'Çevre kirliliği ve çözüm önerileri hakkında kompozisyon',
-      classId: 'class1',
-      className: '9-A',
-      subjectId: 'turkish',
-      subjectName: 'Türkçe',
-      teacherId: 'teacher3',
-      teacherName: 'Mehmet Kaya',
-      type: 'essay',
-      assignedDate: '2024-12-05',
-      dueDate: '2024-12-10',
-      maxPoints: 75,
-      instructions: 'En az 500 kelime, giriş-gelişme-sonuç bölümleri olacak şekilde yazınız.',
-      status: 'overdue',
-      tenantId: currentTenantId || 'demo-school',
-    },
-  ], [currentTenantId]);
+  const mockAssignments: Assignment[] = useMemo(
+    () => [
+      {
+        id: '1',
+        title: 'Fonksiyonlar Konusu Ödev 1',
+        description: 'Fonksiyonların tanımı ve özellikleri üzerine problemler',
+        classId: 'class1',
+        className: '9-A',
+        subjectId: 'math',
+        subjectName: 'Matematik',
+        teacherId: 'teacher1',
+        teacherName: 'Mehmet Öztürk',
+        type: 'homework',
+        assignedDate: '2024-12-01',
+        dueDate: '2024-12-15',
+        maxPoints: 100,
+        instructions:
+          'Kitabın 45-50 sayfalarındaki problemleri çözünüz. Çözümleri düzenli ve okunaklı şekilde yazınız.',
+        status: 'active',
+        tenantId: currentTenantId || 'demo-school',
+      },
+      {
+        id: '2',
+        title: 'Elektrik Devre Projesi',
+        description: 'Basit elektrik devresi tasarımı ve uygulaması',
+        classId: 'class1',
+        className: '9-A',
+        subjectId: 'physics',
+        subjectName: 'Fizik',
+        teacherId: 'teacher2',
+        teacherName: 'Ayşe Demir',
+        type: 'project',
+        assignedDate: '2024-11-20',
+        dueDate: '2024-12-20',
+        maxPoints: 150,
+        instructions:
+          'Seri ve paralel bağlı LED devreleri tasarlayın. Malzeme listesi ve çizimler dahil edilmelidir.',
+        status: 'active',
+        tenantId: currentTenantId || 'demo-school',
+      },
+      {
+        id: '3',
+        title: 'Çevre Kirliliği Kompozisyonu',
+        description: 'Çevre kirliliği ve çözüm önerileri hakkında kompozisyon',
+        classId: 'class1',
+        className: '9-A',
+        subjectId: 'turkish',
+        subjectName: 'Türkçe',
+        teacherId: 'teacher3',
+        teacherName: 'Mehmet Kaya',
+        type: 'essay',
+        assignedDate: '2024-12-05',
+        dueDate: '2024-12-10',
+        maxPoints: 75,
+        instructions: 'En az 500 kelime, giriş-gelişme-sonuç bölümleri olacak şekilde yazınız.',
+        status: 'overdue',
+        tenantId: currentTenantId || 'demo-school',
+      },
+    ],
+    [currentTenantId]
+  );
 
-  const mockSubmissions: Submission[] = useMemo(() => [
-    {
-      id: '1',
-      assignmentId: '1',
-      assignmentTitle: 'Fonksiyonlar Konusu Ödev 1',
-      studentId: 'student1',
-      studentName: 'Ahmet Yılmaz',
-      studentNumber: '2024001',
-      className: '9-A',
-      submissionDate: '2024-12-14',
-      content: 'Tüm problemleri çözdüm.',
-      status: 'submitted',
-      submittedAt: '2024-12-14T14:30:00',
-      tenantId: currentTenantId || 'demo-school',
-    },
-    {
-      id: '2',
-      assignmentId: '1',
-      assignmentTitle: 'Fonksiyonlar Konusu Ödev 1',
-      studentId: 'student2',
-      studentName: 'Ayşe Demir',
-      studentNumber: '2024002',
-      className: '9-A',
-      submissionDate: '2024-12-13',
-      content: 'Ödevimi tamamladım.',
-      grade: 85,
-      feedback: 'İyi çalışma, bazı hesaplama hataları var.',
-      status: 'graded',
-      submittedAt: '2024-12-13T16:45:00',
-      tenantId: currentTenantId || 'demo-school',
-    },
-    {
-      id: '3',
-      assignmentId: '2',
-      assignmentTitle: 'Elektrik Devre Projesi',
-      studentId: 'student1',
-      studentName: 'Ahmet Yılmaz',
-      studentNumber: '2024001',
-      className: '9-A',
-      submissionDate: '',
-      content: '',
-      status: 'not_submitted',
-      tenantId: currentTenantId || 'demo-school',
-    },
-  ], [currentTenantId]);
+  const mockSubmissions: Submission[] = useMemo(
+    () => [
+      {
+        id: '1',
+        assignmentId: '1',
+        assignmentTitle: 'Fonksiyonlar Konusu Ödev 1',
+        studentId: 'student1',
+        studentName: 'Ahmet Yılmaz',
+        studentNumber: '2024001',
+        className: '9-A',
+        submissionDate: '2024-12-14',
+        content: 'Tüm problemleri çözdüm.',
+        status: 'submitted',
+        submittedAt: '2024-12-14T14:30:00',
+        tenantId: currentTenantId || 'demo-school',
+      },
+      {
+        id: '2',
+        assignmentId: '1',
+        assignmentTitle: 'Fonksiyonlar Konusu Ödev 1',
+        studentId: 'student2',
+        studentName: 'Ayşe Demir',
+        studentNumber: '2024002',
+        className: '9-A',
+        submissionDate: '2024-12-13',
+        content: 'Ödevimi tamamladım.',
+        grade: 85,
+        feedback: 'İyi çalışma, bazı hesaplama hataları var.',
+        status: 'graded',
+        submittedAt: '2024-12-13T16:45:00',
+        tenantId: currentTenantId || 'demo-school',
+      },
+      {
+        id: '3',
+        assignmentId: '2',
+        assignmentTitle: 'Elektrik Devre Projesi',
+        studentId: 'student1',
+        studentName: 'Ahmet Yılmaz',
+        studentNumber: '2024001',
+        className: '9-A',
+        submissionDate: '',
+        content: '',
+        status: 'not_submitted',
+        tenantId: currentTenantId || 'demo-school',
+      },
+    ],
+    [currentTenantId]
+  );
 
   useEffect(() => {
     const loadAssignments = async () => {
@@ -359,28 +367,28 @@ export default function AssignmentsPage() {
     setSubmissions(mockSubmissions);
   }, [mockAssignments, mockSubmissions]);
 
-  const filteredAssignments = assignments.filter(assignment => {
-    const matchesSearch = 
+  const filteredAssignments = assignments.filter((assignment) => {
+    const matchesSearch =
       assignment.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       assignment.description.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesClass = classFilter === 'all' || assignment.className === classFilter;
     const matchesSubject = subjectFilter === 'all' || assignment.subjectName === subjectFilter;
     const matchesStatus = statusFilter === 'all' || assignment.status === statusFilter;
     const matchesType = typeFilter === 'all' || assignment.type === typeFilter;
-    
+
     return matchesSearch && matchesClass && matchesSubject && matchesStatus && matchesType;
   });
 
-  const filteredSubmissions = submissions.filter(submission => {
-    const matchesSearch = 
+  const filteredSubmissions = submissions.filter((submission) => {
+    const matchesSearch =
       submission.assignmentTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
       submission.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       submission.studentNumber.includes(searchTerm);
-    
+
     const matchesClass = classFilter === 'all' || submission.className === classFilter;
     const matchesStatus = statusFilter === 'all' || submission.status === statusFilter;
-    
+
     return matchesSearch && matchesClass && matchesStatus;
   });
 
@@ -397,7 +405,7 @@ export default function AssignmentsPage() {
   const handleDeleteAssignment = async (assignmentId: string) => {
     if (confirm('Bu ödevi silmek istediğinizden emin misiniz?')) {
       try {
-        setAssignments(prev => prev.filter(a => a.id !== assignmentId));
+        setAssignments((prev) => prev.filter((a) => a.id !== assignmentId));
       } catch (error) {
         console.error('Ödev silinirken hata:', error);
       }
@@ -407,24 +415,18 @@ export default function AssignmentsPage() {
   const AssignmentForm = () => (
     <form className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1">Ödev Başlığı</label>
-        <Input 
-          placeholder="Ödev başlığını girin"
-          defaultValue={selectedAssignment?.title}
-        />
+        <label className="mb-1 block text-sm font-medium">Ödev Başlığı</label>
+        <Input placeholder="Ödev başlığını girin" defaultValue={selectedAssignment?.title} />
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Açıklama</label>
-        <Textarea 
-          placeholder="Ödev açıklaması"
-          defaultValue={selectedAssignment?.description}
-        />
+        <label className="mb-1 block text-sm font-medium">Açıklama</label>
+        <Textarea placeholder="Ödev açıklaması" defaultValue={selectedAssignment?.description} />
       </div>
-      
+
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Sınıf</label>
+          <label className="mb-1 block text-sm font-medium">Sınıf</label>
           <Select defaultValue={selectedAssignment?.classId}>
             <SelectTrigger>
               <SelectValue placeholder="Sınıf seçin" />
@@ -436,7 +438,7 @@ export default function AssignmentsPage() {
           </Select>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Ders</label>
+          <label className="mb-1 block text-sm font-medium">Ders</label>
           <Select defaultValue={selectedAssignment?.subjectId}>
             <SelectTrigger>
               <SelectValue placeholder="Ders seçin" />
@@ -449,7 +451,7 @@ export default function AssignmentsPage() {
           </Select>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Tür</label>
+          <label className="mb-1 block text-sm font-medium">Tür</label>
           <Select defaultValue={selectedAssignment?.type}>
             <SelectTrigger>
               <SelectValue placeholder="Tür seçin" />
@@ -467,32 +469,22 @@ export default function AssignmentsPage() {
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="block text-sm font-medium mb-1">Verilme Tarihi</label>
-          <Input 
-            type="date"
-            defaultValue={selectedAssignment?.assignedDate}
-          />
+          <label className="mb-1 block text-sm font-medium">Verilme Tarihi</label>
+          <Input type="date" defaultValue={selectedAssignment?.assignedDate} />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Son Tarih</label>
-          <Input 
-            type="date"
-            defaultValue={selectedAssignment?.dueDate}
-          />
+          <label className="mb-1 block text-sm font-medium">Son Tarih</label>
+          <Input type="date" defaultValue={selectedAssignment?.dueDate} />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Maksimum Puan</label>
-          <Input 
-            type="number"
-            placeholder="100"
-            defaultValue={selectedAssignment?.maxPoints}
-          />
+          <label className="mb-1 block text-sm font-medium">Maksimum Puan</label>
+          <Input type="number" placeholder="100" defaultValue={selectedAssignment?.maxPoints} />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">Yönergeler</label>
-        <Textarea 
+        <label className="mb-1 block text-sm font-medium">Yönergeler</label>
+        <Textarea
           placeholder="Ödev yönergeleri ve açıklamaları"
           defaultValue={selectedAssignment?.instructions}
           rows={4}
@@ -500,16 +492,10 @@ export default function AssignmentsPage() {
       </div>
 
       <div className="flex justify-end space-x-2 pt-4">
-        <Button 
-          type="button" 
-          variant="outline" 
-          onClick={() => setIsCreateDialogOpen(false)}
-        >
+        <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
           İptal
         </Button>
-        <Button type="submit">
-          {selectedAssignment ? 'Güncelle' : 'Kaydet'}
-        </Button>
+        <Button type="submit">{selectedAssignment ? 'Güncelle' : 'Kaydet'}</Button>
       </div>
     </form>
   );
@@ -523,18 +509,10 @@ export default function AssignmentsPage() {
         const assignment = row.original;
         return (
           <div className="flex space-x-2">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => handleEditAssignment(assignment)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => handleEditAssignment(assignment)}>
               <Edit className="h-4 w-4" />
             </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => handleDeleteAssignment(assignment.id)}
-            >
+            <Button variant="ghost" size="sm" onClick={() => handleDeleteAssignment(assignment.id)}>
               <Trash2 className="h-4 w-4" />
             </Button>
           </div>
@@ -547,35 +525,35 @@ export default function AssignmentsPage() {
     return (
       <div className="p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 w-1/4 rounded bg-gray-200"></div>
+          <div className="h-64 rounded bg-gray-200"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+      <div className="flex flex-col items-start justify-between space-y-4 sm:flex-row sm:items-center sm:space-y-0">
         <div>
           <h1 className="text-2xl font-bold">Ödev Yönetimi</h1>
           <p className="text-gray-600">Ödevleri oluşturun ve takip edin</p>
         </div>
-        
+
         <div className="flex space-x-2">
           <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Rapor Al
           </Button>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={handleCreateAssignment}>
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Yeni Ödev
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
                   {selectedAssignment ? 'Ödev Düzenle' : 'Yeni Ödev Oluştur'}
@@ -588,11 +566,11 @@ export default function AssignmentsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-blue-100 rounded-full">
+              <div className="rounded-full bg-blue-100 p-2">
                 <BookOpen className="h-4 w-4 text-blue-600" />
               </div>
               <div>
@@ -602,49 +580,52 @@ export default function AssignmentsPage() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-green-100 rounded-full">
+              <div className="rounded-full bg-green-100 p-2">
                 <CheckCircle className="h-4 w-4 text-green-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Aktif Ödev</p>
                 <p className="text-xl font-semibold">
-                  {assignments.filter(a => a.status === 'active').length}
+                  {assignments.filter((a) => a.status === 'active').length}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-red-100 rounded-full">
+              <div className="rounded-full bg-red-100 p-2">
                 <AlertCircle className="h-4 w-4 text-red-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Süresi Geçen</p>
                 <p className="text-xl font-semibold">
-                  {assignments.filter(a => a.status === 'overdue').length}
+                  {assignments.filter((a) => a.status === 'overdue').length}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <div className="p-2 bg-purple-100 rounded-full">
+              <div className="rounded-full bg-purple-100 p-2">
                 <FileText className="h-4 w-4 text-purple-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Teslim Edildi</p>
                 <p className="text-xl font-semibold">
-                  {submissions.filter(s => s.status === 'submitted' || s.status === 'graded').length}
+                  {
+                    submissions.filter((s) => s.status === 'submitted' || s.status === 'graded')
+                      .length
+                  }
                 </p>
               </div>
             </div>
@@ -664,16 +645,16 @@ export default function AssignmentsPage() {
             <span>Teslimler</span>
           </TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="assignments" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Ödev Listesi</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
+              <div className="mb-4 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <Input
                     placeholder="Ödev ara"
                     value={searchTerm}
@@ -681,7 +662,7 @@ export default function AssignmentsPage() {
                     className="pl-10"
                   />
                 </div>
-                
+
                 <Select value={classFilter} onValueChange={setClassFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Sınıf filtrele" />
@@ -692,7 +673,7 @@ export default function AssignmentsPage() {
                     <SelectItem value="10-B">10-B</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select value={subjectFilter} onValueChange={setSubjectFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Ders filtrele" />
@@ -704,7 +685,7 @@ export default function AssignmentsPage() {
                     <SelectItem value="Türkçe">Türkçe</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select value={typeFilter} onValueChange={setTypeFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Tür filtrele" />
@@ -719,23 +700,20 @@ export default function AssignmentsPage() {
                 </Select>
               </div>
 
-              <DataTable
-                columns={assignmentTableColumns}
-                data={filteredAssignments}
-              />
+              <DataTable columns={assignmentTableColumns} data={filteredAssignments} />
             </CardContent>
           </Card>
         </TabsContent>
-        
+
         <TabsContent value="submissions" className="space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Ödev Teslimleri</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
+              <div className="mb-4 flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
                   <Input
                     placeholder="Öğrenci veya ödev ara"
                     value={searchTerm}
@@ -743,7 +721,7 @@ export default function AssignmentsPage() {
                     className="pl-10"
                   />
                 </div>
-                
+
                 <Select value={classFilter} onValueChange={setClassFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Sınıf filtrele" />
@@ -754,7 +732,7 @@ export default function AssignmentsPage() {
                     <SelectItem value="10-B">10-B</SelectItem>
                   </SelectContent>
                 </Select>
-                
+
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-48">
                     <SelectValue placeholder="Durum filtrele" />
@@ -769,10 +747,7 @@ export default function AssignmentsPage() {
                 </Select>
               </div>
 
-              <DataTable
-                columns={submissionColumns}
-                data={filteredSubmissions}
-              />
+              <DataTable columns={submissionColumns} data={filteredSubmissions} />
             </CardContent>
           </Card>
         </TabsContent>

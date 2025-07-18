@@ -52,17 +52,20 @@ export class StudentRepository extends BaseRepository<Student> {
   async findByClassId(classId: string, options: QueryOptions = {}): Promise<QueryResult<Student>> {
     return this.findAll({
       ...options,
-      filters: { class_id: classId }
+      filters: { class_id: classId },
     });
   }
 
   /**
    * Find students by parent ID
    */
-  async findByParentId(parentId: string, options: QueryOptions = {}): Promise<QueryResult<Student>> {
+  async findByParentId(
+    parentId: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Student>> {
     return this.findAll({
       ...options,
-      filters: { parent_id: parentId }
+      filters: { parent_id: parentId },
     });
   }
 
@@ -70,9 +73,7 @@ export class StudentRepository extends BaseRepository<Student> {
    * Find student by student number
    */
   async findByStudentNumber(studentNumber: string): Promise<Student | null> {
-    const { data, error } = await this.getBaseQuery()
-      .eq('student_number', studentNumber)
-      .single();
+    const { data, error } = await this.getBaseQuery().eq('student_number', studentNumber).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -87,13 +88,11 @@ export class StudentRepository extends BaseRepository<Student> {
   /**
    * Search students by name
    */
-  async searchByName(searchTerm: string, options: QueryOptions = {}): Promise<QueryResult<Student>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'created_at',
-      sortOrder = 'desc'
-    } = options;
+  async searchByName(
+    searchTerm: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Student>> {
+    const { page = 1, limit = 10, sortBy = 'created_at', sortOrder = 'desc' } = options;
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -115,7 +114,7 @@ export class StudentRepository extends BaseRepository<Student> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
@@ -125,7 +124,8 @@ export class StudentRepository extends BaseRepository<Student> {
   async findWithRelations(id: string): Promise<StudentWithRelations | null> {
     const { data, error } = await this.supabase
       .from('students')
-      .select(`
+      .select(
+        `
         *,
         parent:parents!parent_id (
           id,
@@ -139,7 +139,8 @@ export class StudentRepository extends BaseRepository<Student> {
           grade,
           section
         )
-      `)
+      `
+      )
       .eq('id', id)
       .eq('tenant_id', this.tenantId)
       .single();
@@ -165,19 +166,21 @@ export class StudentRepository extends BaseRepository<Student> {
   }> {
     const { data, error } = await this.supabase.rpc('get_student_statistics', {
       student_id: studentId,
-      tenant_id: this.tenantId
+      tenant_id: this.tenantId,
     });
 
     if (error) {
       throw new Error(`Repository error: ${error.message}`);
     }
 
-    return data || {
-      attendanceRate: 0,
-      gradeAverage: 0,
-      totalAssignments: 0,
-      completedAssignments: 0
-    };
+    return (
+      data || {
+        attendanceRate: 0,
+        gradeAverage: 0,
+        totalAssignments: 0,
+        completedAssignments: 0,
+      }
+    );
   }
 
   /**
@@ -225,19 +228,21 @@ export class StudentRepository extends BaseRepository<Student> {
   }> {
     const { data, error } = await this.supabase.rpc('get_class_enrollment_stats', {
       class_id: classId,
-      tenant_id: this.tenantId
+      tenant_id: this.tenantId,
     });
 
     if (error) {
       throw new Error(`Repository error: ${error.message}`);
     }
 
-    return data || {
-      totalStudents: 0,
-      activeStudents: 0,
-      maleStudents: 0,
-      femaleStudents: 0
-    };
+    return (
+      data || {
+        totalStudents: 0,
+        activeStudents: 0,
+        maleStudents: 0,
+        femaleStudents: 0,
+      }
+    );
   }
 
   /**
@@ -246,9 +251,9 @@ export class StudentRepository extends BaseRepository<Student> {
   async bulkUpdateClass(studentIds: string[], classId: string): Promise<boolean> {
     const { error } = await this.supabase
       .from('students')
-      .update({ 
+      .update({
         class_id: classId,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .in('id', studentIds)
       .eq('tenant_id', this.tenantId);

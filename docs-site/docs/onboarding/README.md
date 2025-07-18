@@ -59,4 +59,4 @@ Eğer herhangi bir sorunla karşılaşırsanız veya daha fazla bilgiye ihtiyaç
 
 ## Katkıda Bulunma
 
-Projeye katkıda bulunmak isteyenler, [CONTRIBUTING.md](../../CONTRIBUTING.md) dokümanını inceleyebilir. 
+Projeye katkıda bulunmak isteyenler, [CONTRIBUTING.md](../../CONTRIBUTING.md) dokümanını inceleyebilir.

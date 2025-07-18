@@ -90,6 +90,7 @@ npm run pre-commit
 ```
 
 **Pre-commit checks include:**
+
 - TypeScript compilation
 - ESLint linting (no warnings allowed)
 - Prettier formatting
@@ -99,6 +100,7 @@ npm run pre-commit
 ### 2. Code Review Process
 
 **Before submitting PR:**
+
 - [ ] All tests pass
 - [ ] No linting errors
 - [ ] Code is formatted
@@ -106,6 +108,7 @@ npm run pre-commit
 - [ ] Documentation updated
 
 **Review checklist:**
+
 - [ ] Functionality works correctly
 - [ ] Code follows standards
 - [ ] Performance optimized
@@ -237,22 +240,25 @@ interface ComponentProps {
 export function ComponentName({ tenantId, onUpdate }: ComponentProps) {
   // State
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Hooks
   const { user } = useAuth();
   const router = useRouter();
-  
+
   // Callbacks
-  const handleSubmit = useCallback(async (data: any) => {
-    setIsLoading(true);
-    try {
-      // Implementation
-      onUpdate?.(data);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [onUpdate]);
-  
+  const handleSubmit = useCallback(
+    async (data: any) => {
+      setIsLoading(true);
+      try {
+        // Implementation
+        onUpdate?.(data);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [onUpdate]
+  );
+
   // Render
   return (
     <div>
@@ -272,7 +278,7 @@ export function useCustomHook(param: string) {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  
+
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -283,11 +289,11 @@ export function useCustomHook(param: string) {
       setIsLoading(false);
     }
   }, [param]);
-  
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-  
+
   return { data, isLoading, error, refetch: fetchData };
 }
 ```
@@ -316,25 +322,21 @@ export async function GET(request: NextRequest) {
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     // 2. Tenant validation
     const tenantId = request.headers.get('x-tenant-id');
     if (!tenantId) {
       return NextResponse.json({ error: 'Tenant required' }, { status: 400 });
     }
-    
+
     // 3. Business logic
     const users = await getUsersForTenant(tenantId);
-    
+
     // 4. Response
     return NextResponse.json({ data: users, success: true });
-    
   } catch (error) {
     console.error('API Error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 ```
@@ -352,18 +354,18 @@ describe('UserList', () => {
   const mockUsers = [
     { id: '1', name: 'John Doe', email: 'john@example.com' },
   ];
-  
+
   it('renders user list correctly', () => {
     render(<UserList users={mockUsers} />);
-    
+
     expect(screen.getByText('John Doe')).toBeInTheDocument();
     expect(screen.getByText('john@example.com')).toBeInTheDocument();
   });
-  
+
   it('handles user click', () => {
     const mockOnClick = jest.fn();
     render(<UserList users={mockUsers} onUserClick={mockOnClick} />);
-    
+
     fireEvent.click(screen.getByText('John Doe'));
     expect(mockOnClick).toHaveBeenCalledWith(mockUsers[0]);
   });
@@ -383,10 +385,10 @@ describe('/api/users', () => {
       method: 'GET',
       headers: { 'x-tenant-id': 'tenant-1' },
     });
-    
+
     const response = await GET(req);
     const data = await response.json();
-    
+
     expect(response.status).toBe(200);
     expect(data.success).toBe(true);
     expect(data.data).toEqual(expect.any(Array));
@@ -426,11 +428,11 @@ const sortedUsers = useMemo(() => {
 // Use proper error handling
 async function fetchUsers(tenantId: string): Promise<User[]> {
   const response = await fetch(`/api/users?tenantId=${tenantId}`);
-  
+
   if (!response.ok) {
     throw new Error(`Failed to fetch users: ${response.statusText}`);
   }
-  
+
   return response.json();
 }
 
@@ -471,7 +473,7 @@ export async function protectedHandler(request: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  
+
   // Check tenant access
   const tenantId = request.headers.get('x-tenant-id');
   const hasAccess = await validateTenantAccess(session.user.id, tenantId);
@@ -529,14 +531,14 @@ Before deploying:
 
 ### Code Documentation
 
-```typescript
+````typescript
 /**
  * Manages user operations for a specific tenant
- * 
+ *
  * @param tenantId - The ID of the tenant
  * @param onUserUpdate - Callback when user is updated
  * @returns JSX element for user management
- * 
+ *
  * @example
  * ```tsx
  * <UserManagement
@@ -548,7 +550,7 @@ Before deploying:
 export function UserManagement({ tenantId, onUserUpdate }: Props) {
   // Implementation
 }
-```
+````
 
 ### API Documentation
 
@@ -557,10 +559,10 @@ Use JSDoc comments for API endpoints:
 ```typescript
 /**
  * GET /api/users - Retrieve users for a tenant
- * 
+ *
  * @param request - Next.js request object
  * @returns JSON response with user list
- * 
+ *
  * @throws {401} When user is not authenticated
  * @throws {403} When user lacks tenant access
  * @throws {500} When server error occurs

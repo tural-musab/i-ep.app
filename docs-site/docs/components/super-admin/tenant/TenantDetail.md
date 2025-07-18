@@ -18,19 +18,19 @@ Tenant detay bilgilerini görüntüleyen ve yöneten komponent.
 interface TenantDetailProps {
   /** Tenant ID */
   tenantId: string;
-  
+
   /** Görüntülenecek sekmeler */
   tabs?: TabType[];
-  
+
   /** Aktif sekme */
   activeTab?: string;
-  
+
   /** Sekme değiştiğinde çağrılır */
   onTabChange?: (tab: string) => void;
-  
+
   /** Tenant güncellendiğinde çağrılır */
   onTenantUpdate?: (tenant: TenantData) => void;
-  
+
   /** Hata durumunda çağrılır */
   onError?: (error: Error) => void;
 }
@@ -72,7 +72,14 @@ interface TenantData {
   };
 }
 
-type TabType = 'overview' | 'users' | 'domains' | 'subscription' | 'activity' | 'backups' | 'settings';
+type TabType =
+  | 'overview'
+  | 'users'
+  | 'domains'
+  | 'subscription'
+  | 'activity'
+  | 'backups'
+  | 'settings';
 type TenantStatus = 'active' | 'suspended' | 'deleted';
 ```
 
@@ -83,7 +90,7 @@ import { TenantDetail } from '@components/super-admin/tenant';
 
 export default function TenantDetailPage() {
   const { tenantId } = useParams();
-  
+
   const handleTenantUpdate = async (tenant: TenantData) => {
     try {
       await updateTenant(tenant);
@@ -107,15 +114,13 @@ export default function TenantDetailPage() {
 ## Sekmeler
 
 ### Overview
+
 ```tsx
-<OverviewTab
-  tenant={tenant}
-  stats={stats}
-  onStatusChange={handleStatusChange}
-/>
+<OverviewTab tenant={tenant} stats={stats} onStatusChange={handleStatusChange} />
 ```
 
 ### Users
+
 ```tsx
 <UsersTab
   users={users}
@@ -126,6 +131,7 @@ export default function TenantDetailPage() {
 ```
 
 ### Subscription
+
 ```tsx
 <SubscriptionTab
   subscription={subscription}
@@ -136,45 +142,37 @@ export default function TenantDetailPage() {
 ```
 
 ### Activity
+
 ```tsx
-<ActivityTab
-  logs={activityLogs}
-  filters={logFilters}
-  onFilterChange={handleFilterChange}
-/>
+<ActivityTab logs={activityLogs} filters={logFilters} onFilterChange={handleFilterChange} />
 ```
 
 ## API Entegrasyonu
 
 ```typescript
 // Tenant detayı alma
-const { data: tenant, isLoading } = useQuery(
-  ['tenant', tenantId],
-  () => fetchTenantDetails(tenantId)
+const { data: tenant, isLoading } = useQuery(['tenant', tenantId], () =>
+  fetchTenantDetails(tenantId)
 );
 
 // Tenant güncelleme
-const { mutate: updateTenant } = useMutation(
-  (data: Partial<TenantData>) =>
-    fetch(`/api/tenants/${tenantId}`, {
-      method: 'PATCH',
-      body: JSON.stringify(data)
-    })
+const { mutate: updateTenant } = useMutation((data: Partial<TenantData>) =>
+  fetch(`/api/tenants/${tenantId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
 );
 
 // Kullanım istatistikleri
-const { data: stats } = useQuery(
-  ['tenant-stats', tenantId],
-  () => fetchTenantStats(tenantId),
-  {
-    refetchInterval: 60000 // Her dakika güncelle
-  }
-);
+const { data: stats } = useQuery(['tenant-stats', tenantId], () => fetchTenantStats(tenantId), {
+  refetchInterval: 60000, // Her dakika güncelle
+});
 ```
 
 ## Veri Modelleri
 
 ### Kullanıcı
+
 ```typescript
 interface TenantUser {
   id: string;
@@ -191,6 +189,7 @@ type UserStatus = 'active' | 'inactive' | 'blocked';
 ```
 
 ### Aktivite Logu
+
 ```typescript
 interface ActivityLog {
   id: string;
@@ -215,11 +214,11 @@ interface ActivityLog {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1200px | Tam genişlik, yan panel |
-| 768px - 1200px | Tam genişlik, üst panel |
-| < 768px | Tekli görünüm, sekmeler menüde |
+| Ekran Boyutu   | Davranış                       |
+| -------------- | ------------------------------ |
+| > 1200px       | Tam genişlik, yan panel        |
+| 768px - 1200px | Tam genişlik, üst panel        |
+| < 768px        | Tekli görünüm, sekmeler menüde |
 
 ## Hata Yönetimi
 
@@ -241,7 +240,7 @@ const handleError = (error: Error) => {
 describe('TenantDetail', () => {
   it('loads tenant details', async () => {
     render(<TenantDetail tenantId="test-tenant" />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Tenant Detayları')).toBeInTheDocument();
     });
@@ -249,7 +248,7 @@ describe('TenantDetail', () => {
 
   it('handles tab switching', async () => {
     render(<TenantDetail tenantId="test-tenant" />);
-    
+
     await userEvent.click(screen.getByText('Kullanıcılar'));
     expect(screen.getByText('Kullanıcı Listesi')).toBeInTheDocument();
   });
@@ -262,7 +261,7 @@ describe('TenantDetail', () => {
         onTenantUpdate={onTenantUpdate}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Askıya Al'));
     expect(onTenantUpdate).toHaveBeenCalledWith(
       expect.objectContaining({ status: 'suspended' })
@@ -323,7 +322,7 @@ WithError.args = {
   customStyles={{
     header: 'bg-primary-700',
     tabs: 'border-b border-gray-200',
-    content: 'p-6'
+    content: 'p-6',
   }}
 />
 ```
@@ -334,4 +333,4 @@ WithError.args = {
 2. Optimistik güncellemeler kullan
 3. Sekme durumunu URL'de tut
 4. Yetkilendirme kontrolü yap
-5. İşlem geçmişini logla 
+5. İşlem geçmişini logla

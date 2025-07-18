@@ -13,17 +13,23 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { Progress } from '@/components/ui/progress';
-import { 
-  MessageSquare, 
-  Star, 
-  Send, 
-  Eye, 
+import {
+  MessageSquare,
+  Star,
+  Send,
+  Eye,
   Plus,
   Search,
   Filter,
@@ -72,7 +78,7 @@ import {
   Info,
   Shield,
   Volume2,
-  VolumeX
+  VolumeX,
 } from 'lucide-react';
 
 interface ParentFeedback {
@@ -97,7 +103,13 @@ interface ParentFeedback {
     avatar: string;
   };
   feedback: {
-    type: 'teacher_performance' | 'school_service' | 'curriculum' | 'facility' | 'suggestion' | 'complaint';
+    type:
+      | 'teacher_performance'
+      | 'school_service'
+      | 'curriculum'
+      | 'facility'
+      | 'suggestion'
+      | 'complaint';
     category: 'academic' | 'behavioral' | 'administrative' | 'facility' | 'communication' | 'other';
     rating: number;
     title: string;
@@ -175,46 +187,48 @@ export function ParentFeedbackSystem() {
         name: 'Ayşe Veli',
         avatar: '/api/placeholder/40/40',
         email: 'ayse.veli@parent.com',
-        phone: '+90 555 123 4567'
+        phone: '+90 555 123 4567',
       },
       student: {
         id: '1',
         name: 'Ali Veli',
         class: '5-A',
-        number: '2025001'
+        number: '2025001',
       },
       teacher: {
         id: '1',
         name: 'Ahmet Öğretmen',
         subject: 'Matematik',
-        avatar: '/api/placeholder/40/40'
+        avatar: '/api/placeholder/40/40',
       },
       feedback: {
         type: 'teacher_performance',
         category: 'academic',
         rating: 5,
         title: 'Mükemmel Öğretmen Performansı',
-        description: 'Ahmet Öğretmen matematik derslerinde çok başarılı. Çocuğum artık matematiği daha iyi anlıyor ve sevmeye başladı. Öğretmenimizin sabırla ve özenle yaklaşımı takdire şayan.',
+        description:
+          'Ahmet Öğretmen matematik derslerinde çok başarılı. Çocuğum artık matematiği daha iyi anlıyor ve sevmeye başladı. Öğretmenimizin sabırla ve özenle yaklaşımı takdire şayan.',
         isAnonymous: false,
         tags: ['matematik', 'öğretmen', 'başarı', 'sabır'],
         priority: 'low',
         metadata: {
           subject: 'Matematik',
           semester: '2024-2025-1',
-          teachingMethod: 'interactive'
-        }
+          teachingMethod: 'interactive',
+        },
       },
       status: 'responded',
-      response: 'Değerli velimiz, geri bildiriminiz için teşekkür ederiz. Ahmet Öğretmen ile paylaştık ve kendisi çok memnun oldu. Ali\'nin matematik dersindeki gelişimi bizim için de gurur verici.',
+      response:
+        "Değerli velimiz, geri bildiriminiz için teşekkür ederiz. Ahmet Öğretmen ile paylaştık ve kendisi çok memnun oldu. Ali'nin matematik dersindeki gelişimi bizim için de gurur verici.",
       responseDate: '2025-01-15T14:30:00',
       respondedBy: {
         id: '1',
         name: 'Fatma Müdür',
-        role: 'Okul Müdürü'
+        role: 'Okul Müdürü',
       },
       satisfactionRating: 5,
       createdAt: '2025-01-15T10:00:00',
-      updatedAt: '2025-01-15T14:30:00'
+      updatedAt: '2025-01-15T14:30:00',
     },
     {
       id: '2',
@@ -223,31 +237,32 @@ export function ParentFeedbackSystem() {
         name: 'Mehmet Kaya',
         avatar: '/api/placeholder/40/40',
         email: 'mehmet.kaya@parent.com',
-        phone: '+90 555 234 5678'
+        phone: '+90 555 234 5678',
       },
       student: {
         id: '2',
         name: 'Fatma Kaya',
         class: '6-B',
-        number: '2025002'
+        number: '2025002',
       },
       feedback: {
         type: 'school_service',
         category: 'administrative',
         rating: 3,
         title: 'İletişim Konusunda Geliştirme Önerisi',
-        description: 'Okul yönetimi ile iletişim konusunda bazı sıkıntılar yaşıyoruz. Özellikle randevu alma konusunda daha hızlı bir sistem olabilir. Ayrıca önemli duyuruların daha zamanında paylaşılması gerekiyor.',
+        description:
+          'Okul yönetimi ile iletişim konusunda bazı sıkıntılar yaşıyoruz. Özellikle randevu alma konusunda daha hızlı bir sistem olabilir. Ayrıca önemli duyuruların daha zamanında paylaşılması gerekiyor.',
         isAnonymous: false,
         tags: ['iletişim', 'randevu', 'duyuru', 'sistem'],
         priority: 'medium',
         metadata: {
           communicationChannel: 'phone',
-          issueType: 'appointment_system'
-        }
+          issueType: 'appointment_system',
+        },
       },
       status: 'reviewed',
       createdAt: '2025-01-14T09:30:00',
-      updatedAt: '2025-01-14T11:00:00'
+      updatedAt: '2025-01-14T11:00:00',
     },
     {
       id: '3',
@@ -256,32 +271,33 @@ export function ParentFeedbackSystem() {
         name: 'Fatma Demir',
         avatar: '/api/placeholder/40/40',
         email: 'fatma.demir@parent.com',
-        phone: '+90 555 345 6789'
+        phone: '+90 555 345 6789',
       },
       student: {
         id: '3',
         name: 'Ahmet Demir',
         class: '5-A',
-        number: '2025003'
+        number: '2025003',
       },
       feedback: {
         type: 'facility',
         category: 'facility',
         rating: 2,
         title: 'Spor Salonu Aydınlatma Sorunu',
-        description: 'Spor salonunun aydınlatması yetersiz. Çocuklar beden eğitimi dersi sırasında zorluk yaşıyor. Ayrıca salonun havalandırması da yeterli değil.',
+        description:
+          'Spor salonunun aydınlatması yetersiz. Çocuklar beden eğitimi dersi sırasında zorluk yaşıyor. Ayrıca salonun havalandırması da yeterli değil.',
         isAnonymous: false,
         tags: ['spor salonu', 'aydınlatma', 'havalandırma', 'beden eğitimi'],
         priority: 'high',
         metadata: {
           facility: 'gymnasium',
-          issues: ['lighting', 'ventilation']
-        }
+          issues: ['lighting', 'ventilation'],
+        },
       },
       status: 'escalated',
       escalatedTo: 'Okul Müdürü',
       createdAt: '2025-01-13T16:00:00',
-      updatedAt: '2025-01-14T08:00:00'
+      updatedAt: '2025-01-14T08:00:00',
     },
     {
       id: '4',
@@ -290,31 +306,32 @@ export function ParentFeedbackSystem() {
         name: 'Hasan Yılmaz',
         avatar: '/api/placeholder/40/40',
         email: 'hasan.yilmaz@parent.com',
-        phone: '+90 555 456 7890'
+        phone: '+90 555 456 7890',
       },
       student: {
         id: '4',
         name: 'Zehra Yılmaz',
         class: '6-A',
-        number: '2025004'
+        number: '2025004',
       },
       feedback: {
         type: 'curriculum',
         category: 'academic',
         rating: 4,
         title: 'İngilizce Müfredatı Önerisi',
-        description: 'İngilizce derslerinin daha interaktif olması güzel olurdu. Konuşma pratiği için daha çok fırsat verilmesi gerektiğini düşünüyorum. Oyun tabanlı öğrenme yöntemleri kullanılabilir.',
+        description:
+          'İngilizce derslerinin daha interaktif olması güzel olurdu. Konuşma pratiği için daha çok fırsat verilmesi gerektiğini düşünüyorum. Oyun tabanlı öğrenme yöntemleri kullanılabilir.',
         isAnonymous: false,
         tags: ['ingilizce', 'müfredat', 'konuşma', 'interaktif'],
         priority: 'medium',
         metadata: {
           subject: 'İngilizce',
-          suggestion: 'interactive_learning'
-        }
+          suggestion: 'interactive_learning',
+        },
       },
       status: 'submitted',
       createdAt: '2025-01-12T14:00:00',
-      updatedAt: '2025-01-12T14:00:00'
+      updatedAt: '2025-01-12T14:00:00',
     },
     {
       id: '5',
@@ -323,41 +340,43 @@ export function ParentFeedbackSystem() {
         name: 'Elif Özkan',
         avatar: '/api/placeholder/40/40',
         email: 'elif.ozkan@parent.com',
-        phone: '+90 555 567 8901'
+        phone: '+90 555 567 8901',
       },
       student: {
         id: '5',
         name: 'Mert Özkan',
         class: '5-B',
-        number: '2025005'
+        number: '2025005',
       },
       feedback: {
         type: 'suggestion',
         category: 'other',
         rating: 4,
         title: 'Okul Sonrası Aktivite Önerisi',
-        description: 'Okul sonrası çocuklar için daha fazla aktivite düzenlenebilir. Kodlama, robotik, müzik gibi alanlarda kulüpler kurulabilir. Bu şekilde çocuklar boş vakitlerini daha verimli değerlendirebilir.',
+        description:
+          'Okul sonrası çocuklar için daha fazla aktivite düzenlenebilir. Kodlama, robotik, müzik gibi alanlarda kulüpler kurulabilir. Bu şekilde çocuklar boş vakitlerini daha verimli değerlendirebilir.',
         isAnonymous: false,
         tags: ['aktivite', 'kulüp', 'kodlama', 'müzik'],
         priority: 'low',
         metadata: {
           suggestionType: 'extracurricular',
-          activities: ['coding', 'robotics', 'music']
-        }
+          activities: ['coding', 'robotics', 'music'],
+        },
       },
       status: 'resolved',
-      response: 'Öneriniz için teşekkürler. Gelecek dönem için kulüp faaliyetlerini genişletme planımız var. Kodlama ve robotik kulübü açılması konusunda çalışmalarımızı başlattık.',
+      response:
+        'Öneriniz için teşekkürler. Gelecek dönem için kulüp faaliyetlerini genişletme planımız var. Kodlama ve robotik kulübü açılması konusunda çalışmalarımızı başlattık.',
       responseDate: '2025-01-10T16:00:00',
       respondedBy: {
         id: '2',
         name: 'Ali Müdür Yardımcısı',
-        role: 'Müdür Yardımcısı'
+        role: 'Müdür Yardımcısı',
       },
       resolutionDate: '2025-01-10T16:00:00',
       satisfactionRating: 4,
       createdAt: '2025-01-08T11:00:00',
-      updatedAt: '2025-01-10T16:00:00'
-    }
+      updatedAt: '2025-01-10T16:00:00',
+    },
   ]);
 
   const [feedbackTemplates] = useState<FeedbackTemplate[]>([
@@ -371,25 +390,25 @@ export function ParentFeedbackSystem() {
           id: '1',
           question: 'Öğretmenin ders anlatım kalitesini değerlendirin',
           type: 'rating',
-          required: true
+          required: true,
         },
         {
           id: '2',
           question: 'Öğretmenin öğrencilere yaklaşımını nasıl buluyorsunuz?',
           type: 'multiple_choice',
           required: true,
-          options: ['Çok iyi', 'İyi', 'Orta', 'Kötü']
+          options: ['Çok iyi', 'İyi', 'Orta', 'Kötü'],
         },
         {
           id: '3',
           question: 'Ek yorumlarınız',
           type: 'text',
-          required: false
-        }
+          required: false,
+        },
       ],
       isActive: true,
       usageCount: 45,
-      createdAt: '2025-01-01T00:00:00'
+      createdAt: '2025-01-01T00:00:00',
     },
     {
       id: '2',
@@ -401,26 +420,26 @@ export function ParentFeedbackSystem() {
           id: '1',
           question: 'Okul hizmetlerini genel olarak nasıl değerlendiriyorsunuz?',
           type: 'rating',
-          required: true
+          required: true,
         },
         {
           id: '2',
           question: 'Hangi alanda gelişim gerektiğini düşünüyorsunuz?',
           type: 'multiple_choice',
           required: false,
-          options: ['İletişim', 'Randevu Sistemi', 'Bilgilendirme', 'Hızlı Yanıt']
+          options: ['İletişim', 'Randevu Sistemi', 'Bilgilendirme', 'Hızlı Yanıt'],
         },
         {
           id: '3',
           question: 'Önerileriniz',
           type: 'text',
-          required: false
-        }
+          required: false,
+        },
       ],
       isActive: true,
       usageCount: 28,
-      createdAt: '2025-01-01T00:00:00'
-    }
+      createdAt: '2025-01-01T00:00:00',
+    },
   ]);
 
   const [newFeedbackData, setNewFeedbackData] = useState({
@@ -433,64 +452,88 @@ export function ParentFeedbackSystem() {
     description: '',
     isAnonymous: false,
     tags: '',
-    priority: 'medium'
+    priority: 'medium',
   });
 
   const [responseData, setResponseData] = useState({
     response: '',
     escalate: false,
-    escalateTo: ''
+    escalateTo: '',
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'submitted': return 'bg-yellow-100 text-yellow-800';
-      case 'reviewed': return 'bg-blue-100 text-blue-800';
-      case 'responded': return 'bg-green-100 text-green-800';
-      case 'resolved': return 'bg-gray-100 text-gray-800';
-      case 'escalated': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'submitted':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'reviewed':
+        return 'bg-blue-100 text-blue-800';
+      case 'responded':
+        return 'bg-green-100 text-green-800';
+      case 'resolved':
+        return 'bg-gray-100 text-gray-800';
+      case 'escalated':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getPriorityColor = (priority?: string) => {
     switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'urgent':
+        return 'bg-red-100 text-red-800';
+      case 'high':
+        return 'bg-orange-100 text-orange-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'teacher_performance': return <UserCheck className="h-4 w-4" />;
-      case 'school_service': return <Settings className="h-4 w-4" />;
-      case 'curriculum': return <BookOpen className="h-4 w-4" />;
-      case 'facility': return <Home className="h-4 w-4" />;
-      case 'suggestion': return <Lightbulb className="h-4 w-4" />;
-      case 'complaint': return <AlertTriangle className="h-4 w-4" />;
-      default: return <MessageSquare className="h-4 w-4" />;
+      case 'teacher_performance':
+        return <UserCheck className="h-4 w-4" />;
+      case 'school_service':
+        return <Settings className="h-4 w-4" />;
+      case 'curriculum':
+        return <BookOpen className="h-4 w-4" />;
+      case 'facility':
+        return <Home className="h-4 w-4" />;
+      case 'suggestion':
+        return <Lightbulb className="h-4 w-4" />;
+      case 'complaint':
+        return <AlertTriangle className="h-4 w-4" />;
+      default:
+        return <MessageSquare className="h-4 w-4" />;
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'submitted': return <Send className="h-4 w-4" />;
-      case 'reviewed': return <Eye className="h-4 w-4" />;
-      case 'responded': return <MessageCircle className="h-4 w-4" />;
-      case 'resolved': return <CheckCircle className="h-4 w-4" />;
-      case 'escalated': return <AlertTriangle className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
+      case 'submitted':
+        return <Send className="h-4 w-4" />;
+      case 'reviewed':
+        return <Eye className="h-4 w-4" />;
+      case 'responded':
+        return <MessageCircle className="h-4 w-4" />;
+      case 'resolved':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'escalated':
+        return <AlertTriangle className="h-4 w-4" />;
+      default:
+        return <Clock className="h-4 w-4" />;
     }
   };
 
   const getRatingStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <Star 
-        key={i} 
-        className={`h-4 w-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+      <Star
+        key={i}
+        className={`h-4 w-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
       />
     ));
   };
@@ -508,51 +551,62 @@ export function ParentFeedbackSystem() {
     return <Frown className="h-4 w-4" />;
   };
 
-  const filteredFeedbacks = feedbacks.filter(feedback => {
-    const matchesSearch = feedback.feedback.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         feedback.feedback.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         feedback.parent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (feedback.student?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredFeedbacks = feedbacks.filter((feedback) => {
+    const matchesSearch =
+      feedback.feedback.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      feedback.feedback.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      feedback.parent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (feedback.student?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || feedback.status === filterStatus;
     const matchesType = filterType === 'all' || feedback.feedback.type === filterType;
-    const matchesCategory = filterCategory === 'all' || feedback.feedback.category === filterCategory;
-    const matchesRating = filterRating === 'all' || 
-                         (filterRating === '5' && feedback.feedback.rating === 5) ||
-                         (filterRating === '4' && feedback.feedback.rating === 4) ||
-                         (filterRating === '3' && feedback.feedback.rating === 3) ||
-                         (filterRating === '2' && feedback.feedback.rating === 2) ||
-                         (filterRating === '1' && feedback.feedback.rating === 1);
+    const matchesCategory =
+      filterCategory === 'all' || feedback.feedback.category === filterCategory;
+    const matchesRating =
+      filterRating === 'all' ||
+      (filterRating === '5' && feedback.feedback.rating === 5) ||
+      (filterRating === '4' && feedback.feedback.rating === 4) ||
+      (filterRating === '3' && feedback.feedback.rating === 3) ||
+      (filterRating === '2' && feedback.feedback.rating === 2) ||
+      (filterRating === '1' && feedback.feedback.rating === 1);
     return matchesSearch && matchesStatus && matchesType && matchesCategory && matchesRating;
   });
 
   const feedbackSummary: FeedbackSummary = {
     totalFeedback: feedbacks.length,
     averageRating: feedbacks.reduce((sum, f) => sum + f.feedback.rating, 0) / feedbacks.length,
-    responseRate: (feedbacks.filter(f => f.status === 'responded' || f.status === 'resolved').length / feedbacks.length) * 100,
+    responseRate:
+      (feedbacks.filter((f) => f.status === 'responded' || f.status === 'resolved').length /
+        feedbacks.length) *
+      100,
     averageResponseTime: 2.5, // hours
-    satisfactionScore: feedbacks.filter(f => f.satisfactionRating).reduce((sum, f) => sum + (f.satisfactionRating || 0), 0) / feedbacks.filter(f => f.satisfactionRating).length,
+    satisfactionScore:
+      feedbacks
+        .filter((f) => f.satisfactionRating)
+        .reduce((sum, f) => sum + (f.satisfactionRating || 0), 0) /
+      feedbacks.filter((f) => f.satisfactionRating).length,
     trendDirection: 'up',
     categoryBreakdown: {
-      academic: feedbacks.filter(f => f.feedback.category === 'academic').length,
-      behavioral: feedbacks.filter(f => f.feedback.category === 'behavioral').length,
-      administrative: feedbacks.filter(f => f.feedback.category === 'administrative').length,
-      facility: feedbacks.filter(f => f.feedback.category === 'facility').length,
-      communication: feedbacks.filter(f => f.feedback.category === 'communication').length,
-      other: feedbacks.filter(f => f.feedback.category === 'other').length
+      academic: feedbacks.filter((f) => f.feedback.category === 'academic').length,
+      behavioral: feedbacks.filter((f) => f.feedback.category === 'behavioral').length,
+      administrative: feedbacks.filter((f) => f.feedback.category === 'administrative').length,
+      facility: feedbacks.filter((f) => f.feedback.category === 'facility').length,
+      communication: feedbacks.filter((f) => f.feedback.category === 'communication').length,
+      other: feedbacks.filter((f) => f.feedback.category === 'other').length,
     },
     typeBreakdown: {
-      teacher_performance: feedbacks.filter(f => f.feedback.type === 'teacher_performance').length,
-      school_service: feedbacks.filter(f => f.feedback.type === 'school_service').length,
-      curriculum: feedbacks.filter(f => f.feedback.type === 'curriculum').length,
-      facility: feedbacks.filter(f => f.feedback.type === 'facility').length,
-      suggestion: feedbacks.filter(f => f.feedback.type === 'suggestion').length,
-      complaint: feedbacks.filter(f => f.feedback.type === 'complaint').length
+      teacher_performance: feedbacks.filter((f) => f.feedback.type === 'teacher_performance')
+        .length,
+      school_service: feedbacks.filter((f) => f.feedback.type === 'school_service').length,
+      curriculum: feedbacks.filter((f) => f.feedback.type === 'curriculum').length,
+      facility: feedbacks.filter((f) => f.feedback.type === 'facility').length,
+      suggestion: feedbacks.filter((f) => f.feedback.type === 'suggestion').length,
+      complaint: feedbacks.filter((f) => f.feedback.type === 'complaint').length,
     },
     monthlyTrend: [
       { month: 'Ocak', count: 15, rating: 4.2 },
       { month: 'Aralık', count: 12, rating: 4.0 },
-      { month: 'Kasım', count: 18, rating: 4.1 }
-    ]
+      { month: 'Kasım', count: 18, rating: 4.1 },
+    ],
   };
 
   const handleSubmitFeedback = () => {
@@ -569,7 +623,7 @@ export function ParentFeedbackSystem() {
       description: '',
       isAnonymous: false,
       tags: '',
-      priority: 'medium'
+      priority: 'medium',
     });
   };
 
@@ -580,7 +634,7 @@ export function ParentFeedbackSystem() {
     setResponseData({
       response: '',
       escalate: false,
-      escalateTo: ''
+      escalateTo: '',
     });
   };
 
@@ -599,30 +653,28 @@ export function ParentFeedbackSystem() {
       {/* Header Controls */}
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5" />
                 Veli Geri Bildirim Sistemi
               </CardTitle>
-              <CardDescription>
-                Veli geri bildirimlerini yönetin ve yanıtlayın
-              </CardDescription>
+              <CardDescription>Veli geri bildirimlerini yönetin ve yanıtlayın</CardDescription>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setIsCreatingFeedback(true)}>
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Geri Bildirim Ekle
               </Button>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4 items-end">
+          <div className="flex items-end gap-4">
             <div className="flex-1 space-y-2">
               <Label>Geri Bildirim Ara</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Başlık, açıklama, veli veya öğrenci ara..."
                   value={searchTerm}
@@ -685,16 +737,16 @@ export function ParentFeedbackSystem() {
       </Card>
 
       {/* Feedback Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Toplam Geri Bildirim</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <MessageSquare className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{feedbackSummary.totalFeedback}</div>
             <div className="flex items-center text-xs text-green-600">
-              <TrendingUp className="h-3 w-3 mr-1" />
+              <TrendingUp className="mr-1 h-3 w-3" />
               Bu ay artış
             </div>
           </CardContent>
@@ -703,7 +755,7 @@ export function ParentFeedbackSystem() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ortalama Puan</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
+            <Star className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">
@@ -718,13 +770,13 @@ export function ParentFeedbackSystem() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Yanıt Oranı</CardTitle>
-            <MessageCircle className="h-4 w-4 text-muted-foreground" />
+            <MessageCircle className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">
               %{feedbackSummary.responseRate.toFixed(1)}
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {feedbackSummary.averageResponseTime}s ortalama yanıt
             </p>
           </CardContent>
@@ -733,15 +785,13 @@ export function ParentFeedbackSystem() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Memnuniyet</CardTitle>
-            <Heart className="h-4 w-4 text-muted-foreground" />
+            <Heart className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-pink-600">
               {feedbackSummary.satisfactionScore.toFixed(1)}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Yanıt memnuniyeti
-            </p>
+            <p className="text-muted-foreground text-xs">Yanıt memnuniyeti</p>
           </CardContent>
         </Card>
       </div>
@@ -758,7 +808,7 @@ export function ParentFeedbackSystem() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Recent Feedbacks */}
             <Card>
               <CardHeader>
@@ -766,26 +816,29 @@ export function ParentFeedbackSystem() {
                   <MessageSquare className="h-5 w-5" />
                   Son Geri Bildirimler
                 </CardTitle>
-                <CardDescription>
-                  En son alınan geri bildirimler
-                </CardDescription>
+                <CardDescription>En son alınan geri bildirimler</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {filteredFeedbacks.slice(0, 5).map((feedback) => (
-                    <div key={feedback.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div
+                      key={feedback.id}
+                      className="flex items-center gap-3 rounded-lg border p-3"
+                    >
                       <div className="flex items-center gap-2">
                         {getTypeIcon(feedback.feedback.type)}
                         {getRatingEmoji(feedback.feedback.rating)}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-medium text-sm">{feedback.feedback.title}</p>
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 flex items-center gap-2">
+                          <p className="text-sm font-medium">{feedback.feedback.title}</p>
                           <Badge variant="outline" className={getStatusColor(feedback.status)}>
                             {getStatusIcon(feedback.status)}
                           </Badge>
                         </div>
-                        <p className="text-sm text-gray-600 truncate">{feedback.feedback.description}</p>
+                        <p className="truncate text-sm text-gray-600">
+                          {feedback.feedback.description}
+                        </p>
                         <div className="flex items-center gap-4 text-xs text-gray-500">
                           <div className="flex items-center gap-1">
                             <Users className="h-3 w-3" />
@@ -801,7 +854,11 @@ export function ParentFeedbackSystem() {
                         </div>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => setSelectedFeedback(feedback.id)}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedFeedback(feedback.id)}
+                        >
                           <Eye className="h-4 w-4" />
                         </Button>
                       </div>
@@ -818,18 +875,16 @@ export function ParentFeedbackSystem() {
                   <BarChart3 className="h-5 w-5" />
                   Puan Dağılımı
                 </CardTitle>
-                <CardDescription>
-                  Alınan puanların dağılımı
-                </CardDescription>
+                <CardDescription>Alınan puanların dağılımı</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {[5, 4, 3, 2, 1].map((rating) => {
-                    const count = feedbacks.filter(f => f.feedback.rating === rating).length;
+                    const count = feedbacks.filter((f) => f.feedback.rating === rating).length;
                     const percentage = (count / feedbacks.length) * 100;
                     return (
                       <div key={rating} className="flex items-center gap-3">
-                        <div className="flex items-center gap-1 min-w-[80px]">
+                        <div className="flex min-w-[80px] items-center gap-1">
                           <span className="text-sm font-medium">{rating}</span>
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                         </div>
@@ -854,15 +909,13 @@ export function ParentFeedbackSystem() {
                 <Target className="h-5 w-5" />
                 Kategori Dağılımı
               </CardTitle>
-              <CardDescription>
-                Geri bildirim kategorilerinin dağılımı
-              </CardDescription>
+              <CardDescription>Geri bildirim kategorilerinin dağılımı</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {Object.entries(feedbackSummary.categoryBreakdown).map(([category, count]) => (
-                  <div key={category} className="p-4 border rounded-lg">
-                    <div className="flex items-center gap-2 mb-2">
+                  <div key={category} className="rounded-lg border p-4">
+                    <div className="mb-2 flex items-center gap-2">
                       {category === 'academic' && <BookOpen className="h-4 w-4" />}
                       {category === 'behavioral' && <UserCheck className="h-4 w-4" />}
                       {category === 'administrative' && <Settings className="h-4 w-4" />}
@@ -870,12 +923,19 @@ export function ParentFeedbackSystem() {
                       {category === 'communication' && <MessageCircle className="h-4 w-4" />}
                       {category === 'other' && <MoreHorizontal className="h-4 w-4" />}
                       <h3 className="font-medium">
-                        {category === 'academic' ? 'Akademik' :
-                         category === 'behavioral' ? 'Davranış' :
-                         category === 'administrative' ? 'İdari' :
-                         category === 'facility' ? 'Tesis' :
-                         category === 'communication' ? 'İletişim' :
-                         category === 'other' ? 'Diğer' : category}
+                        {category === 'academic'
+                          ? 'Akademik'
+                          : category === 'behavioral'
+                            ? 'Davranış'
+                            : category === 'administrative'
+                              ? 'İdari'
+                              : category === 'facility'
+                                ? 'Tesis'
+                                : category === 'communication'
+                                  ? 'İletişim'
+                                  : category === 'other'
+                                    ? 'Diğer'
+                                    : category}
                       </h3>
                     </div>
                     <div className="text-2xl font-bold">{count}</div>
@@ -894,15 +954,13 @@ export function ParentFeedbackSystem() {
           <Card>
             <CardHeader>
               <CardTitle>Tüm Geri Bildirimler</CardTitle>
-              <CardDescription>
-                Alınan geri bildirimler ve durumları
-              </CardDescription>
+              <CardDescription>Alınan geri bildirimler ve durumları</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {filteredFeedbacks.map((feedback) => (
-                  <div key={feedback.id} className="p-4 border rounded-lg">
-                    <div className="flex items-center justify-between mb-3">
+                  <div key={feedback.id} className="rounded-lg border p-4">
+                    <div className="mb-3 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
                           {getTypeIcon(feedback.feedback.type)}
@@ -911,8 +969,11 @@ export function ParentFeedbackSystem() {
                         <div>
                           <h3 className="font-medium">{feedback.feedback.title}</h3>
                           <p className="text-sm text-gray-600">
-                            {feedback.feedback.isAnonymous ? 'Anonim Geri Bildirim' : feedback.parent.name}
-                            {feedback.student && ` • ${feedback.student.name} - ${feedback.student.class}`}
+                            {feedback.feedback.isAnonymous
+                              ? 'Anonim Geri Bildirim'
+                              : feedback.parent.name}
+                            {feedback.student &&
+                              ` • ${feedback.student.name} - ${feedback.student.class}`}
                           </p>
                         </div>
                       </div>
@@ -924,19 +985,22 @@ export function ParentFeedbackSystem() {
                           {getStatusIcon(feedback.status)}
                         </Badge>
                         {feedback.feedback.priority && (
-                          <Badge variant="outline" className={getPriorityColor(feedback.feedback.priority)}>
+                          <Badge
+                            variant="outline"
+                            className={getPriorityColor(feedback.feedback.priority)}
+                          >
                             {feedback.feedback.priority}
                           </Badge>
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="mb-3">
                       <p className="text-sm text-gray-700">{feedback.feedback.description}</p>
                     </div>
 
                     {feedback.feedback.tags && feedback.feedback.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-3">
+                      <div className="mb-3 flex flex-wrap gap-2">
                         {feedback.feedback.tags.map((tag, index) => (
                           <Badge key={index} variant="secondary" className="text-xs">
                             {tag}
@@ -946,19 +1010,20 @@ export function ParentFeedbackSystem() {
                     )}
 
                     {feedback.response && (
-                      <div className="mb-3 p-3 bg-green-50 rounded-lg">
-                        <div className="flex items-center gap-2 mb-1">
+                      <div className="mb-3 rounded-lg bg-green-50 p-3">
+                        <div className="mb-1 flex items-center gap-2">
                           <MessageCircle className="h-4 w-4 text-green-600" />
                           <span className="text-sm font-medium text-green-800">
                             {feedback.respondedBy?.name} - {feedback.respondedBy?.role}
                           </span>
                           <span className="text-xs text-gray-600">
-                            {feedback.responseDate && new Date(feedback.responseDate).toLocaleDateString('tr-TR')}
+                            {feedback.responseDate &&
+                              new Date(feedback.responseDate).toLocaleDateString('tr-TR')}
                           </span>
                         </div>
                         <p className="text-sm text-gray-700">{feedback.response}</p>
                         {feedback.satisfactionRating && (
-                          <div className="flex items-center gap-2 mt-2">
+                          <div className="mt-2 flex items-center gap-2">
                             <span className="text-xs text-gray-600">Memnuniyet:</span>
                             {getRatingStars(feedback.satisfactionRating)}
                           </div>
@@ -975,30 +1040,44 @@ export function ParentFeedbackSystem() {
                         {feedback.teacher && (
                           <div className="flex items-center gap-1">
                             <GraduationCap className="h-4 w-4" />
-                            <span>{feedback.teacher.name} - {feedback.teacher.subject}</span>
+                            <span>
+                              {feedback.teacher.name} - {feedback.teacher.subject}
+                            </span>
                           </div>
                         )}
                       </div>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-2" />
+                          <Eye className="mr-2 h-4 w-4" />
                           Detay
                         </Button>
                         {feedback.status === 'submitted' && (
-                          <Button variant="outline" size="sm" onClick={() => setIsRespondingTo(feedback.id)}>
-                            <MessageCircle className="h-4 w-4 mr-2" />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsRespondingTo(feedback.id)}
+                          >
+                            <MessageCircle className="mr-2 h-4 w-4" />
                             Yanıtla
                           </Button>
                         )}
                         {feedback.status === 'reviewed' && (
-                          <Button variant="outline" size="sm" onClick={() => handleEscalateFeedback(feedback.id)}>
-                            <Flag className="h-4 w-4 mr-2" />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEscalateFeedback(feedback.id)}
+                          >
+                            <Flag className="mr-2 h-4 w-4" />
                             Yönlendir
                           </Button>
                         )}
                         {feedback.status === 'responded' && (
-                          <Button variant="outline" size="sm" onClick={() => handleResolveFeedback(feedback.id)}>
-                            <Check className="h-4 w-4 mr-2" />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleResolveFeedback(feedback.id)}
+                          >
+                            <Check className="mr-2 h-4 w-4" />
                             Çöz
                           </Button>
                         )}
@@ -1016,64 +1095,78 @@ export function ParentFeedbackSystem() {
           <Card>
             <CardHeader>
               <CardTitle>Bekleyen Geri Bildirimler</CardTitle>
-              <CardDescription>
-                Yanıt bekleyen geri bildirimler
-              </CardDescription>
+              <CardDescription>Yanıt bekleyen geri bildirimler</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {feedbacks.filter(f => f.status === 'submitted' || f.status === 'reviewed').map((feedback) => (
-                  <div key={feedback.id} className="p-4 border rounded-lg bg-yellow-50">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
+                {feedbacks
+                  .filter((f) => f.status === 'submitted' || f.status === 'reviewed')
+                  .map((feedback) => (
+                    <div key={feedback.id} className="rounded-lg border bg-yellow-50 p-4">
+                      <div className="mb-3 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            {getTypeIcon(feedback.feedback.type)}
+                            {getRatingEmoji(feedback.feedback.rating)}
+                          </div>
+                          <div>
+                            <h3 className="font-medium">{feedback.feedback.title}</h3>
+                            <p className="text-sm text-gray-600">
+                              {feedback.feedback.isAnonymous
+                                ? 'Anonim Geri Bildirim'
+                                : feedback.parent.name}
+                              {feedback.student &&
+                                ` • ${feedback.student.name} - ${feedback.student.class}`}
+                            </p>
+                          </div>
+                        </div>
                         <div className="flex items-center gap-2">
-                          {getTypeIcon(feedback.feedback.type)}
-                          {getRatingEmoji(feedback.feedback.rating)}
-                        </div>
-                        <div>
-                          <h3 className="font-medium">{feedback.feedback.title}</h3>
-                          <p className="text-sm text-gray-600">
-                            {feedback.feedback.isAnonymous ? 'Anonim Geri Bildirim' : feedback.parent.name}
-                            {feedback.student && ` • ${feedback.student.name} - ${feedback.student.class}`}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1">
-                          {getRatingStars(feedback.feedback.rating)}
-                        </div>
-                        <Badge variant="outline" className={getStatusColor(feedback.status)}>
-                          {getStatusIcon(feedback.status)}
-                        </Badge>
-                        {feedback.feedback.priority && (
-                          <Badge variant="outline" className={getPriorityColor(feedback.feedback.priority)}>
-                            {feedback.feedback.priority}
+                          <div className="flex items-center gap-1">
+                            {getRatingStars(feedback.feedback.rating)}
+                          </div>
+                          <Badge variant="outline" className={getStatusColor(feedback.status)}>
+                            {getStatusIcon(feedback.status)}
                           </Badge>
-                        )}
+                          {feedback.feedback.priority && (
+                            <Badge
+                              variant="outline"
+                              className={getPriorityColor(feedback.feedback.priority)}
+                            >
+                              {feedback.feedback.priority}
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="mb-3">
-                      <p className="text-sm text-gray-700">{feedback.feedback.description}</p>
-                    </div>
 
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-gray-600">
-                        Gönderilme: {new Date(feedback.createdAt).toLocaleDateString('tr-TR')}
+                      <div className="mb-3">
+                        <p className="text-sm text-gray-700">{feedback.feedback.description}</p>
                       </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm" onClick={() => setIsRespondingTo(feedback.id)}>
-                          <MessageCircle className="h-4 w-4 mr-2" />
-                          Yanıtla
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleEscalateFeedback(feedback.id)}>
-                          <Flag className="h-4 w-4 mr-2" />
-                          Yönlendir
-                        </Button>
+
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-gray-600">
+                          Gönderilme: {new Date(feedback.createdAt).toLocaleDateString('tr-TR')}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsRespondingTo(feedback.id)}
+                          >
+                            <MessageCircle className="mr-2 h-4 w-4" />
+                            Yanıtla
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEscalateFeedback(feedback.id)}
+                          >
+                            <Flag className="mr-2 h-4 w-4" />
+                            Yönlendir
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </CardContent>
           </Card>
@@ -1081,23 +1174,25 @@ export function ParentFeedbackSystem() {
 
         {/* Analytics Tab */}
         <TabsContent value="analytics" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>Geri Bildirim İstatistikleri</CardTitle>
-                <CardDescription>
-                  Detaylı performans metrikleri
-                </CardDescription>
+                <CardDescription>Detaylı performans metrikleri</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{feedbackSummary.totalFeedback}</div>
+                    <div className="rounded-lg bg-blue-50 p-4 text-center">
+                      <div className="text-2xl font-bold text-blue-600">
+                        {feedbackSummary.totalFeedback}
+                      </div>
                       <div className="text-sm text-blue-800">Toplam Geri Bildirim</div>
                     </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">{feedbackSummary.averageRating.toFixed(1)}</div>
+                    <div className="rounded-lg bg-green-50 p-4 text-center">
+                      <div className="text-2xl font-bold text-green-600">
+                        {feedbackSummary.averageRating.toFixed(1)}
+                      </div>
                       <div className="text-sm text-green-800">Ortalama Puan</div>
                     </div>
                   </div>
@@ -1105,19 +1200,28 @@ export function ParentFeedbackSystem() {
                     <h4 className="font-medium">Durum Dağılımı</h4>
                     <div className="space-y-2">
                       {Object.entries({
-                        submitted: feedbacks.filter(f => f.status === 'submitted').length,
-                        reviewed: feedbacks.filter(f => f.status === 'reviewed').length,
-                        responded: feedbacks.filter(f => f.status === 'responded').length,
-                        resolved: feedbacks.filter(f => f.status === 'resolved').length,
-                        escalated: feedbacks.filter(f => f.status === 'escalated').length
+                        submitted: feedbacks.filter((f) => f.status === 'submitted').length,
+                        reviewed: feedbacks.filter((f) => f.status === 'reviewed').length,
+                        responded: feedbacks.filter((f) => f.status === 'responded').length,
+                        resolved: feedbacks.filter((f) => f.status === 'resolved').length,
+                        escalated: feedbacks.filter((f) => f.status === 'escalated').length,
                       }).map(([status, count]) => (
-                        <div key={status} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                        <div
+                          key={status}
+                          className="flex items-center justify-between rounded bg-gray-50 p-2"
+                        >
                           <span className="text-sm capitalize">
-                            {status === 'submitted' ? 'Gönderildi' :
-                             status === 'reviewed' ? 'İncelendi' :
-                             status === 'responded' ? 'Yanıtlandı' :
-                             status === 'resolved' ? 'Çözüldü' :
-                             status === 'escalated' ? 'Yönlendirildi' : status}
+                            {status === 'submitted'
+                              ? 'Gönderildi'
+                              : status === 'reviewed'
+                                ? 'İncelendi'
+                                : status === 'responded'
+                                  ? 'Yanıtlandı'
+                                  : status === 'resolved'
+                                    ? 'Çözüldü'
+                                    : status === 'escalated'
+                                      ? 'Yönlendirildi'
+                                      : status}
                           </span>
                           <span className="text-sm font-medium">{count}</span>
                         </div>
@@ -1131,24 +1235,32 @@ export function ParentFeedbackSystem() {
             <Card>
               <CardHeader>
                 <CardTitle>Tür Dağılımı</CardTitle>
-                <CardDescription>
-                  Geri bildirim türlerinin dağılımı
-                </CardDescription>
+                <CardDescription>Geri bildirim türlerinin dağılımı</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {Object.entries(feedbackSummary.typeBreakdown).map(([type, count]) => (
-                    <div key={type} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div
+                      key={type}
+                      className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                    >
                       <div className="flex items-center gap-2">
                         {getTypeIcon(type)}
                         <div>
                           <div className="text-sm font-medium">
-                            {type === 'teacher_performance' ? 'Öğretmen Performansı' :
-                             type === 'school_service' ? 'Okul Hizmetleri' :
-                             type === 'curriculum' ? 'Müfredat' :
-                             type === 'facility' ? 'Tesis' :
-                             type === 'suggestion' ? 'Öneri' :
-                             type === 'complaint' ? 'Şikayet' : type}
+                            {type === 'teacher_performance'
+                              ? 'Öğretmen Performansı'
+                              : type === 'school_service'
+                                ? 'Okul Hizmetleri'
+                                : type === 'curriculum'
+                                  ? 'Müfredat'
+                                  : type === 'facility'
+                                    ? 'Tesis'
+                                    : type === 'suggestion'
+                                      ? 'Öneri'
+                                      : type === 'complaint'
+                                        ? 'Şikayet'
+                                        : type}
                           </div>
                           <div className="text-xs text-gray-600">{type}</div>
                         </div>
@@ -1172,15 +1284,13 @@ export function ParentFeedbackSystem() {
           <Card>
             <CardHeader>
               <CardTitle>Geri Bildirim Şablonları</CardTitle>
-              <CardDescription>
-                Standart geri bildirim formları
-              </CardDescription>
+              <CardDescription>Standart geri bildirim formları</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {feedbackTemplates.map((template) => (
-                  <div key={template.id} className="p-4 border rounded-lg">
-                    <div className="flex items-center justify-between mb-3">
+                  <div key={template.id} className="rounded-lg border p-4">
+                    <div className="mb-3 flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {getTypeIcon(template.type)}
                         <div>
@@ -1189,27 +1299,37 @@ export function ParentFeedbackSystem() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className={template.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                        <Badge
+                          variant="outline"
+                          className={
+                            template.isActive
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }
+                        >
                           {template.isActive ? 'Aktif' : 'Pasif'}
                         </Badge>
-                        <Badge variant="outline">
-                          {template.usageCount} kullanım
-                        </Badge>
+                        <Badge variant="outline">{template.usageCount} kullanım</Badge>
                       </div>
                     </div>
-                    
+
                     <div className="mb-3">
-                      <h4 className="font-medium text-sm mb-2">Sorular:</h4>
+                      <h4 className="mb-2 text-sm font-medium">Sorular:</h4>
                       <div className="space-y-2">
                         {template.questions.map((question) => (
-                          <div key={question.id} className="p-2 bg-gray-50 rounded text-sm">
+                          <div key={question.id} className="rounded bg-gray-50 p-2 text-sm">
                             <div className="flex items-center gap-2">
                               <span className="font-medium">{question.question}</span>
                               <Badge variant="secondary" className="text-xs">
-                                {question.type === 'text' ? 'Metin' :
-                                 question.type === 'rating' ? 'Puan' :
-                                 question.type === 'multiple_choice' ? 'Çoktan Seçmeli' :
-                                 question.type === 'scale' ? 'Ölçek' : question.type}
+                                {question.type === 'text'
+                                  ? 'Metin'
+                                  : question.type === 'rating'
+                                    ? 'Puan'
+                                    : question.type === 'multiple_choice'
+                                      ? 'Çoktan Seçmeli'
+                                      : question.type === 'scale'
+                                        ? 'Ölçek'
+                                        : question.type}
                               </Badge>
                               {question.required && (
                                 <Badge variant="destructive" className="text-xs">
@@ -1228,15 +1348,15 @@ export function ParentFeedbackSystem() {
                       </div>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4 mr-2" />
+                          <Edit className="mr-2 h-4 w-4" />
                           Düzenle
                         </Button>
                         <Button variant="outline" size="sm">
-                          <Copy className="h-4 w-4 mr-2" />
+                          <Copy className="mr-2 h-4 w-4" />
                           Kopyala
                         </Button>
                         <Button variant="outline" size="sm">
-                          <Trash2 className="h-4 w-4 mr-2" />
+                          <Trash2 className="mr-2 h-4 w-4" />
                           Sil
                         </Button>
                       </div>
@@ -1251,22 +1371,22 @@ export function ParentFeedbackSystem() {
 
       {/* Create Feedback Modal */}
       {isCreatingFeedback && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+          <Card className="max-h-[90vh] w-full max-w-2xl overflow-y-auto">
             <CardHeader>
               <CardTitle>Yeni Geri Bildirim</CardTitle>
-              <CardDescription>
-                Geri bildirim ekleyin
-              </CardDescription>
+              <CardDescription>Geri bildirim ekleyin</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>Öğrenci</Label>
                     <Select
                       value={newFeedbackData.student}
-                      onValueChange={(value) => setNewFeedbackData({ ...newFeedbackData, student: value })}
+                      onValueChange={(value) =>
+                        setNewFeedbackData({ ...newFeedbackData, student: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Öğrenci seçin" />
@@ -1283,7 +1403,9 @@ export function ParentFeedbackSystem() {
                     <Label>Öğretmen (Opsiyonel)</Label>
                     <Select
                       value={newFeedbackData.teacher}
-                      onValueChange={(value) => setNewFeedbackData({ ...newFeedbackData, teacher: value })}
+                      onValueChange={(value) =>
+                        setNewFeedbackData({ ...newFeedbackData, teacher: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Öğretmen seçin" />
@@ -1298,12 +1420,14 @@ export function ParentFeedbackSystem() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>Geri Bildirim Türü</Label>
                     <Select
                       value={newFeedbackData.type}
-                      onValueChange={(value) => setNewFeedbackData({ ...newFeedbackData, type: value })}
+                      onValueChange={(value) =>
+                        setNewFeedbackData({ ...newFeedbackData, type: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -1322,7 +1446,9 @@ export function ParentFeedbackSystem() {
                     <Label>Kategori</Label>
                     <Select
                       value={newFeedbackData.category}
-                      onValueChange={(value) => setNewFeedbackData({ ...newFeedbackData, category: value })}
+                      onValueChange={(value) =>
+                        setNewFeedbackData({ ...newFeedbackData, category: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -1366,7 +1492,9 @@ export function ParentFeedbackSystem() {
                   <Input
                     placeholder="Geri bildirim başlığı"
                     value={newFeedbackData.title}
-                    onChange={(e) => setNewFeedbackData({ ...newFeedbackData, title: e.target.value })}
+                    onChange={(e) =>
+                      setNewFeedbackData({ ...newFeedbackData, title: e.target.value })
+                    }
                   />
                 </div>
 
@@ -1375,7 +1503,9 @@ export function ParentFeedbackSystem() {
                   <Textarea
                     placeholder="Geri bildirim açıklaması"
                     value={newFeedbackData.description}
-                    onChange={(e) => setNewFeedbackData({ ...newFeedbackData, description: e.target.value })}
+                    onChange={(e) =>
+                      setNewFeedbackData({ ...newFeedbackData, description: e.target.value })
+                    }
                     className="min-h-[120px]"
                   />
                 </div>
@@ -1385,16 +1515,20 @@ export function ParentFeedbackSystem() {
                   <Input
                     placeholder="etiket1, etiket2, etiket3"
                     value={newFeedbackData.tags}
-                    onChange={(e) => setNewFeedbackData({ ...newFeedbackData, tags: e.target.value })}
+                    onChange={(e) =>
+                      setNewFeedbackData({ ...newFeedbackData, tags: e.target.value })
+                    }
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>Öncelik</Label>
                     <Select
                       value={newFeedbackData.priority}
-                      onValueChange={(value) => setNewFeedbackData({ ...newFeedbackData, priority: value })}
+                      onValueChange={(value) =>
+                        setNewFeedbackData({ ...newFeedbackData, priority: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -1412,7 +1546,9 @@ export function ParentFeedbackSystem() {
                       <Label>Anonim Geri Bildirim</Label>
                       <Switch
                         checked={newFeedbackData.isAnonymous}
-                        onCheckedChange={(checked) => setNewFeedbackData({ ...newFeedbackData, isAnonymous: checked })}
+                        onCheckedChange={(checked) =>
+                          setNewFeedbackData({ ...newFeedbackData, isAnonymous: checked })
+                        }
                       />
                     </div>
                   </div>
@@ -1422,7 +1558,10 @@ export function ParentFeedbackSystem() {
                   <Button variant="outline" onClick={() => setIsCreatingFeedback(false)}>
                     İptal
                   </Button>
-                  <Button onClick={handleSubmitFeedback} disabled={!newFeedbackData.title || !newFeedbackData.description}>
+                  <Button
+                    onClick={handleSubmitFeedback}
+                    disabled={!newFeedbackData.title || !newFeedbackData.description}
+                  >
                     Geri Bildirim Gönder
                   </Button>
                 </div>
@@ -1434,13 +1573,11 @@ export function ParentFeedbackSystem() {
 
       {/* Response Modal */}
       {isRespondingTo && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+          <Card className="max-h-[90vh] w-full max-w-2xl overflow-y-auto">
             <CardHeader>
               <CardTitle>Geri Bildirime Yanıt Ver</CardTitle>
-              <CardDescription>
-                Geri bildirime yanıt yazın
-              </CardDescription>
+              <CardDescription>Geri bildirime yanıt yazın</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -1459,13 +1596,17 @@ export function ParentFeedbackSystem() {
                     <Label>Üst Makama Yönlendir</Label>
                     <Switch
                       checked={responseData.escalate}
-                      onCheckedChange={(checked) => setResponseData({ ...responseData, escalate: checked })}
+                      onCheckedChange={(checked) =>
+                        setResponseData({ ...responseData, escalate: checked })
+                      }
                     />
                   </div>
                   {responseData.escalate && (
                     <Select
                       value={responseData.escalateTo}
-                      onValueChange={(value) => setResponseData({ ...responseData, escalateTo: value })}
+                      onValueChange={(value) =>
+                        setResponseData({ ...responseData, escalateTo: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Yönlendirileceği kişi" />
@@ -1483,7 +1624,10 @@ export function ParentFeedbackSystem() {
                   <Button variant="outline" onClick={() => setIsRespondingTo(null)}>
                     İptal
                   </Button>
-                  <Button onClick={() => handleRespondToFeedback(isRespondingTo)} disabled={!responseData.response}>
+                  <Button
+                    onClick={() => handleRespondToFeedback(isRespondingTo)}
+                    disabled={!responseData.response}
+                  >
                     Yanıt Gönder
                   </Button>
                 </div>

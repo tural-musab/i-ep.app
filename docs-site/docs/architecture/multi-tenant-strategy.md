@@ -30,6 +30,7 @@ CREATE SCHEMA tenant_{tenant_id};
 ```
 
 Bu şemalar şu tabloları içerir:
+
 - Kullanıcılar ve roller
 - Öğrenci bilgileri
 - Öğretmen bilgileri
@@ -83,35 +84,34 @@ import { getTenantByDomain } from '@/lib/tenant';
 
 export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || '';
-  
+
   // Ana domain kontrolü
-  const isRootDomain = hostname === 'i-ep.app' || 
-                        hostname === 'www.i-ep.app';
-  
+  const isRootDomain = hostname === 'i-ep.app' || hostname === 'www.i-ep.app';
+
   if (isRootDomain) {
     // Ana site için işlem yok
     return NextResponse.next();
   }
-  
+
   // Subdomain'i çıkar
   const subdomain = hostname.split('.')[0];
-  
+
   // Tenant bilgisini al
   const tenant = await getTenantByDomain(hostname);
-  
+
   if (!tenant) {
     // Tenant bulunamadı, 404 veya ana sayfaya yönlendir
     return NextResponse.redirect(new URL('/', request.url));
   }
-  
+
   // Tenant bilgisini request'e ekle
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-tenant-id', tenant.id);
-  
+
   return NextResponse.next({
     request: {
-      headers: requestHeaders
-    }
+      headers: requestHeaders,
+    },
   });
 }
 
@@ -151,15 +151,15 @@ const TenantContext = createContext<TenantContextProps>({
   isFeatureEnabled: () => false
 });
 
-export const TenantProvider = ({ 
+export const TenantProvider = ({
   children,
   initialTenant
-}: { 
+}: {
   children: ReactNode;
   initialTenant?: Tenant;
 }) => {
   // Tenant state ve logic burada
-  
+
   return (
     <TenantContext.Provider value={/* context değerleri */}>
       {children}
@@ -180,11 +180,11 @@ import { getTenantById } from '@/lib/db';
 export async function getCurrentTenant() {
   const headersList = headers();
   const tenantId = headersList.get('x-tenant-id');
-  
+
   if (!tenantId) {
     return null;
   }
-  
+
   return getTenantById(tenantId);
 }
 ```
@@ -234,22 +234,22 @@ export async function createNewTenant(
 ): Promise<Tenant> {
   // 1. Tenant kaydı oluştur
   const tenant = await createTenantRecord(name, subdomain, planType);
-  
+
   // 2. Tenant şeması oluştur
   await createTenantSchema(tenant.id);
-  
+
   // 3. Temel tabloları oluştur
   await createTenantTables(tenant.id);
-  
+
   // 4. Varsayılan rolleri ve izinleri oluştur
   await createDefaultRolesAndPermissions(tenant.id);
-  
+
   // 5. Admin kullanıcıyı oluştur
   await createAdminUser(tenant.id, adminEmail);
-  
+
   // 6. Bildirim gönder
   await sendWelcomeEmail(adminEmail, tenant);
-  
+
   return tenant;
 }
 ```
@@ -257,25 +257,27 @@ export async function createNewTenant(
 ## Domain Yönetimi
 
 ### Subdomain ve Özel Domain Desteği
+
 Her tenant için aşağıdaki domain yapıları desteklenmektedir:
 
 1. **Subdomain yapısı**: `{tenant-subdomain}.i-ep.app`
    - Tüm tenantlar için otomatik olarak oluşturulur
    - Tenant oluşturulduğunda subdomain otomatik olarak atanır
-   
 2. **Özel domain yapısı**: `okuladi.com` veya `portal.okuladi.com`
    - Premium ve Standard plan kullanıcıları için sunulan ek özellik
    - Free plan kullanıcıları sadece subdomain kullanabilir
    - SSL sertifikaları otomatik olarak oluşturulur ve yönetilir
 
 ### Domain Yönetimi Teknik İmplementasyonu
+
 - Cloudflare API kullanılarak DNS kayıtları ve SSL sertifikaları yönetilir
 - Middleware seviyesinde subdomain ve özel domain tespiti yapılır
 - Admin panelinden domain ekleme, silme ve doğrulama yönetimi yapılabilir
 
 ### Tenant Özelliklerine Göre Domain Kısıtlamaları
+
 | Plan Türü | Subdomain | Özel Domain | SSL |
-|-----------|-----------|-------------|-----|
+| --------- | --------- | ----------- | --- |
 | Free      | ✅        | ❌          | ✅  |
 | Standard  | ✅        | ✅          | ✅  |
 | Premium   | ✅        | ✅          | ✅  |
@@ -314,7 +316,7 @@ import { useTenant } from '@/lib/hooks/use-tenant';
 
 function MyComponent() {
   const { isFeatureEnabled } = useTenant();
-  
+
   if (isFeatureEnabled('advanced_analytics')) {
     // Premium özelliği göster
   } else {
@@ -327,11 +329,11 @@ import { getCurrentTenant } from '@/lib/tenant-server';
 
 export async function GET(request: Request) {
   const tenant = await getCurrentTenant();
-  
+
   if (!tenant.features.includes('api_access')) {
     return new Response('Feature not available', { status: 403 });
   }
-  
+
   // API işlemleri
 }
 ```
@@ -358,16 +360,15 @@ import type { NextRequest } from 'next/server';
 export function tenantSecurityMiddleware(request: NextRequest) {
   const tenantId = request.headers.get('x-tenant-id');
   const requestPath = request.nextUrl.pathname;
-  
+
   // Tenant spesifik API path kontrolü
-  if (requestPath.startsWith('/api/tenants/') && 
-      !requestPath.includes(tenantId)) {
-    return new NextResponse(
-      JSON.stringify({ error: 'Unauthorized cross-tenant access' }),
-      { status: 403, headers: { 'content-type': 'application/json' } }
-    );
+  if (requestPath.startsWith('/api/tenants/') && !requestPath.includes(tenantId)) {
+    return new NextResponse(JSON.stringify({ error: 'Unauthorized cross-tenant access' }), {
+      status: 403,
+      headers: { 'content-type': 'application/json' },
+    });
   }
-  
+
   return NextResponse.next();
 }
 ```
@@ -398,13 +399,13 @@ export async function rateLimitMiddleware(req, res, next) {
   const tenantId = req.headers['x-tenant-id'];
   const tenant = await getTenantById(tenantId);
   const { requestsPerMinute } = getTenantPlanLimits(tenant.planType);
-  
+
   const limiter = rateLimit({
     windowMs: 60 * 1000, // 1 dakika
     max: requestsPerMinute,
-    message: 'Too many requests from this tenant, please try again later'
+    message: 'Too many requests from this tenant, please try again later',
   });
-  
+
   return limiter(req, res, next);
 }
 ```
@@ -426,16 +427,19 @@ export async function rateLimitMiddleware(req, res, next) {
 ## Büyük Ölçekli SaaS İçin Yol Haritası
 
 ### İlk Aşama (MVP)
+
 - Şema bazlı izolasyon
 - Basit tenant yönetimi
 - Temel özellik bayrakları
 
 ### Orta Aşama
+
 - Hibrit izolasyon (şema + prefix)
 - Gelişmiş tenant yaşam döngüsü
 - Otomatik ölçeklendirme
 
 ### İleri Aşama
+
 - Tam coğrafi dağıtım
 - Tenant bazlı şardalama
 - İleri kaynak izolasyonu

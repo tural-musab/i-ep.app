@@ -1,5 +1,5 @@
-
 Burada:
+
 - **Toplam Dakika**: Bir ayda toplam dakika sayısı
 - **Kesinti Dakikaları**: Planlanmamış kesinti süresinin toplam dakika sayısı
 
@@ -11,6 +11,7 @@ Planlı bakım çalışmaları genellikle aşağıdaki zaman dilimlerinde gerçe
 - **Saat**: 00:00 - 06:00 (Türkiye saati)
 
 Planlı bakım, aşağıdaki şekilde bildirilecektir:
+
 - Premium kullanıcılar: En az 7 gün önceden
 - Standard kullanıcılar: En az 5 gün önceden
 - Free kullanıcılar: En az 3 gün önceden
@@ -21,19 +22,20 @@ Planlı bakım süreleri, çalışma süresi hesaplamasına dahil edilmez.
 
 #### Sayfa Yükleme Süreleri
 
-| Metrik | Free | Standard | Premium |
-|--------|------|----------|---------|
+| Metrik                        | Free       | Standard   | Premium    |
+| ----------------------------- | ---------- | ---------- | ---------- |
 | Ortalama Sayfa Yükleme Süresi | < 5 saniye | < 3 saniye | < 2 saniye |
-| %95 Yükleme Süresi | < 8 saniye | < 5 saniye | < 3 saniye |
+| %95 Yükleme Süresi            | < 8 saniye | < 5 saniye | < 3 saniye |
 
 #### API Yanıt Süreleri
 
-| Metrik | Free | Standard | Premium |
-|--------|------|----------|---------|
-| Ortalama API Yanıt Süresi | < 1000 ms | < 800 ms | < 500 ms |
-| %95 API Yanıt Süresi | < 3000 ms | < 2000 ms | < 1000 ms |
+| Metrik                    | Free      | Standard  | Premium   |
+| ------------------------- | --------- | --------- | --------- |
+| Ortalama API Yanıt Süresi | < 1000 ms | < 800 ms  | < 500 ms  |
+| %95 API Yanıt Süresi      | < 3000 ms | < 2000 ms | < 1000 ms |
 
 Bu performans metrikleri:
+
 - Türkiye içindeki standart internet bağlantıları için geçerlidir
 - İstemci tarafındaki ağ sorunları veya tarayıcı performans sorunları hariç tutulur
 - Statik içerik dağıtım ağı (CDN) üzerinden sunulan içeriği içerir
@@ -42,52 +44,52 @@ Bu performans metrikleri:
 
 #### Yedekleme Sıklığı
 
-| Plan | Sıklık | Saklama Süresi | Kurtarma Talebi |
-|------|--------|----------------|-----------------|
-| Free | Günlük | 7 gün | Ücretli |
-| Standard | Günlük | 30 gün | Ayda 1 ücretsiz |
-| Premium | Saatlik | 90 gün | Sınırsız ücretsiz |
+| Plan     | Sıklık  | Saklama Süresi | Kurtarma Talebi   |
+| -------- | ------- | -------------- | ----------------- |
+| Free     | Günlük  | 7 gün          | Ücretli           |
+| Standard | Günlük  | 30 gün         | Ayda 1 ücretsiz   |
+| Premium  | Saatlik | 90 gün         | Sınırsız ücretsiz |
 
 #### Veri Kurtarma Süresi (RTO)
 
-| Plan | Normal Kurtarma | Hızlı Kurtarma |
-|------|-----------------|----------------|
-| Free | 48 saat içinde | Ücretli - 24 saat |
-| Standard | 24 saat içinde | Ücretli - 12 saat |
-| Premium | 4 saat içinde | Ücretsiz - 2 saat |
+| Plan     | Normal Kurtarma | Hızlı Kurtarma    |
+| -------- | --------------- | ----------------- |
+| Free     | 48 saat içinde  | Ücretli - 24 saat |
+| Standard | 24 saat içinde  | Ücretli - 12 saat |
+| Premium  | 4 saat içinde   | Ücretsiz - 2 saat |
 
 ### Teknik Destek Taahhütleri
 
 #### Olay Sınıflandırması
 
-| Öncelik | Tanım |
-|---------|-------|
+| Öncelik    | Tanım                                                                                                                                                                                                                        |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Kritik** | Platformun tamamen veya önemli işlevlerinin kullanılamaz durumda olması. Tüm kullanıcılar veya kullanıcıların büyük çoğunluğu etkilenmiştir. Örnekler: Oturum açma çalışmıyor, veri görüntülenemiyor, sistem çökmüş durumda. |
-| **Önemli** | Önemli işlevlerin bozuk veya yavaş çalışması. Kullanıcıların önemli bir kısmı etkilenmiştir. Örnekler: Belirli raporlar alınamıyor, sistem yavaş çalışıyor, bazı özellikler kullanılamıyor. |
-| **Normal** | Belirli özellikler beklendiği gibi çalışmıyor ancak iş akışını tamamen engellemiyor. Örnekler: Küçük hata mesajları, bazı UI sorunları, küçük işlev hataları. |
-| **Düşük** | Küçük hatalar veya iyileştirme önerileri. İş akışını etkilemez. Örnekler: UI geliştirme talepleri, dokümantasyon soruları, küçük kozmetik hatalar. |
+| **Önemli** | Önemli işlevlerin bozuk veya yavaş çalışması. Kullanıcıların önemli bir kısmı etkilenmiştir. Örnekler: Belirli raporlar alınamıyor, sistem yavaş çalışıyor, bazı özellikler kullanılamıyor.                                  |
+| **Normal** | Belirli özellikler beklendiği gibi çalışmıyor ancak iş akışını tamamen engellemiyor. Örnekler: Küçük hata mesajları, bazı UI sorunları, küçük işlev hataları.                                                                |
+| **Düşük**  | Küçük hatalar veya iyileştirme önerileri. İş akışını etkilemez. Örnekler: UI geliştirme talepleri, dokümantasyon soruları, küçük kozmetik hatalar.                                                                           |
 
 #### Yanıt ve Çözüm Süreleri
 
-| Plan | Öncelik | İlk Yanıt | Hedef Çözüm Süresi |
-|------|---------|-----------|-------------------|
-| **Free** | Tüm olaylar | 24 iş saati | En iyi çaba |
-| **Standard** | Kritik | 8 iş saati | 48 saat |
-|  | Önemli | 16 iş saati | 72 saat |
-|  | Normal | 24 iş saati | En iyi çaba |
-|  | Düşük | 48 iş saati | En iyi çaba |
-| **Premium** | Kritik | 2 saat (7/24) | 8 saat |
-|  | Önemli | 4 iş saati | 24 saat |
-|  | Normal | 8 iş saati | 72 saat |
-|  | Düşük | 16 iş saati | En iyi çaba |
+| Plan         | Öncelik     | İlk Yanıt     | Hedef Çözüm Süresi |
+| ------------ | ----------- | ------------- | ------------------ |
+| **Free**     | Tüm olaylar | 24 iş saati   | En iyi çaba        |
+| **Standard** | Kritik      | 8 iş saati    | 48 saat            |
+|              | Önemli      | 16 iş saati   | 72 saat            |
+|              | Normal      | 24 iş saati   | En iyi çaba        |
+|              | Düşük       | 48 iş saati   | En iyi çaba        |
+| **Premium**  | Kritik      | 2 saat (7/24) | 8 saat             |
+|              | Önemli      | 4 iş saati    | 24 saat            |
+|              | Normal      | 8 iş saati    | 72 saat            |
+|              | Düşük       | 16 iş saati   | En iyi çaba        |
 
 #### Destek Kanalları ve Çalışma Saatleri
 
-| Plan | Destek Kanalları | Çalışma Saatleri |
-|------|------------------|------------------|
-| **Free** | E-posta | İş saatleri (09:00-18:00, Pazartesi-Cuma) |
-| **Standard** | E-posta, İletişim Formu | İş saatleri (09:00-18:00, Pazartesi-Cuma) |
-| **Premium** | E-posta, İletişim Formu, Telefon | 7/24 (Kritik olaylar için) <br> İş saatleri (Diğer olaylar için) |
+| Plan         | Destek Kanalları                 | Çalışma Saatleri                                                 |
+| ------------ | -------------------------------- | ---------------------------------------------------------------- |
+| **Free**     | E-posta                          | İş saatleri (09:00-18:00, Pazartesi-Cuma)                        |
+| **Standard** | E-posta, İletişim Formu          | İş saatleri (09:00-18:00, Pazartesi-Cuma)                        |
+| **Premium**  | E-posta, İletişim Formu, Telefon | 7/24 (Kritik olaylar için) <br> İş saatleri (Diğer olaylar için) |
 
 ## SLA Ölçümü ve Raporlama
 
@@ -96,12 +98,14 @@ Bu performans metrikleri:
 #### Çalışma Süresi İzleme
 
 Sistem erişilebilirliği aşağıdaki yöntemlerle izlenir:
+
 - Harici izleme hizmetleri (Pingdom, StatusCake, UptimeRobot)
 - Çeşitli coğrafi lokasyonlardan düzenli kontroller
 - Sistem API endpoint'lerine düzenli sağlık kontrolleri
 - CDN ve uygulama katmanı performans metrikleri
 
 Kesinti, aşağıdaki durumlarda gerçekleşmiş kabul edilir:
+
 - Sistemin tüm kullanıcılar için tamamen erişilemez olması
 - Temel işlevlerin (oturum açma, temel veri görüntüleme, vb.) çalışmaması
 - Sistemin 5 dakikadan uzun süre yanıt vermemesi
@@ -109,6 +113,7 @@ Kesinti, aşağıdaki durumlarda gerçekleşmiş kabul edilir:
 #### Performans İzleme
 
 Sistem performansı aşağıdaki metriklerle izlenir:
+
 - Gerçek kullanıcı ölçümleri (RUM - Real User Monitoring)
 - Sentetik işlem izleme (kritik işlemler için)
 - Sunucu yanıt süreleri ve kaynak kullanımı
@@ -120,11 +125,11 @@ Sistem performansı aşağıdaki metriklerle izlenir:
 
 SLA performans raporları aşağıdaki şekilde sunulacaktır:
 
-| Plan | Rapor Sıklığı | Rapor İçeriği |
-|------|---------------|---------------|
-| **Free** | İstek üzerine | Basit çalışma süresi raporu |
-| **Standard** | Aylık | Çalışma süresi, performans özeti |
-| **Premium** | Haftalık | Detaylı çalışma süresi, performans, olay ve çözüm süreleri |
+| Plan         | Rapor Sıklığı | Rapor İçeriği                                              |
+| ------------ | ------------- | ---------------------------------------------------------- |
+| **Free**     | İstek üzerine | Basit çalışma süresi raporu                                |
+| **Standard** | Aylık         | Çalışma süresi, performans özeti                           |
+| **Premium**  | Haftalık      | Detaylı çalışma süresi, performans, olay ve çözüm süreleri |
 
 Premium kullanıcılar için özel bir dashboard üzerinden SLA metriklerine gerçek zamanlı erişim sağlanacaktır.
 
@@ -136,24 +141,24 @@ Taahhüt edilen SLA seviyelerinin altında kalan performans durumunda aşağıda
 
 #### Çalışma Süresi SLA İhlalleri
 
-| Plan | Kesinti Süresi | Kredi |
-|------|----------------|-------|
-| **Free** | SLA yok | SLA yok |
-| **Standard** | %99.5 - %99.0 | Aylık ücretin %10'u |
-|  | %99.0 - %98.0 | Aylık ücretin %25'i |
-|  | < %98.0 | Aylık ücretin %50'si |
-| **Premium** | %99.9 - %99.5 | Aylık ücretin %10'u |
-|  | %99.5 - %99.0 | Aylık ücretin %25'i |
-|  | < %99.0 | Aylık ücretin %50'si |
+| Plan         | Kesinti Süresi | Kredi                |
+| ------------ | -------------- | -------------------- |
+| **Free**     | SLA yok        | SLA yok              |
+| **Standard** | %99.5 - %99.0  | Aylık ücretin %10'u  |
+|              | %99.0 - %98.0  | Aylık ücretin %25'i  |
+|              | < %98.0        | Aylık ücretin %50'si |
+| **Premium**  | %99.9 - %99.5  | Aylık ücretin %10'u  |
+|              | %99.5 - %99.0  | Aylık ücretin %25'i  |
+|              | < %99.0        | Aylık ücretin %50'si |
 
 #### Destek Yanıt Süresi SLA İhlalleri
 
-| Plan | Gecikme | Kredi |
-|------|---------|-------|
-| **Free** | SLA yok | SLA yok |
-| **Standard** | > 2x taahhüt | Aylık ücretin %5'i |
-| **Premium** | > 1.5x taahhüt | Aylık ücretin %5'i |
-|  | > 2x taahhüt | Aylık ücretin %10'u |
+| Plan         | Gecikme        | Kredi               |
+| ------------ | -------------- | ------------------- |
+| **Free**     | SLA yok        | SLA yok             |
+| **Standard** | > 2x taahhüt   | Aylık ücretin %5'i  |
+| **Premium**  | > 1.5x taahhüt | Aylık ücretin %5'i  |
+|              | > 2x taahhüt   | Aylık ücretin %10'u |
 
 ### Kredi Talep Süreci
 
@@ -181,11 +186,11 @@ Aşağıdaki durumlar SLA taahhütleri dışında tutulur:
 
 Iqra Eğitim Portalı, bu SLA'da değişiklik yapma hakkını saklı tutar. Değişiklikler aşağıdaki şekilde bildirilecektir:
 
-| Plan | Bildirim Süresi |
-|------|-----------------|
-| **Free** | 30 gün önceden |
-| **Standard** | 60 gün önceden |
-| **Premium** | 90 gün önceden |
+| Plan         | Bildirim Süresi |
+| ------------ | --------------- |
+| **Free**     | 30 gün önceden  |
+| **Standard** | 60 gün önceden  |
+| **Premium**  | 90 gün önceden  |
 
 Değişiklikler, e-posta ve platform içi bildirimlerle kullanıcılara iletilecektir. Mevcut aboneler için, değişiklikler genellikle bir sonraki abonelik yenileme döneminde geçerli olacaktır.
 
@@ -215,16 +220,16 @@ export const monitoringConfig = {
     },
     // Diğer endpoint'ler...
   ],
-  
+
   performanceMonitoring: {
     pageLoadSampleRate: 0.1, // %10 örnekleme
     apiResponseSampleRate: 0.2, // %20 örnekleme
     slowThresholds: {
       pageLoad: 5000, // 5 saniye
       apiResponse: 1000, // 1 saniye
-    }
+    },
   },
-  
+
   alertChannels: [
     {
       type: 'slack',
@@ -240,9 +245,9 @@ export const monitoringConfig = {
       type: 'sms',
       recipients: ['+905XXXXXXXXX'],
       severity: ['critical'],
-    }
+    },
   ],
-  
+
   escalationPolicy: {
     gracePeriod: 15, // dakika
     levels: [
@@ -257,9 +262,9 @@ export const monitoringConfig = {
       {
         timeout: 30,
         contacts: ['cto@i-ep.app', '+905XXXXXXXXX'],
-      }
-    ]
-  }
+      },
+    ],
+  },
 };
 ```
 
@@ -340,15 +345,15 @@ export const disasterRecoveryConfig = {
         instanceType: 'db.r5.large',
         multiAZ: true,
         backupStrategy: 'daily',
-      }
+      },
     },
     storage: {
       type: 's3',
       buckets: ['i-es-prod-data', 'i-es-prod-files'],
       replicationEnabled: true,
-    }
+    },
   },
-  
+
   secondary: {
     region: 'eu-central-1',
     databases: {
@@ -361,31 +366,31 @@ export const disasterRecoveryConfig = {
         instanceType: 'db.r5.large',
         syncType: 'async',
         lagAlert: 3600, // saniye
-      }
+      },
     },
     storage: {
       type: 's3',
       buckets: ['i-es-dr-data', 'i-es-dr-files'],
-    }
+    },
   },
-  
+
   rto: {
     free: 48 * 60 * 60, // 48 saat (saniye)
     standard: 24 * 60 * 60, // 24 saat
     premium: 4 * 60 * 60, // 4 saat
   },
-  
+
   rpo: {
     free: 24 * 60 * 60, // 24 saat
     standard: 12 * 60 * 60, // 12 saat
     premium: 1 * 60 * 60, // 1 saat
   },
-  
+
   testSchedule: {
     fullDrTest: 'YEARLY',
     componentTests: 'QUARTERLY',
     backupVerification: 'WEEKLY',
-  }
+  },
 };
 ```
 
@@ -421,14 +426,14 @@ SLA taahhütlerinin karşılanabilmesi için müşterilerin aşağıdaki sorumlu
 
 ### Destek İletişim Kanalları
 
-| Plan | Kanal | İletişim Detayları | Yanıt Beklentisi |
-|------|-------|-------------------|------------------|
-| **Free** | E-posta | support@i-ep.app | 24 iş saati |
-| **Standard** | E-posta | support@i-ep.app | 8-16 iş saati |
-|  | İletişim Formu | Portal üzerinden | 8-16 iş saati |
-| **Premium** | E-posta | premium-support@i-ep.app | 2-8 saat |
-|  | İletişim Formu | Portal üzerinden | 2-8 saat |
-|  | Telefon | +90 212 XXX XX XX | Anında (7/24) |
+| Plan         | Kanal          | İletişim Detayları       | Yanıt Beklentisi |
+| ------------ | -------------- | ------------------------ | ---------------- |
+| **Free**     | E-posta        | support@i-ep.app         | 24 iş saati      |
+| **Standard** | E-posta        | support@i-ep.app         | 8-16 iş saati    |
+|              | İletişim Formu | Portal üzerinden         | 8-16 iş saati    |
+| **Premium**  | E-posta        | premium-support@i-ep.app | 2-8 saat         |
+|              | İletişim Formu | Portal üzerinden         | 2-8 saat         |
+|              | Telefon        | +90 212 XXX XX XX        | Anında (7/24)    |
 
 ### Eskalasyon Prosedürü
 

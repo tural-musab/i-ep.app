@@ -67,18 +67,22 @@ Kabul Edildi
 ## Alternatifler
 
 ### Vitest + Testing Library
+
 - **Avantajlar**: Daha hızlı çalışma, Vite ile entegrasyon, modern ESM desteği
 - **Dezavantajlar**: Daha yeni ve daha az olgun ekosistem, Next.js ile bazı uyumluluk sorunları
 
 ### Mocha + Enzyme
+
 - **Avantajlar**: Esnek yapılandırma, olgun ekosistem
 - **Dezavantajlar**: React 18 ile tam uyumluluk sorunları, implementasyon odaklı testler
 
 ### Jasmine + Enzyme
+
 - **Avantajlar**: Dahili assertions ve spy, basit API
 - **Dezavantajlar**: Modern React projelerinde kısıtlı destek, daha az aktif geliştirme
 
 ### Cypress Component Testing
+
 - **Avantajlar**: Gerçek tarayıcıda komponent testi, aynı aracı E2E ve komponent testleri için kullanma
 - **Dezavantajlar**: Kurulum karmaşıklığı, yavaş test çalıştırma süresi
 
@@ -131,4 +135,4 @@ Iqra Eğitim Portalı için aşağıdaki test stratejisi benimsenmiştir:
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
 - [Testing Next.js Applications](https://nextjs.org/docs/testing)
 - [Playwright Documentation](https://playwright.dev/)
-- [Kent C. Dodds - Testing Library Principles](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library) 
+- [Kent C. Dodds - Testing Library Principles](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)

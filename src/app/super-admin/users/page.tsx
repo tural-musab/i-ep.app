@@ -35,7 +35,7 @@ export default function UsersPage() {
       cell: ({ row }: { row: { original: User } }) => (
         <div className="flex flex-col">
           <span className="font-medium">{row.original.full_name}</span>
-          <span className="text-xs text-muted-foreground">{row.original.email}</span>
+          <span className="text-muted-foreground text-xs">{row.original.email}</span>
         </div>
       ),
     },
@@ -45,7 +45,7 @@ export default function UsersPage() {
       cell: ({ row }: { row: { original: User } }) => {
         const role = row.original.role;
         let color = 'bg-blue-50 text-blue-700 border-blue-200';
-        
+
         if (role === 'super_admin') {
           color = 'bg-purple-50 text-purple-700 border-purple-200';
         } else if (role === 'tenant_admin') {
@@ -53,7 +53,7 @@ export default function UsersPage() {
         } else if (role === 'teacher') {
           color = 'bg-yellow-50 text-yellow-700 border-yellow-200';
         }
-        
+
         return (
           <Badge variant="outline" className={color}>
             {role === 'super_admin'
@@ -80,13 +80,13 @@ export default function UsersPage() {
       cell: ({ row }: { row: { original: User } }) => (
         <div>
           {row.original.is_active ? (
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-              <CheckCircle className="h-3 w-3 mr-1" />
+            <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">
+              <CheckCircle className="mr-1 h-3 w-3" />
               Aktif
             </Badge>
           ) : (
-            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-              <AlertCircle className="h-3 w-3 mr-1" />
+            <Badge variant="outline" className="border-red-200 bg-red-50 text-red-700">
+              <AlertCircle className="mr-1 h-3 w-3" />
               Pasif
             </Badge>
           )}
@@ -96,16 +96,16 @@ export default function UsersPage() {
     {
       accessorKey: 'last_sign_in_at',
       header: 'Son Giriş',
-      cell: ({ row }: { row: { original: User } }) => (
+      cell: ({ row }: { row: { original: User } }) =>
         row.original.last_sign_in_at
           ? format(new Date(row.original.last_sign_in_at), 'dd MMM yyyy', { locale: tr })
-          : 'Hiç giriş yapmadı'
-      ),
+          : 'Hiç giriş yapmadı',
     },
     {
       accessorKey: 'created_at',
       header: 'Kayıt Tarihi',
-      cell: ({ row }: { row: { original: User } }) => format(new Date(row.original.created_at), 'dd MMM yyyy', { locale: tr }),
+      cell: ({ row }: { row: { original: User } }) =>
+        format(new Date(row.original.created_at), 'dd MMM yyyy', { locale: tr }),
     },
     {
       id: 'actions',
@@ -118,22 +118,19 @@ export default function UsersPage() {
           <Button variant="ghost" size="icon" title="Düzenle">
             <Edit2 className="h-4 w-4" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            title="Şifre Sıfırla"
-          >
+          <Button variant="ghost" size="icon" title="Şifre Sıfırla">
             <Lock className="h-4 w-4" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            title={row.original.is_active ? "Pasifleştir" : "Aktifleştir"}
+          <Button
+            variant="ghost"
+            size="icon"
+            title={row.original.is_active ? 'Pasifleştir' : 'Aktifleştir'}
           >
-            {row.original.is_active 
-              ? <AlertCircle className="h-4 w-4" /> 
-              : <CheckCircle className="h-4 w-4" />
-            }
+            {row.original.is_active ? (
+              <AlertCircle className="h-4 w-4" />
+            ) : (
+              <CheckCircle className="h-4 w-4" />
+            )}
           </Button>
         </div>
       ),
@@ -145,43 +142,45 @@ export default function UsersPage() {
       setIsLoading(true);
       try {
         const supabase = createClientComponentClient();
-        
+
         // Kullanıcıları getir
         const { data: users, error: usersError } = await supabase
           .from('users')
           .select('*')
           .order('created_at', { ascending: false });
-        
+
         if (usersError) throw usersError;
-        
+
         // Tenant bilgilerini ekle
-        const enrichedUsers = await Promise.all((users || []).map(async (user) => {
-          let tenantName = null;
-          
-          if (user.tenant_id) {
-            const { data: tenantData } = await supabase
-              .from('tenants')
-              .select('name')
-              .eq('id', user.tenant_id)
+        const enrichedUsers = await Promise.all(
+          (users || []).map(async (user) => {
+            let tenantName = null;
+
+            if (user.tenant_id) {
+              const { data: tenantData } = await supabase
+                .from('tenants')
+                .select('name')
+                .eq('id', user.tenant_id)
+                .single();
+
+              tenantName = tenantData?.name;
+            }
+
+            // Son giriş bilgisini getir
+            const { data: authUser } = await supabase
+              .from('auth.users')
+              .select('last_sign_in_at')
+              .eq('id', user.id)
               .single();
-            
-            tenantName = tenantData?.name;
-          }
-          
-          // Son giriş bilgisini getir
-          const { data: authUser } = await supabase
-            .from('auth.users')
-            .select('last_sign_in_at')
-            .eq('id', user.id)
-            .single();
-          
-          return {
-            ...user,
-            tenant_name: tenantName,
-            last_sign_in_at: authUser?.last_sign_in_at
-          };
-        }));
-        
+
+            return {
+              ...user,
+              tenant_name: tenantName,
+              last_sign_in_at: authUser?.last_sign_in_at,
+            };
+          })
+        );
+
         setUsers(enrichedUsers);
       } catch (error) {
         console.error('Kullanıcılar yüklenirken hata:', error);
@@ -195,12 +194,10 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Kullanıcılar</h1>
-          <p className="text-muted-foreground">
-            Sistem üzerindeki tüm kullanıcıları yönetin
-          </p>
+          <p className="text-muted-foreground">Sistem üzerindeki tüm kullanıcıları yönetin</p>
         </div>
         <Button className="flex items-center">
           <UserPlus className="mr-2 h-4 w-4" />
@@ -229,4 +226,4 @@ export default function UsersPage() {
       </Card>
     </div>
   );
-} 
+}

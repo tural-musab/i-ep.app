@@ -39,11 +39,7 @@ export class ClassRepository {
    */
   async getById(id: string): Promise<Class | null> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    const { data, error } = await supabase
-      .from('classes')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabase.from('classes').select('*').eq('id', id).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -128,14 +124,16 @@ export class ClassRepository {
 
     if (error) {
       console.error('Öğretmenin ders verdiği sınıflar getirilirken hata oluştu:', error);
-      throw new Error(`Öğretmenin ders verdiği sınıflar getirilirken hata oluştu: ${error.message}`);
+      throw new Error(
+        `Öğretmenin ders verdiği sınıflar getirilirken hata oluştu: ${error.message}`
+      );
     }
 
     if (!data || data.length === 0) {
       return [];
     }
 
-    const classIds = data.map(item => item.class_id);
+    const classIds = data.map((item) => item.class_id);
     const { data: classes, error: classesError } = await supabase
       .from('classes')
       .select('*')
@@ -156,11 +154,7 @@ export class ClassRepository {
    */
   async create(classData: InsertClass): Promise<Class> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    const { data, error } = await supabase
-      .from('classes')
-      .insert(classData)
-      .select()
-      .single();
+    const { data, error } = await supabase.from('classes').insert(classData).select().single();
 
     if (error) {
       console.error('Sınıf oluşturulurken hata oluştu:', error);
@@ -200,9 +194,13 @@ export class ClassRepository {
   /**
    * Öğretmeni bir dersle ilişkilendirir
    */
-  async assignTeacherToClass(teacherId: string, classId: string, subject: string): Promise<TeacherClass> {
+  async assignTeacherToClass(
+    teacherId: string,
+    classId: string,
+    subject: string
+  ): Promise<TeacherClass> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    
+
     // Önce böyle bir atama var mı kontrol et
     const { data: existingData, error: checkError } = await supabase
       .from('teacher_class')
@@ -211,24 +209,26 @@ export class ClassRepository {
       .eq('class_id', classId)
       .eq('subject', subject)
       .maybeSingle();
-      
+
     if (checkError) {
       console.error('Öğretmen-sınıf ilişkisi kontrol edilirken hata oluştu:', checkError);
-      throw new Error(`Öğretmen-sınıf ilişkisi kontrol edilirken hata oluştu: ${checkError.message}`);
+      throw new Error(
+        `Öğretmen-sınıf ilişkisi kontrol edilirken hata oluştu: ${checkError.message}`
+      );
     }
-    
+
     // Zaten varsa, mevcut kaydı döndür
     if (existingData) {
       return existingData;
     }
-    
+
     // Yoksa yeni kayıt oluştur
     const { data, error } = await supabase
       .from('teacher_class')
       .insert({
         teacher_id: teacherId,
         class_id: classId,
-        subject: subject
+        subject: subject,
       })
       .select()
       .single();
@@ -264,23 +264,17 @@ export class ClassRepository {
    */
   async delete(id: string): Promise<void> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    
+
     // Önce tüm teacher_class ilişkilerini temizle
-    const { error: relError } = await supabase
-      .from('teacher_class')
-      .delete()
-      .eq('class_id', id);
-      
+    const { error: relError } = await supabase.from('teacher_class').delete().eq('class_id', id);
+
     if (relError) {
       console.error('Sınıf ilişkileri silinirken hata oluştu:', relError);
       throw new Error(`Sınıf ilişkileri silinirken hata oluştu: ${relError.message}`);
     }
-    
+
     // Sonra sınıfı sil
-    const { error } = await supabase
-      .from('classes')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('classes').delete().eq('id', id);
 
     if (error) {
       console.error('Sınıf silinirken hata oluştu:', error);
@@ -304,4 +298,4 @@ export class ClassRepository {
 
     return count || 0;
   }
-} 
+}

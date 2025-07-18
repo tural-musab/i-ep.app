@@ -86,4 +86,4 @@ Yeni bir migration eklemek için:
 1. `migrations/` klasöründe yeni bir SQL dosyası oluşturun (tarih_açıklama.sql formatında)
 2. SQL betiklerini dikkatli bir şekilde yazın, hata durumunda geri almak için kontroller ekleyin
 3. Yerel ortamda test edin
-4. Değişiklikleri commit edin 
+4. Değişiklikleri commit edin

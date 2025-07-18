@@ -1,9 +1,9 @@
 /**
  * Super Admin Tenants Management API
  * Sprint 7: Super Admin Paneli - Tenant Yönetimi Endpoint'i
- * 
+ *
  * Bu endpoint tenant yönetimi işlemlerini sağlar ve sadece super admin'ler tarafından erişilebilir.
- * 
+ *
  * GET /api/super-admin/tenants - Tenant listesi
  * POST /api/super-admin/tenants - Yeni tenant oluşturma
  */
@@ -18,7 +18,9 @@ const logger = getLogger('super-admin-tenants-api');
 /**
  * Super Admin yetki kontrolü
  */
-async function validateSuperAdminAccess(request: NextRequest): Promise<{ authorized: boolean; userId?: string; error?: string }> {
+async function validateSuperAdminAccess(
+  request: NextRequest
+): Promise<{ authorized: boolean; userId?: string; error?: string }> {
   try {
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -26,15 +28,18 @@ async function validateSuperAdminAccess(request: NextRequest): Promise<{ authori
     }
 
     const token = authHeader.split(' ')[1];
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabaseAdmin.auth.getUser(token);
+
     if (authError || !user) {
       return { authorized: false, error: 'Invalid or expired token' };
     }
 
     // Super admin rolü kontrolü
     const { data: isSuperAdmin, error: roleError } = await supabaseAdmin.rpc('is_super_admin');
-    
+
     if (roleError || !isSuperAdmin) {
       logger.warn(`Non-admin user attempted to access tenants management: ${user.email}`);
       return { authorized: false, error: 'Super admin access required' };
@@ -50,7 +55,7 @@ async function validateSuperAdminAccess(request: NextRequest): Promise<{ authori
 /**
  * GET /api/super-admin/tenants
  * Tenant listesini döndürür
- * 
+ *
  * @swagger
  * /api/super-admin/tenants:
  *   get:
@@ -114,7 +119,7 @@ async function validateSuperAdminAccess(request: NextRequest): Promise<{ authori
  */
 export async function GET(request: NextRequest) {
   const timestamp = new Date().toISOString();
-  
+
   try {
     // Super admin yetki kontrolü
     const { authorized, userId, error: authError } = await validateSuperAdminAccess(request);
@@ -137,9 +142,8 @@ export async function GET(request: NextRequest) {
     const to = from + limit - 1;
 
     // Base query
-    let query = supabaseAdmin
-      .from('tenants')
-      .select(`
+    let query = supabaseAdmin.from('tenants').select(
+      `
         id,
         name,
         subdomain,
@@ -148,7 +152,9 @@ export async function GET(request: NextRequest) {
         created_at,
         updated_at,
         settings
-      `, { count: 'exact' });
+      `,
+      { count: 'exact' }
+    );
 
     // Filters
     if (status) {
@@ -165,9 +171,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Pagination ve ordering
-    query = query
-      .order('created_at', { ascending: false })
-      .range(from, to);
+    query = query.order('created_at', { ascending: false }).range(from, to);
 
     const { data: tenants, error: tenantsError, count } = await query;
 
@@ -215,7 +219,7 @@ export async function GET(request: NextRequest) {
             lastActivity: lastActivity?.[0]?.last_login_at || null,
             createdAt: tenant.created_at,
             updatedAt: tenant.updated_at,
-            settings: tenant.settings
+            settings: tenant.settings,
           };
         } catch (error) {
           logger.warn(`Failed to enrich tenant ${tenant.id}:`, error);
@@ -230,7 +234,7 @@ export async function GET(request: NextRequest) {
             lastActivity: null,
             createdAt: tenant.created_at,
             updatedAt: tenant.updated_at,
-            settings: tenant.settings
+            settings: tenant.settings,
           };
         }
       })
@@ -244,7 +248,7 @@ export async function GET(request: NextRequest) {
       limit,
       totalPages,
       hasNext: page < totalPages,
-      hasPrev: page > 1
+      hasPrev: page > 1,
     };
 
     // Audit log
@@ -256,7 +260,7 @@ export async function GET(request: NextRequest) {
       resource_type: 'tenants',
       resource_id: 'list',
       description: `Super admin tenant list access`,
-      metadata: { page, limit, status, search, resultCount: enrichedTenants.length }
+      metadata: { page, limit, status, search, resultCount: enrichedTenants.length },
     });
 
     logger.info(`Super admin tenant list accessed by ${userId}`, {
@@ -264,24 +268,23 @@ export async function GET(request: NextRequest) {
       limit,
       status,
       search,
-      resultCount: enrichedTenants.length
+      resultCount: enrichedTenants.length,
     });
 
     return NextResponse.json({
       success: true,
       data: enrichedTenants,
       meta,
-      timestamp
+      timestamp,
     });
-
   } catch (error) {
     logger.error('Tenants list endpoint error:', error);
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to fetch tenants', 
-        timestamp 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to fetch tenants',
+        timestamp,
       },
       { status: 500 }
     );
@@ -291,7 +294,7 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/super-admin/tenants
  * Yeni tenant oluşturur
- * 
+ *
  * @swagger
  * /api/super-admin/tenants:
  *   post:
@@ -361,7 +364,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   const timestamp = new Date().toISOString();
-  
+
   try {
     // Super admin yetki kontrolü
     const { authorized, userId, error: authError } = await validateSuperAdminAccess(request);
@@ -388,10 +391,11 @@ export async function POST(request: NextRequest) {
     const subdomainRegex = /^[a-z0-9][a-z0-9-]*[a-z0-9]$/;
     if (!subdomainRegex.test(subdomain)) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Subdomain must be lowercase alphanumeric with hyphens, starting and ending with alphanumeric characters', 
-          timestamp 
+        {
+          success: false,
+          error:
+            'Subdomain must be lowercase alphanumeric with hyphens, starting and ending with alphanumeric characters',
+          timestamp,
         },
         { status: 400 }
       );
@@ -422,14 +426,14 @@ export async function POST(request: NextRequest) {
         settings: {
           theme: {
             primaryColor: '#1976d2',
-            secondaryColor: '#dc004e'
+            secondaryColor: '#dc004e',
           },
           features: ['user_management', 'basic_reporting'],
           limits: {
             maxUsers: planType === 'free' ? 50 : planType === 'basic' ? 200 : 1000,
-            maxStorage: planType === 'free' ? 1 : planType === 'basic' ? 10 : 100 // GB
-          }
-        }
+            maxStorage: planType === 'free' ? 1 : planType === 'basic' ? 10 : 100, // GB
+          },
+        },
       })
       .select()
       .single();
@@ -443,15 +447,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Default subdomain oluştur
-    const { error: domainError } = await supabaseAdmin
-      .from('tenant_domains')
-      .insert({
-        tenant_id: newTenant.id,
-        domain: `${subdomain}.i-ep.app`,
-        type: 'subdomain',
-        is_primary: true,
-        is_verified: true
-      });
+    const { error: domainError } = await supabaseAdmin.from('tenant_domains').insert({
+      tenant_id: newTenant.id,
+      domain: `${subdomain}.i-ep.app`,
+      type: 'subdomain',
+      is_primary: true,
+      is_verified: true,
+    });
 
     if (domainError) {
       logger.warn('Failed to create default domain:', domainError);
@@ -467,26 +469,24 @@ export async function POST(request: NextRequest) {
           user_metadata: {
             tenant_id: newTenant.id,
             role: 'admin',
-            full_name: adminName
-          }
+            full_name: adminName,
+          },
         });
 
         if (adminError) {
           logger.warn('Failed to create admin user:', adminError);
         } else {
           // Tenant-specific users tablosuna da ekle
-          await supabaseAdmin
-            .from('users')
-            .insert({
-              id: adminUser.user.id,
-              tenant_id: newTenant.id,
-              email: adminEmail,
-              first_name: adminName.split(' ')[0] || adminName,
-              last_name: adminName.split(' ').slice(1).join(' ') || '',
-              role: 'admin',
-              is_active: true,
-              verification_status: 'verified'
-            });
+          await supabaseAdmin.from('users').insert({
+            id: adminUser.user.id,
+            tenant_id: newTenant.id,
+            email: adminEmail,
+            first_name: adminName.split(' ')[0] || adminName,
+            last_name: adminName.split(' ').slice(1).join(' ') || '',
+            role: 'admin',
+            is_active: true,
+            verification_status: 'verified',
+          });
         }
       } catch (adminCreationError) {
         logger.warn('Admin user creation failed:', adminCreationError);
@@ -503,41 +503,43 @@ export async function POST(request: NextRequest) {
       resource_id: newTenant.id,
       description: `New tenant created: ${name}`,
       new_state: newTenant,
-      metadata: { name, subdomain, planType, adminEmail: adminEmail ? true : false }
+      metadata: { name, subdomain, planType, adminEmail: adminEmail ? true : false },
     });
 
     logger.info(`New tenant created by super admin ${userId}`, {
       tenantId: newTenant.id,
       name,
       subdomain,
-      planType
+      planType,
     });
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        id: newTenant.id,
-        name: newTenant.name,
-        subdomain: newTenant.subdomain,
-        planType: newTenant.plan_type,
-        status: newTenant.is_active ? 'active' : 'inactive',
-        createdAt: newTenant.created_at,
-        settings: newTenant.settings,
-        defaultDomain: `${subdomain}.i-ep.app`
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          id: newTenant.id,
+          name: newTenant.name,
+          subdomain: newTenant.subdomain,
+          planType: newTenant.plan_type,
+          status: newTenant.is_active ? 'active' : 'inactive',
+          createdAt: newTenant.created_at,
+          settings: newTenant.settings,
+          defaultDomain: `${subdomain}.i-ep.app`,
+        },
+        timestamp,
       },
-      timestamp
-    }, { status: 201 });
-
+      { status: 201 }
+    );
   } catch (error) {
     logger.error('Tenant creation endpoint error:', error);
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to create tenant', 
-        timestamp 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to create tenant',
+        timestamp,
       },
       { status: 500 }
     );
   }
-} 
+}

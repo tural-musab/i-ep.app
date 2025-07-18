@@ -45,34 +45,34 @@ export const getApiDocs = () => {
       tags: [
         {
           name: 'tenant',
-          description: 'Tenant (Okul) yönetim API\'leri',
+          description: "Tenant (Okul) yönetim API'leri",
         },
         {
           name: 'auth',
-          description: 'Kimlik doğrulama API\'leri',
+          description: "Kimlik doğrulama API'leri",
         },
         {
           name: 'user',
-          description: 'Kullanıcı yönetim API\'leri',
+          description: "Kullanıcı yönetim API'leri",
         },
         {
           name: 'student',
-          description: 'Öğrenci yönetim API\'leri',
+          description: "Öğrenci yönetim API'leri",
         },
         {
           name: 'teacher',
-          description: 'Öğretmen yönetim API\'leri',
+          description: "Öğretmen yönetim API'leri",
         },
         {
           name: 'class',
-          description: 'Sınıf yönetim API\'leri',
+          description: "Sınıf yönetim API'leri",
         },
         {
           name: 'grade',
-          description: 'Not yönetim API\'leri',
+          description: "Not yönetim API'leri",
         },
       ],
     },
   });
   return spec;
-}; 
+};

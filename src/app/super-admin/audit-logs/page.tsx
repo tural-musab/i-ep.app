@@ -68,7 +68,7 @@ export default function AuditLogsPage() {
       header: 'Tarih',
       cell: ({ row }: TableCellProps) => (
         <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-muted-foreground" />
+          <Clock className="text-muted-foreground h-4 w-4" />
           {format(new Date(row.original.created_at), 'dd MMM yyyy HH:mm:ss', { locale: tr })}
         </div>
       ),
@@ -79,7 +79,7 @@ export default function AuditLogsPage() {
       cell: ({ row }: TableCellProps) => {
         const action = row.original.action;
         let color = 'bg-blue-50 text-blue-700 border-blue-200';
-        
+
         if (action === 'delete' || action === 'remove') {
           color = 'bg-red-50 text-red-700 border-red-200';
         } else if (action === 'create' || action === 'add') {
@@ -87,7 +87,7 @@ export default function AuditLogsPage() {
         } else if (action === 'update' || action === 'edit') {
           color = 'bg-yellow-50 text-yellow-700 border-yellow-200';
         }
-        
+
         return (
           <Badge variant="outline" className={color}>
             {action.charAt(0).toUpperCase() + action.slice(1)}
@@ -100,7 +100,7 @@ export default function AuditLogsPage() {
       header: 'Varlık Tipi',
       cell: ({ row }: TableCellProps) => (
         <div className="flex items-center gap-2">
-          <Database className="h-4 w-4 text-muted-foreground" />
+          <Database className="text-muted-foreground h-4 w-4" />
           {row.original.entity_type}
         </div>
       ),
@@ -122,7 +122,7 @@ export default function AuditLogsPage() {
       header: 'Kullanıcı',
       cell: ({ row }: TableCellProps) => (
         <div className="flex items-center gap-2">
-          <User className="h-4 w-4 text-muted-foreground" />
+          <User className="text-muted-foreground h-4 w-4" />
           {row.original.user_email || 'Bilinmeyen kullanıcı'}
         </div>
       ),
@@ -141,7 +141,7 @@ export default function AuditLogsPage() {
       header: 'Tarih',
       cell: ({ row }: AccessDeniedTableCellProps) => (
         <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-muted-foreground" />
+          <Clock className="text-muted-foreground h-4 w-4" />
           {format(new Date(row.original.timestamp), 'dd MMM yyyy HH:mm:ss', { locale: tr })}
         </div>
       ),
@@ -150,7 +150,7 @@ export default function AuditLogsPage() {
       accessorKey: 'command',
       header: 'Komut',
       cell: ({ row }: AccessDeniedTableCellProps) => (
-        <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+        <Badge variant="outline" className="border-red-200 bg-red-50 text-red-700">
           {row.original.command}
         </Badge>
       ),
@@ -160,7 +160,7 @@ export default function AuditLogsPage() {
       header: 'Tablo',
       cell: ({ row }: AccessDeniedTableCellProps) => (
         <div className="flex items-center gap-2">
-          <Database className="h-4 w-4 text-muted-foreground" />
+          <Database className="text-muted-foreground h-4 w-4" />
           {row.original.schema_name}.{row.original.table_name}
         </div>
       ),
@@ -175,7 +175,7 @@ export default function AuditLogsPage() {
       header: 'Kullanıcı',
       cell: ({ row }: AccessDeniedTableCellProps) => (
         <div className="flex items-center gap-2">
-          <User className="h-4 w-4 text-muted-foreground" />
+          <User className="text-muted-foreground h-4 w-4" />
           {row.original.user_email || 'Bilinmeyen kullanıcı'}
         </div>
       ),
@@ -186,7 +186,7 @@ export default function AuditLogsPage() {
       cell: ({ row }: AccessDeniedTableCellProps) => (
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-red-500" />
-          <span className="truncate max-w-[250px]" title={row.original.error_message}>
+          <span className="max-w-[250px] truncate" title={row.original.error_message}>
             {row.original.error_message}
           </span>
         </div>
@@ -205,50 +205,52 @@ export default function AuditLogsPage() {
         setIsLoadingActivity(true);
         try {
           const supabase = createClientComponentClient();
-          
+
           // Denetim günlüklerini getir
           const { data, error } = await supabase
             .from('audit.audit_logs')
             .select('*')
             .order('created_at', { ascending: false })
             .limit(100);
-          
+
           if (error) throw error;
-          
+
           // Tenant ve kullanıcı bilgilerini zenginleştir
-          const enrichedData = await Promise.all((data || []).map(async (log) => {
-            let tenantName = null;
-            let userEmail = null;
-            
-            // Tenant bilgisi varsa getir
-            if (log.tenant_id) {
-              const { data: tenantData } = await supabase
-                .from('tenants')
-                .select('name')
-                .eq('id', log.tenant_id)
-                .single();
-              
-              tenantName = tenantData?.name;
-            }
-            
-            // Kullanıcı bilgisi varsa getir
-            if (log.user_id) {
-              const { data: userData } = await supabase
-                .from('users')
-                .select('email')
-                .eq('id', log.user_id)
-                .single();
-              
-              userEmail = userData?.email;
-            }
-            
-            return {
-              ...log,
-              tenant_name: tenantName,
-              user_email: userEmail
-            };
-          }));
-          
+          const enrichedData = await Promise.all(
+            (data || []).map(async (log) => {
+              let tenantName = null;
+              let userEmail = null;
+
+              // Tenant bilgisi varsa getir
+              if (log.tenant_id) {
+                const { data: tenantData } = await supabase
+                  .from('tenants')
+                  .select('name')
+                  .eq('id', log.tenant_id)
+                  .single();
+
+                tenantName = tenantData?.name;
+              }
+
+              // Kullanıcı bilgisi varsa getir
+              if (log.user_id) {
+                const { data: userData } = await supabase
+                  .from('users')
+                  .select('email')
+                  .eq('id', log.user_id)
+                  .single();
+
+                userEmail = userData?.email;
+              }
+
+              return {
+                ...log,
+                tenant_name: tenantName,
+                user_email: userEmail,
+              };
+            })
+          );
+
           setActivityLogs(enrichedData);
         } catch (error) {
           console.error('Denetim günlükleri yüklenirken hata:', error);
@@ -259,50 +261,52 @@ export default function AuditLogsPage() {
         setIsLoadingAccessDenied(true);
         try {
           const supabase = createClientComponentClient();
-          
+
           // Erişim reddedildi günlüklerini getir
           const { data, error } = await supabase
             .from('audit.access_denied_logs')
             .select('*')
             .order('timestamp', { ascending: false })
             .limit(100);
-          
+
           if (error) throw error;
-          
+
           // Tenant ve kullanıcı bilgilerini zenginleştir
-          const enrichedData = await Promise.all((data || []).map(async (log) => {
-            let tenantName = null;
-            let userEmail = null;
-            
-            // Tenant bilgisi varsa getir
-            if (log.tenant_id) {
-              const { data: tenantData } = await supabase
-                .from('tenants')
-                .select('name')
-                .eq('id', log.tenant_id)
-                .single();
-              
-              tenantName = tenantData?.name;
-            }
-            
-            // Kullanıcı bilgisi varsa getir
-            if (log.user_id) {
-              const { data: userData } = await supabase
-                .from('users')
-                .select('email')
-                .eq('id', log.user_id)
-                .single();
-              
-              userEmail = userData?.email;
-            }
-            
-            return {
-              ...log,
-              tenant_name: tenantName,
-              user_email: userEmail
-            };
-          }));
-          
+          const enrichedData = await Promise.all(
+            (data || []).map(async (log) => {
+              let tenantName = null;
+              let userEmail = null;
+
+              // Tenant bilgisi varsa getir
+              if (log.tenant_id) {
+                const { data: tenantData } = await supabase
+                  .from('tenants')
+                  .select('name')
+                  .eq('id', log.tenant_id)
+                  .single();
+
+                tenantName = tenantData?.name;
+              }
+
+              // Kullanıcı bilgisi varsa getir
+              if (log.user_id) {
+                const { data: userData } = await supabase
+                  .from('users')
+                  .select('email')
+                  .eq('id', log.user_id)
+                  .single();
+
+                userEmail = userData?.email;
+              }
+
+              return {
+                ...log,
+                tenant_name: tenantName,
+                user_email: userEmail,
+              };
+            })
+          );
+
           setAccessDeniedLogs(enrichedData);
         } catch (error) {
           console.error('Erişim reddedildi günlükleri yüklenirken hata:', error);
@@ -319,9 +323,7 @@ export default function AuditLogsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Denetim Günlükleri</h1>
-        <p className="text-muted-foreground">
-          Sistemdeki tüm aktiviteler ve güvenlik olayları
-        </p>
+        <p className="text-muted-foreground">Sistemdeki tüm aktiviteler ve güvenlik olayları</p>
       </div>
 
       <Card>
@@ -332,8 +334,8 @@ export default function AuditLogsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs 
-            defaultValue="activity" 
+          <Tabs
+            defaultValue="activity"
             value={activeTab}
             onValueChange={setActiveTab}
             className="space-y-4"
@@ -348,7 +350,7 @@ export default function AuditLogsPage() {
                 <span>Erişim Reddedildi</span>
               </TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="activity" className="space-y-4">
               <DataTable
                 columns={activityColumns}
@@ -360,7 +362,7 @@ export default function AuditLogsPage() {
                 pageSize={10}
               />
             </TabsContent>
-            
+
             <TabsContent value="access-denied" className="space-y-4">
               <DataTable
                 columns={accessDeniedColumns}
@@ -377,4 +379,4 @@ export default function AuditLogsPage() {
       </Card>
     </div>
   );
-} 
+}

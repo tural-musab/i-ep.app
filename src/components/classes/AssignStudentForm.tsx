@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import * as Sentry from "@sentry/nextjs";
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import * as Sentry from '@sentry/nextjs';
 import {
   Form,
   FormControl,
@@ -12,16 +12,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+} from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
 interface Student {
   id: string;
@@ -33,7 +33,7 @@ interface Student {
 
 const formSchema = z.object({
   student_id: z.string({
-    required_error: "Öğrenci seçiniz",
+    required_error: 'Öğrenci seçiniz',
   }),
 });
 
@@ -50,7 +50,7 @@ export function AssignStudentForm({ classId, onSuccess, onCancel }: AssignStuden
   const [filteredStudents, setFilteredStudents] = React.useState<Student[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [searchTerm, setSearchTerm] = React.useState("");
+  const [searchTerm, setSearchTerm] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
 
   const form = useForm<FormValues>({
@@ -60,25 +60,23 @@ export function AssignStudentForm({ classId, onSuccess, onCancel }: AssignStuden
   const fetchAvailableStudents = async () => {
     return Sentry.startSpan(
       {
-        op: "http.client",
-        name: "GET /api/students/available",
+        op: 'http.client',
+        name: 'GET /api/students/available',
       },
       async () => {
         try {
-          const response = await fetch(
-            `/api/students?available=true&classId=${classId}`
-          );
+          const response = await fetch(`/api/students?available=true&classId=${classId}`);
           if (!response.ok) {
-            throw new Error("Öğrenci listesi alınamadı");
+            throw new Error('Öğrenci listesi alınamadı');
           }
           const data = await response.json();
           setStudents(data);
           setFilteredStudents(data);
           setError(null);
         } catch (error) {
-          console.error("Error fetching available students:", error);
+          console.error('Error fetching available students:', error);
           Sentry.captureException(error);
-          setError("Öğrenci listesi alınamadı");
+          setError('Öğrenci listesi alınamadı');
         } finally {
           setIsLoading(false);
         }
@@ -89,8 +87,8 @@ export function AssignStudentForm({ classId, onSuccess, onCancel }: AssignStuden
   const onSubmit = async (values: FormValues) => {
     return Sentry.startSpan(
       {
-        op: "ui.submit",
-        name: "Assign Student Form Submit",
+        op: 'ui.submit',
+        name: 'Assign Student Form Submit',
       },
       async () => {
         try {
@@ -98,9 +96,9 @@ export function AssignStudentForm({ classId, onSuccess, onCancel }: AssignStuden
           setError(null);
 
           const response = await fetch(`/api/class-students/${classId}`, {
-            method: "POST",
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               student_id: values.student_id,
@@ -109,14 +107,14 @@ export function AssignStudentForm({ classId, onSuccess, onCancel }: AssignStuden
 
           if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || "Öğrenci eklenemedi");
+            throw new Error(error.message || 'Öğrenci eklenemedi');
           }
 
           onSuccess();
         } catch (error) {
-          console.error("Error assigning student:", error);
+          console.error('Error assigning student:', error);
           Sentry.captureException(error);
-          setError("Öğrenci eklenemedi");
+          setError('Öğrenci eklenemedi');
         } finally {
           setIsSubmitting(false);
         }
@@ -142,8 +140,8 @@ export function AssignStudentForm({ classId, onSuccess, onCancel }: AssignStuden
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-48">
-        <div className="text-lg text-muted-foreground">Öğrenciler yükleniyor...</div>
+      <div className="flex h-48 items-center justify-center">
+        <div className="text-muted-foreground text-lg">Öğrenciler yükleniyor...</div>
       </div>
     );
   }
@@ -182,8 +180,7 @@ export function AssignStudentForm({ classId, onSuccess, onCancel }: AssignStuden
                 <SelectContent>
                   {filteredStudents.map((student: Student) => (
                     <SelectItem key={student.id} value={student.id}>
-                      {student.student_number} - {student.first_name}{" "}
-                      {student.last_name}
+                      {student.student_number} - {student.first_name} {student.last_name}
                     </SelectItem>
                   ))}
                   {filteredStudents.length === 0 && (
@@ -204,23 +201,14 @@ export function AssignStudentForm({ classId, onSuccess, onCancel }: AssignStuden
             className="flex-1"
             disabled={isSubmitting || filteredStudents.length === 0}
           >
-            {isSubmitting ? "Ekleniyor..." : "Ekle"}
+            {isSubmitting ? 'Ekleniyor...' : 'Ekle'}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            className="flex-1"
-            onClick={onCancel}
-          >
+          <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
             İptal
           </Button>
         </div>
 
-        {error && (
-          <div className="text-sm text-destructive text-center">
-            {error}
-          </div>
-        )}
+        {error && <div className="text-destructive text-center text-sm">{error}</div>}
       </form>
     </Form>
   );

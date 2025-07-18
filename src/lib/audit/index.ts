@@ -1,6 +1,6 @@
 /**
  * Audit/Denetim loglama modülü
- * 
+ *
  * Bu modül, sistemdeki işlemlerin denetim kayıtlarını yönetir ve
  * erişim reddi loglarına erişim sağlar.
  */
@@ -9,7 +9,7 @@ import { logAccessDenied, getAccessDeniedLogs } from '../tenant/tenant-access';
 
 /**
  * Sistem işlemlerini logla (INSERT, UPDATE, DELETE)
- * 
+ *
  * Not: Bu işlemler veritabanı seviyesinde otomatik olarak
  * audit.log_activity tetikleyicisi ile yapılmaktadır
  */
@@ -19,12 +19,12 @@ export { logAccessDenied, getAccessDeniedLogs };
 
 /**
  * Özel uygulamaların denetim logu
- * 
+ *
  * @param tenantId İlgili tenant ID'si
  * @param userId İşlemi yapan kullanıcı ID'si
  * @param action Yapılan işlem
  * @param entityType İşlem yapılan varlık türü
- * @param entityId İşlem yapılan varlık ID'si 
+ * @param entityId İşlem yapılan varlık ID'si
  * @param metadata Ek bilgiler
  */
 export async function logAuditEvent(
@@ -50,10 +50,10 @@ export async function logAuditEvent(
         old_data: oldData || null,
         new_data: newData || null,
         entity_id: entityId,
-        metadata: metadata || {}
+        metadata: metadata || {},
       }
     );
   } catch (error) {
     console.error('Audit log kayıt hatası:', error);
   }
-} 
+}

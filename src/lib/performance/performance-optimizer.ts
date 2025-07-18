@@ -1,113 +1,113 @@
-import { createClient } from '@/lib/supabase/client'
-import { healthChecker } from '@/lib/monitoring/health-check'
-import { alertingSystem } from '@/lib/monitoring/alerting'
-import { environmentManager } from '@/lib/config/environment'
+import { createClient } from '@/lib/supabase/client';
+import { healthChecker } from '@/lib/monitoring/health-check';
+import { alertingSystem } from '@/lib/monitoring/alerting';
+import { environmentManager } from '@/lib/config/environment';
 
 export interface PerformanceMetric {
-  id: string
-  name: string
-  category: 'database' | 'api' | 'frontend' | 'network' | 'memory' | 'cpu'
-  value: number
-  unit: string
+  id: string;
+  name: string;
+  category: 'database' | 'api' | 'frontend' | 'network' | 'memory' | 'cpu';
+  value: number;
+  unit: string;
   threshold: {
-    warning: number
-    critical: number
-  }
-  timestamp: string
-  tenant_id: string
-  metadata: Record<string, any>
+    warning: number;
+    critical: number;
+  };
+  timestamp: string;
+  tenant_id: string;
+  metadata: Record<string, any>;
 }
 
 export interface PerformanceProfile {
-  id: string
-  name: string
-  description: string
-  metrics: PerformanceMetric[]
-  baseline: Record<string, number>
-  current: Record<string, number>
-  degradation: Record<string, number>
+  id: string;
+  name: string;
+  description: string;
+  metrics: PerformanceMetric[];
+  baseline: Record<string, number>;
+  current: Record<string, number>;
+  degradation: Record<string, number>;
   recommendations: Array<{
-    priority: 'low' | 'medium' | 'high' | 'critical'
-    category: string
-    title: string
-    description: string
-    implementation: string
-    estimated_improvement: number
-  }>
-  created_at: string
-  updated_at: string
+    priority: 'low' | 'medium' | 'high' | 'critical';
+    category: string;
+    title: string;
+    description: string;
+    implementation: string;
+    estimated_improvement: number;
+  }>;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface OptimizationTask {
-  id: string
-  name: string
-  type: 'database' | 'api' | 'caching' | 'bundling' | 'cdn' | 'query'
-  status: 'pending' | 'running' | 'completed' | 'failed'
-  priority: 'low' | 'medium' | 'high' | 'critical'
-  estimated_improvement: number
-  actual_improvement?: number
-  started_at?: string
-  completed_at?: string
-  error_message?: string
-  tenant_id: string
-  metadata: Record<string, any>
+  id: string;
+  name: string;
+  type: 'database' | 'api' | 'caching' | 'bundling' | 'cdn' | 'query';
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  priority: 'low' | 'medium' | 'high' | 'critical';
+  estimated_improvement: number;
+  actual_improvement?: number;
+  started_at?: string;
+  completed_at?: string;
+  error_message?: string;
+  tenant_id: string;
+  metadata: Record<string, any>;
 }
 
 export interface PerformanceTest {
-  id: string
-  name: string
-  type: 'load' | 'stress' | 'spike' | 'endurance' | 'volume'
+  id: string;
+  name: string;
+  type: 'load' | 'stress' | 'spike' | 'endurance' | 'volume';
   configuration: {
-    duration: number
-    virtual_users: number
-    ramp_up_time: number
-    target_rps: number
-    endpoints: string[]
-  }
+    duration: number;
+    virtual_users: number;
+    ramp_up_time: number;
+    target_rps: number;
+    endpoints: string[];
+  };
   results: {
-    avg_response_time: number
-    max_response_time: number
-    min_response_time: number
-    throughput: number
-    error_rate: number
-    successful_requests: number
-    failed_requests: number
+    avg_response_time: number;
+    max_response_time: number;
+    min_response_time: number;
+    throughput: number;
+    error_rate: number;
+    successful_requests: number;
+    failed_requests: number;
     percentiles: {
-      p50: number
-      p75: number
-      p90: number
-      p95: number
-      p99: number
-    }
-  }
-  status: 'pending' | 'running' | 'completed' | 'failed'
-  started_at: string
-  completed_at?: string
-  tenant_id: string
+      p50: number;
+      p75: number;
+      p90: number;
+      p95: number;
+      p99: number;
+    };
+  };
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  started_at: string;
+  completed_at?: string;
+  tenant_id: string;
 }
 
 export interface PerformanceAlert {
-  id: string
-  metric_name: string
-  threshold_type: 'warning' | 'critical'
-  current_value: number
-  threshold_value: number
-  severity: 'low' | 'medium' | 'high' | 'critical'
-  status: 'active' | 'resolved'
-  created_at: string
-  resolved_at?: string
-  tenant_id: string
+  id: string;
+  metric_name: string;
+  threshold_type: 'warning' | 'critical';
+  current_value: number;
+  threshold_value: number;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  status: 'active' | 'resolved';
+  created_at: string;
+  resolved_at?: string;
+  tenant_id: string;
 }
 
 export class PerformanceOptimizer {
-  private supabase: any
-  private tenantId: string
-  private config: any
+  private supabase: any;
+  private tenantId: string;
+  private config: any;
 
   constructor(tenantId: string) {
-    this.supabase = createClient()
-    this.tenantId = tenantId
-    this.config = environmentManager.getConfig()
+    this.supabase = createClient();
+    this.tenantId = tenantId;
+    this.config = environmentManager.getConfig();
   }
 
   /**
@@ -115,48 +115,56 @@ export class PerformanceOptimizer {
    */
   async collectMetrics(): Promise<PerformanceMetric[]> {
     try {
-      const metrics: PerformanceMetric[] = []
-      const timestamp = new Date().toISOString()
+      const metrics: PerformanceMetric[] = [];
+      const timestamp = new Date().toISOString();
 
       // Database metrics
-      const dbMetrics = await this.collectDatabaseMetrics()
-      metrics.push(...dbMetrics.map(m => ({
-        ...m,
-        timestamp,
-        tenant_id: this.tenantId
-      })))
+      const dbMetrics = await this.collectDatabaseMetrics();
+      metrics.push(
+        ...dbMetrics.map((m) => ({
+          ...m,
+          timestamp,
+          tenant_id: this.tenantId,
+        }))
+      );
 
       // API metrics
-      const apiMetrics = await this.collectAPIMetrics()
-      metrics.push(...apiMetrics.map(m => ({
-        ...m,
-        timestamp,
-        tenant_id: this.tenantId
-      })))
+      const apiMetrics = await this.collectAPIMetrics();
+      metrics.push(
+        ...apiMetrics.map((m) => ({
+          ...m,
+          timestamp,
+          tenant_id: this.tenantId,
+        }))
+      );
 
       // Frontend metrics
-      const frontendMetrics = await this.collectFrontendMetrics()
-      metrics.push(...frontendMetrics.map(m => ({
-        ...m,
-        timestamp,
-        tenant_id: this.tenantId
-      })))
+      const frontendMetrics = await this.collectFrontendMetrics();
+      metrics.push(
+        ...frontendMetrics.map((m) => ({
+          ...m,
+          timestamp,
+          tenant_id: this.tenantId,
+        }))
+      );
 
       // System metrics
-      const systemMetrics = await this.collectSystemMetrics()
-      metrics.push(...systemMetrics.map(m => ({
-        ...m,
-        timestamp,
-        tenant_id: this.tenantId
-      })))
+      const systemMetrics = await this.collectSystemMetrics();
+      metrics.push(
+        ...systemMetrics.map((m) => ({
+          ...m,
+          timestamp,
+          tenant_id: this.tenantId,
+        }))
+      );
 
       // Store metrics
-      await this.storeMetrics(metrics)
+      await this.storeMetrics(metrics);
 
-      return metrics
+      return metrics;
     } catch (error) {
-      console.error('Error collecting metrics:', error)
-      throw new Error('Failed to collect performance metrics')
+      console.error('Error collecting metrics:', error);
+      throw new Error('Failed to collect performance metrics');
     }
   }
 
@@ -165,9 +173,9 @@ export class PerformanceOptimizer {
    */
   async analyzePerformance(): Promise<PerformanceProfile> {
     try {
-      const metrics = await this.collectMetrics()
-      const baseline = await this.getBaselineMetrics()
-      
+      const metrics = await this.collectMetrics();
+      const baseline = await this.getBaselineMetrics();
+
       const profile: PerformanceProfile = {
         id: `profile_${Date.now()}`,
         name: 'Performance Analysis',
@@ -178,21 +186,19 @@ export class PerformanceOptimizer {
         degradation: this.calculateDegradation(baseline, metrics),
         recommendations: await this.generateRecommendations(metrics, baseline),
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
+        updated_at: new Date().toISOString(),
+      };
 
       // Store profile
-      await this.supabase
-        .from('performance_profiles')
-        .insert({
-          ...profile,
-          tenant_id: this.tenantId
-        })
+      await this.supabase.from('performance_profiles').insert({
+        ...profile,
+        tenant_id: this.tenantId,
+      });
 
-      return profile
+      return profile;
     } catch (error) {
-      console.error('Error analyzing performance:', error)
-      throw new Error('Failed to analyze performance')
+      console.error('Error analyzing performance:', error);
+      throw new Error('Failed to analyze performance');
     }
   }
 
@@ -207,21 +213,21 @@ export class PerformanceOptimizer {
         .select('*')
         .eq('id', taskId)
         .eq('tenant_id', this.tenantId)
-        .single()
+        .single();
 
-      if (error) throw error
+      if (error) throw error;
 
       // Update task status
       await this.supabase
         .from('optimization_tasks')
         .update({
           status: 'running',
-          started_at: new Date().toISOString()
+          started_at: new Date().toISOString(),
         })
-        .eq('id', taskId)
+        .eq('id', taskId);
 
       // Execute optimization based on type
-      const result = await this.executeOptimizationByType(task)
+      const result = await this.executeOptimizationByType(task);
 
       // Update task with results
       await this.supabase
@@ -229,11 +235,11 @@ export class PerformanceOptimizer {
         .update({
           status: 'completed',
           completed_at: new Date().toISOString(),
-          actual_improvement: result.improvement
+          actual_improvement: result.improvement,
         })
-        .eq('id', taskId)
+        .eq('id', taskId);
 
-      return { ...task, status: 'completed', actual_improvement: result.improvement }
+      return { ...task, status: 'completed', actual_improvement: result.improvement };
     } catch (error) {
       // Update task with error
       await this.supabase
@@ -241,12 +247,12 @@ export class PerformanceOptimizer {
         .update({
           status: 'failed',
           completed_at: new Date().toISOString(),
-          error_message: error instanceof Error ? error.message : 'Unknown error'
+          error_message: error instanceof Error ? error.message : 'Unknown error',
         })
-        .eq('id', taskId)
+        .eq('id', taskId);
 
-      console.error('Error executing optimization:', error)
-      throw new Error('Failed to execute optimization')
+      console.error('Error executing optimization:', error);
+      throw new Error('Failed to execute optimization');
     }
   }
 
@@ -254,13 +260,13 @@ export class PerformanceOptimizer {
    * Run performance test
    */
   async runPerformanceTest(testConfig: {
-    name: string
-    type: 'load' | 'stress' | 'spike' | 'endurance' | 'volume'
-    duration: number
-    virtual_users: number
-    ramp_up_time: number
-    target_rps: number
-    endpoints: string[]
+    name: string;
+    type: 'load' | 'stress' | 'spike' | 'endurance' | 'volume';
+    duration: number;
+    virtual_users: number;
+    ramp_up_time: number;
+    target_rps: number;
+    endpoints: string[];
   }): Promise<PerformanceTest> {
     try {
       // Create test record
@@ -273,7 +279,7 @@ export class PerformanceOptimizer {
           virtual_users: testConfig.virtual_users,
           ramp_up_time: testConfig.ramp_up_time,
           target_rps: testConfig.target_rps,
-          endpoints: testConfig.endpoints
+          endpoints: testConfig.endpoints,
         },
         results: {
           avg_response_time: 0,
@@ -288,21 +294,19 @@ export class PerformanceOptimizer {
             p75: 0,
             p90: 0,
             p95: 0,
-            p99: 0
-          }
+            p99: 0,
+          },
         },
         status: 'pending',
         started_at: new Date().toISOString(),
-        tenant_id: this.tenantId
-      }
+        tenant_id: this.tenantId,
+      };
 
       // Store test
-      await this.supabase
-        .from('performance_tests')
-        .insert(test)
+      await this.supabase.from('performance_tests').insert(test);
 
       // Execute test
-      const results = await this.executePerformanceTest(test)
+      const results = await this.executePerformanceTest(test);
 
       // Update test with results
       await this.supabase
@@ -310,14 +314,14 @@ export class PerformanceOptimizer {
         .update({
           status: 'completed',
           completed_at: new Date().toISOString(),
-          results
+          results,
         })
-        .eq('id', test.id)
+        .eq('id', test.id);
 
-      return { ...test, results, status: 'completed' }
+      return { ...test, results, status: 'completed' };
     } catch (error) {
-      console.error('Error running performance test:', error)
-      throw new Error('Failed to run performance test')
+      console.error('Error running performance test:', error);
+      throw new Error('Failed to run performance test');
     }
   }
 
@@ -326,8 +330,8 @@ export class PerformanceOptimizer {
    */
   async monitorPerformanceAlerts(): Promise<PerformanceAlert[]> {
     try {
-      const metrics = await this.collectMetrics()
-      const alerts: PerformanceAlert[] = []
+      const metrics = await this.collectMetrics();
+      const alerts: PerformanceAlert[] = [];
 
       for (const metric of metrics) {
         // Check warning threshold
@@ -341,8 +345,8 @@ export class PerformanceOptimizer {
             severity: 'medium',
             status: 'active',
             created_at: new Date().toISOString(),
-            tenant_id: this.tenantId
-          })
+            tenant_id: this.tenantId,
+          });
         }
 
         // Check critical threshold
@@ -356,61 +360,56 @@ export class PerformanceOptimizer {
             severity: 'critical',
             status: 'active',
             created_at: new Date().toISOString(),
-            tenant_id: this.tenantId
-          })
+            tenant_id: this.tenantId,
+          });
         }
       }
 
       // Store alerts
       if (alerts.length > 0) {
-        await this.supabase
-          .from('performance_alerts')
-          .insert(alerts)
+        await this.supabase.from('performance_alerts').insert(alerts);
 
         // Send notifications
         for (const alert of alerts) {
-          await this.sendPerformanceAlert(alert)
+          await this.sendPerformanceAlert(alert);
         }
       }
 
-      return alerts
+      return alerts;
     } catch (error) {
-      console.error('Error monitoring performance alerts:', error)
-      throw new Error('Failed to monitor performance alerts')
+      console.error('Error monitoring performance alerts:', error);
+      throw new Error('Failed to monitor performance alerts');
     }
   }
 
   /**
    * Generate performance report
    */
-  async generatePerformanceReport(timeRange: {
-    start: string
-    end: string
-  }): Promise<{
+  async generatePerformanceReport(timeRange: { start: string; end: string }): Promise<{
     summary: {
-      total_metrics: number
-      avg_response_time: number
-      error_rate: number
-      uptime: number
-      performance_score: number
-    }
+      total_metrics: number;
+      avg_response_time: number;
+      error_rate: number;
+      uptime: number;
+      performance_score: number;
+    };
     trends: Array<{
-      metric: string
-      trend: 'improving' | 'stable' | 'degrading'
-      change_percentage: number
-    }>
+      metric: string;
+      trend: 'improving' | 'stable' | 'degrading';
+      change_percentage: number;
+    }>;
     bottlenecks: Array<{
-      category: string
-      issue: string
-      impact: 'low' | 'medium' | 'high'
-      recommendation: string
-    }>
+      category: string;
+      issue: string;
+      impact: 'low' | 'medium' | 'high';
+      recommendation: string;
+    }>;
     optimizations: Array<{
-      completed: number
-      pending: number
-      total_improvement: number
-    }>
-    recommendations: string[]
+      completed: number;
+      pending: number;
+      total_improvement: number;
+    }>;
+    recommendations: string[];
   }> {
     try {
       // Get metrics for time range
@@ -420,40 +419,43 @@ export class PerformanceOptimizer {
         .eq('tenant_id', this.tenantId)
         .gte('timestamp', timeRange.start)
         .lte('timestamp', timeRange.end)
-        .order('timestamp', { ascending: true })
+        .order('timestamp', { ascending: true });
 
       // Get optimization tasks
       const { data: optimizations } = await this.supabase
         .from('optimization_tasks')
         .select('*')
-        .eq('tenant_id', this.tenantId)
+        .eq('tenant_id', this.tenantId);
 
       // Calculate summary
-      const summary = this.calculatePerformanceSummary(metrics)
-      
+      const summary = this.calculatePerformanceSummary(metrics);
+
       // Analyze trends
-      const trends = this.analyzeTrends(metrics)
-      
+      const trends = this.analyzeTrends(metrics);
+
       // Identify bottlenecks
-      const bottlenecks = this.identifyBottlenecks(metrics)
-      
+      const bottlenecks = this.identifyBottlenecks(metrics);
+
       // Generate recommendations
-      const recommendations = this.generatePerformanceRecommendations(metrics, bottlenecks)
+      const recommendations = this.generatePerformanceRecommendations(metrics, bottlenecks);
 
       return {
         summary,
         trends,
         bottlenecks,
-        optimizations: [{
-          completed: optimizations?.filter(o => o.status === 'completed').length || 0,
-          pending: optimizations?.filter(o => o.status === 'pending').length || 0,
-          total_improvement: optimizations?.reduce((sum, o) => sum + (o.actual_improvement || 0), 0) || 0
-        }],
-        recommendations
-      }
+        optimizations: [
+          {
+            completed: optimizations?.filter((o) => o.status === 'completed').length || 0,
+            pending: optimizations?.filter((o) => o.status === 'pending').length || 0,
+            total_improvement:
+              optimizations?.reduce((sum, o) => sum + (o.actual_improvement || 0), 0) || 0,
+          },
+        ],
+        recommendations,
+      };
     } catch (error) {
-      console.error('Error generating performance report:', error)
-      throw new Error('Failed to generate performance report')
+      console.error('Error generating performance report:', error);
+      throw new Error('Failed to generate performance report');
     }
   }
 
@@ -461,37 +463,42 @@ export class PerformanceOptimizer {
    * Auto-optimize system
    */
   async autoOptimize(): Promise<{
-    optimizations_applied: number
-    estimated_improvement: number
-    actual_improvement: number
-    failed_optimizations: number
+    optimizations_applied: number;
+    estimated_improvement: number;
+    actual_improvement: number;
+    failed_optimizations: number;
   }> {
     try {
-      const metrics = await this.collectMetrics()
-      const recommendations = await this.generateRecommendations(metrics, await this.getBaselineMetrics())
-      
-      let optimizationsApplied = 0
-      let estimatedImprovement = 0
-      let actualImprovement = 0
-      let failedOptimizations = 0
+      const metrics = await this.collectMetrics();
+      const recommendations = await this.generateRecommendations(
+        metrics,
+        await this.getBaselineMetrics()
+      );
+
+      let optimizationsApplied = 0;
+      let estimatedImprovement = 0;
+      let actualImprovement = 0;
+      let failedOptimizations = 0;
 
       // Apply high-priority optimizations automatically
-      const highPriorityTasks = recommendations.filter(r => r.priority === 'high' || r.priority === 'critical')
-      
+      const highPriorityTasks = recommendations.filter(
+        (r) => r.priority === 'high' || r.priority === 'critical'
+      );
+
       for (const task of highPriorityTasks) {
         try {
-          const optimizationTask = await this.createOptimizationTask(task)
-          const result = await this.executeOptimization(optimizationTask.id)
-          
+          const optimizationTask = await this.createOptimizationTask(task);
+          const result = await this.executeOptimization(optimizationTask.id);
+
           if (result.status === 'completed') {
-            optimizationsApplied++
-            estimatedImprovement += task.estimated_improvement
-            actualImprovement += result.actual_improvement || 0
+            optimizationsApplied++;
+            estimatedImprovement += task.estimated_improvement;
+            actualImprovement += result.actual_improvement || 0;
           } else {
-            failedOptimizations++
+            failedOptimizations++;
           }
         } catch (error) {
-          failedOptimizations++
+          failedOptimizations++;
         }
       }
 
@@ -499,20 +506,20 @@ export class PerformanceOptimizer {
         optimizations_applied: optimizationsApplied,
         estimated_improvement: estimatedImprovement,
         actual_improvement: actualImprovement,
-        failed_optimizations: failedOptimizations
-      }
+        failed_optimizations: failedOptimizations,
+      };
     } catch (error) {
-      console.error('Error auto-optimizing:', error)
-      throw new Error('Failed to auto-optimize system')
+      console.error('Error auto-optimizing:', error);
+      throw new Error('Failed to auto-optimize system');
     }
   }
 
   // Private helper methods
 
   private async collectDatabaseMetrics(): Promise<Partial<PerformanceMetric>[]> {
-    const health = await healthChecker.checkHealth()
-    const dbService = health.services.find(s => s.name === 'database')
-    
+    const health = await healthChecker.checkHealth();
+    const dbService = health.services.find((s) => s.name === 'database');
+
     return [
       {
         id: 'db_response_time',
@@ -521,7 +528,7 @@ export class PerformanceOptimizer {
         value: dbService?.responseTime || 0,
         unit: 'ms',
         threshold: { warning: 500, critical: 1000 },
-        metadata: { service: 'database' }
+        metadata: { service: 'database' },
       },
       {
         id: 'db_connections',
@@ -530,9 +537,9 @@ export class PerformanceOptimizer {
         value: Math.floor(Math.random() * 100),
         unit: 'count',
         threshold: { warning: 80, critical: 95 },
-        metadata: { service: 'database' }
-      }
-    ]
+        metadata: { service: 'database' },
+      },
+    ];
   }
 
   private async collectAPIMetrics(): Promise<Partial<PerformanceMetric>[]> {
@@ -544,7 +551,7 @@ export class PerformanceOptimizer {
         value: Math.floor(Math.random() * 200) + 100,
         unit: 'ms',
         threshold: { warning: 200, critical: 500 },
-        metadata: { service: 'api' }
+        metadata: { service: 'api' },
       },
       {
         id: 'api_error_rate',
@@ -553,9 +560,9 @@ export class PerformanceOptimizer {
         value: Math.random() * 5,
         unit: '%',
         threshold: { warning: 2, critical: 5 },
-        metadata: { service: 'api' }
-      }
-    ]
+        metadata: { service: 'api' },
+      },
+    ];
   }
 
   private async collectFrontendMetrics(): Promise<Partial<PerformanceMetric>[]> {
@@ -567,7 +574,7 @@ export class PerformanceOptimizer {
         value: Math.floor(Math.random() * 2000) + 1000,
         unit: 'ms',
         threshold: { warning: 2000, critical: 3000 },
-        metadata: { service: 'frontend' }
+        metadata: { service: 'frontend' },
       },
       {
         id: 'bundle_size',
@@ -576,16 +583,16 @@ export class PerformanceOptimizer {
         value: Math.floor(Math.random() * 500) + 200,
         unit: 'KB',
         threshold: { warning: 500, critical: 1000 },
-        metadata: { service: 'frontend' }
-      }
-    ]
+        metadata: { service: 'frontend' },
+      },
+    ];
   }
 
   private async collectSystemMetrics(): Promise<Partial<PerformanceMetric>[]> {
-    const health = await healthChecker.checkHealth()
-    const memoryService = health.services.find(s => s.name === 'memory')
-    const cpuService = health.services.find(s => s.name === 'cpu')
-    
+    const health = await healthChecker.checkHealth();
+    const memoryService = health.services.find((s) => s.name === 'memory');
+    const cpuService = health.services.find((s) => s.name === 'cpu');
+
     return [
       {
         id: 'memory_usage',
@@ -594,7 +601,7 @@ export class PerformanceOptimizer {
         value: memoryService?.details?.percentage || 0,
         unit: '%',
         threshold: { warning: 75, critical: 90 },
-        metadata: { service: 'system' }
+        metadata: { service: 'system' },
       },
       {
         id: 'cpu_usage',
@@ -603,15 +610,13 @@ export class PerformanceOptimizer {
         value: cpuService?.details?.percentage || 0,
         unit: '%',
         threshold: { warning: 70, critical: 85 },
-        metadata: { service: 'system' }
-      }
-    ]
+        metadata: { service: 'system' },
+      },
+    ];
   }
 
   private async storeMetrics(metrics: PerformanceMetric[]): Promise<void> {
-    await this.supabase
-      .from('performance_metrics')
-      .insert(metrics)
+    await this.supabase.from('performance_metrics').insert(metrics);
   }
 
   private async getBaselineMetrics(): Promise<Record<string, number>> {
@@ -620,59 +625,71 @@ export class PerformanceOptimizer {
       .select('name, value')
       .eq('tenant_id', this.tenantId)
       .order('timestamp', { ascending: false })
-      .limit(100)
+      .limit(100);
 
-    const baseline: Record<string, number> = {}
-    const grouped = metrics?.reduce((acc, metric) => {
-      if (!acc[metric.name]) acc[metric.name] = []
-      acc[metric.name].push(metric.value)
-      return acc
-    }, {} as Record<string, number[]>) || {}
+    const baseline: Record<string, number> = {};
+    const grouped =
+      metrics?.reduce(
+        (acc, metric) => {
+          if (!acc[metric.name]) acc[metric.name] = [];
+          acc[metric.name].push(metric.value);
+          return acc;
+        },
+        {} as Record<string, number[]>
+      ) || {};
 
     Object.entries(grouped).forEach(([name, values]) => {
-      baseline[name] = values.reduce((sum, val) => sum + val, 0) / values.length
-    })
+      baseline[name] = values.reduce((sum, val) => sum + val, 0) / values.length;
+    });
 
-    return baseline
+    return baseline;
   }
 
   private aggregateMetrics(metrics: PerformanceMetric[]): Record<string, number> {
-    const aggregated: Record<string, number> = {}
-    
-    metrics.forEach(metric => {
+    const aggregated: Record<string, number> = {};
+
+    metrics.forEach((metric) => {
       if (!aggregated[metric.name]) {
-        aggregated[metric.name] = metric.value
+        aggregated[metric.name] = metric.value;
       }
-    })
+    });
 
-    return aggregated
+    return aggregated;
   }
 
-  private calculateDegradation(baseline: Record<string, number>, metrics: PerformanceMetric[]): Record<string, number> {
-    const current = this.aggregateMetrics(metrics)
-    const degradation: Record<string, number> = {}
+  private calculateDegradation(
+    baseline: Record<string, number>,
+    metrics: PerformanceMetric[]
+  ): Record<string, number> {
+    const current = this.aggregateMetrics(metrics);
+    const degradation: Record<string, number> = {};
 
-    Object.keys(baseline).forEach(key => {
+    Object.keys(baseline).forEach((key) => {
       if (current[key] && baseline[key]) {
-        degradation[key] = ((current[key] - baseline[key]) / baseline[key]) * 100
+        degradation[key] = ((current[key] - baseline[key]) / baseline[key]) * 100;
       }
-    })
+    });
 
-    return degradation
+    return degradation;
   }
 
-  private async generateRecommendations(metrics: PerformanceMetric[], baseline: Record<string, number>): Promise<Array<{
-    priority: 'low' | 'medium' | 'high' | 'critical'
-    category: string
-    title: string
-    description: string
-    implementation: string
-    estimated_improvement: number
-  }>> {
-    const recommendations = []
+  private async generateRecommendations(
+    metrics: PerformanceMetric[],
+    baseline: Record<string, number>
+  ): Promise<
+    Array<{
+      priority: 'low' | 'medium' | 'high' | 'critical';
+      category: string;
+      title: string;
+      description: string;
+      implementation: string;
+      estimated_improvement: number;
+    }>
+  > {
+    const recommendations = [];
 
     // Database optimizations
-    const dbMetrics = metrics.filter(m => m.category === 'database')
+    const dbMetrics = metrics.filter((m) => m.category === 'database');
     for (const metric of dbMetrics) {
       if (metric.value > metric.threshold.warning) {
         recommendations.push({
@@ -681,13 +698,13 @@ export class PerformanceOptimizer {
           title: `Optimize ${metric.name}`,
           description: `${metric.name} is above threshold (${metric.value}${metric.unit})`,
           implementation: 'Add database indexes, optimize queries, or increase connection pool',
-          estimated_improvement: 25
-        })
+          estimated_improvement: 25,
+        });
       }
     }
 
     // API optimizations
-    const apiMetrics = metrics.filter(m => m.category === 'api')
+    const apiMetrics = metrics.filter((m) => m.category === 'api');
     for (const metric of apiMetrics) {
       if (metric.value > metric.threshold.warning) {
         recommendations.push({
@@ -696,87 +713,94 @@ export class PerformanceOptimizer {
           title: `Optimize ${metric.name}`,
           description: `${metric.name} can be improved`,
           implementation: 'Add caching, optimize middleware, or implement rate limiting',
-          estimated_improvement: 15
-        })
+          estimated_improvement: 15,
+        });
       }
     }
 
-    return recommendations
+    return recommendations;
   }
 
-  private async executeOptimizationByType(task: OptimizationTask): Promise<{ improvement: number }> {
+  private async executeOptimizationByType(
+    task: OptimizationTask
+  ): Promise<{ improvement: number }> {
     // Simulate optimization execution
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    let improvement = 0
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    let improvement = 0;
+
     switch (task.type) {
       case 'database':
-        improvement = await this.optimizeDatabase(task)
-        break
+        improvement = await this.optimizeDatabase(task);
+        break;
       case 'api':
-        improvement = await this.optimizeAPI(task)
-        break
+        improvement = await this.optimizeAPI(task);
+        break;
       case 'caching':
-        improvement = await this.optimizeCaching(task)
-        break
+        improvement = await this.optimizeCaching(task);
+        break;
       case 'bundling':
-        improvement = await this.optimizeBundling(task)
-        break
+        improvement = await this.optimizeBundling(task);
+        break;
       default:
-        improvement = Math.random() * 20 + 5 // 5-25% improvement
+        improvement = Math.random() * 20 + 5; // 5-25% improvement
     }
-    
-    return { improvement }
+
+    return { improvement };
   }
 
   private async optimizeDatabase(task: OptimizationTask): Promise<number> {
     // Database optimization logic
-    console.log(`Optimizing database for task: ${task.name}`)
-    return Math.random() * 30 + 10 // 10-40% improvement
+    console.log(`Optimizing database for task: ${task.name}`);
+    return Math.random() * 30 + 10; // 10-40% improvement
   }
 
   private async optimizeAPI(task: OptimizationTask): Promise<number> {
     // API optimization logic
-    console.log(`Optimizing API for task: ${task.name}`)
-    return Math.random() * 25 + 5 // 5-30% improvement
+    console.log(`Optimizing API for task: ${task.name}`);
+    return Math.random() * 25 + 5; // 5-30% improvement
   }
 
   private async optimizeCaching(task: OptimizationTask): Promise<number> {
     // Caching optimization logic
-    console.log(`Optimizing caching for task: ${task.name}`)
-    return Math.random() * 40 + 15 // 15-55% improvement
+    console.log(`Optimizing caching for task: ${task.name}`);
+    return Math.random() * 40 + 15; // 15-55% improvement
   }
 
   private async optimizeBundling(task: OptimizationTask): Promise<number> {
     // Bundling optimization logic
-    console.log(`Optimizing bundling for task: ${task.name}`)
-    return Math.random() * 20 + 10 // 10-30% improvement
+    console.log(`Optimizing bundling for task: ${task.name}`);
+    return Math.random() * 20 + 10; // 10-30% improvement
   }
 
   private async executePerformanceTest(test: PerformanceTest): Promise<any> {
     // Simulate performance test execution
-    await new Promise(resolve => setTimeout(resolve, test.configuration.duration * 1000))
-    
-    const baseResponseTime = 100
-    const variance = 50
-    
+    await new Promise((resolve) => setTimeout(resolve, test.configuration.duration * 1000));
+
+    const baseResponseTime = 100;
+    const variance = 50;
+
     return {
       avg_response_time: baseResponseTime + Math.random() * variance,
       max_response_time: baseResponseTime + variance + Math.random() * 200,
       min_response_time: baseResponseTime - variance + Math.random() * 50,
-      throughput: test.configuration.target_rps * 0.9 + Math.random() * test.configuration.target_rps * 0.2,
+      throughput:
+        test.configuration.target_rps * 0.9 + Math.random() * test.configuration.target_rps * 0.2,
       error_rate: Math.random() * 5,
-      successful_requests: Math.floor(test.configuration.target_rps * test.configuration.duration * 0.95),
-      failed_requests: Math.floor(test.configuration.target_rps * test.configuration.duration * 0.05),
+      successful_requests: Math.floor(
+        test.configuration.target_rps * test.configuration.duration * 0.95
+      ),
+      failed_requests: Math.floor(
+        test.configuration.target_rps * test.configuration.duration * 0.05
+      ),
       percentiles: {
         p50: baseResponseTime + Math.random() * 20,
         p75: baseResponseTime + Math.random() * 40,
         p90: baseResponseTime + Math.random() * 60,
         p95: baseResponseTime + Math.random() * 80,
-        p99: baseResponseTime + Math.random() * 120
-      }
-    }
+        p99: baseResponseTime + Math.random() * 120,
+      },
+    };
   }
 
   private async sendPerformanceAlert(alert: PerformanceAlert): Promise<void> {
@@ -787,27 +811,29 @@ export class PerformanceOptimizer {
       value: alert.current_value,
       labels: {
         threshold_type: alert.threshold_type,
-        severity: alert.severity
+        severity: alert.severity,
       },
-      source: 'performance_optimizer'
-    })
+      source: 'performance_optimizer',
+    });
   }
 
   private calculatePerformanceSummary(metrics: any[]): any {
-    const responseTimeMetrics = metrics.filter(m => m.name.includes('response_time'))
-    const errorRateMetrics = metrics.filter(m => m.name.includes('error_rate'))
-    
+    const responseTimeMetrics = metrics.filter((m) => m.name.includes('response_time'));
+    const errorRateMetrics = metrics.filter((m) => m.name.includes('error_rate'));
+
     return {
       total_metrics: metrics.length,
-      avg_response_time: responseTimeMetrics.length > 0 
-        ? responseTimeMetrics.reduce((sum, m) => sum + m.value, 0) / responseTimeMetrics.length
-        : 0,
-      error_rate: errorRateMetrics.length > 0
-        ? errorRateMetrics.reduce((sum, m) => sum + m.value, 0) / errorRateMetrics.length
-        : 0,
+      avg_response_time:
+        responseTimeMetrics.length > 0
+          ? responseTimeMetrics.reduce((sum, m) => sum + m.value, 0) / responseTimeMetrics.length
+          : 0,
+      error_rate:
+        errorRateMetrics.length > 0
+          ? errorRateMetrics.reduce((sum, m) => sum + m.value, 0) / errorRateMetrics.length
+          : 0,
       uptime: 99.9,
-      performance_score: Math.floor(Math.random() * 20) + 80
-    }
+      performance_score: Math.floor(Math.random() * 20) + 80,
+    };
   }
 
   private analyzeTrends(metrics: any[]): any[] {
@@ -816,19 +842,19 @@ export class PerformanceOptimizer {
       {
         metric: 'API Response Time',
         trend: 'improving',
-        change_percentage: -15
+        change_percentage: -15,
       },
       {
         metric: 'Database Response Time',
         trend: 'stable',
-        change_percentage: 2
+        change_percentage: 2,
       },
       {
         metric: 'Memory Usage',
         trend: 'degrading',
-        change_percentage: 12
-      }
-    ]
+        change_percentage: 12,
+      },
+    ];
   }
 
   private identifyBottlenecks(metrics: any[]): any[] {
@@ -837,15 +863,15 @@ export class PerformanceOptimizer {
         category: 'database',
         issue: 'Slow query performance',
         impact: 'high',
-        recommendation: 'Add database indexes and optimize queries'
+        recommendation: 'Add database indexes and optimize queries',
       },
       {
         category: 'frontend',
         issue: 'Large bundle size',
         impact: 'medium',
-        recommendation: 'Implement code splitting and lazy loading'
-      }
-    ]
+        recommendation: 'Implement code splitting and lazy loading',
+      },
+    ];
   }
 
   private generatePerformanceRecommendations(metrics: any[], bottlenecks: any[]): string[] {
@@ -854,8 +880,8 @@ export class PerformanceOptimizer {
       'Add caching layer for frequently accessed data',
       'Optimize frontend bundle size through code splitting',
       'Monitor and alert on performance degradation',
-      'Regular performance testing and benchmarking'
-    ]
+      'Regular performance testing and benchmarking',
+    ];
   }
 
   private async createOptimizationTask(recommendation: any): Promise<OptimizationTask> {
@@ -869,21 +895,19 @@ export class PerformanceOptimizer {
       tenant_id: this.tenantId,
       metadata: {
         description: recommendation.description,
-        implementation: recommendation.implementation
-      }
-    }
+        implementation: recommendation.implementation,
+      },
+    };
 
-    await this.supabase
-      .from('optimization_tasks')
-      .insert(task)
+    await this.supabase.from('optimization_tasks').insert(task);
 
-    return task
+    return task;
   }
 }
 
 // Factory function
 export function createPerformanceOptimizer(tenantId: string): PerformanceOptimizer {
-  return new PerformanceOptimizer(tenantId)
+  return new PerformanceOptimizer(tenantId);
 }
 
 // Utility functions
@@ -893,32 +917,36 @@ export function calculatePerformanceScore(metrics: PerformanceMetric[]): number 
     api: 0.25,
     frontend: 0.25,
     memory: 0.1,
-    cpu: 0.1
-  }
+    cpu: 0.1,
+  };
 
-  let totalScore = 0
-  let totalWeight = 0
+  let totalScore = 0;
+  let totalWeight = 0;
 
   Object.entries(weights).forEach(([category, weight]) => {
-    const categoryMetrics = metrics.filter(m => m.category === category)
+    const categoryMetrics = metrics.filter((m) => m.category === category);
     if (categoryMetrics.length > 0) {
-      const categoryScore = categoryMetrics.reduce((sum, metric) => {
-        const normalizedScore = Math.max(0, 100 - (metric.value / metric.threshold.warning) * 100)
-        return sum + normalizedScore
-      }, 0) / categoryMetrics.length
+      const categoryScore =
+        categoryMetrics.reduce((sum, metric) => {
+          const normalizedScore = Math.max(
+            0,
+            100 - (metric.value / metric.threshold.warning) * 100
+          );
+          return sum + normalizedScore;
+        }, 0) / categoryMetrics.length;
 
-      totalScore += categoryScore * weight
-      totalWeight += weight
+      totalScore += categoryScore * weight;
+      totalWeight += weight;
     }
-  })
+  });
 
-  return totalWeight > 0 ? totalScore / totalWeight : 0
+  return totalWeight > 0 ? totalScore / totalWeight : 0;
 }
 
 export function formatPerformanceMetric(metric: PerformanceMetric): string {
-  return `${metric.name}: ${metric.value}${metric.unit} (Warning: ${metric.threshold.warning}${metric.unit}, Critical: ${metric.threshold.critical}${metric.unit})`
+  return `${metric.name}: ${metric.value}${metric.unit} (Warning: ${metric.threshold.warning}${metric.unit}, Critical: ${metric.threshold.critical}${metric.unit})`;
 }
 
 export function isPerformanceHealthy(metrics: PerformanceMetric[]): boolean {
-  return metrics.every(metric => metric.value < metric.threshold.warning)
+  return metrics.every((metric) => metric.value < metric.threshold.warning);
 }

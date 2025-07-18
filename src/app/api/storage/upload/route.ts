@@ -17,8 +17,11 @@ const UploadParamsSchema = z.object({
   type: z.enum(['assignment', 'profile', 'document', 'image']),
   category: z.string().optional(),
   assignment_id: z.string().uuid().optional(),
-  public: z.string().optional().transform(val => val === 'true'),
-  tenant_id: z.string().uuid().optional()
+  public: z
+    .string()
+    .optional()
+    .transform((val) => val === 'true'),
+  tenant_id: z.string().uuid().optional(),
 });
 
 /**
@@ -27,11 +30,11 @@ const UploadParamsSchema = z.object({
 function getTenantId(): string {
   const headersList = headers();
   const tenantId = headersList.get('x-tenant-id');
-  
+
   if (!tenantId) {
     throw new Error('Tenant ID not found in headers');
   }
-  
+
   return tenantId;
 }
 
@@ -43,25 +46,22 @@ export async function POST(request: NextRequest) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Parse form data
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    
+
     if (!file) {
-      return NextResponse.json(
-        { error: 'No file provided' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
     }
 
     // Parse and validate upload parameters
@@ -71,15 +71,17 @@ export async function POST(request: NextRequest) {
         .map(([key, value]) => [key, value.toString()])
     );
 
-    const { type, category, assignment_id, public: isPublic } = UploadParamsSchema.parse(uploadParams);
+    const {
+      type,
+      category,
+      assignment_id,
+      public: isPublic,
+    } = UploadParamsSchema.parse(uploadParams);
 
     // Validate file
     const validationResult = validateFile(file, type);
     if (!validationResult.isValid) {
-      return NextResponse.json(
-        { error: validationResult.error },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: validationResult.error }, { status: 400 });
     }
 
     // Check permissions for assignment uploads
@@ -96,23 +98,18 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (assignmentError || !assignment) {
-        return NextResponse.json(
-          { error: 'Assignment not found' },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
       }
 
       // Check if user can upload to this assignment
-      const canUpload = userRole === 'super_admin' || 
-                       userRole === 'admin' || 
-                       (userRole === 'teacher' && assignment.teacher_id === userId) ||
-                       (userRole === 'student'); // Students can submit assignments
+      const canUpload =
+        userRole === 'super_admin' ||
+        userRole === 'admin' ||
+        (userRole === 'teacher' && assignment.teacher_id === userId) ||
+        userRole === 'student'; // Students can submit assignments
 
       if (!canUpload) {
-        return NextResponse.json(
-          { error: 'Insufficient permissions' },
-          { status: 403 }
-        );
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
       }
     }
 
@@ -123,7 +120,7 @@ export async function POST(request: NextRequest) {
       type,
       category,
       fileName: file.name,
-      assignmentId: assignment_id
+      assignmentId: assignment_id,
     });
 
     // Upload file
@@ -138,8 +135,8 @@ export async function POST(request: NextRequest) {
         tenantId,
         originalName: file.name,
         size: file.size,
-        mimeType: file.type
-      }
+        mimeType: file.type,
+      },
     });
 
     // Store file metadata in database
@@ -157,7 +154,7 @@ export async function POST(request: NextRequest) {
         is_public: isPublic || false,
         uploaded_by: session.user.id,
         metadata: uploadResult.metadata,
-        assignment_id: assignment_id || null
+        assignment_id: assignment_id || null,
       })
       .select()
       .single();
@@ -178,24 +175,20 @@ export async function POST(request: NextRequest) {
         mimeType: file.type,
         url: uploadResult.publicUrl,
         provider: uploadResult.provider,
-        metadata: uploadResult.metadata
-      }
+        metadata: uploadResult.metadata,
+      },
     });
-
   } catch (error) {
     console.error('Error uploading file:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid upload parameters', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -208,9 +201,9 @@ export async function GET() {
     const config = {
       maxFileSize: {
         assignment: 50 * 1024 * 1024, // 50MB
-        profile: 5 * 1024 * 1024, // 5MB  
+        profile: 5 * 1024 * 1024, // 5MB
         document: 100 * 1024 * 1024, // 100MB
-        image: 10 * 1024 * 1024 // 10MB
+        image: 10 * 1024 * 1024, // 10MB
       },
       allowedMimeTypes: {
         assignment: [
@@ -226,36 +219,22 @@ export async function GET() {
           'image/png',
           'image/gif',
           'application/zip',
-          'application/x-rar-compressed'
+          'application/x-rar-compressed',
         ],
-        profile: [
-          'image/jpeg',
-          'image/png',
-          'image/gif',
-          'image/webp'
-        ],
+        profile: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
         document: [
           'application/pdf',
           'application/msword',
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'text/plain'
+          'text/plain',
         ],
-        image: [
-          'image/jpeg',
-          'image/png',
-          'image/gif',
-          'image/webp',
-          'image/svg+xml'
-        ]
-      }
+        image: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'],
+      },
     };
 
     return NextResponse.json(config);
   } catch (error) {
     console.error('Error fetching upload config:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

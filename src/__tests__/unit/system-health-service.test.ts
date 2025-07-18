@@ -13,24 +13,24 @@ jest.mock('@/lib/supabase/admin', () => ({
   supabaseAdmin: {
     from: jest.fn(() => ({
       select: jest.fn(() => ({
-        limit: jest.fn(() => Promise.resolve({ data: [], error: null }))
-      }))
-    }))
-  }
+        limit: jest.fn(() => Promise.resolve({ data: [], error: null })),
+      })),
+    })),
+  },
 }));
 
 jest.mock('@/lib/cache/redis', () => ({
   getCachedData: jest.fn(),
   setCachedData: jest.fn(),
-  ping: jest.fn()
+  ping: jest.fn(),
 }));
 
 jest.mock('@/lib/utils/logger', () => ({
   getLogger: jest.fn(() => ({
     info: jest.fn(),
     warn: jest.fn(),
-    error: jest.fn()
-  }))
+    error: jest.fn(),
+  })),
 }));
 
 // Type-safe mocks
@@ -49,11 +49,13 @@ describe('SystemHealthService', () => {
       // Mock successful database connection
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: [{ test: 'data' }],
-            error: null
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: [{ test: 'data' }],
+              error: null,
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
@@ -78,11 +80,13 @@ describe('SystemHealthService', () => {
       // Mock database connection failure
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: null,
-            error: { message: 'Connection failed' }
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: null,
+              error: { message: 'Connection failed' },
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
@@ -100,11 +104,13 @@ describe('SystemHealthService', () => {
       // Mock successful database connection
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: [{ test: 'data' }],
-            error: null
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: [{ test: 'data' }],
+              error: null,
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
@@ -123,18 +129,18 @@ describe('SystemHealthService', () => {
       const mockFromQuery = {
         select: jest.fn(() => ({
           limit: jest.fn(async () => {
-            await new Promise(resolve => setTimeout(resolve, 10)); // 10ms delay
+            await new Promise((resolve) => setTimeout(resolve, 10)); // 10ms delay
             return Promise.resolve({
               data: [{ test: 'data' }],
-              error: null
+              error: null,
             });
-          })
-        }))
+          }),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
       mockRedis.ping.mockImplementation(async () => {
-        await new Promise(resolve => setTimeout(resolve, 5)); // 5ms delay
+        await new Promise((resolve) => setTimeout(resolve, 5)); // 5ms delay
         return true;
       });
 
@@ -148,11 +154,13 @@ describe('SystemHealthService', () => {
       // Mock successful connections
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: [{ test: 'data' }],
-            error: null
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: [{ test: 'data' }],
+              error: null,
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
@@ -167,11 +175,13 @@ describe('SystemHealthService', () => {
       // Mock successful connections
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: [{ test: 'data' }],
-            error: null
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: [{ test: 'data' }],
+              error: null,
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
@@ -181,9 +191,9 @@ describe('SystemHealthService', () => {
       expect(report.overall.checks).toBeDefined();
       expect(Array.isArray(report.overall.checks)).toBe(true);
       expect(report.overall.checks.length).toBeGreaterThan(0);
-      
+
       // Should have at least database and Redis checks
-      const checkNames = report.overall.checks.map(check => check.name);
+      const checkNames = report.overall.checks.map((check) => check.name);
       expect(checkNames).toContain('database');
       expect(checkNames).toContain('redis');
     });
@@ -192,11 +202,13 @@ describe('SystemHealthService', () => {
       // Mock database connection failure
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: null,
-            error: { message: 'Database down' }
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: null,
+              error: { message: 'Database down' },
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
@@ -216,11 +228,13 @@ describe('SystemHealthService', () => {
       // Mock successful database connection
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: [{ test: 'data' }],
-            error: null
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: [{ test: 'data' }],
+              error: null,
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
@@ -235,11 +249,13 @@ describe('SystemHealthService', () => {
       // Mock database connection failure
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: null,
-            error: { message: 'Database connection failed' }
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: null,
+              error: { message: 'Database connection failed' },
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
 
@@ -253,11 +269,13 @@ describe('SystemHealthService', () => {
       // Mock successful database connection
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: [{ test: 'data' }],
-            error: null
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: [{ test: 'data' }],
+              error: null,
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
@@ -279,11 +297,13 @@ describe('SystemHealthService', () => {
     it('should correctly identify healthy database', async () => {
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: [{ test: 'data' }],
-            error: null
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: [{ test: 'data' }],
+              error: null,
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
@@ -298,8 +318,8 @@ describe('SystemHealthService', () => {
     it('should handle database timeout errors', async () => {
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.reject(new Error('Query timeout')))
-        }))
+          limit: jest.fn(() => Promise.reject(new Error('Query timeout'))),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
@@ -315,11 +335,13 @@ describe('SystemHealthService', () => {
     it('should correctly identify healthy Redis', async () => {
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: [{ test: 'data' }],
-            error: null
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: [{ test: 'data' }],
+              error: null,
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
@@ -334,11 +356,13 @@ describe('SystemHealthService', () => {
     it('should handle Redis connection errors', async () => {
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: [{ test: 'data' }],
-            error: null
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: [{ test: 'data' }],
+              error: null,
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockRejectedValue(new Error('Redis unavailable'));
@@ -357,11 +381,13 @@ describe('SystemHealthService', () => {
 
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: [{ test: 'data' }],
-            error: null
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: [{ test: 'data' }],
+              error: null,
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
@@ -380,11 +406,13 @@ describe('SystemHealthService', () => {
 
       const mockFromQuery = {
         select: jest.fn(() => ({
-          limit: jest.fn(() => Promise.resolve({
-            data: [{ test: 'data' }],
-            error: null
-          }))
-        }))
+          limit: jest.fn(() =>
+            Promise.resolve({
+              data: [{ test: 'data' }],
+              error: null,
+            })
+          ),
+        })),
       };
       mockSupabaseAdmin.from.mockReturnValue(mockFromQuery as never);
       mockRedis.ping.mockResolvedValue(true);
@@ -397,4 +425,4 @@ describe('SystemHealthService', () => {
       process.env.NODE_ENV = originalEnv;
     });
   });
-}); 
+});

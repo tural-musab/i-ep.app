@@ -11,12 +11,12 @@ jest.mock('@/lib/supabase/admin', () => ({
   supabaseAdmin: {
     auth: {
       admin: {
-        listUsers: jest.fn()
-      }
+        listUsers: jest.fn(),
+      },
     },
     from: jest.fn(),
-    rpc: jest.fn()
-  }
+    rpc: jest.fn(),
+  },
 }));
 
 describe('Service Role Performance', () => {
@@ -28,13 +28,15 @@ describe('Service Role Performance', () => {
     it('should handle bulk user creation efficiently', async () => {
       const userCount = 100;
       const startTime = Date.now();
-      
+
       const mockListUsers = jest.fn().mockResolvedValue({
-        data: Array(userCount).fill(null).map((_, i) => ({
-          id: `user-${i}`,
-          email: `user${i}@example.com`
-        })),
-        error: null
+        data: Array(userCount)
+          .fill(null)
+          .map((_, i) => ({
+            id: `user-${i}`,
+            email: `user${i}@example.com`,
+          })),
+        error: null,
       });
 
       supabaseAdmin.auth.admin.listUsers = mockListUsers;
@@ -54,22 +56,22 @@ describe('Service Role Performance', () => {
 
       const mockSelect = jest.fn().mockResolvedValue({
         data: [{ id: 1, name: 'Test' }],
-        error: null
+        error: null,
       });
 
       supabaseAdmin.from = jest.fn().mockReturnValue({
-        select: mockSelect
+        select: mockSelect,
       });
 
-      const operations = Array(operationCount).fill(null).map(() =>
-        supabaseAdmin.from('users').select('*')
-      );
+      const operations = Array(operationCount)
+        .fill(null)
+        .map(() => supabaseAdmin.from('users').select('*'));
 
       const results = await Promise.all(operations);
       const endTime = Date.now();
       const duration = endTime - startTime;
 
-      expect(results.every(r => !r.error)).toBe(true);
+      expect(results.every((r) => !r.error)).toBe(true);
       expect(duration).toBeLessThan(2000); // 2 saniyeden az sürmeli
     });
   });
@@ -80,20 +82,20 @@ describe('Service Role Performance', () => {
 
       const mockSelect = jest.fn().mockResolvedValue({
         data: [
-          { 
-            id: 1, 
+          {
+            id: 1,
             name: 'Test User',
             classes: [
               { id: 1, name: 'Class A' },
-              { id: 2, name: 'Class B' }
-            ]
-          }
+              { id: 2, name: 'Class B' },
+            ],
+          },
         ],
-        error: null
+        error: null,
       });
 
       supabaseAdmin.from = jest.fn().mockReturnValue({
-        select: mockSelect
+        select: mockSelect,
       });
 
       const result = await supabaseAdmin.from('users').select(`
@@ -118,16 +120,18 @@ describe('Service Role Performance', () => {
       const startTime = Date.now();
 
       const mockSelect = jest.fn().mockResolvedValue({
-        data: Array(rowCount).fill(null).map((_, i) => ({
-          id: i,
-          name: `Item ${i}`,
-          created_at: new Date().toISOString()
-        })),
-        error: null
+        data: Array(rowCount)
+          .fill(null)
+          .map((_, i) => ({
+            id: i,
+            name: `Item ${i}`,
+            created_at: new Date().toISOString(),
+          })),
+        error: null,
       });
 
       supabaseAdmin.from = jest.fn().mockReturnValue({
-        select: mockSelect
+        select: mockSelect,
       });
 
       const result = await supabaseAdmin.from('large_table').select('*');
@@ -146,14 +150,14 @@ describe('Service Role Performance', () => {
 
       const mockRpc = jest.fn().mockResolvedValue({
         data: { result: 'success' },
-        error: null
+        error: null,
       });
 
       supabaseAdmin.rpc = mockRpc;
 
       const result = await supabaseAdmin.rpc('complex_calculation', {
         param1: 'value1',
-        param2: 'value2'
+        param2: 'value2',
       });
 
       const endTime = Date.now();
@@ -170,50 +174,52 @@ describe('Service Role Performance', () => {
 
       const mockRpc = jest.fn().mockResolvedValue({
         data: { result: 'success' },
-        error: null
+        error: null,
       });
 
       supabaseAdmin.rpc = mockRpc;
 
-      const calls = Array(callCount).fill(null).map(() =>
-        supabaseAdmin.rpc('test_procedure')
-      );
+      const calls = Array(callCount)
+        .fill(null)
+        .map(() => supabaseAdmin.rpc('test_procedure'));
 
       const results = await Promise.all(calls);
       const endTime = Date.now();
       const duration = endTime - startTime;
 
-      expect(results.every(r => !r.error)).toBe(true);
+      expect(results.every((r) => !r.error)).toBe(true);
       expect(duration).toBeLessThan(1000); // 1 saniyeden az sürmeli
     });
   });
 
   describe('Memory Usage', () => {
     it('should handle large data sets without memory issues', async () => {
-      const largeDataSet = Array(10000).fill(null).map((_, i) => ({
-        id: i,
-        name: `Item ${i}`,
-        description: 'A'.repeat(1000), // 1KB string
-        data: { 
-          field1: 'value1',
-          field2: 'value2',
-          field3: Array(100).fill('test')
-        }
-      }));
+      const largeDataSet = Array(10000)
+        .fill(null)
+        .map((_, i) => ({
+          id: i,
+          name: `Item ${i}`,
+          description: 'A'.repeat(1000), // 1KB string
+          data: {
+            field1: 'value1',
+            field2: 'value2',
+            field3: Array(100).fill('test'),
+          },
+        }));
 
       const mockSelect = jest.fn().mockResolvedValue({
         data: largeDataSet,
-        error: null
+        error: null,
       });
 
       supabaseAdmin.from = jest.fn().mockReturnValue({
-        select: mockSelect
+        select: mockSelect,
       });
 
       const startHeapUsed = process.memoryUsage().heapUsed;
       const result = await supabaseAdmin.from('large_data_table').select('*');
       const endHeapUsed = process.memoryUsage().heapUsed;
-      
+
       const memoryIncrease = endHeapUsed - startHeapUsed;
 
       expect(result.error).toBeNull();
@@ -221,4 +227,4 @@ describe('Service Role Performance', () => {
       expect(memoryIncrease).toBeLessThan(50 * 1024 * 1024); // 50MB'dan az artış olmalı
     });
   });
-}); 
+});

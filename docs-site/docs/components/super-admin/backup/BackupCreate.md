@@ -18,22 +18,22 @@ Yeni yedekleme işlemi başlatmak için kullanılan form komponenti.
 interface BackupCreateProps {
   /** Tenant ID */
   tenantId?: string;
-  
+
   /** Yedekleme başlatıldığında çağrılır */
   onBackupStart?: (config: BackupConfig) => Promise<void>;
-  
+
   /** İptal edildiğinde çağrılır */
   onCancel?: () => void;
-  
+
   /** İlerleme durumu değiştiğinde çağrılır */
   onProgressChange?: (progress: BackupProgress) => void;
-  
+
   /** Varsayılan ayarlar */
   defaultSettings?: Partial<BackupSettings>;
-  
+
   /** Kullanılabilir depolama hedefleri */
   storageTargets?: StorageTarget[];
-  
+
   /** Form durumu */
   status?: 'idle' | 'validating' | 'starting' | 'in_progress' | 'completed' | 'error';
 }
@@ -100,8 +100,8 @@ export default function CreateBackupPage() {
         type: 'full',
         compression: {
           enabled: true,
-          level: 'medium'
-        }
+          level: 'medium',
+        },
       }}
       storageTargets={[
         {
@@ -109,9 +109,9 @@ export default function CreateBackupPage() {
           name: 'AWS S3',
           type: 's3',
           config: {
-            bucket: 'backups'
-          }
-        }
+            bucket: 'backups',
+          },
+        },
       ]}
     />
   );
@@ -121,16 +121,13 @@ export default function CreateBackupPage() {
 ## Form Bölümleri
 
 ### Temel Ayarlar
+
 ```tsx
-<BackupBasicSettings
-  type={type}
-  onTypeChange={setType}
-  scope={scope}
-  onScopeChange={setScope}
-/>
+<BackupBasicSettings type={type} onTypeChange={setType} scope={scope} onScopeChange={setScope} />
 ```
 
 ### Zamanlama
+
 ```tsx
 <BackupScheduling
   schedule={schedule}
@@ -140,6 +137,7 @@ export default function CreateBackupPage() {
 ```
 
 ### Depolama
+
 ```tsx
 <BackupStorage
   targets={storageTargets}
@@ -157,7 +155,7 @@ export default function CreateBackupPage() {
 const startBackup = async (config: BackupConfig) => {
   const response = await fetch('/api/backups', {
     method: 'POST',
-    body: JSON.stringify(config)
+    body: JSON.stringify(config),
   });
   return response.json();
 };
@@ -172,7 +170,7 @@ const trackProgress = async (backupId: string) => {
 const validateStorage = async (target: StorageTarget) => {
   const response = await fetch('/api/storage/validate', {
     method: 'POST',
-    body: JSON.stringify(target)
+    body: JSON.stringify(target),
   });
   return response.json();
 };
@@ -182,38 +180,33 @@ const validateStorage = async (target: StorageTarget) => {
 
 ```typescript
 const validationSchema = yup.object().shape({
-  type: yup.string()
+  type: yup
+    .string()
     .required('Yedekleme tipi seçilmelidir')
     .oneOf(['full', 'incremental', 'differential']),
   scope: yup.object().shape({
     databases: yup.array().min(1, 'En az bir veritabanı seçilmelidir'),
     includeFiles: yup.boolean(),
-    excludePaths: yup.array().of(yup.string())
+    excludePaths: yup.array().of(yup.string()),
   }),
   storage: yup.object().shape({
     target: yup.string().required('Depolama hedefi seçilmelidir'),
-    path: yup.string().required('Depolama yolu belirtilmelidir')
+    path: yup.string().required('Depolama yolu belirtilmelidir'),
   }),
   encryption: yup.object().shape({
     enabled: yup.boolean(),
     key: yup.string().when('enabled', {
       is: true,
-      then: yup.string().required('Şifreleme anahtarı gereklidir')
-    })
-  })
+      then: yup.string().required('Şifreleme anahtarı gereklidir'),
+    }),
+  }),
 });
 ```
 
 ## İlerleme Gösterimi
 
 ```tsx
-<BackupProgress
-  status={status}
-  progress={progress}
-  showPercentage
-  showSpeed
-  showEstimatedTime
-/>
+<BackupProgress status={status} progress={progress} showPercentage showSpeed showEstimatedTime />
 ```
 
 ## Erişilebilirlik
@@ -226,11 +219,11 @@ const validationSchema = yup.object().shape({
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Yan yana form grupları |
-| 768px - 1024px | Tek kolon form |
-| < 768px | Basitleştirilmiş görünüm |
+| Ekran Boyutu   | Davranış                 |
+| -------------- | ------------------------ |
+| > 1024px       | Yan yana form grupları   |
+| 768px - 1024px | Tek kolon form           |
+| < 768px        | Basitleştirilmiş görünüm |
 
 ## Test
 
@@ -238,7 +231,7 @@ const validationSchema = yup.object().shape({
 describe('BackupCreate', () => {
   it('validates required fields', async () => {
     render(<BackupCreate />);
-    
+
     await userEvent.click(screen.getByText('Yedekleme Başlat'));
     expect(screen.getByText('Yedekleme tipi seçilmelidir')).toBeInTheDocument();
   });
@@ -246,13 +239,13 @@ describe('BackupCreate', () => {
   it('handles backup start', async () => {
     const onBackupStart = jest.fn();
     render(<BackupCreate onBackupStart={onBackupStart} />);
-    
+
     await userEvent.selectOptions(
       screen.getByLabelText('Yedekleme Tipi'),
       'full'
     );
     await userEvent.click(screen.getByText('Yedekleme Başlat'));
-    
+
     expect(onBackupStart).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'full' })
     );
@@ -266,7 +259,7 @@ describe('BackupCreate', () => {
         onProgressChange={onProgressChange}
       />
     );
-    
+
     // Simulate progress
     mockBackupProgress({
       status: 'running',
@@ -274,7 +267,7 @@ describe('BackupCreate', () => {
       bytesProcessed: 1024,
       totalBytes: 2048
     });
-    
+
     await waitFor(() => {
       expect(screen.getByText('50%')).toBeInTheDocument();
     });
@@ -343,13 +336,13 @@ WithError.args = {
   customStyles={{
     progress: {
       bar: 'bg-blue-500',
-      track: 'bg-gray-200'
+      track: 'bg-gray-200',
     },
     status: {
       running: 'text-blue-600',
       completed: 'text-green-600',
-      error: 'text-red-600'
-    }
+      error: 'text-red-600',
+    },
   }}
 />
 ```
@@ -360,4 +353,4 @@ WithError.args = {
 2. Şifreleme anahtarını güvenli sakla
 3. İlerleme durumunu düzenli güncelle
 4. Hata durumunda retry mekanizması kullan
-5. Yedekleme loglarını tut 
+5. Yedekleme loglarını tut

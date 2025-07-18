@@ -42,7 +42,7 @@ describe('Health Check API Endpoints', () => {
       expect(data.checks).toEqual({
         database: 'healthy',
         redis: 'healthy',
-        externalApis: 'healthy'
+        externalApis: 'healthy',
       });
     });
   });
@@ -52,11 +52,11 @@ describe('Health Check API Endpoints', () => {
       // Arrange - Supabase mock'ını başarılı response için ayarla
       const mockSelect = jest.fn().mockReturnValue({
         limit: jest.fn().mockReturnValue({
-          single: jest.fn().mockResolvedValue({ data: null, error: null })
-        })
+          single: jest.fn().mockResolvedValue({ data: null, error: null }),
+        }),
       });
       (supabase.from as jest.Mock).mockReturnValue({
-        select: mockSelect
+        select: mockSelect,
       });
 
       // Act
@@ -74,14 +74,14 @@ describe('Health Check API Endpoints', () => {
       // Arrange - Supabase mock'ını hata response için ayarla
       const mockSelect = jest.fn().mockReturnValue({
         limit: jest.fn().mockReturnValue({
-          single: jest.fn().mockResolvedValue({ 
-            data: null, 
-            error: { message: 'Database connection failed' }
-          })
-        })
+          single: jest.fn().mockResolvedValue({
+            data: null,
+            error: { message: 'Database connection failed' },
+          }),
+        }),
       });
       (supabase.from as jest.Mock).mockReturnValue({
-        select: mockSelect
+        select: mockSelect,
       });
 
       // Act
@@ -112,4 +112,4 @@ describe('Health Check API Endpoints', () => {
       expect(data).toHaveProperty('timestamp');
     });
   });
-}); 
+});

@@ -12,16 +12,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Save, 
-  Plus, 
-  Trash2, 
-  Upload, 
-  Download, 
+import {
+  Save,
+  Plus,
+  Trash2,
+  Upload,
+  Download,
   Calculator,
   Users,
   BookOpen,
@@ -29,7 +35,7 @@ import {
   FileText,
   AlertCircle,
   CheckCircle,
-  Edit
+  Edit,
 } from 'lucide-react';
 
 interface Student {
@@ -68,43 +74,43 @@ export function GradeEntryForm() {
       name: 'Ali Veli',
       number: '2025001',
       class: '5-A',
-      status: 'present'
+      status: 'present',
     },
     {
       id: '2',
       name: 'Ayşe Yılmaz',
       number: '2025002',
       class: '5-A',
-      status: 'present'
+      status: 'present',
     },
     {
       id: '3',
       name: 'Mehmet Kaya',
       number: '2025003',
       class: '5-A',
-      status: 'absent'
+      status: 'absent',
     },
     {
       id: '4',
       name: 'Fatma Demir',
       number: '2025004',
       class: '5-A',
-      status: 'present'
+      status: 'present',
     },
     {
       id: '5',
       name: 'Ahmet Çelik',
       number: '2025005',
       class: '5-A',
-      status: 'excused'
-    }
+      status: 'excused',
+    },
   ]);
 
   const classes = [
     { value: '5-a', label: '5-A' },
     { value: '5-b', label: '5-B' },
     { value: '6-a', label: '6-A' },
-    { value: '6-b', label: '6-B' }
+    { value: '6-b', label: '6-B' },
   ];
 
   const subjects = [
@@ -112,7 +118,7 @@ export function GradeEntryForm() {
     { value: 'turkce', label: 'Türkçe' },
     { value: 'fen', label: 'Fen Bilgisi' },
     { value: 'sosyal', label: 'Sosyal Bilgiler' },
-    { value: 'ingilizce', label: 'İngilizce' }
+    { value: 'ingilizce', label: 'İngilizce' },
   ];
 
   const gradeTypes = [
@@ -120,18 +126,18 @@ export function GradeEntryForm() {
     { value: 'homework', label: 'Ödev' },
     { value: 'project', label: 'Proje' },
     { value: 'quiz', label: 'Kısa Sınav' },
-    { value: 'participation', label: 'Katılım' }
+    { value: 'participation', label: 'Katılım' },
   ];
 
   const handleGradeChange = (studentId: string, grade: string) => {
     const gradeValue = parseFloat(grade) || 0;
     const maxGradeValue = parseFloat(maxGrade) || 100;
-    
-    setGradeEntries(prev => {
-      const existing = prev.find(entry => entry.studentId === studentId);
+
+    setGradeEntries((prev) => {
+      const existing = prev.find((entry) => entry.studentId === studentId);
       if (existing) {
-        return prev.map(entry => 
-          entry.studentId === studentId 
+        return prev.map((entry) =>
+          entry.studentId === studentId
             ? { ...entry, grade: gradeValue, maxGrade: maxGradeValue }
             : entry
         );
@@ -142,14 +148,10 @@ export function GradeEntryForm() {
   };
 
   const handleNotesChange = (studentId: string, notes: string) => {
-    setGradeEntries(prev => {
-      const existing = prev.find(entry => entry.studentId === studentId);
+    setGradeEntries((prev) => {
+      const existing = prev.find((entry) => entry.studentId === studentId);
       if (existing) {
-        return prev.map(entry => 
-          entry.studentId === studentId 
-            ? { ...entry, notes }
-            : entry
-        );
+        return prev.map((entry) => (entry.studentId === studentId ? { ...entry, notes } : entry));
       } else {
         return [...prev, { studentId, grade: 0, maxGrade: parseFloat(maxGrade) || 100, notes }];
       }
@@ -159,27 +161,27 @@ export function GradeEntryForm() {
   const handleBulkGradeApplication = (grade: string) => {
     const gradeValue = parseFloat(grade) || 0;
     const maxGradeValue = parseFloat(maxGrade) || 100;
-    
+
     const newEntries = students
-      .filter(student => student.status === 'present')
-      .map(student => ({
+      .filter((student) => student.status === 'present')
+      .map((student) => ({
         studentId: student.id,
         grade: gradeValue,
-        maxGrade: maxGradeValue
+        maxGrade: maxGradeValue,
       }));
-    
+
     setGradeEntries(newEntries);
   };
 
   const calculateStatistics = () => {
-    const grades = gradeEntries.map(entry => (entry.grade / entry.maxGrade) * 100);
+    const grades = gradeEntries.map((entry) => (entry.grade / entry.maxGrade) * 100);
     if (grades.length === 0) return null;
 
     const sum = grades.reduce((acc, grade) => acc + grade, 0);
     const average = sum / grades.length;
     const highest = Math.max(...grades);
     const lowest = Math.min(...grades);
-    const passingGrades = grades.filter(grade => grade >= 60);
+    const passingGrades = grades.filter((grade) => grade >= 60);
     const passingRate = (passingGrades.length / grades.length) * 100;
 
     return {
@@ -188,7 +190,7 @@ export function GradeEntryForm() {
       lowest: lowest.toFixed(1),
       passingRate: passingRate.toFixed(1),
       totalGraded: grades.length,
-      totalStudents: students.length
+      totalStudents: students.length,
     };
   };
 
@@ -210,14 +212,14 @@ export function GradeEntryForm() {
         maxGrade,
         weight,
         description,
-        grades: gradeEntries
+        grades: gradeEntries,
       });
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       alert('Notlar başarıyla kaydedildi!');
-      
+
       // Reset form
       setGradeEntries([]);
     } catch (error) {
@@ -252,10 +254,14 @@ export function GradeEntryForm() {
 
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'present': return 'Mevcut';
-      case 'absent': return 'Devamsız';
-      case 'excused': return 'Mazeretli';
-      default: return status;
+      case 'present':
+        return 'Mevcut';
+      case 'absent':
+        return 'Devamsız';
+      case 'excused':
+        return 'Mazeretli';
+      default:
+        return status;
     }
   };
 
@@ -270,12 +276,10 @@ export function GradeEntryForm() {
             <Edit className="h-5 w-5" />
             Not Giriş Ayarları
           </CardTitle>
-          <CardDescription>
-            Not girişi için sınıf, ders ve sınav bilgilerini seçin
-          </CardDescription>
+          <CardDescription>Not girişi için sınıf, ders ve sınav bilgilerini seçin</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div className="space-y-2">
               <Label>Sınıf</Label>
               <Select value={selectedClass} onValueChange={setSelectedClass}>
@@ -283,8 +287,10 @@ export function GradeEntryForm() {
                   <SelectValue placeholder="Sınıf seçin" />
                 </SelectTrigger>
                 <SelectContent>
-                  {classes.map(cls => (
-                    <SelectItem key={cls.value} value={cls.value}>{cls.label}</SelectItem>
+                  {classes.map((cls) => (
+                    <SelectItem key={cls.value} value={cls.value}>
+                      {cls.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -297,8 +303,10 @@ export function GradeEntryForm() {
                   <SelectValue placeholder="Ders seçin" />
                 </SelectTrigger>
                 <SelectContent>
-                  {subjects.map(subject => (
-                    <SelectItem key={subject.value} value={subject.value}>{subject.label}</SelectItem>
+                  {subjects.map((subject) => (
+                    <SelectItem key={subject.value} value={subject.value}>
+                      {subject.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -311,8 +319,10 @@ export function GradeEntryForm() {
                   <SelectValue placeholder="Not türü seçin" />
                 </SelectTrigger>
                 <SelectContent>
-                  {gradeTypes.map(type => (
-                    <SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>
+                  {gradeTypes.map((type) => (
+                    <SelectItem key={type.value} value={type.value}>
+                      {type.label}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -329,11 +339,7 @@ export function GradeEntryForm() {
 
             <div className="space-y-2">
               <Label>Tarih</Label>
-              <Input
-                type="date"
-                value={examDate}
-                onChange={(e) => setExamDate(e.target.value)}
-              />
+              <Input type="date" value={examDate} onChange={(e) => setExamDate(e.target.value)} />
             </div>
 
             <div className="space-y-2">
@@ -376,12 +382,13 @@ export function GradeEntryForm() {
             <Calculator className="h-5 w-5" />
             Not Giriş Modu
           </CardTitle>
-          <CardDescription>
-            Tek tek veya toplu not girişi yapın
-          </CardDescription>
+          <CardDescription>Tek tek veya toplu not girişi yapın</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs value={entryMode} onValueChange={(value) => setEntryMode(value as 'individual' | 'bulk')}>
+          <Tabs
+            value={entryMode}
+            onValueChange={(value) => setEntryMode(value as 'individual' | 'bulk')}
+          >
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="individual">Tek Tek Giriş</TabsTrigger>
               <TabsTrigger value="bulk">Toplu İşlem</TabsTrigger>
@@ -391,9 +398,9 @@ export function GradeEntryForm() {
             <TabsContent value="individual" className="space-y-4">
               <div className="space-y-4">
                 {students.map((student) => {
-                  const entry = gradeEntries.find(e => e.studentId === student.id);
+                  const entry = gradeEntries.find((e) => e.studentId === student.id);
                   return (
-                    <div key={student.id} className="flex items-center gap-4 p-4 border rounded-lg">
+                    <div key={student.id} className="flex items-center gap-4 rounded-lg border p-4">
                       <div className="flex items-center gap-2">
                         {getStatusIcon(student.status)}
                         <div>
@@ -403,8 +410,8 @@ export function GradeEntryForm() {
                           </p>
                         </div>
                       </div>
-                      
-                      <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                      <div className="grid flex-1 grid-cols-1 gap-4 md:grid-cols-3">
                         <div className="space-y-2">
                           <Label>Puan</Label>
                           <Input
@@ -415,16 +422,18 @@ export function GradeEntryForm() {
                             disabled={student.status !== 'present'}
                           />
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label>Yüzde</Label>
-                          <div className="flex items-center h-10 px-3 border rounded-md bg-gray-50">
-                            <span className={`font-medium ${entry ? getGradeColor(entry.grade, entry.maxGrade) : 'text-gray-400'}`}>
+                          <div className="flex h-10 items-center rounded-md border bg-gray-50 px-3">
+                            <span
+                              className={`font-medium ${entry ? getGradeColor(entry.grade, entry.maxGrade) : 'text-gray-400'}`}
+                            >
                               {entry ? ((entry.grade / entry.maxGrade) * 100).toFixed(1) : '0'}%
                             </span>
                           </div>
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label>Not</Label>
                           <Textarea
@@ -444,8 +453,8 @@ export function GradeEntryForm() {
 
             {/* Bulk Entry */}
             <TabsContent value="bulk" className="space-y-4">
-              <div className="p-4 border rounded-lg bg-blue-50">
-                <h3 className="font-medium mb-4">Toplu Not Uygulama</h3>
+              <div className="rounded-lg border bg-blue-50 p-4">
+                <h3 className="mb-4 font-medium">Toplu Not Uygulama</h3>
                 <div className="flex gap-4">
                   <div className="flex-1">
                     <Input
@@ -466,16 +475,19 @@ export function GradeEntryForm() {
                     Uygula
                   </Button>
                 </div>
-                <p className="text-sm text-gray-600 mt-2">
+                <p className="mt-2 text-sm text-gray-600">
                   Bu işlem sadece mevcut öğrencilere uygulanacak
                 </p>
               </div>
 
               <div className="space-y-2">
                 {students.map((student) => {
-                  const entry = gradeEntries.find(e => e.studentId === student.id);
+                  const entry = gradeEntries.find((e) => e.studentId === student.id);
                   return (
-                    <div key={student.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div
+                      key={student.id}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div className="flex items-center gap-2">
                         {getStatusIcon(student.status)}
                         <div>
@@ -483,22 +495,29 @@ export function GradeEntryForm() {
                           <p className="text-sm text-gray-600">#{student.number}</p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-4">
                         <div className="text-right">
-                          <div className={`font-medium ${entry ? getGradeColor(entry.grade, entry.maxGrade) : 'text-gray-400'}`}>
+                          <div
+                            className={`font-medium ${entry ? getGradeColor(entry.grade, entry.maxGrade) : 'text-gray-400'}`}
+                          >
                             {entry ? entry.grade : '-'} / {maxGrade}
                           </div>
                           <div className="text-sm text-gray-600">
                             {entry ? `${((entry.grade / entry.maxGrade) * 100).toFixed(1)}%` : '-%'}
                           </div>
                         </div>
-                        
-                        <Badge variant="outline" className={
-                          student.status === 'present' ? 'bg-green-100 text-green-800' :
-                          student.status === 'absent' ? 'bg-red-100 text-red-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        }>
+
+                        <Badge
+                          variant="outline"
+                          className={
+                            student.status === 'present'
+                              ? 'bg-green-100 text-green-800'
+                              : student.status === 'absent'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                          }
+                        >
                           {getStatusLabel(student.status)}
                         </Badge>
                       </div>
@@ -519,25 +538,23 @@ export function GradeEntryForm() {
               <BarChart3 className="h-5 w-5" />
               İstatistikler
             </CardTitle>
-            <CardDescription>
-              Girilen notların anlık analizi
-            </CardDescription>
+            <CardDescription>Girilen notların anlık analizi</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-lg bg-blue-50 p-4 text-center">
                 <div className="text-2xl font-bold text-blue-600">{statistics.average}</div>
                 <div className="text-sm text-blue-800">Sınıf Ortalaması</div>
               </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
+              <div className="rounded-lg bg-green-50 p-4 text-center">
                 <div className="text-2xl font-bold text-green-600">{statistics.highest}</div>
                 <div className="text-sm text-green-800">En Yüksek Not</div>
               </div>
-              <div className="text-center p-4 bg-red-50 rounded-lg">
+              <div className="rounded-lg bg-red-50 p-4 text-center">
                 <div className="text-2xl font-bold text-red-600">{statistics.lowest}</div>
                 <div className="text-sm text-red-800">En Düşük Not</div>
               </div>
-              <div className="text-center p-4 bg-yellow-50 rounded-lg">
+              <div className="rounded-lg bg-yellow-50 p-4 text-center">
                 <div className="text-2xl font-bold text-yellow-600">{statistics.passingRate}%</div>
                 <div className="text-sm text-yellow-800">Başarı Oranı</div>
               </div>
@@ -550,14 +567,14 @@ export function GradeEntryForm() {
       )}
 
       {/* Action Buttons */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <Button variant="outline">
-            <Upload className="h-4 w-4 mr-2" />
+            <Upload className="mr-2 h-4 w-4" />
             Excel'den İçe Aktar
           </Button>
           <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Şablon İndir
           </Button>
         </div>
@@ -568,12 +585,12 @@ export function GradeEntryForm() {
           <Button onClick={handleSave} disabled={isSaving || gradeEntries.length === 0}>
             {isSaving ? (
               <>
-                <Calculator className="h-4 w-4 mr-2 animate-spin" />
+                <Calculator className="mr-2 h-4 w-4 animate-spin" />
                 Kaydediliyor...
               </>
             ) : (
               <>
-                <Save className="h-4 w-4 mr-2" />
+                <Save className="mr-2 h-4 w-4" />
                 Kaydet ({gradeEntries.length})
               </>
             )}

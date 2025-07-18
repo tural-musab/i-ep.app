@@ -1,6 +1,6 @@
 /**
  * Component Template for İ-EP.APP
- * 
+ *
  * This template provides a standardized structure for React components
  * following the project's coding standards and best practices.
  */
@@ -54,27 +54,27 @@ interface ComponentProps {
    * The tenant ID for multi-tenant isolation
    */
   tenantId: string;
-  
+
   /**
    * Initial data for the component
    */
   initialData?: ComponentFormData;
-  
+
   /**
    * Callback function called when data is updated
    */
   onDataUpdate?: (data: ComponentFormData) => void;
-  
+
   /**
    * Callback function called when an error occurs
    */
   onError?: (error: Error) => void;
-  
+
   /**
    * Optional CSS class name for styling
    */
   className?: string;
-  
+
   /**
    * Whether the component is in read-only mode
    */
@@ -87,16 +87,16 @@ interface ComponentProps {
 
 /**
  * ComponentName provides [brief description of functionality]
- * 
+ *
  * @param tenantId - The ID of the tenant for multi-tenant isolation
  * @param initialData - Optional initial data for the component
  * @param onDataUpdate - Callback function called when data is updated
  * @param onError - Callback function called when an error occurs
  * @param className - Optional CSS class name for styling
  * @param readOnly - Whether the component is in read-only mode
- * 
+ *
  * @returns JSX element containing the component interface
- * 
+ *
  * @example
  * ```tsx
  * <ComponentName
@@ -118,20 +118,20 @@ export function ComponentName({
   // ========================================================================
   // STATE MANAGEMENT
   // ========================================================================
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<ComponentFormData | null>(initialData || null);
-  
+
   // ========================================================================
   // HOOKS
   // ========================================================================
-  
+
   const { user } = useAuth();
   const { tenant } = useTenant();
   const { toast } = useToast();
   const router = useRouter();
-  
+
   // Form handling
   const {
     register,
@@ -143,35 +143,35 @@ export function ComponentName({
     resolver: zodResolver(componentFormSchema),
     defaultValues: initialData,
   });
-  
+
   // ========================================================================
   // COMPUTED VALUES
   // ========================================================================
-  
+
   const canEdit = useMemo(() => {
     return !readOnly && user?.role === 'admin';
   }, [readOnly, user]);
-  
+
   const formData = watch();
-  
+
   // ========================================================================
   // CALLBACK FUNCTIONS
   // ========================================================================
-  
+
   const handleFormSubmit = useCallback(
     async (formData: ComponentFormData) => {
       if (!canEdit) return;
-      
+
       setIsLoading(true);
       setError(null);
-      
+
       try {
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         setData(formData);
         onDataUpdate?.(formData);
-        
+
         toast({
           title: 'Success',
           description: 'Data saved successfully',
@@ -180,7 +180,7 @@ export function ComponentName({
         const errorMessage = err instanceof Error ? err.message : 'An error occurred';
         setError(errorMessage);
         onError?.(err instanceof Error ? err : new Error(errorMessage));
-        
+
         toast({
           title: 'Error',
           description: errorMessage,
@@ -192,31 +192,31 @@ export function ComponentName({
     },
     [canEdit, onDataUpdate, onError, toast]
   );
-  
+
   const handleReset = useCallback(() => {
     reset(initialData);
     setError(null);
   }, [reset, initialData]);
-  
+
   // ========================================================================
   // EFFECTS
   // ========================================================================
-  
+
   useEffect(() => {
     if (initialData) {
       setData(initialData);
     }
   }, [initialData]);
-  
+
   // ========================================================================
   // RENDER HELPERS
   // ========================================================================
-  
+
   const renderError = () => {
     if (!error) return null;
-    
+
     return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-4">
+      <div className="mb-4 rounded-md border border-red-200 bg-red-50 p-4">
         <div className="flex">
           <div className="ml-3">
             <h3 className="text-sm font-medium text-red-800">Error</h3>
@@ -226,41 +226,41 @@ export function ComponentName({
       </div>
     );
   };
-  
+
   const renderLoadingState = () => {
     if (!isLoading) return null;
-    
+
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
       </div>
     );
   };
-  
+
   // ========================================================================
   // EARLY RETURNS
   // ========================================================================
-  
+
   if (!user) {
     return (
-      <div className="text-center py-8">
+      <div className="py-8 text-center">
         <p className="text-gray-500">Please log in to view this content</p>
       </div>
     );
   }
-  
+
   if (!tenant) {
     return (
-      <div className="text-center py-8">
+      <div className="py-8 text-center">
         <p className="text-gray-500">Tenant information not available</p>
       </div>
     );
   }
-  
+
   // ========================================================================
   // MAIN RENDER
   // ========================================================================
-  
+
   return (
     <div className={className}>
       <Card>
@@ -270,10 +270,10 @@ export function ComponentName({
         <CardContent>
           {renderError()}
           {renderLoadingState()}
-          
+
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="name" className="mb-1 block text-sm font-medium text-gray-700">
                 Name
               </label>
               <Input
@@ -284,14 +284,14 @@ export function ComponentName({
                 aria-describedby="name-error"
               />
               {errors.name && (
-                <p id="name-error" className="text-red-500 text-sm mt-1">
+                <p id="name-error" className="mt-1 text-sm text-red-500">
                   {errors.name.message}
                 </p>
               )}
             </div>
-            
+
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
                 Email
               </label>
               <Input
@@ -303,14 +303,14 @@ export function ComponentName({
                 aria-describedby="email-error"
               />
               {errors.email && (
-                <p id="email-error" className="text-red-500 text-sm mt-1">
+                <p id="email-error" className="mt-1 text-sm text-red-500">
                   {errors.email.message}
                 </p>
               )}
             </div>
-            
+
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="description" className="mb-1 block text-sm font-medium text-gray-700">
                 Description
               </label>
               <textarea
@@ -319,41 +319,32 @@ export function ComponentName({
                 rows={3}
                 placeholder="Enter description"
                 disabled={!canEdit || isLoading}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 aria-describedby="description-error"
               />
               {errors.description && (
-                <p id="description-error" className="text-red-500 text-sm mt-1">
+                <p id="description-error" className="mt-1 text-sm text-red-500">
                   {errors.description.message}
                 </p>
               )}
             </div>
-            
+
             {canEdit && (
               <div className="flex gap-2">
-                <Button
-                  type="submit"
-                  disabled={!isValid || isLoading}
-                  className="flex-1"
-                >
+                <Button type="submit" disabled={!isValid || isLoading} className="flex-1">
                   {isLoading ? 'Saving...' : 'Save'}
                 </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleReset}
-                  disabled={isLoading}
-                >
+                <Button type="button" variant="outline" onClick={handleReset} disabled={isLoading}>
                   Reset
                 </Button>
               </div>
             )}
           </form>
-          
+
           {/* Additional content sections */}
           <div className="mt-6">
-            <h3 className="text-lg font-medium mb-3">Additional Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h3 className="mb-3 text-lg font-medium">Additional Information</h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div>
                 <p className="text-sm text-gray-600">Tenant ID</p>
                 <p className="font-medium">{tenantId}</p>

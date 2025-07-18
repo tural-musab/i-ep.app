@@ -20,6 +20,7 @@ graph TD
 ```
 
 **Detaylar:**
+
 1. Tenant adı ve subdomain kontrolü
 2. Plan seçimi
 3. Admin kullanıcı bilgileri
@@ -191,4 +192,4 @@ graph TD
 
 - [Dashboard Tasarımı](../layouts/super-admin/dashboard.md)
 - [Komponent Kütüphanesi](../../components/README.md)
-- [API Dokümantasyonu](../../api/super-admin-api.md) 
+- [API Dokümantasyonu](../../api/super-admin-api.md)

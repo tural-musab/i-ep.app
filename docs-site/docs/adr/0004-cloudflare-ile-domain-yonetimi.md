@@ -64,18 +64,22 @@ Kabul Edildi
 ## Alternatifler
 
 ### AWS Route 53
+
 - **Avantajlar**: AWS entegrasyonu, güvenilirlik, programatik kontrol
 - **Dezavantajlar**: Her domain/subdomain için ayrı ücret, daha karmaşık API
 
 ### GoDaddy API
+
 - **Avantajlar**: Geniş domain portföyü, domain kayıt entegrasyonu
 - **Dezavantajlar**: Sınırlı API yetenekleri, CDN ve güvenlik özelliklerinin olmaması
 
 ### Google Cloud DNS
+
 - **Avantajlar**: Google Cloud entegrasyonu, ölçeklenebilirlik
 - **Dezavantajlar**: Daha karmaşık yapılandırma, CDN ve SSL entegrasyonunun ayrıca yapılması gerekir
 
 ### Vercel Domain API
+
 - **Avantajlar**: Vercel hosting ile entegrasyon, basit kullanım
 - **Dezavantajlar**: Sınırlı özelleştirme, daha az gelişmiş DNS yönetimi
 
@@ -106,4 +110,4 @@ Iqra Eğitim Portalı için aşağıdaki domain yönetim stratejisi benimsenmiş
 
 - [Cloudflare API Dokümantasyonu](https://developers.cloudflare.com/api/)
 - [Cloudflare SSL Sertifikaları](https://developers.cloudflare.com/ssl/)
-- [Multi-Tenant Uygulamalar için Domain Stratejileri](https://www.cloudflare.com/learning/cloud/what-is-a-multi-tenant-architecture/) 
+- [Multi-Tenant Uygulamalar için Domain Stratejileri](https://www.cloudflare.com/learning/cloud/what-is-a-multi-tenant-architecture/)

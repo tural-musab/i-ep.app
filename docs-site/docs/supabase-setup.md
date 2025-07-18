@@ -31,16 +31,19 @@ Supabase projeniz oluşturulduktan sonra, veritabanı yapısını kurmak için i
 ### B. Komut Satırı (CLI) ile Kurulum
 
 1. Supabase CLI'yi yükleyin (henüz yüklemediyseniz):
+
    ```bash
    npm install -g supabase
    ```
 
 2. Supabase CLI'yi kullanarak oturum açın:
+
    ```bash
    supabase login
    ```
 
 3. Proje dizinine gidin:
+
    ```bash
    cd /path/to/i-ep.app
    ```
@@ -62,7 +65,7 @@ Supabase projeniz oluşturulduktan sonra, veritabanı yapısını kurmak için i
 
 4. "URL Configuration" bölümünde:
    - **Site URL**: `https://i-ep.app` (veya geliştirme ortamı için `http://localhost:3000`)
-   - **Redirect URLs**: 
+   - **Redirect URLs**:
      - `https://i-ep.app/auth/callback`
      - `https://*.i-ep.app/auth/callback`
      - `http://localhost:3000/auth/callback` (geliştirme için)
@@ -79,6 +82,7 @@ Supabase projeniz oluşturulduktan sonra, veritabanı yapısını kurmak için i
    - `public` - Genel dosyalar için
 
 4. Her bucket için gerekli RLS politikalarını ayarlayın:
+
    ```sql
    -- Örnek: avatars bucket politikası
    CREATE POLICY "Herkes kendi avatar'ını yükleyebilir"
@@ -88,7 +92,7 @@ Supabase projeniz oluşturulduktan sonra, veritabanı yapısını kurmak için i
      bucket_id = 'avatars' AND
      (storage.foldername(name))[1] = auth.uid()::text
    );
-   
+
    CREATE POLICY "Herkes kendi avatar'ını güncelleyebilir"
    ON storage.objects
    FOR UPDATE TO authenticated
@@ -96,7 +100,7 @@ Supabase projeniz oluşturulduktan sonra, veritabanı yapısını kurmak için i
      bucket_id = 'avatars' AND
      (storage.foldername(name))[1] = auth.uid()::text
    );
-   
+
    CREATE POLICY "Avatarlar herkese görünür"
    ON storage.objects
    FOR SELECT TO authenticated
@@ -116,7 +120,7 @@ Supabase projeniz oluşturulduktan sonra, veritabanı yapısını kurmak için i
 
 ## 7. Ortam Değişkenlerini Yapılandırma
 
-1. Proje ayarlarından "API" sekmesine tıklayın 
+1. Proje ayarlarından "API" sekmesine tıklayın
 2. `SUPABASE_URL` ve `SUPABASE_ANON_KEY` değerlerini kopyalayın
 3. Projenizin `.env.local` dosyasını aşağıdaki gibi düzenleyin:
 
@@ -140,13 +144,13 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 ## Sorun Giderme
 
-- **Hata**: "Relation does not exist" 
+- **Hata**: "Relation does not exist"
   **Çözüm**: SQL dosyalarını sırasıyla tekrar çalıştırın, şemaların önce oluşturulduğundan emin olun
 
-- **Hata**: "Permission denied" 
+- **Hata**: "Permission denied"
   **Çözüm**: RLS politikalarını kontrol edin, doğru kullanıcı rolü ve tenant erişimi sağlandığından emin olun
 
-- **Hata**: "Function not found" 
+- **Hata**: "Function not found"
   **Çözüm**: Uzantıların doğru yüklendiğini kontrol edin, gerekirse `02_extensions.sql` dosyasını tekrar çalıştırın
 
 ## İleri Seviye Yapılandırma
@@ -158,4 +162,4 @@ SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 
 ---
 
-Bu kurulum talimatlarını takip ederek Iqra Eğitim Portalı'nın Supabase backend altyapısını başarıyla kurmuş olacaksınız. Sorunlarla karşılaşırsanız veya daha fazla yardıma ihtiyacınız olursa, geliştirici ekibine başvurun. 
+Bu kurulum talimatlarını takip ederek Iqra Eğitim Portalı'nın Supabase backend altyapısını başarıyla kurmuş olacaksınız. Sorunlarla karşılaşırsanız veya daha fazla yardıma ihtiyacınız olursa, geliştirici ekibine başvurun.

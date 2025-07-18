@@ -41,13 +41,13 @@ Otomatik CI/CD entegrasyonu:
 
 Sistem şu dosyalardaki değişiklikleri izler:
 
-| Dosya | Açıklama | Senkronizasyon Etkisi |
-|-------|-----------|---------------------|
-| `PROGRESS.md` | Proje ilerleme durumu | Progress yüzdesi, sprint durumu |
-| `SPRINT-PLANNING-2025.md` | Sprint planlama | Aktif sprint, sprint status |
-| `PROJECT-STATUS-REPORT-*.md` | Proje durum raporları | Genel proje durumu |
-| `DEVELOPMENT-ROADMAP-2025.md` | Geliştirme yol haritası | Roadmap güncellemeleri |
-| `src/lib/storage/**` | Storage implementation | Storage completion status |
+| Dosya                         | Açıklama                | Senkronizasyon Etkisi           |
+| ----------------------------- | ----------------------- | ------------------------------- |
+| `PROGRESS.md`                 | Proje ilerleme durumu   | Progress yüzdesi, sprint durumu |
+| `SPRINT-PLANNING-2025.md`     | Sprint planlama         | Aktif sprint, sprint status     |
+| `PROJECT-STATUS-REPORT-*.md`  | Proje durum raporları   | Genel proje durumu              |
+| `DEVELOPMENT-ROADMAP-2025.md` | Geliştirme yol haritası | Roadmap güncellemeleri          |
+| `src/lib/storage/**`          | Storage implementation  | Storage completion status       |
 
 ## 🎯 Hedef Dosya
 
@@ -99,9 +99,9 @@ Script, chokidar kullanarak dosya değişikliklerini izler:
 ```javascript
 const watcher = chokidar.watch([
   'PROGRESS.md',
-  'SPRINT-PLANNING-2025.md', 
+  'SPRINT-PLANNING-2025.md',
   'PROJECT-STATUS-REPORT-*.md',
-  'src/lib/storage/**'
+  'src/lib/storage/**',
 ]);
 ```
 
@@ -155,7 +155,7 @@ DOC_SYNC_LOG_LEVEL=info
 const CONFIG = {
   watchFiles: [
     'PROGRESS.md',
-    'SPRINT-PLANNING-2025.md'
+    'SPRINT-PLANNING-2025.md',
     // Yeni dosyalar eklenebilir
   ],
   targetFile: 'docs-site/docs/meta/dokumantasyon-iyilestirme-plani-2025.html',
@@ -198,12 +198,14 @@ Comprehensive error handling:
 ### Common Issues
 
 1. **Dosya bulunamadı hatası**
+
    ```bash
    # Dosya yollarını kontrol et
    npm run doc:status
    ```
 
 2. **Permission errors**
+
    ```bash
    # Dosya izinlerini kontrol et
    ls -la docs-site/docs/meta/

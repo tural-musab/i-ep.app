@@ -12,19 +12,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { 
-  BookOpen, 
-  Calculator, 
-  TrendingUp, 
-  Users, 
-  Award, 
+import {
+  BookOpen,
+  Calculator,
+  TrendingUp,
+  Users,
+  Award,
   FileText,
   Plus,
   Edit,
   Eye,
   Download,
   Upload,
-  BarChart3
+  BarChart3,
 } from 'lucide-react';
 import { GradeEntryForm } from '@/components/grades/grade-entry-form';
 import { GradeBook } from '@/components/grades/grade-book';
@@ -45,7 +45,7 @@ export default function GradesPage() {
     gradedAssignments: 245,
     pendingGrades: 18,
     monthlyTrend: 'up',
-    trendValue: 0.15
+    trendValue: 0.15,
   };
 
   const classPerformance = [
@@ -56,7 +56,7 @@ export default function GradesPage() {
       subjectCount: 8,
       completionRate: 95,
       topSubject: 'Matematik',
-      challengingSubject: 'Fen Bilgisi'
+      challengingSubject: 'Fen Bilgisi',
     },
     {
       class: '5-B',
@@ -65,7 +65,7 @@ export default function GradesPage() {
       subjectCount: 8,
       completionRate: 88,
       topSubject: 'Türkçe',
-      challengingSubject: 'Matematik'
+      challengingSubject: 'Matematik',
     },
     {
       class: '6-A',
@@ -74,7 +74,7 @@ export default function GradesPage() {
       subjectCount: 9,
       completionRate: 92,
       topSubject: 'Sosyal Bilgiler',
-      challengingSubject: 'İngilizce'
+      challengingSubject: 'İngilizce',
     },
     {
       class: '6-B',
@@ -83,8 +83,8 @@ export default function GradesPage() {
       subjectCount: 9,
       completionRate: 90,
       topSubject: 'Türkçe',
-      challengingSubject: 'Fen Bilgisi'
-    }
+      challengingSubject: 'Fen Bilgisi',
+    },
   ];
 
   const recentGrades = [
@@ -98,7 +98,7 @@ export default function GradesPage() {
       grade: 85,
       maxGrade: 100,
       date: '2025-01-15',
-      teacher: 'Ahmet Öğretmen'
+      teacher: 'Ahmet Öğretmen',
     },
     {
       id: '2',
@@ -110,7 +110,7 @@ export default function GradesPage() {
       grade: 92,
       maxGrade: 100,
       date: '2025-01-15',
-      teacher: 'Fatma Öğretmen'
+      teacher: 'Fatma Öğretmen',
     },
     {
       id: '3',
@@ -122,8 +122,8 @@ export default function GradesPage() {
       grade: 78,
       maxGrade: 100,
       date: '2025-01-14',
-      teacher: 'Mustafa Öğretmen'
-    }
+      teacher: 'Mustafa Öğretmen',
+    },
   ];
 
   const subjectStatistics = [
@@ -135,12 +135,12 @@ export default function GradesPage() {
       highestGrade: 100,
       lowestGrade: 45,
       gradeDistribution: {
-        'A': 25,
-        'B': 45,
-        'C': 35,
-        'D': 20,
-        'F': 25
-      }
+        A: 25,
+        B: 45,
+        C: 35,
+        D: 20,
+        F: 25,
+      },
     },
     {
       subject: 'Türkçe',
@@ -150,12 +150,12 @@ export default function GradesPage() {
       highestGrade: 98,
       lowestGrade: 52,
       gradeDistribution: {
-        'A': 35,
-        'B': 50,
-        'C': 30,
-        'D': 20,
-        'F': 15
-      }
+        A: 35,
+        B: 50,
+        C: 30,
+        D: 20,
+        F: 15,
+      },
     },
     {
       subject: 'Fen Bilgisi',
@@ -165,13 +165,13 @@ export default function GradesPage() {
       highestGrade: 96,
       lowestGrade: 38,
       gradeDistribution: {
-        'A': 20,
-        'B': 40,
-        'C': 45,
-        'D': 25,
-        'F': 20
-      }
-    }
+        A: 20,
+        B: 40,
+        C: 45,
+        D: 25,
+        F: 20,
+      },
+    },
   ];
 
   const pendingGrades = [
@@ -185,7 +185,7 @@ export default function GradesPage() {
       studentsCount: 30,
       gradedCount: 25,
       pendingCount: 5,
-      teacher: 'Ahmet Öğretmen'
+      teacher: 'Ahmet Öğretmen',
     },
     {
       id: '2',
@@ -197,8 +197,8 @@ export default function GradesPage() {
       studentsCount: 28,
       gradedCount: 20,
       pendingCount: 8,
-      teacher: 'Fatma Öğretmen'
-    }
+      teacher: 'Fatma Öğretmen',
+    },
   ];
 
   const getGradeColor = (grade: number, maxGrade: number) => {
@@ -237,56 +237,53 @@ export default function GradesPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto space-y-6 p-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Not Yönetimi</h1>
-          <p className="text-gray-600 mt-2">Öğrenci notlarını yönetin, analiz edin ve raporlayın</p>
+          <p className="mt-2 text-gray-600">Öğrenci notlarını yönetin, analiz edin ve raporlayın</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Rapor İndir
           </Button>
           <Button variant="outline">
-            <Upload className="h-4 w-4 mr-2" />
+            <Upload className="mr-2 h-4 w-4" />
             Notları İçe Aktar
           </Button>
           <Button>
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Not Ekle
           </Button>
         </div>
       </div>
 
       {/* Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Toplam Öğrenci</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{gradeOverview.totalStudents}</div>
-            <p className="text-xs text-muted-foreground">
-              {gradeOverview.totalSubjects} ders
-            </p>
+            <p className="text-muted-foreground text-xs">{gradeOverview.totalSubjects} ders</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ortalama GPA</CardTitle>
-            <Calculator className="h-4 w-4 text-muted-foreground" />
+            <Calculator className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${getGPAColor(gradeOverview.averageGPA)}`}>
               {gradeOverview.averageGPA}
             </div>
             <div className="flex items-center text-xs text-green-600">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              +{gradeOverview.trendValue} bu ay
+              <TrendingUp className="mr-1 h-3 w-3" />+{gradeOverview.trendValue} bu ay
             </div>
           </CardContent>
         </Card>
@@ -294,26 +291,22 @@ export default function GradesPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Notlanan Ödev</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <Award className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{gradeOverview.gradedAssignments}</div>
-            <p className="text-xs text-muted-foreground">
-              Bu dönem
-            </p>
+            <p className="text-muted-foreground text-xs">Bu dönem</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bekleyen Notlar</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">{gradeOverview.pendingGrades}</div>
-            <p className="text-xs text-muted-foreground">
-              Not girilmesi gereken
-            </p>
+            <p className="text-muted-foreground text-xs">Not girilmesi gereken</p>
           </CardContent>
         </Card>
       </div>
@@ -330,7 +323,7 @@ export default function GradesPage() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Class Performance */}
             <Card>
               <CardHeader>
@@ -338,15 +331,13 @@ export default function GradesPage() {
                   <Users className="h-5 w-5" />
                   Sınıf Performansları
                 </CardTitle>
-                <CardDescription>
-                  Sınıf bazlı akademik performans özeti
-                </CardDescription>
+                <CardDescription>Sınıf bazlı akademik performans özeti</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {classPerformance.map((classData, index) => (
-                    <div key={index} className="p-4 border rounded-lg">
-                      <div className="flex justify-between items-start mb-3">
+                    <div key={index} className="rounded-lg border p-4">
+                      <div className="mb-3 flex items-start justify-between">
                         <div>
                           <h3 className="font-medium">{classData.class}</h3>
                           <p className="text-sm text-gray-600">{classData.students} öğrenci</p>
@@ -358,8 +349,8 @@ export default function GradesPage() {
                           <div className="text-sm text-gray-600">GPA</div>
                         </div>
                       </div>
-                      
-                      <div className="grid grid-cols-2 gap-4 mb-3">
+
+                      <div className="mb-3 grid grid-cols-2 gap-4">
                         <div>
                           <div className="text-sm text-gray-600">Tamamlanma Oranı</div>
                           <div className="flex items-center gap-2">
@@ -372,15 +363,19 @@ export default function GradesPage() {
                           <div className="text-lg font-bold">{classData.subjectCount}</div>
                         </div>
                       </div>
-                      
+
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <span className="text-gray-600">En Başarılı:</span>
-                          <span className="ml-2 font-medium text-green-600">{classData.topSubject}</span>
+                          <span className="ml-2 font-medium text-green-600">
+                            {classData.topSubject}
+                          </span>
                         </div>
                         <div>
                           <span className="text-gray-600">Zor Olan:</span>
-                          <span className="ml-2 font-medium text-red-600">{classData.challengingSubject}</span>
+                          <span className="ml-2 font-medium text-red-600">
+                            {classData.challengingSubject}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -396,28 +391,28 @@ export default function GradesPage() {
                   <BookOpen className="h-5 w-5" />
                   Ders İstatistikleri
                 </CardTitle>
-                <CardDescription>
-                  Ders bazlı genel performans analizi
-                </CardDescription>
+                <CardDescription>Ders bazlı genel performans analizi</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {subjectStatistics.map((subject, index) => (
-                    <div key={index} className="p-4 border rounded-lg">
-                      <div className="flex justify-between items-start mb-3">
+                    <div key={index} className="rounded-lg border p-4">
+                      <div className="mb-3 flex items-start justify-between">
                         <div>
                           <h3 className="font-medium">{subject.subject}</h3>
                           <p className="text-sm text-gray-600">{subject.totalStudents} öğrenci</p>
                         </div>
                         <div className="text-right">
-                          <div className={`text-lg font-bold ${getGradeColor(subject.averageGrade, 100)}`}>
+                          <div
+                            className={`text-lg font-bold ${getGradeColor(subject.averageGrade, 100)}`}
+                          >
                             {subject.averageGrade}
                           </div>
                           <div className="text-sm text-gray-600">Ortalama</div>
                         </div>
                       </div>
-                      
-                      <div className="grid grid-cols-2 gap-4 mb-3">
+
+                      <div className="mb-3 grid grid-cols-2 gap-4">
                         <div>
                           <div className="text-sm text-gray-600">Başarı Oranı</div>
                           <div className="flex items-center gap-2">
@@ -432,7 +427,7 @@ export default function GradesPage() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex flex-wrap gap-1">
                         {Object.entries(subject.gradeDistribution).map(([letter, count]) => (
                           <Badge key={letter} variant="outline" className="text-xs">
@@ -454,14 +449,15 @@ export default function GradesPage() {
                 <FileText className="h-5 w-5" />
                 Son Girilen Notlar
               </CardTitle>
-              <CardDescription>
-                En son girilen notların listesi
-              </CardDescription>
+              <CardDescription>En son girilen notların listesi</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {recentGrades.map((grade) => (
-                  <div key={grade.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div
+                    key={grade.id}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
                     <div className="flex items-center gap-4">
                       <div>
                         <h3 className="font-medium">{grade.student}</h3>
@@ -480,10 +476,13 @@ export default function GradesPage() {
                         <div className="text-sm font-medium">{grade.teacher}</div>
                       </div>
                       <div className="text-right">
-                        <Badge variant="outline" className={getGradeBadge(grade.grade, grade.maxGrade)}>
+                        <Badge
+                          variant="outline"
+                          className={getGradeBadge(grade.grade, grade.maxGrade)}
+                        >
                           {getLetterGrade(grade.grade, grade.maxGrade)}
                         </Badge>
-                        <div className="text-sm text-gray-600 mt-1">
+                        <div className="mt-1 text-sm text-gray-600">
                           {grade.grade}/{grade.maxGrade}
                         </div>
                       </div>
@@ -507,15 +506,13 @@ export default function GradesPage() {
                 <FileText className="h-5 w-5" />
                 Bekleyen Notlar
               </CardTitle>
-              <CardDescription>
-                Not girişi bekleyen sınavlar ve ödevler
-              </CardDescription>
+              <CardDescription>Not girişi bekleyen sınavlar ve ödevler</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {pendingGrades.map((pending) => (
-                  <div key={pending.id} className="p-4 border rounded-lg bg-orange-50">
-                    <div className="flex justify-between items-start mb-3">
+                  <div key={pending.id} className="rounded-lg border bg-orange-50 p-4">
+                    <div className="mb-3 flex items-start justify-between">
                       <div>
                         <h3 className="font-medium">{pending.examName}</h3>
                         <p className="text-sm text-gray-600">
@@ -526,33 +523,37 @@ export default function GradesPage() {
                         {pending.pendingCount} bekleyen
                       </Badge>
                     </div>
-                    
-                    <div className="grid grid-cols-3 gap-4 mb-3">
+
+                    <div className="mb-3 grid grid-cols-3 gap-4">
                       <div>
                         <div className="text-sm text-gray-600">Toplam Öğrenci</div>
                         <div className="text-lg font-bold">{pending.studentsCount}</div>
                       </div>
                       <div>
                         <div className="text-sm text-gray-600">Notlanan</div>
-                        <div className="text-lg font-bold text-green-600">{pending.gradedCount}</div>
+                        <div className="text-lg font-bold text-green-600">
+                          {pending.gradedCount}
+                        </div>
                       </div>
                       <div>
                         <div className="text-sm text-gray-600">Bekleyen</div>
-                        <div className="text-lg font-bold text-orange-600">{pending.pendingCount}</div>
+                        <div className="text-lg font-bold text-orange-600">
+                          {pending.pendingCount}
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="flex justify-between items-center">
+
+                    <div className="flex items-center justify-between">
                       <div className="text-sm text-gray-600">
                         Sınav Tarihi: {new Date(pending.examDate).toLocaleDateString('tr-TR')}
                       </div>
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-2" />
+                          <Eye className="mr-2 h-4 w-4" />
                           Detay
                         </Button>
                         <Button size="sm">
-                          <Edit className="h-4 w-4 mr-2" />
+                          <Edit className="mr-2 h-4 w-4" />
                           Not Gir
                         </Button>
                       </div>
@@ -584,19 +585,15 @@ export default function GradesPage() {
           <Card>
             <CardHeader>
               <CardTitle>Not Raporları</CardTitle>
-              <CardDescription>
-                Detaylı not raporlarını görüntüleyin ve indirin
-              </CardDescription>
+              <CardDescription>Detaylı not raporlarını görüntüleyin ve indirin</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <BarChart3 className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium mb-2">Not Raporları</h3>
-                <p className="text-gray-600 mb-4">
-                  Bu özellik yakında eklenecek
-                </p>
+              <div className="py-8 text-center">
+                <BarChart3 className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                <h3 className="mb-2 text-lg font-medium">Not Raporları</h3>
+                <p className="mb-4 text-gray-600">Bu özellik yakında eklenecek</p>
                 <Button variant="outline">
-                  <FileText className="h-4 w-4 mr-2" />
+                  <FileText className="mr-2 h-4 w-4" />
                   Rapor Oluştur
                 </Button>
               </div>

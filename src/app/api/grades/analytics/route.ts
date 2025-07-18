@@ -1,7 +1,7 @@
 /**
  * Grade Analytics API Route
  * İ-EP.APP - Grade Management System
- * 
+ *
  * Endpoints:
  * - GET /api/grades/analytics - Get comprehensive grade analytics and statistics
  */
@@ -23,7 +23,9 @@ const AnalyticsQuerySchema = z.object({
   academicYear: z.string().optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
-  gradeType: z.enum(['exam', 'homework', 'project', 'participation', 'quiz', 'midterm', 'final']).optional(),
+  gradeType: z
+    .enum(['exam', 'homework', 'project', 'participation', 'quiz', 'midterm', 'final'])
+    .optional(),
   includeDetails: z.string().transform(Boolean).optional().default(false),
   includeComparisons: z.string().transform(Boolean).optional().default(false),
   timePeriod: z.enum(['week', 'month', 'semester', 'year']).optional().default('semester'),
@@ -37,25 +39,25 @@ export async function GET(request: NextRequest) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Parse and validate query parameters
     const { searchParams } = new URL(request.url);
     const queryParams = Object.fromEntries(searchParams.entries());
-    
+
     const validatedQuery = AnalyticsQuerySchema.parse(queryParams);
-    
+
     // Initialize repository
     const gradeRepo = new GradeRepository(supabase, tenantId);
-    
+
     let result;
 
     switch (validatedQuery.type) {
@@ -66,7 +68,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await generateStudentAnalytics(
           gradeRepo,
           validatedQuery.studentId,
@@ -85,7 +87,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await generateClassAnalytics(
           gradeRepo,
           validatedQuery.classId,
@@ -103,7 +105,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await generateSubjectAnalytics(
           gradeRepo,
           validatedQuery.subjectId,
@@ -121,7 +123,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await generateTeacherAnalytics(
           gradeRepo,
           validatedQuery.teacherId,
@@ -167,10 +169,7 @@ export async function GET(request: NextRequest) {
         break;
 
       default:
-        return NextResponse.json(
-          { error: 'Invalid analytics type' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Invalid analytics type' }, { status: 400 });
     }
 
     return NextResponse.json({
@@ -179,21 +178,17 @@ export async function GET(request: NextRequest) {
       type: validatedQuery.type,
       generatedAt: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Error generating grade analytics:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid query parameters', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to generate analytics' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Failed to generate analytics' }, { status: 500 });
   }
 }
 
@@ -232,14 +227,10 @@ async function generateStudentAnalytics(
 
   let classRankings = null;
   let subjectComparisons = null;
-  
+
   if (includeComparisons) {
-    classRankings = await gradeRepo.getStudentClassRankings(
-      studentId,
-      semester,
-      academicYear
-    );
-    
+    classRankings = await gradeRepo.getStudentClassRankings(studentId, semester, academicYear);
+
     subjectComparisons = await gradeRepo.getStudentSubjectComparisons(
       studentId,
       semester,
@@ -300,11 +291,7 @@ async function generateClassAnalytics(
 
   let subjectBreakdown = null;
   if (includeDetails && !subjectId) {
-    subjectBreakdown = await gradeRepo.getClassSubjectBreakdown(
-      classId,
-      semester,
-      academicYear
-    );
+    subjectBreakdown = await gradeRepo.getClassSubjectBreakdown(classId, semester, academicYear);
   }
 
   return {
@@ -392,14 +379,10 @@ async function generateTeacherAnalytics(
 
   let classBreakdown = null;
   let subjectBreakdown = null;
-  
+
   if (includeDetails) {
-    classBreakdown = await gradeRepo.getTeacherClassBreakdown(
-      teacherId,
-      semester,
-      academicYear
-    );
-    
+    classBreakdown = await gradeRepo.getTeacherClassBreakdown(teacherId, semester, academicYear);
+
     if (!subjectId) {
       subjectBreakdown = await gradeRepo.getTeacherSubjectBreakdown(
         teacherId,
@@ -429,27 +412,21 @@ async function generateTrendsAnalytics(
   startDate?: Date,
   endDate?: Date
 ) {
-  const trends = await gradeRepo.getGradeTrends(
-    timePeriod,
-    {
-      studentId,
-      classId,
-      subjectId,
-      startDate,
-      endDate,
-    }
-  );
+  const trends = await gradeRepo.getGradeTrends(timePeriod, {
+    studentId,
+    classId,
+    subjectId,
+    startDate,
+    endDate,
+  });
 
-  const performanceTrends = await gradeRepo.getPerformanceTrends(
-    timePeriod,
-    {
-      studentId,
-      classId,
-      subjectId,
-      startDate,
-      endDate,
-    }
-  );
+  const performanceTrends = await gradeRepo.getPerformanceTrends(timePeriod, {
+    studentId,
+    classId,
+    subjectId,
+    startDate,
+    endDate,
+  });
 
   return {
     trends,
@@ -515,17 +492,9 @@ async function generateComparisonAnalytics(
   academicYear?: string,
   includeDetails: boolean = false
 ) {
-  const classComparisons = await gradeRepo.getClassComparisons(
-    semester,
-    academicYear,
-    subjectId
-  );
+  const classComparisons = await gradeRepo.getClassComparisons(semester, academicYear, subjectId);
 
-  const subjectComparisons = await gradeRepo.getSubjectComparisons(
-    classId,
-    semester,
-    academicYear
-  );
+  const subjectComparisons = await gradeRepo.getSubjectComparisons(classId, semester, academicYear);
 
   let historicalComparisons = null;
   if (includeDetails) {

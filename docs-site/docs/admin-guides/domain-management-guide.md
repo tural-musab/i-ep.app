@@ -119,6 +119,7 @@ SSL sertifikaları, Cloudflare tarafından otomatik olarak sağlanır ve yöneti
 **Sorun**: Domain doğrulama işlemi başarısız oluyor.
 
 **Çözüm**:
+
 1. DNS sağlayıcınızın kontrol panelinde CNAME kaydını kontrol edin
 2. Kaydın doğru formatta olduğundan emin olun
 3. DNS değişikliklerinin yayılması için 24-48 saat bekleyin
@@ -133,6 +134,7 @@ SSL sertifikaları, Cloudflare tarafından otomatik olarak sağlanır ve yöneti
 **Sorun**: SSL sertifikası oluşturulmuyor veya "Geçersiz Sertifika" hatası alınıyor.
 
 **Çözüm**:
+
 1. Domain doğrulamasının tamamlandığını kontrol edin
 2. Cloudflare SSL modunun "Full" olarak ayarlandığından emin olun
 3. 24 saat bekleyin, SSL sağlama işlemi zaman alabilir
@@ -143,6 +145,7 @@ SSL sertifikaları, Cloudflare tarafından otomatik olarak sağlanır ve yöneti
 **Sorun**: "Subdomain zaten kullanımda" hatası alınıyor.
 
 **Çözüm**:
+
 1. Farklı bir subdomain adı seçin
 2. Eğer bu subdomain daha önce kullanıldıysa ve artık aktif değilse, sistemde temizlenmesi için 7 gün bekleyin
 3. Acil durumlarda destek ekibiyle iletişime geçin
@@ -173,4 +176,4 @@ Domain yönetimi ile ilgili sorunlarınız için:
 
 - E-posta: domain-support@i-ep.app
 - Destek portalı: https://destek.i-ep.app
-- Telefon: +90 (212) XXX-XX-XX (Mesai saatleri içinde) 
+- Telefon: +90 (212) XXX-XX-XX (Mesai saatleri içinde)

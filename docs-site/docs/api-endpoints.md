@@ -16,11 +16,11 @@ GET /api/domains
 
 #### Query Parametreleri
 
-| Parametre | Tip | Zorunlu | Açıklama |
-|-----------|-----|---------|----------|
-| tenantId | string | hayır | Belirli bir tenant'a ait domainleri filtreler |
-| type | string | hayır | Domain tipine göre filtreler: "subdomain" veya "custom" |
-| isVerified | boolean | hayır | Doğrulama durumuna göre filtreler |
+| Parametre  | Tip     | Zorunlu | Açıklama                                                |
+| ---------- | ------- | ------- | ------------------------------------------------------- |
+| tenantId   | string  | hayır   | Belirli bir tenant'a ait domainleri filtreler           |
+| type       | string  | hayır   | Domain tipine göre filtreler: "subdomain" veya "custom" |
+| isVerified | boolean | hayır   | Doğrulama durumuna göre filtreler                       |
 
 #### Yanıt
 
@@ -279,17 +279,17 @@ POST /api/domains/{domainId}/renew-ssl
 
 Domain API'leri aşağıdaki hata kodlarını döndürebilir:
 
-| Hata Kodu | Açıklama |
-|-----------|----------|
-| domain_not_found | Belirtilen domain bulunamadı |
-| subdomain_conflict | Bu subdomain zaten kullanılıyor |
-| invalid_domain_format | Geçersiz domain formatı |
-| dns_verification_failed | DNS doğrulama başarısız oldu |
-| ssl_provision_failed | SSL sertifikası oluşturulamadı |
+| Hata Kodu               | Açıklama                                           |
+| ----------------------- | -------------------------------------------------- |
+| domain_not_found        | Belirtilen domain bulunamadı                       |
+| subdomain_conflict      | Bu subdomain zaten kullanılıyor                    |
+| invalid_domain_format   | Geçersiz domain formatı                            |
+| dns_verification_failed | DNS doğrulama başarısız oldu                       |
+| ssl_provision_failed    | SSL sertifikası oluşturulamadı                     |
 | primary_domain_required | Her tenant'ın en az bir primary domain'i olmalıdır |
-| domain_not_verified | Doğrulanmamış domain primary olarak ayarlanamaz |
-| cloudflare_api_error | Cloudflare API ile iletişim hatası |
-| permission_denied | Bu işlem için yetkiniz yok |
+| domain_not_verified     | Doğrulanmamış domain primary olarak ayarlanamaz    |
+| cloudflare_api_error    | Cloudflare API ile iletişim hatası                 |
+| permission_denied       | Bu işlem için yetkiniz yok                         |
 
 ## Örnek Kullanımlar
 
@@ -319,10 +319,10 @@ const getDomains = async () => {
   const response = await fetch('/api/domains', {
     method: 'GET',
     headers: {
-      'Authorization': `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
-  
+
   return await response.json();
 };
 
@@ -331,12 +331,12 @@ const addCustomDomain = async (tenantId: string, domain: string) => {
   const response = await fetch('/api/domains/custom', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ tenantId, domain })
+    body: JSON.stringify({ tenantId, domain }),
   });
-  
+
   return await response.json();
 };
-``` 
+```

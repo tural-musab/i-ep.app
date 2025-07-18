@@ -1,7 +1,7 @@
 /**
  * Attendance Statistics API Route
  * İ-EP.APP - Attendance Management System
- * 
+ *
  * Endpoints:
  * - GET /api/attendance/statistics - Get attendance statistics and analytics
  */
@@ -31,25 +31,25 @@ export async function GET(request: NextRequest) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Parse and validate query parameters
     const { searchParams } = new URL(request.url);
     const queryParams = Object.fromEntries(searchParams.entries());
-    
+
     const validatedQuery = StatisticsQuerySchema.parse(queryParams);
-    
+
     // Initialize repository
     const attendanceRepo = new AttendanceRepository(supabase, tenantId);
-    
+
     let result;
 
     switch (validatedQuery.type) {
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await attendanceRepo.getStudentAttendanceStats(
           validatedQuery.studentId,
           validatedQuery.startDate ? new Date(validatedQuery.startDate) : undefined,
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await attendanceRepo.getClassAttendanceSummary(
           validatedQuery.classId,
           validatedQuery.startDate ? new Date(validatedQuery.startDate) : new Date()
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await attendanceRepo.getAttendanceTrends(
           validatedQuery.studentId,
           validatedQuery.days || 30
@@ -113,10 +113,7 @@ export async function GET(request: NextRequest) {
         break;
 
       default:
-        return NextResponse.json(
-          { error: 'Invalid statistics type' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Invalid statistics type' }, { status: 400 });
     }
 
     return NextResponse.json({
@@ -124,20 +121,16 @@ export async function GET(request: NextRequest) {
       data: result,
       type: validatedQuery.type,
     });
-
   } catch (error) {
     console.error('Error fetching attendance statistics:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid query parameters', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to fetch attendance statistics' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Failed to fetch attendance statistics' }, { status: 500 });
   }
 }

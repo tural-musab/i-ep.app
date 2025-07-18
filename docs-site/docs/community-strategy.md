@@ -17,21 +17,25 @@ Bu doküman, Iqra Eğitim Portalı'nın kullanıcı topluluğunu oluşturmak, g�
 Iqra Eğitim Portalı topluluğu dört ana segmentten oluşmaktadır:
 
 ### 1. Eğitim Kurumu Yöneticileri
+
 - Okul müdürleri, yardımcıları ve BT yöneticileri
 - Karar verici pozisyonunda, platformun kurumsal benimsenmesinde anahtar rol
 - Odak: Operasyonel verimlilik, veri güvenliği, maliyet etkinliği
 
 ### 2. Öğretmenler
+
 - Platform üzerinden eğitim süreçlerini yöneten temel kullanıcılar
 - Günlük operasyonlar için platformu en yoğun kullanan grup
 - Odak: Kullanım kolaylığı, pedagojik araçlar, iş yükü azaltma
 
 ### 3. Öğrenciler
+
 - Platform üzerinden eğitim içeriklerine ve değerlendirmelere erişen kullanıcılar
 - Dijital okuryazarlık seviyeleri değişken olabilir
 - Odak: Kullanıcı dostu arayüz, erişilebilirlik, etkileşimli özellikler
 
 ### 4. Veliler
+
 - Öğrenci gelişimini takip eden ve okul-aile iletişimini sağlayan kullanıcılar
 - Farklı teknoloji okuryazarlık seviyelerine sahip
 - Odak: Basit arayüz, bilgilendirme özellikleri, iletişim araçları
@@ -41,17 +45,20 @@ Iqra Eğitim Portalı topluluğu dört ana segmentten oluşmaktadır:
 ### Aşama 1: Pilot Topluluk (0-6 Ay)
 
 **Hedefler:**
+
 - İlk 10-15 okul ile pilot topluluk oluşturmak
 - Ürün-pazar uyumunu doğrulamak
 - Erken geri bildirim döngüleri kurmak
 
 **Stratejiler:**
+
 - Pilot okulların dikkatli seçimi (farklı okul türleri, bölgeler ve büyüklükler)
 - Yüz yüze eğitim ve destek sağlama
 - Haftalık geri bildirim oturumları düzenleme
 - VIP kullanıcı desteği
 
 **Metrikler:**
+
 - Katılım oranı (aktif kullanıcılar / toplam kullanıcılar)
 - Haftalık geri bildirim toplantılarına katılım
 - Bildirilen hata ve iyileştirme önerileri sayısı
@@ -60,17 +67,20 @@ Iqra Eğitim Portalı topluluğu dört ana segmentten oluşmaktadır:
 ### Aşama 2: Topluluk Genişletme (6-18 Ay)
 
 **Hedefler:**
+
 - Kullanıcı tabanını 100+ okula genişletmek
 - İlk "şampiyon kullanıcılar" grubunu oluşturmak
 - Kullanıcı tarafından oluşturulan içerik ekosistemini başlatmak
 
 **Stratejiler:**
+
 - Referans programı (mevcut kullanıcılardan yeni kullanıcılara)
 - Şampiyon kullanıcı programının başlatılması
 - İlk Iqra Eğitim Portalı Kullanıcı Konferansı düzenlenmesi
 - Öğretmenler için içerik paylaşım platformu oluşturulması
 
 **Metrikler:**
+
 - Aylık aktif kullanıcı artışı
 - Referans programı dönüşüm oranı
 - Şampiyon kullanıcı sayısı ve etkileşimleri
@@ -79,17 +89,20 @@ Iqra Eğitim Portalı topluluğu dört ana segmentten oluşmaktadır:
 ### Aşama 3: Kendini Sürdüren Topluluk (18+ Ay)
 
 **Hedefler:**
+
 - Kendini yöneten ve sürdüren bir topluluk oluşturmak
 - Topluluk liderlerinin yetkilendirilmesi
 - Eğitim ekosistemine katkıda bulunan bir platform oluşturmak
 
 **Stratejiler:**
+
 - Topluluk moderatörleri programı
 - Bölgesel kullanıcı grupları
 - Açık API ve entegrasyon ekosistemi
 - Yıllık Iqra Eğitim Portalı Eğitim İnovasyon Ödülleri
 
 **Metrikler:**
+
 - Topluluk katılım oranları (forum yazıları, etkinlikler)
 - Topluluk tarafından çözülen destek soruları yüzdesi
 - Topluluk liderlerinin sayısı ve aktivitesi
@@ -116,8 +129,8 @@ export const forumCategories = [
     subForums: [
       { id: 'system-setup', title: 'Sistem Kurulumu ve Yapılandırma' },
       { id: 'data-management', title: 'Veri Yönetimi ve Raporlama' },
-      { id: 'staff-management', title: 'Personel Yönetimi' }
-    ]
+      { id: 'staff-management', title: 'Personel Yönetimi' },
+    ],
   },
   {
     id: 'teachers',
@@ -127,8 +140,8 @@ export const forumCategories = [
       { id: 'classroom-management', title: 'Sınıf Yönetimi' },
       { id: 'assessment', title: 'Ölçme ve Değerlendirme' },
       { id: 'content-sharing', title: 'İçerik Paylaşımı' },
-      { id: 'best-practices', title: 'En İyi Uygulamalar' }
-    ]
+      { id: 'best-practices', title: 'En İyi Uygulamalar' },
+    ],
   },
   {
     id: 'students',
@@ -137,8 +150,8 @@ export const forumCategories = [
     subForums: [
       { id: 'platform-usage', title: 'Platform Kullanımı' },
       { id: 'study-groups', title: 'Çalışma Grupları' },
-      { id: 'student-council', title: 'Öğrenci Konseyi' }
-    ]
+      { id: 'student-council', title: 'Öğrenci Konseyi' },
+    ],
   },
   {
     id: 'parents',
@@ -147,8 +160,8 @@ export const forumCategories = [
     subForums: [
       { id: 'parent-portal', title: 'Veli Portalı Kullanımı' },
       { id: 'parent-teacher', title: 'Veli-Öğretmen İşbirliği' },
-      { id: 'home-support', title: 'Evde Öğrenme Desteği' }
-    ]
+      { id: 'home-support', title: 'Evde Öğrenme Desteği' },
+    ],
   },
   {
     id: 'feature-requests',
@@ -157,8 +170,8 @@ export const forumCategories = [
     subForums: [
       { id: 'under-review', title: 'İnceleme Altında' },
       { id: 'planned', title: 'Planlanıyor' },
-      { id: 'implemented', title: 'Uygulandı' }
-    ]
+      { id: 'implemented', title: 'Uygulandı' },
+    ],
   },
   {
     id: 'success-stories',
@@ -167,9 +180,9 @@ export const forumCategories = [
     subForums: [
       { id: 'case-studies', title: 'Vaka Çalışmaları' },
       { id: 'testimonials', title: 'Kullanıcı Deneyimleri' },
-      { id: 'impact-stories', title: 'Etki Hikayeleri' }
-    ]
-  }
+      { id: 'impact-stories', title: 'Etki Hikayeleri' },
+    ],
+  },
 ];
 ```
 
@@ -203,18 +216,21 @@ Düzenli olarak gerçekleştirilecek çevrimiçi etkinlikler:
 Platformun en aktif ve bilgili kullanıcılarının diğer kullanıcılara rehberlik ettiği program:
 
 #### Seçim Kriterleri
+
 - Platform kullanım süresi ve sıklığı
 - Topluluk katkıları (forum yanıtları, içerik paylaşımı)
 - Eğitim ve mentorluk becerileri
 - Farklı rollerin temsili (yönetici, öğretmen, BT uzmanı)
 
 #### Şampiyon Sorumlulukları
+
 - Topluluk forumlarında destek sağlamak
 - Yerel kullanıcı grubu etkinlikleri düzenlemek
 - Kullanım ipuçları ve en iyi uygulamalar oluşturmak
 - Beta test programlarına katılmak
 
 #### Şampiyon Avantajları
+
 - Erken erişim yeni özelliklere
 - Özel eğitim oturumları
 - Yıllık şampiyonlar zirvesine katılım
@@ -242,22 +258,24 @@ interface ChampionUser {
 
 // Şampiyon puanı hesaplama
 export function calculateChampionScore(champion: ChampionUser): number {
-  const contributionScore = 
+  const contributionScore =
     champion.contributions.forum_posts * 2 +
     champion.contributions.knowledge_articles * 10 +
     champion.contributions.events_hosted * 15 +
     champion.contributions.mentoring_hours * 5;
-  
+
   const tenureMonths = differenceInMonths(new Date(), champion.joined_date);
   const tenureScore = Math.min(tenureMonths * 2, 50); // Maksimum 50 puan
-  
+
   const badgeScore = champion.badges.length * 5;
-  
+
   return contributionScore + tenureScore + badgeScore;
 }
 
 // Sertifikasyon seviyesi değerlendirme
-export function evaluateChampionCertificationLevel(score: number): ChampionUser['certification_level'] {
+export function evaluateChampionCertificationLevel(
+  score: number
+): ChampionUser['certification_level'] {
   if (score >= 500) return 'platinum';
   if (score >= 300) return 'gold';
   if (score >= 150) return 'silver';
@@ -270,17 +288,20 @@ export function evaluateChampionCertificationLevel(score: number): ChampionUser[
 Öğretmenler ve eğitimciler arasında ders planları, öğretim materyalleri ve değerlendirme araçlarının paylaşılmasını teşvik eden program:
 
 #### İçerik Kategorileri
+
 - Ders planları ve ünite planlamaları
 - Ölçme ve değerlendirme araçları
 - Etkileşimli öğrenme materyalleri
 - Veli iletişim şablonları
 
 #### Kalite Güvence Süreci
+
 - Topluluk değerlendirme ve derecelendirme sistemi
 - Editör incelemesi ve onayı
 - Telif hakkı ve uygunluk kontrolü
 
 #### Teşvik Mekanizmaları
+
 - İçerik kullanım istatistikleri ve etki ölçümü
 - Rozet ve tanınma sistemi
 - Yıllık en iyi içerik yarışmaları
@@ -291,16 +312,19 @@ export function evaluateChampionCertificationLevel(score: number): ChampionUser[
 Yeni özelliklerin ve güncellemelerin piyasaya sürülmeden önce test edilmesine olanak tanıyan program:
 
 #### Katılım Süreci
+
 - Başvuru ve seçim kriterleri
 - Gizlilik anlaşması ve beklentiler
 - Test sürecine giriş eğitimi
 
 #### Test Süreci
+
 - Senaryoya dayalı test vakaları
 - Hata raporlama mekanizması
 - Geribildirim anketleri ve oturumlar
 
 #### Ödüller ve Tanınma
+
 - Katkıda bulunanlar için özel rozet
 - Ürün kredileri ve indirimler
 - Yol haritası etkileme fırsatı
@@ -309,15 +333,15 @@ Yeni özelliklerin ve güncellemelerin piyasaya sürülmeden önce test edilmesi
 
 ### Temel Topluluk Metrikleri
 
-| Metrik | Açıklama | Hedef |
-|--------|----------|-------|
+| Metrik                       | Açıklama                                                    | Hedef           |
+| ---------------------------- | ----------------------------------------------------------- | --------------- |
 | Aylık Aktif Topluluk Üyeleri | Topluluk platformunda aktif olan benzersiz kullanıcı sayısı | İlk yıl: 5,000+ |
-| Katılım Oranı | Aktif topluluk üyeleri / Toplam kullanıcılar | %25+ |
-| Yanıt Verilen Sorular | Topluluk üyeleri tarafından yanıtlanan soruların oranı | %60+ |
-| Yanıt Süresi | Bir sorunun ilk yanıtı alması için gereken ortalama süre | <8 saat |
-| Çözüm Oranı | Çözümlenen sorunların toplam sorunlara oranı | %85+ |
-| İçerik Üretim Oranı | Topluluk tarafından aylık oluşturulan içerik miktarı | Aylık 100+ |
-| NPS (Net Promoter Score) | Topluluk deneyimi için tavsiye etme olasılığı | 40+ |
+| Katılım Oranı                | Aktif topluluk üyeleri / Toplam kullanıcılar                | %25+            |
+| Yanıt Verilen Sorular        | Topluluk üyeleri tarafından yanıtlanan soruların oranı      | %60+            |
+| Yanıt Süresi                 | Bir sorunun ilk yanıtı alması için gereken ortalama süre    | <8 saat         |
+| Çözüm Oranı                  | Çözümlenen sorunların toplam sorunlara oranı                | %85+            |
+| İçerik Üretim Oranı          | Topluluk tarafından aylık oluşturulan içerik miktarı        | Aylık 100+      |
+| NPS (Net Promoter Score)     | Topluluk deneyimi için tavsiye etme olasılığı               | 40+             |
 
 ### Topluluk Sağlığı İzleme
 
@@ -358,27 +382,27 @@ export async function generateCommunityHealthReport(
 ): Promise<CommunityHealthReport> {
   // Başlangıç tarihini hesapla
   const start_date = calculateStartDate(end_date, period);
-  
+
   // Metrikleri topla
   const metrics = await collectCommunityMetrics(start_date, end_date);
-  
+
   // Önceki dönem metrikleri
   const previous_period_end = start_date;
   const previous_period_start = calculateStartDate(previous_period_end, period);
   const previous_metrics = await collectCommunityMetrics(
-    previous_period_start, 
+    previous_period_start,
     previous_period_end
   );
-  
+
   // Trendleri hesapla
   const trend = calculateMetricTrends(metrics, previous_metrics);
-  
+
   // Uyarıları belirle
   const alerts = generateHealthAlerts(metrics, trend);
-  
+
   // Önerileri oluştur
   const recommendations = generateRecommendations(metrics, trend, alerts);
-  
+
   return {
     period,
     start_date,
@@ -386,7 +410,7 @@ export async function generateCommunityHealthReport(
     metrics,
     trend,
     alerts,
-    recommendations
+    recommendations,
   };
 }
 ```
@@ -419,20 +443,15 @@ export async function generateCommunityHealthReport(
 
 ```typescript
 // lib/community/feedback-workflow.ts
-type FeedbackStatus = 
-  'new' | 
-  'under-review' | 
-  'planned' | 
-  'in-progress' | 
-  'implemented' | 
-  'not-planned';
+type FeedbackStatus =
+  | 'new'
+  | 'under-review'
+  | 'planned'
+  | 'in-progress'
+  | 'implemented'
+  | 'not-planned';
 
-type FeedbackType = 
-  'bug-report' | 
-  'feature-request' | 
-  'improvement' | 
-  'question' | 
-  'other';
+type FeedbackType = 'bug-report' | 'feature-request' | 'improvement' | 'question' | 'other';
 
 interface CommunityFeedback {
   id: string;
@@ -455,20 +474,26 @@ interface CommunityFeedback {
 // Geribildirim yönetim iş akışı
 export class FeedbackWorkflow {
   // Yeni geribildirim kaydetme
-  async submitFeedback(feedback: Omit<CommunityFeedback, 'id' | 'status' | 'submitted_at' | 'upvotes' | 'comments'>): Promise<CommunityFeedback> {
+  async submitFeedback(
+    feedback: Omit<CommunityFeedback, 'id' | 'status' | 'submitted_at' | 'upvotes' | 'comments'>
+  ): Promise<CommunityFeedback> {
     // Geribildirim kaydı oluştur
     // Benzer geribildirimleri kontrol et
     // Öncelik hesapla
     // İlgili ekibe bildir
   }
-  
+
   // Geribildirim durumunu güncelleme
-  async updateFeedbackStatus(id: string, newStatus: FeedbackStatus, notes?: string): Promise<CommunityFeedback> {
+  async updateFeedbackStatus(
+    id: string,
+    newStatus: FeedbackStatus,
+    notes?: string
+  ): Promise<CommunityFeedback> {
     // Durumu güncelle
     // Gerekirse bildirim gönder
     // Güncellemeleri kaydet
   }
-  
+
   // Geribildirim eğilimlerini analiz etme
   async analyzeFeedbackTrends(period: 'week' | 'month' | 'quarter'): Promise<FeedbackTrendsReport> {
     // Dönem içindeki geribildirimleri analiz et

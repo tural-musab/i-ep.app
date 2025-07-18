@@ -18,22 +18,22 @@ Yedekleme işleminin durumunu ve detaylarını gösteren komponent.
 interface BackupStatusProps {
   /** Yedekleme ID */
   backupId: string;
-  
+
   /** Tenant ID */
   tenantId?: string;
-  
+
   /** Yenileme aralığı (ms) */
   refreshInterval?: number;
-  
+
   /** Detay seviyesi */
   detailLevel?: 'basic' | 'detailed' | 'debug';
-  
+
   /** Durum değiştiğinde çağrılır */
   onStatusChange?: (status: BackupStatus) => void;
-  
+
   /** Hata durumunda çağrılır */
   onError?: (error: BackupError) => void;
-  
+
   /** İşlem kontrolü aktif mi */
   allowControl?: boolean;
 }
@@ -70,7 +70,14 @@ interface BackupError {
   recoverable: boolean;
 }
 
-type BackupState = 'queued' | 'preparing' | 'running' | 'finalizing' | 'completed' | 'failed' | 'cancelled';
+type BackupState =
+  | 'queued'
+  | 'preparing'
+  | 'running'
+  | 'finalizing'
+  | 'completed'
+  | 'failed'
+  | 'cancelled';
 ```
 
 ## Kullanım
@@ -106,34 +113,21 @@ export default function BackupStatusPage() {
 ## Durum Gösterimi
 
 ### İlerleme Çubuğu
+
 ```tsx
-<BackupProgressBar
-  percentage={progress.percentage}
-  status={status}
-  showLabel
-  animated
-/>
+<BackupProgressBar percentage={progress.percentage} status={status} showLabel animated />
 ```
 
 ### Durum Detayları
+
 ```tsx
-<BackupStatusDetails
-  status={status}
-  progress={progress}
-  result={result}
-  showSpeed
-  showETA
-/>
+<BackupStatusDetails status={status} progress={progress} result={result} showSpeed showETA />
 ```
 
 ### Log Görüntüleyici
+
 ```tsx
-<BackupLogViewer
-  logs={logs}
-  level={detailLevel}
-  autoScroll
-  searchable
-/>
+<BackupLogViewer logs={logs} level={detailLevel} autoScroll searchable />
 ```
 
 ## API Entegrasyonu
@@ -155,7 +149,7 @@ const fetchLogs = async () => {
 const controlBackup = async (action: 'pause' | 'resume' | 'cancel') => {
   const response = await fetch(`/api/backups/${backupId}/control`, {
     method: 'POST',
-    body: JSON.stringify({ action })
+    body: JSON.stringify({ action }),
   });
   return response.json();
 };
@@ -178,11 +172,11 @@ useEffect(() => {
     try {
       const newStatus = await checkStatus();
       setStatus(newStatus);
-      
+
       if (newStatus.status !== status?.status) {
         onStatusChange?.(newStatus);
       }
-      
+
       if (newStatus.error) {
         onError?.(newStatus.error);
       }
@@ -206,16 +200,14 @@ const calculateStats = (status: BackupStatus) => {
     new Date(status.progress.endTime || Date.now()),
     new Date(status.progress.startTime)
   );
-  
+
   const speed = status.progress.bytesProcessed / duration;
-  const compressionRatio = status.result
-    ? 1 - (status.result.size / status.progress.totalBytes)
-    : 0;
-    
+  const compressionRatio = status.result ? 1 - status.result.size / status.progress.totalBytes : 0;
+
   return {
     duration,
     speed,
-    compressionRatio
+    compressionRatio,
   };
 };
 ```
@@ -230,11 +222,11 @@ const calculateStats = (status: BackupStatus) => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Tam detay görünümü |
-| 768px - 1024px | Özet görünüm |
-| < 768px | Minimal görünüm |
+| Ekran Boyutu   | Davranış           |
+| -------------- | ------------------ |
+| > 1024px       | Tam detay görünümü |
+| 768px - 1024px | Özet görünüm       |
+| < 768px        | Minimal görünüm    |
 
 ## Test
 
@@ -247,7 +239,7 @@ describe('BackupStatus', () => {
         refreshInterval={1000}
       />
     );
-    
+
     await waitFor(() => {
       expect(screen.getByText('Yedekleme devam ediyor')).toBeInTheDocument();
     });
@@ -261,13 +253,13 @@ describe('BackupStatus', () => {
         onStatusChange={onStatusChange}
       />
     );
-    
+
     // Simulate status change
     mockBackupStatus({
       status: 'completed',
       progress: { percentage: 100 }
     });
-    
+
     await waitFor(() => {
       expect(onStatusChange).toHaveBeenCalledWith(
         expect.objectContaining({ status: 'completed' })
@@ -282,7 +274,7 @@ describe('BackupStatus', () => {
         allowControl
       />
     );
-    
+
     await userEvent.click(screen.getByText('Duraklat'));
     expect(await screen.findByText('Devam Ettir')).toBeInTheDocument();
   });
@@ -359,13 +351,13 @@ Failed.args = {
   customStyles={{
     progress: {
       bar: 'bg-blue-500',
-      track: 'bg-gray-200'
+      track: 'bg-gray-200',
     },
     status: {
       running: 'text-blue-600',
       completed: 'text-green-600',
-      failed: 'text-red-600'
-    }
+      failed: 'text-red-600',
+    },
   }}
 />
 ```
@@ -376,4 +368,4 @@ Failed.args = {
 2. Log boyutunu sınırla
 3. Hata durumlarını detaylı raporla
 4. İşlem kontrolünü doğrula
-5. Performans metriklerini izle 
+5. Performans metriklerini izle

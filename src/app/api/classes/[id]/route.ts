@@ -1,24 +1,22 @@
-import { NextRequest } from "next/server";
-import * as Sentry from "@sentry/nextjs";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { NextRequest } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   return Sentry.startSpan(
     {
-      op: "http.server",
-      name: "GET /api/classes/[id]",
+      op: 'http.server',
+      name: 'GET /api/classes/[id]',
     },
     async () => {
       try {
         const supabase = createRouteHandlerClient({ cookies });
 
         const { data: classData, error } = await supabase
-          .from("classes")
-          .select(`
+          .from('classes')
+          .select(
+            `
             *,
             homeroom_teacher:teachers!homeroom_teacher_id (
               id,
@@ -28,8 +26,9 @@ export async function GET(
             ),
             student_count:class_students (count),
             teacher_count:class_teachers (count)
-          `)
-          .eq("id", params.id)
+          `
+          )
+          .eq('id', params.id)
           .single();
 
         if (error) {
@@ -37,10 +36,7 @@ export async function GET(
         }
 
         if (!classData) {
-          return Response.json(
-            { error: "Sınıf bulunamadı" },
-            { status: 404 }
-          );
+          return Response.json({ error: 'Sınıf bulunamadı' }, { status: 404 });
         }
 
         // Format the counts
@@ -52,25 +48,19 @@ export async function GET(
 
         return Response.json(formattedClass);
       } catch (error) {
-        console.error("Error fetching class:", error);
+        console.error('Error fetching class:', error);
         Sentry.captureException(error);
-        return Response.json(
-          { error: "Sınıf detayları alınamadı" },
-          { status: 500 }
-        );
+        return Response.json({ error: 'Sınıf detayları alınamadı' }, { status: 500 });
       }
     }
   );
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   return Sentry.startSpan(
     {
-      op: "http.server",
-      name: "DELETE /api/classes/[id]",
+      op: 'http.server',
+      name: 'DELETE /api/classes/[id]',
     },
     async () => {
       try {
@@ -78,37 +68,28 @@ export async function DELETE(
 
         // Önce sınıfın mevcut olup olmadığını kontrol et
         const { data: existingClass, error: fetchError } = await supabase
-          .from("classes")
-          .select("id")
-          .eq("id", params.id)
+          .from('classes')
+          .select('id')
+          .eq('id', params.id)
           .single();
 
         if (fetchError || !existingClass) {
-          return Response.json(
-            { error: "Sınıf bulunamadı" },
-            { status: 404 }
-          );
+          return Response.json({ error: 'Sınıf bulunamadı' }, { status: 404 });
         }
 
         // Sınıfı sil
-        const { error: deleteError } = await supabase
-          .from("classes")
-          .delete()
-          .eq("id", params.id);
+        const { error: deleteError } = await supabase.from('classes').delete().eq('id', params.id);
 
         if (deleteError) {
           throw deleteError;
         }
 
-        return Response.json({ message: "Sınıf başarıyla silindi" });
+        return Response.json({ message: 'Sınıf başarıyla silindi' });
       } catch (error) {
-        console.error("Error deleting class:", error);
+        console.error('Error deleting class:', error);
         Sentry.captureException(error);
-        return Response.json(
-          { error: "Sınıf silinemedi" },
-          { status: 500 }
-        );
+        return Response.json({ error: 'Sınıf silinemedi' }, { status: 500 });
       }
     }
   );
-} 
+}

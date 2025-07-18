@@ -296,4 +296,4 @@ Supabase Dashboard'ındaki PostgreSQL insights ile veritabanı performansını i
 - [Teknoloji Yığını](../architecture/tech-stack.md)
 - [CI/CD Pipeline](./ci-cd-pipeline.md)
 - [Yedekleme ve Geri Yükleme](./backup-restore.md)
-- [Felaketten Kurtarma Planı](./disaster-recovery.md) 
+- [Felaketten Kurtarma Planı](./disaster-recovery.md)

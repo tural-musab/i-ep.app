@@ -2,7 +2,7 @@
 
 /**
  * Health Check Script for İ-EP.APP Docker Container
- * 
+ *
  * This script verifies that the Next.js application is running properly
  * and responds to HTTP requests within the Docker container.
  */
@@ -19,7 +19,7 @@ const options = {
 
 const request = http.request(options, (res) => {
   console.log(`Health check response status: ${res.statusCode}`);
-  
+
   if (res.statusCode === 200) {
     console.log('✅ Health check passed');
     process.exit(0);
@@ -41,4 +41,4 @@ request.on('timeout', () => {
 });
 
 request.setTimeout(2000);
-request.end(); 
+request.end();

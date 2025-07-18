@@ -12,22 +12,28 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  PlusCircle, 
-  Search, 
-  Calendar, 
-  Clock, 
-  Users, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  PlusCircle,
+  Search,
+  Calendar,
+  Clock,
+  Users,
   CheckCircle,
   AlertCircle,
-  BookOpen
+  BookOpen,
 } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function AssignmentsPage() {
   const session = await getServerSession(authOptions);
-  
+
   if (!session) {
     redirect('/auth/giris');
   }
@@ -44,7 +50,7 @@ export default async function AssignmentsPage() {
       totalSubmissions: 25,
       gradedSubmissions: 20,
       status: 'published',
-      createdAt: '2025-01-15'
+      createdAt: '2025-01-15',
     },
     {
       id: '2',
@@ -56,7 +62,7 @@ export default async function AssignmentsPage() {
       totalSubmissions: 18,
       gradedSubmissions: 10,
       status: 'published',
-      createdAt: '2025-01-16'
+      createdAt: '2025-01-16',
     },
     {
       id: '3',
@@ -68,15 +74,18 @@ export default async function AssignmentsPage() {
       totalSubmissions: 30,
       gradedSubmissions: 30,
       status: 'completed',
-      createdAt: '2025-01-10'
-    }
+      createdAt: '2025-01-10',
+    },
   ];
 
   const stats = {
     totalAssignments: assignments.length,
-    activeAssignments: assignments.filter(a => a.status === 'published').length,
-    pendingGrades: assignments.reduce((acc, a) => acc + (a.totalSubmissions - a.gradedSubmissions), 0),
-    completedAssignments: assignments.filter(a => a.status === 'completed').length
+    activeAssignments: assignments.filter((a) => a.status === 'published').length,
+    pendingGrades: assignments.reduce(
+      (acc, a) => acc + (a.totalSubmissions - a.gradedSubmissions),
+      0
+    ),
+    completedAssignments: assignments.filter((a) => a.status === 'completed').length,
   };
 
   const getStatusBadge = (status: string) => {
@@ -95,13 +104,29 @@ export default async function AssignmentsPage() {
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'homework':
-        return <Badge variant="outline" className="bg-blue-50 text-blue-600">Ödev</Badge>;
+        return (
+          <Badge variant="outline" className="bg-blue-50 text-blue-600">
+            Ödev
+          </Badge>
+        );
       case 'project':
-        return <Badge variant="outline" className="bg-green-50 text-green-600">Proje</Badge>;
+        return (
+          <Badge variant="outline" className="bg-green-50 text-green-600">
+            Proje
+          </Badge>
+        );
       case 'exam':
-        return <Badge variant="outline" className="bg-red-50 text-red-600">Sınav</Badge>;
+        return (
+          <Badge variant="outline" className="bg-red-50 text-red-600">
+            Sınav
+          </Badge>
+        );
       case 'quiz':
-        return <Badge variant="outline" className="bg-purple-50 text-purple-600">Quiz</Badge>;
+        return (
+          <Badge variant="outline" className="bg-purple-50 text-purple-600">
+            Quiz
+          </Badge>
+        );
       default:
         return <Badge variant="outline">{type}</Badge>;
     }
@@ -110,10 +135,10 @@ export default async function AssignmentsPage() {
   return (
     <div className="container mx-auto p-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Ödev Yönetimi</h1>
-          <p className="text-gray-600 mt-2">Ödevleri oluşturun, takip edin ve değerlendirin</p>
+          <p className="mt-2 text-gray-600">Ödevleri oluşturun, takip edin ve değerlendirin</p>
         </div>
         <Link href="/dashboard/assignments/create">
           <Button>
@@ -124,48 +149,48 @@ export default async function AssignmentsPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Toplam Ödev</CardTitle>
-            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <BookOpen className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalAssignments}</div>
-            <p className="text-xs text-muted-foreground">Tüm ödevler</p>
+            <p className="text-muted-foreground text-xs">Tüm ödevler</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Aktif Ödevler</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <Clock className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.activeAssignments}</div>
-            <p className="text-xs text-muted-foreground">Devam eden ödevler</p>
+            <p className="text-muted-foreground text-xs">Devam eden ödevler</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bekleyen Notlar</CardTitle>
-            <AlertCircle className="h-4 w-4 text-muted-foreground" />
+            <AlertCircle className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.pendingGrades}</div>
-            <p className="text-xs text-muted-foreground">Notlandırılmayı bekleyen</p>
+            <p className="text-muted-foreground text-xs">Notlandırılmayı bekleyen</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Tamamlanan</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            <CheckCircle className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.completedAssignments}</div>
-            <p className="text-xs text-muted-foreground">Tamamlanan ödevler</p>
+            <p className="text-muted-foreground text-xs">Tamamlanan ödevler</p>
           </CardContent>
         </Card>
       </div>
@@ -188,9 +213,9 @@ export default async function AssignmentsPage() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-4">
-                <div className="flex-1 min-w-[200px]">
+                <div className="min-w-[200px] flex-1">
                   <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Search className="text-muted-foreground absolute top-2.5 left-2 h-4 w-4" />
                     <Input placeholder="Ödev ara..." className="pl-8" />
                   </div>
                 </div>
@@ -236,9 +261,9 @@ export default async function AssignmentsPage() {
             {assignments.map((assignment) => (
               <Card key={assignment.id}>
                 <CardHeader>
-                  <div className="flex justify-between items-start">
+                  <div className="flex items-start justify-between">
                     <div>
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="mb-2 flex items-center gap-2">
                         <CardTitle className="text-lg">{assignment.title}</CardTitle>
                         {getTypeBadge(assignment.type)}
                         {getStatusBadge(assignment.status)}
@@ -269,18 +294,14 @@ export default async function AssignmentsPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                     <div className="flex items-center gap-2">
                       <Users className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm">
-                        {assignment.totalSubmissions} teslim
-                      </span>
+                      <span className="text-sm">{assignment.totalSubmissions} teslim</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm">
-                        {assignment.gradedSubmissions} notlandırıldı
-                      </span>
+                      <span className="text-sm">{assignment.gradedSubmissions} notlandırıldı</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <AlertCircle className="h-4 w-4 text-amber-500" />
@@ -304,22 +325,30 @@ export default async function AssignmentsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {assignments.filter(a => a.status === 'published').map((assignment) => (
-                  <div key={assignment.id} className="flex justify-between items-center p-4 border rounded-lg">
-                    <div>
-                      <h3 className="font-medium">{assignment.title}</h3>
-                      <p className="text-sm text-gray-600">{assignment.subject} • {assignment.class}</p>
+                {assignments
+                  .filter((a) => a.status === 'published')
+                  .map((assignment) => (
+                    <div
+                      key={assignment.id}
+                      className="flex items-center justify-between rounded-lg border p-4"
+                    >
+                      <div>
+                        <h3 className="font-medium">{assignment.title}</h3>
+                        <p className="text-sm text-gray-600">
+                          {assignment.subject} • {assignment.class}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium">
+                          Son teslim: {new Date(assignment.dueDate).toLocaleDateString('tr-TR')}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {assignment.totalSubmissions - assignment.gradedSubmissions}{' '}
+                          notlandırılacak
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium">
-                        Son teslim: {new Date(assignment.dueDate).toLocaleDateString('tr-TR')}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        {assignment.totalSubmissions - assignment.gradedSubmissions} notlandırılacak
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </CardContent>
           </Card>
@@ -334,29 +363,34 @@ export default async function AssignmentsPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {assignments.filter(a => a.totalSubmissions > a.gradedSubmissions).map((assignment) => (
-                  <div key={assignment.id} className="flex justify-between items-center p-4 border rounded-lg">
-                    <div>
-                      <h3 className="font-medium">{assignment.title}</h3>
-                      <p className="text-sm text-gray-600">{assignment.subject} • {assignment.class}</p>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <p className="text-sm font-medium text-amber-600">
-                          {assignment.totalSubmissions - assignment.gradedSubmissions} bekliyor
-                        </p>
+                {assignments
+                  .filter((a) => a.totalSubmissions > a.gradedSubmissions)
+                  .map((assignment) => (
+                    <div
+                      key={assignment.id}
+                      className="flex items-center justify-between rounded-lg border p-4"
+                    >
+                      <div>
+                        <h3 className="font-medium">{assignment.title}</h3>
                         <p className="text-sm text-gray-600">
-                          {assignment.gradedSubmissions}/{assignment.totalSubmissions} tamamlandı
+                          {assignment.subject} • {assignment.class}
                         </p>
                       </div>
-                      <Link href={`/dashboard/assignments/${assignment.id}/grade`}>
-                        <Button size="sm">
-                          Notlandır
-                        </Button>
-                      </Link>
+                      <div className="flex items-center gap-4">
+                        <div className="text-right">
+                          <p className="text-sm font-medium text-amber-600">
+                            {assignment.totalSubmissions - assignment.gradedSubmissions} bekliyor
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {assignment.gradedSubmissions}/{assignment.totalSubmissions} tamamlandı
+                          </p>
+                        </div>
+                        <Link href={`/dashboard/assignments/${assignment.id}/grade`}>
+                          <Button size="sm">Notlandır</Button>
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </CardContent>
           </Card>
@@ -370,7 +404,7 @@ export default async function AssignmentsPage() {
               <CardDescription>Genel performans ve istatistikler</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-4">
                   <h3 className="font-medium">Teslim Oranları</h3>
                   {assignments.map((assignment) => (
@@ -379,9 +413,9 @@ export default async function AssignmentsPage() {
                         <span>{assignment.title}</span>
                         <span>{Math.round((assignment.totalSubmissions / 30) * 100)}%</span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full" 
+                      <div className="h-2 w-full rounded-full bg-gray-200">
+                        <div
+                          className="h-2 rounded-full bg-blue-600"
                           style={{ width: `${(assignment.totalSubmissions / 30) * 100}%` }}
                         ></div>
                       </div>
@@ -394,12 +428,16 @@ export default async function AssignmentsPage() {
                     <div key={assignment.id} className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>{assignment.title}</span>
-                        <span>{assignment.gradedSubmissions}/{assignment.totalSubmissions}</span>
+                        <span>
+                          {assignment.gradedSubmissions}/{assignment.totalSubmissions}
+                        </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-green-600 h-2 rounded-full" 
-                          style={{ width: `${(assignment.gradedSubmissions / assignment.totalSubmissions) * 100}%` }}
+                      <div className="h-2 w-full rounded-full bg-gray-200">
+                        <div
+                          className="h-2 rounded-full bg-green-600"
+                          style={{
+                            width: `${(assignment.gradedSubmissions / assignment.totalSubmissions) * 100}%`,
+                          }}
                         ></div>
                       </div>
                     </div>

@@ -26,7 +26,7 @@ export interface CreateUserInput {
  */
 export class ApiError extends Error {
   statusCode: number;
-  
+
   constructor(message: string, statusCode: number = 500) {
     super(message);
     this.statusCode = statusCode;
@@ -40,13 +40,13 @@ export class ApiError extends Error {
 export async function fetchUsers(role?: string): Promise<User[]> {
   try {
     const url = new URL('/api/v1/users', window.location.origin);
-    
+
     if (role) {
       url.searchParams.append('role', role);
     }
-    
+
     const response = await fetch(url.toString());
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new ApiError(
@@ -54,7 +54,7 @@ export async function fetchUsers(role?: string): Promise<User[]> {
         response.status
       );
     }
-    
+
     return await response.json();
   } catch (error) {
     if (error instanceof ApiError) {
@@ -76,7 +76,7 @@ export async function createUser(userData: CreateUserInput): Promise<User> {
       },
       body: JSON.stringify(userData),
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new ApiError(
@@ -84,7 +84,7 @@ export async function createUser(userData: CreateUserInput): Promise<User> {
         response.status
       );
     }
-    
+
     return await response.json();
   } catch (error) {
     if (error instanceof ApiError) {
@@ -106,7 +106,7 @@ export async function updateUser(id: string, userData: Partial<CreateUserInput>)
       },
       body: JSON.stringify(userData),
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new ApiError(
@@ -114,7 +114,7 @@ export async function updateUser(id: string, userData: Partial<CreateUserInput>)
         response.status
       );
     }
-    
+
     return await response.json();
   } catch (error) {
     if (error instanceof ApiError) {
@@ -132,7 +132,7 @@ export async function deleteUser(id: string): Promise<void> {
     const response = await fetch(`/api/v1/users/${id}`, {
       method: 'DELETE',
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new ApiError(
@@ -146,4 +146,4 @@ export async function deleteUser(id: string): Promise<void> {
     }
     throw new ApiError('Kullanıcı silinirken bir hata oluştu');
   }
-} 
+}

@@ -4,6 +4,15 @@
 
 **Iqra Eğitim Portalı**, Türkiye'deki eğitim kurumları için özel olarak geliştirilmiş, çok kiracılı (multi-tenant) bir SaaS okul yönetim sistemidir. Platform, okulların yönetim süreçlerini dijitalleştirerek, öğrenci, öğretmen, veli ve yöneticiler arasında kesintisiz bir iletişim ve işbirliği sağlar.
 
+## 🏆 Güncel Durum (16 Temmuz 2025)
+
+- **Genel İlerleme**: 70/100 (Three Core Systems Complete)
+- **UI/UX Readiness**: 85/100 (102/120 pages complete)
+- **MVP Timeline**: 4 hafta (12 Ağustos 2025 target)
+- **Aktif Phase**: Phase 4.6 - UI/UX Critical Fixes
+- **Tamamlanan Sistemler**: Assignment (100%), Attendance (100%), Grade Management (100%)
+- **Sonraki Milestone**: Parent Communication + Report Generation completion
+
 ## 🌟 Genel Bakış
 
 Iqra Eğitim Portalı, modern eğitim teknolojileriyle Türk eğitim sisteminin ihtiyaçlarını buluşturan, ölçeklenebilir ve güvenli bir platformdur. Her okul (tenant), kendi alt alan adında izole edilmiş bir ortamda çalışır, böylece veriler güvenle korunurken, ortak altyapı sayesinde maliyet avantajı sağlanır.
@@ -23,6 +32,7 @@ Türkiye'deki her okul için kolay erişilebilir, kullanıcı dostu ve ekonomik 
 ## ✨ Özellikler
 
 ### 🏫 Multi-Tenant Mimari
+
 - Her okul için ayrı subdomain (`okul-adi.i-ep.app`)
 - Premium planlar için özel domain desteği
 - Tenant bazlı veri izolasyonu
@@ -30,23 +40,35 @@ Türkiye'deki her okul için kolay erişilebilir, kullanıcı dostu ve ekonomik 
 - Çok adımlı onboarding süreci ile kolay tenant oluşturma
 
 ### �� Kullanıcı Rolleri
+
 - **Yönetici**: Okul yönetimi, kullanıcı ve yapılandırma işlemleri
 - **Öğretmen**: Ders, ödev, not ve devamsızlık yönetimi
 - **Öğrenci**: Ders programı, ödevler, notlar, duyurular
 - **Veli**: Öğrenci gelişimi takibi, öğretmenlerle iletişim
 
 ### 💰 Abonelik Modeli
+
 - **Ücretsiz Plan**: Temel özellikler, sınırlı öğrenci sayısı
 - **Standart Plan**: Gelişmiş özellikler, orta ölçekli okullar için
 - **Premium Plan**: Tüm özellikler, öncelikli destek, özel alan adı
 
 ### 📊 Akademik Yönetim
-- Müfredat ve ders planlaması
-- Ödev ve proje yönetimi
-- Not değerlendirme ve karne sistemi
-- Devam takibi ve raporlama
+
+### ✅ Tamamlanan Sistemler (Production-Ready)
+
+- **Assignment System**: ✅ 100% Complete - Ödev ve proje yönetimi
+- **Attendance System**: ✅ 100% Complete - Devam takibi ve raporlama
+- **Grade Management**: ✅ 100% Complete - Not değerlendirme ve karne sistemi
+
+### ⚠️ Geliştirme Aşamasında
+
+- **Parent Communication**: 40% Complete - Veli-öğretmen iletişimi
+- **Class Scheduling**: 25% Complete - Ders programı planlama
+- **Report Generation**: 30% Complete - Akademik rapor oluşturma
+- **Advanced Analytics**: 30% Complete - Performans analizi ve görselleştirme
 
 ### 📱 İletişim ve Etkileşim
+
 - Okul duyuruları ve etkinlik takvimi
 - Öğretmen-veli mesajlaşma
 - Veli toplantısı planlama
@@ -55,23 +77,27 @@ Türkiye'deki her okul için kolay erişilebilir, kullanıcı dostu ve ekonomik 
 ## 🛠️ Teknoloji Yığını
 
 ### Frontend
+
 - **Next.js 14**: React framework, SSR ve SSG desteği
 - **TypeScript**: Tip güvenli kod geliştirme
 - **Tailwind CSS**: Utility-first CSS framework
 - **Shadcn/UI**: Erişilebilir ve özelleştirilebilir UI komponentleri
 
 ### Backend
+
 - **Supabase**: PostgreSQL tabanlı BaaS
 - **PostgreSQL**: İlişkisel veritabanı
 - **Redis**: Önbellek ve oturum yönetimi
 
 ### DevOps
+
 - **Vercel**: Frontend dağıtımı
 - **AWS/ECS**: Backend servisler için
 - **Docker**: Konteynerizasyon
 - **GitHub Actions**: CI/CD pipeline
 
 ### Güvenlik
+
 - **Row Level Security (RLS)**: Tenant-seviyesinde veri izolasyonu
 - **JWT Tabanlı Kimlik Doğrulama**: Güvenli oturum yönetimi
 - **KVKK Uyumlu Veri İşleme**: Kişisel verilerin korunması
@@ -79,33 +105,46 @@ Türkiye'deki her okul için kolay erişilebilir, kullanıcı dostu ve ekonomik 
 ## 🚀 Başlarken
 
 ### Ön Gereksinimler
+
 - Node.js 18.x veya üzeri
 - npm 8.x veya üzeri
 - PostgreSQL 14.x veya üzeri (veya Supabase hesabı)
 - Git
+
+### Sistem Gereksinimleri
+
+- **Development**: 8GB RAM, 4 CPU cores
+- **Production**: 16GB RAM, 8 CPU cores
+- **Database**: PostgreSQL 14+ with RLS support
+- **Cache**: Redis 6.x or Upstash Redis
+- **Storage**: Supabase Storage (R2 migration ready)
 
 ### Kurulum
 
 #### Seçenek 1: Geleneksel Kurulum
 
 1. Repoyu klonlayın:
+
    ```bash
    git clone https://github.com/tural-musab/i-ep.app.git
    cd i-ep.app
    ```
 
 2. Bağımlılıkları yükleyin:
+
    ```bash
    npm install
    ```
 
 3. Çevre değişkenlerini yapılandırın:
+
    ```bash
    cp .env.example .env.local
    # .env.local dosyasını düzenleyin
    ```
 
 4. Geliştirme sunucusunu başlatın:
+
    ```bash
    npm run dev
    # veya
@@ -137,6 +176,7 @@ docker-compose up -d
 ```
 
 **Docker Servisleri:**
+
 - İ-EP.APP: http://localhost:3000
 - PostgreSQL: localhost:5432
 - Redis: localhost:6379
@@ -144,6 +184,7 @@ docker-compose up -d
 - Redis Commander: http://localhost:8081 (profile: tools ile)
 
 **Ek Araçlar ile Başlatma:**
+
 ```bash
 # Tüm geliştirme araçları ile başlat
 docker-compose --profile tools up -d
@@ -169,6 +210,7 @@ Bu proje [`next/font`](https://nextjs.org/docs/app/building-your-application/opt
 ## 🔍 Next.js Kaynakları
 
 Next.js hakkında daha fazla bilgi edinmek için:
+
 - [Next.js Dokümantasyonu](https://nextjs.org/docs) - Next.js özellikleri ve API'leri
 - [Learn Next.js](https://nextjs.org/learn) - İnteraktif Next.js dersleri
 - [Next.js GitHub Deposu](https://github.com/vercel/next.js) - Geri bildirimleriniz ve katkılarınız bekleniyor!
@@ -200,7 +242,6 @@ MOP/
 ├── PROGRESS.md
 └── README.md
 
-
 ## 🚀 Hedeflenen Proje Yapısı (Uygulama Geliştirme)
 
 MOP/
@@ -229,6 +270,7 @@ MOP/
 Detaylı geliştirici dokümantasyonu aşağıdaki dosyalarda bulunabilir:
 
 ### Proje Planlama ve Mimari
+
 - [Proje Planı](docs/project-plan.md)
 - [Multi-Tenant Stratejisi](docs/architecture/multi-tenant-strategy.md)
 - [Veri İzolasyon Stratejisi](docs/architecture/data-isolation.md)
@@ -237,17 +279,20 @@ Detaylı geliştirici dokümantasyonu aşağıdaki dosyalarda bulunabilir:
 <!-- CI Test Trigger: Updated on 2024-12-20 -->
 
 ### Operasyonel Dokümantasyon
+
 - [Yedekleme ve Geri Yükleme](docs/deployment/backup-restore.md)
 - [Felaketten Kurtarma Planı](docs/deployment/disaster-recovery.md)
 - [CI/CD Pipeline](docs/deployment/ci-cd-pipeline.md)
 
 ### Stratejik Belgeler
+
 - [Teknik Borç Yönetimi](docs/technical-debt.md)
 - [SLA Tanımları](docs/sla-definitions.md)
 - [Community Building Stratejisi](docs/community-strategy.md)
 - [Kültürel ve Bölgesel Farklılıklar Yönetimi](docs/cultural-adaptation.md)
 
 ### Geliştirici Kaynakları
+
 - [MVP Kontrol Listesi](docs/mvp-checklist.md)
 - [Demo Tenant Oluşturma Kılavuzu](docs/demo-tenant-guide.md)
 - [Geliştirici Dokümantasyonu Planı](docs/developer-docs-plan.md)
@@ -286,30 +331,35 @@ Projenin ilerleme durumu ve geliştirme adımları için [PROGRESS.md](PROGRESS.
 ### 🗓️ Yol Haritası
 
 #### Faz 1: Temel Mimari ve MVP (3 ay)
+
 - Multi-tenant mimari altyapısı
 - Temel kullanıcı yönetimi ve kimlik doğrulama
 - Yönetici, öğretmen, öğrenci ve veli rolleri
 - Basit okul, sınıf ve ders yapılandırması
 
 #### Faz 2: Akademik Özellikler (3 ay)
+
 - Müfredat ve ders programı yönetimi
 - Not ve değerlendirme sistemi
 - Ödev ve proje takibi
 - Devam/devamsızlık yönetimi
 
 #### Faz 3: İletişim ve Etkileşim (2 ay)
+
 - Mesajlaşma ve bildirim sistemi
 - Etkinlik ve duyuru yönetimi
 - Veli-öğretmen iletişim kanalları
 - Dosya paylaşımı ve depolama
 
 #### Faz 4: Ticari Özellikler (3 ay)
+
 - Abonelik ve ödeme yönetimi
 - Faturalandırma sistemi
 - Premium özelliklerin etkinleştirilmesi
 - Self-servis tenant yönetimi
 
 #### Faz 5: Analitik ve Raporlama (3 ay)
+
 - Okul performans göstergeleri
 - Öğrenci gelişim raporları
 - Veri analizi ve görselleştirme
@@ -394,6 +444,7 @@ npm run validate:env      # Env değişkenlerinin doğruluğunu kontrol et
 Bazen yerel geliştirme yaparken gerçek (uzaktaki) backend servislerine bağlanmak isteyebilirsiniz. Bu durumda hibrit bir ortam oluşturabilirsiniz:
 
 1. `.env.local-remote` dosyasını yapılandırın:
+
    ```
    # Yerel frontend ayarları
    NEXT_PUBLIC_APP_URL=http://localhost:3000
@@ -406,18 +457,20 @@ Bazen yerel geliştirme yaparken gerçek (uzaktaki) backend servislerine bağlan
    ```
 
 2. Hibrit modda geliştirme sunucusunu başlatın:
+
    ```bash
    npm run dev:local-remote
    ```
 
 3. Ortamlar arasında geçiş yapmak için:
+
    ```bash
    # Tamamen yerel ortama geçiş
    npm run dev
-   
+
    # Yerel frontend + Uzak backend ortamına geçiş
    npm run dev:local-remote
-   
+
    # Gerçek staging ortamına geçiş
    npm run dev:staging
    ```
@@ -445,21 +498,25 @@ Iqra Eğitim Portalı - Türkiye'nin eğitim geleceği için
 Sistem, kapsamlı bir denetim mekanizması içermektedir. Bu mekanizma şunları sağlar:
 
 ### 1. Veritabanı Seviyesinde Denetim
+
 - `audit.audit_logs` tablosu, veritabanındaki INSERT, UPDATE, DELETE işlemlerini otomatik olarak kayıt altına alır
 - `log_activity` tetikleyici fonksiyonu ile tüm değişiklikler eski ve yeni veri ile birlikte kaydedilir
 
 ### 2. Erişim Reddi Kayıtları
+
 - `audit.access_denied_logs` tablosu, erişim reddedilme durumlarını kayıt altına alır
 - Middleware seviyesinde tenant erişim redleri
 - RLS politikaları tarafından engellenen erişimler
 - Fonksiyon seviyesinde erişim reddi durumları
 
 ### 3. Uygulama Seviyesinde Denetim
+
 - Auth modülü içerisinde tüm giriş denemeleri (başarılı/başarısız) kaydedilir
 - Tenant erişim kontrolleri middleware seviyesinde denetlenir ve loglanır
 - Öğretmen-sınıf, öğretmen-öğrenci erişimleri RLS fonksiyonları ile kontrol edilir
 
 ### Denetim Kayıtlarına Erişim
+
 Denetim kayıtlarına yönetici panelinden erişilebilir. Süper admin ve tenant admin kullanıcıları kendi tenant'larına ait kayıtları görüntüleyebilir.
 
 ## Güvenlik
@@ -475,7 +532,7 @@ Sistem, Row Level Security (RLS) politikaları ile güvenlik sağlar:
 Platform, çok kiracılı (multi-tenant) bir mimari kullanmaktadır. Her müşteri kendi izole edilmiş ortamında çalışır.
 
 - Subdomain tabanlı tenant ayrımı (`tenant-name.i-ep.app`)
-- Özel domain desteği 
+- Özel domain desteği
 - Tenant bazlı veri izolasyonu (RLS ile)
 - Tenant bazlı özelleştirmeler
 
@@ -483,9 +540,10 @@ Platform, çok kiracılı (multi-tenant) bir mimari kullanmaktadır. Her müşte
 
 Projenin çalışması için gerekli olan çevre değişkenleri:
 
-```
+````
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 NEXTAUTH_SECRET=your-nextauth-secret
 NEXTAUTH_URL=http://localhost:3000
 ```// re-trigger CI with new secrets
+````

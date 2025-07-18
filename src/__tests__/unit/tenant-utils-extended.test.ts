@@ -1,9 +1,9 @@
 import { describe, it, expect } from '@jest/globals';
-import { 
-  extractTenantFromSubdomain, 
-  isFeatureEnabled, 
-  createTenantUrl, 
-  detectTenantFromUrl 
+import {
+  extractTenantFromSubdomain,
+  isFeatureEnabled,
+  createTenantUrl,
+  detectTenantFromUrl,
 } from '@/lib/tenant/tenant-utils';
 import { Tenant } from '@/types/tenant';
 
@@ -51,19 +51,19 @@ describe('Tenant Utils Extended Tests', () => {
         allowParentRegistration: true,
         allowTeacherRegistration: true,
         languagePreference: 'tr',
-        timeZone: 'Europe/Istanbul'
+        timeZone: 'Europe/Istanbul',
       },
-      isActive: true
+      isActive: true,
     };
 
     const standardTenant: Tenant = {
       ...premiumTenant,
-      planType: 'standard'
+      planType: 'standard',
     };
 
     const freeTenant: Tenant = {
       ...premiumTenant,
-      planType: 'free'
+      planType: 'free',
     };
 
     it('should allow all features for premium plan', () => {
@@ -111,17 +111,17 @@ describe('Tenant Utils Extended Tests', () => {
       Object.defineProperty(process.env, 'NODE_ENV', {
         value: 'development',
         writable: true,
-        configurable: true
+        configurable: true,
       });
-      
+
       const result = createTenantUrl('test-school', '/admin');
       expect(result).toBe('http://test-school.i-ep.app/admin');
-      
+
       // Restore original value
       Object.defineProperty(process.env, 'NODE_ENV', {
         value: originalNodeEnv,
         writable: true,
-        configurable: true
+        configurable: true,
       });
     });
   });
@@ -151,4 +151,4 @@ describe('Tenant Utils Extended Tests', () => {
       expect(result).toBeNull();
     });
   });
-}); 
+});

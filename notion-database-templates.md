@@ -7,6 +7,7 @@
 ## Database Template 1: Sprint Planning Database
 
 ### CSV Import Template
+
 ```csv
 Sprint Name,Sprint Number,Status,Start Date,End Date,Progress,Priority,Assignee,Description,Goals
 Sprint 7: Foundation-First Strategy,7,Active,2025-07-15,2025-09-15,15%,Critical,TBD,Stabilize foundation and implement MVP core features,Build stability and core features
@@ -15,6 +16,7 @@ Sprint 9: Production Ready,9,Planning,2025-11-01,2025-12-15,0%,High,TBD,Prepare 
 ```
 
 ### Property Setup
+
 - **Sprint Name**: Title (Primary key)
 - **Sprint Number**: Number
 - **Status**: Select (Active, Planning, Completed, Blocked, On Hold)
@@ -29,6 +31,7 @@ Sprint 9: Production Ready,9,Planning,2025-11-01,2025-12-15,0%,High,TBD,Prepare 
 ## Database Template 2: Foundation-First Strategy Database
 
 ### CSV Import Template
+
 ```csv
 Task Name,Phase,Week,Status,Priority,Assignee,Due Date,Time Estimate,Description,Acceptance Criteria
 Build Error Fix,Phase 1 - Stabilization,1,Not Started,Critical,TBD,2025-07-17,8,Fix createContext error in assignment page,Build completes successfully without errors
@@ -45,6 +48,7 @@ Class Scheduling API,Phase 2 - MVP Features,8,Not Started,Medium,TBD,2025-09-06,
 ```
 
 ### Property Setup
+
 - **Task Name**: Title (Primary key)
 - **Phase**: Select (Phase 1 - Stabilization, Phase 2 - MVP Features)
 - **Week**: Number
@@ -59,6 +63,7 @@ Class Scheduling API,Phase 2 - MVP Features,8,Not Started,Medium,TBD,2025-09-06,
 ## Database Template 3: Development Tasks Database
 
 ### CSV Import Template
+
 ```csv
 Task Name,Feature Category,Type,Status,Priority,Assignee,Story Points,Progress,Start Date,Due Date,Technical Details,Acceptance Criteria
 Fix createContext error in assignment page,Assignment System,Frontend,Backlog,Critical,TBD,5,0%,2025-07-15,2025-07-17,Assignment page throws createContext error during build,Build completes successfully
@@ -93,6 +98,7 @@ Implement calendar integration,Scheduling,Backend,Backlog,Low,TBD,10,0%,2025-09-
 ```
 
 ### Property Setup
+
 - **Task Name**: Title (Primary key)
 - **Feature Category**: Select (Assignment System, Attendance, Grades, Parent Communication, Reports, Scheduling, Infrastructure, Testing)
 - **Type**: Select (Frontend, Backend, Database, API, Testing, Documentation, DevOps)
@@ -109,6 +115,7 @@ Implement calendar integration,Scheduling,Backend,Backlog,Low,TBD,10,0%,2025-09-
 ## Database Template 4: Project Status Database
 
 ### CSV Import Template
+
 ```csv
 Status Name,Category,Current Progress,Target Progress,Status,Last Updated,Notes
 Infrastructure,Infrastructure,95,95,Completed,2025-07-15,Next.js 15 setup complete with all infrastructure components
@@ -124,6 +131,7 @@ Deployment Pipeline,Deployment,90,95,On Track,2025-07-15,CI/CD working but produ
 ```
 
 ### Property Setup
+
 - **Status Name**: Title (Primary key)
 - **Category**: Select (Infrastructure, UI Components, API Endpoints, Database, Business Logic, Testing, Security, Performance, Documentation, Deployment)
 - **Current Progress**: Number (0-100)
@@ -135,6 +143,7 @@ Deployment Pipeline,Deployment,90,95,On Track,2025-07-15,CI/CD working but produ
 ## Database Template 5: Documentation Database
 
 ### CSV Import Template
+
 ```csv
 Document Name,Type,Status,Owner,Created Date,Last Updated,Version,Description
 Project Overview,Architecture,Approved,TBD,2025-07-15,2025-07-15,1.0,High-level project architecture and technical decisions
@@ -150,6 +159,7 @@ Architecture Decisions,Architecture,Approved,TBD,2025-07-15,2025-07-15,1.0,Archi
 ```
 
 ### Property Setup
+
 - **Document Name**: Title (Primary key)
 - **Type**: Select (Technical Spec, User Guide, API Doc, Architecture, Meeting Notes, Analysis, Requirements)
 - **Status**: Select (Draft, Review, Approved, Archived, Outdated)
@@ -162,6 +172,7 @@ Architecture Decisions,Architecture,Approved,TBD,2025-07-15,2025-07-15,1.0,Archi
 ## Database Template 6: Bug Tracking Database
 
 ### CSV Import Template
+
 ```csv
 Bug Title,Priority,Status,Assignee,Reporter,Created Date,Environment,Impact,Description,Steps to Reproduce
 Build Error - createContext,Critical,Open,TBD,Development Team,2025-07-15,Development,High,Assignment page throws createContext error during build,"1. Run npm run build\n2. Check assignment page compilation\n3. Build fails with createContext error"
@@ -173,6 +184,7 @@ Performance Issues,Medium,Open,TBD,Development Team,2025-07-15,All,Medium,Bundle
 ```
 
 ### Property Setup
+
 - **Bug Title**: Title (Primary key)
 - **Priority**: Select (Critical, High, Medium, Low)
 - **Status**: Select (Open, In Progress, Resolved, Closed, Duplicate, Won't Fix)
@@ -187,6 +199,7 @@ Performance Issues,Medium,Open,TBD,Development Team,2025-07-15,All,Medium,Bundle
 ## Database Template 7: Performance Metrics Database
 
 ### CSV Import Template
+
 ```csv
 Metric Name,Category,Current Value,Target Value,Status,Measurement Date,Unit,Notes
 Bundle Size,Performance,850,500,Needs Improvement,2025-07-15,kB,Bundle size too large - needs optimization
@@ -202,6 +215,7 @@ Cumulative Layout Shift,Performance,0.15,0.1,Needs Improvement,2025-07-15,score,
 ```
 
 ### Property Setup
+
 - **Metric Name**: Title (Primary key)
 - **Category**: Select (Performance, Security, Quality, User Experience, Infrastructure)
 - **Current Value**: Number
@@ -214,6 +228,7 @@ Cumulative Layout Shift,Performance,0.15,0.1,Needs Improvement,2025-07-15,score,
 ## Automated Views Setup
 
 ### View 1: Sprint Kanban Board
+
 - **Database**: Sprint Planning
 - **View Type**: Kanban
 - **Group By**: Status
@@ -222,6 +237,7 @@ Cumulative Layout Shift,Performance,0.15,0.1,Needs Improvement,2025-07-15,score,
 - **Properties**: Sprint Name, Priority, Progress, Assignee, Due Date
 
 ### View 2: Foundation Strategy Timeline
+
 - **Database**: Foundation-First Strategy
 - **View Type**: Timeline
 - **Group By**: Phase
@@ -230,6 +246,7 @@ Cumulative Layout Shift,Performance,0.15,0.1,Needs Improvement,2025-07-15,score,
 - **Properties**: Task Name, Phase, Week, Status, Priority, Due Date
 
 ### View 3: Active Development Tasks
+
 - **Database**: Development Tasks
 - **View Type**: Kanban
 - **Group By**: Status
@@ -238,6 +255,7 @@ Cumulative Layout Shift,Performance,0.15,0.1,Needs Improvement,2025-07-15,score,
 - **Properties**: Task Name, Feature Category, Type, Priority, Assignee, Story Points
 
 ### View 4: Critical Bugs
+
 - **Database**: Bug Tracking
 - **View Type**: Table
 - **Group By**: None
@@ -246,6 +264,7 @@ Cumulative Layout Shift,Performance,0.15,0.1,Needs Improvement,2025-07-15,score,
 - **Properties**: Bug Title, Priority, Status, Assignee, Created Date, Environment
 
 ### View 5: Performance Dashboard
+
 - **Database**: Performance Metrics
 - **View Type**: Gallery
 - **Group By**: Category
@@ -254,6 +273,7 @@ Cumulative Layout Shift,Performance,0.15,0.1,Needs Improvement,2025-07-15,score,
 - **Properties**: Metric Name, Current Value, Target Value, Status, Unit
 
 ### View 6: Project Status Overview
+
 - **Database**: Project Status
 - **View Type**: Table
 - **Group By**: None
@@ -264,26 +284,31 @@ Cumulative Layout Shift,Performance,0.15,0.1,Needs Improvement,2025-07-15,score,
 ## Import Instructions
 
 ### Step 1: Create Databases
+
 1. In Notion, create a new database for each template
 2. Name the database according to the template name
 3. Import the CSV data using Notion's import feature
 
 ### Step 2: Set Up Properties
+
 1. After importing, adjust property types according to the specifications
 2. Set up Select options for dropdown fields
 3. Configure Formula fields for calculated values
 
 ### Step 3: Create Views
+
 1. Create the automated views as specified
 2. Set up filters and sorting for each view
 3. Configure properties to display in each view
 
 ### Step 4: Set Up Relations
+
 1. Create relations between related databases
 2. Set up rollup properties for summary information
 3. Configure formulas for calculated fields
 
 ### Step 5: Configure Permissions
+
 1. Set up team member access levels
 2. Configure notification preferences
 3. Set up sharing permissions for external stakeholders

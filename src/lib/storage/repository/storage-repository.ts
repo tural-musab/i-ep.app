@@ -35,7 +35,7 @@ export class StorageRepository {
    */
   async getById(fileId: string): Promise<StorageFile | null> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    
+
     const { data, error } = await supabase
       .from('files')
       .select('*')
@@ -59,7 +59,7 @@ export class StorageRepository {
    */
   async list(options: FileListOptions = {}): Promise<StorageFile[]> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    
+
     let query = supabase
       .from('files')
       .select('*')
@@ -120,7 +120,7 @@ export class StorageRepository {
         status: 'active',
         access_count: 0,
         created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .select()
       .single();
@@ -143,7 +143,7 @@ export class StorageRepository {
       .from('files')
       .update({
         ...updates,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', fileId)
       .eq('status', 'active')
@@ -169,7 +169,7 @@ export class StorageRepository {
       .update({
         status: 'deleted',
         deleted_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', fileId);
 
@@ -186,7 +186,7 @@ export class StorageRepository {
     const supabase = getTenantSupabaseClient(this.tenantId);
 
     const { error } = await supabase.rpc('increment_file_access', {
-      file_id: fileId
+      file_id: fileId,
     });
 
     if (error) {
@@ -198,22 +198,24 @@ export class StorageRepository {
   /**
    * Dosya paylaşımı oluşturur
    */
-  async createShare(fileId: string, shareOptions: FileShareOptions, sharedBy: string): Promise<void> {
+  async createShare(
+    fileId: string,
+    shareOptions: FileShareOptions,
+    sharedBy: string
+  ): Promise<void> {
     const supabase = getTenantSupabaseClient(this.tenantId);
 
-    const { error } = await supabase
-      .from('file_shares')
-      .insert({
-        file_id: fileId,
-        shared_by: sharedBy,
-        shared_with_type: shareOptions.shared_with_type,
-        shared_with_id: shareOptions.shared_with_id,
-        can_download: shareOptions.permission === 'write' || shareOptions.permission === 'read',
-        can_view: true,
-        can_delete: shareOptions.permission === 'write',
-        expires_at: shareOptions.expires_at?.toISOString(),
-        created_at: new Date().toISOString()
-      });
+    const { error } = await supabase.from('file_shares').insert({
+      file_id: fileId,
+      shared_by: sharedBy,
+      shared_with_type: shareOptions.shared_with_type,
+      shared_with_id: shareOptions.shared_with_id,
+      can_download: shareOptions.permission === 'write' || shareOptions.permission === 'read',
+      can_view: true,
+      can_delete: shareOptions.permission === 'write',
+      expires_at: shareOptions.expires_at?.toISOString(),
+      created_at: new Date().toISOString(),
+    });
 
     if (error) {
       console.error('Dosya paylaşımı oluşturulurken hata oluştu:', error);
@@ -280,7 +282,7 @@ export class StorageRepository {
         totalFiles: 0,
         totalSize: 0,
         filesByType: {},
-        filesByAccessLevel: {}
+        filesByAccessLevel: {},
       };
     }
 
@@ -291,10 +293,10 @@ export class StorageRepository {
     const filesByType: Record<string, number> = {};
     const filesByAccessLevel: Record<string, number> = {};
 
-    stats.forEach(file => {
+    stats.forEach((file) => {
       const type = file.mime_type?.split('/')[0] || 'unknown';
       filesByType[type] = (filesByType[type] || 0) + 1;
-      
+
       filesByAccessLevel[file.access_level] = (filesByAccessLevel[file.access_level] || 0) + 1;
     });
 
@@ -302,7 +304,7 @@ export class StorageRepository {
       totalFiles,
       totalSize,
       filesByType,
-      filesByAccessLevel
+      filesByAccessLevel,
     };
   }
 

@@ -20,14 +20,14 @@ Sistemdeki tüm webhook'ları listeler.
 
 #### Query Parameters
 
-| Parametre | Tip | Açıklama |
-|-----------|-----|----------|
-| page | number | Sayfa numarası |
-| pageSize | number | Sayfa başına kayıt sayısı |
-| sort | string | Sıralama alanı ve yönü (örn: `createdAt:desc`) |
-| search | string | Arama terimi |
-| status | string[] | Durum filtreleri |
-| events | string[] | Event filtreleri |
+| Parametre | Tip      | Açıklama                                       |
+| --------- | -------- | ---------------------------------------------- |
+| page      | number   | Sayfa numarası                                 |
+| pageSize  | number   | Sayfa başına kayıt sayısı                      |
+| sort      | string   | Sıralama alanı ve yönü (örn: `createdAt:desc`) |
+| search    | string   | Arama terimi                                   |
+| status    | string[] | Durum filtreleri                               |
+| events    | string[] | Event filtreleri                               |
 
 #### Response
 
@@ -280,11 +280,11 @@ Belirli bir webhook'un istatistiklerini getirir.
 
 #### Query Parameters
 
-| Parametre | Tip | Açıklama |
-|-----------|-----|----------|
-| start | string | Başlangıç tarihi |
-| end | string | Bitiş tarihi |
-| interval | string | Zaman aralığı (1h, 1d, 1w, 1m) |
+| Parametre | Tip    | Açıklama                       |
+| --------- | ------ | ------------------------------ |
+| start     | string | Başlangıç tarihi               |
+| end       | string | Bitiş tarihi                   |
+| interval  | string | Zaman aralığı (1h, 1d, 1w, 1m) |
 
 #### Response
 
@@ -325,12 +325,12 @@ Belirli bir webhook'un teslimat geçmişini getirir.
 
 #### Query Parameters
 
-| Parametre | Tip | Açıklama |
-|-----------|-----|----------|
-| page | number | Sayfa numarası |
-| pageSize | number | Sayfa başına kayıt sayısı |
-| status | string | Durum filtresi |
-| event | string | Event filtresi |
+| Parametre | Tip    | Açıklama                  |
+| --------- | ------ | ------------------------- |
+| page      | number | Sayfa numarası            |
+| pageSize  | number | Sayfa başına kayıt sayısı |
+| status    | string | Durum filtresi            |
+| event     | string | Event filtresi            |
 
 #### Response
 
@@ -388,16 +388,16 @@ interface WebhookEvent {
 
 ## Hata Kodları
 
-| Kod | Açıklama |
-|-----|----------|
-| 400 | Geçersiz istek |
+| Kod | Açıklama             |
+| --- | -------------------- |
+| 400 | Geçersiz istek       |
 | 401 | Yetkilendirme hatası |
-| 403 | Erişim engellendi |
-| 404 | Webhook bulunamadı |
-| 409 | URL çakışması |
-| 422 | Doğrulama hatası |
-| 429 | Çok fazla istek |
-| 500 | Sunucu hatası |
+| 403 | Erişim engellendi    |
+| 404 | Webhook bulunamadı   |
+| 409 | URL çakışması        |
+| 422 | Doğrulama hatası     |
+| 429 | Çok fazla istek      |
+| 500 | Sunucu hatası        |
 
 ## Örnek İstekler
 
@@ -455,4 +455,4 @@ curl -X POST \
 7. İstek boyutlarını sınırla
 8. Yanıt sürelerini optimize et
 9. Loglama mekanizması ekle
-10. Dokümantasyonu güncel tut 
+10. Dokümantasyonu güncel tut

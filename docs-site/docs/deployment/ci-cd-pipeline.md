@@ -26,7 +26,6 @@ Iqra Eğitim Portalı için aşağıdaki CI/CD mimarisi kullanılmaktadır:
 ↓
 [Vercel/AWS] → [Farklı Ortamlar]
 
-
 ### Kullanılan Teknolojiler ve Araçlar
 
 - **Versiyon Kontrolü**: GitHub
@@ -47,10 +46,10 @@ Iqra Eğitim Portalı, GitFlow'un özelleştirilmiş bir versiyonunu kullanmakta
 
 - **main**: Üretim ortamı kodu (korumalı)
 - **develop**: Geliştirme ortamı kodu
-- **feature/*****: Yeni özellikler için dallar
-- **bugfix/*****: Hata düzeltmeleri için dallar
-- **release/*****: Sürüm hazırlığı için dallar
-- **hotfix/*****: Acil üretim düzeltmeleri için dallar
+- **feature/\*\*\***: Yeni özellikler için dallar
+- **bugfix/\*\*\***: Hata düzeltmeleri için dallar
+- **release/\*\*\***: Sürüm hazırlığı için dallar
+- **hotfix/\*\*\***: Acil üretim düzeltmeleri için dallar
 
 ```mermaid
 graph TD
@@ -96,9 +95,9 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: [ develop, main, release/* ]
+    branches: [develop, main, release/*]
   push:
-    branches: [ develop, main ]
+    branches: [develop, main]
 
 jobs:
   lint:
@@ -221,11 +220,11 @@ Iqra Eğitim Portalı, aşağıdaki ortamlara sahiptir:
 
 2. **Staging (UAT)**: Kullanıcı kabul testleri için
    - URL: staging.i-ep.app
-   - Dalı: release/*
+   - Dalı: release/\*
    - Otomatik dağıtım: Her release dalı güncellemesinde
 
 3. **Üretim (Production)**: Canlı ortam
-   - URL: *.i-ep.app
+   - URL: \*.i-ep.app
    - Dalı: main
    - Otomatik dağıtım: Manuel onay sonrası
 
@@ -242,7 +241,7 @@ name: Deploy
 
 on:
   push:
-    branches: [ develop, main, release/* ]
+    branches: [develop, main, release/*]
   workflow_dispatch:
 
 jobs:
@@ -256,13 +255,13 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run build
         run: npm run build
-      
+
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v20
         with:
@@ -281,7 +280,7 @@ name: Deploy Backend
 
 on:
   push:
-    branches: [ develop, main, release/* ]
+    branches: [develop, main, release/*]
     paths:
       - 'backend/**'
       - 'packages/**'
@@ -293,18 +292,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
-      
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      
+
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -315,7 +314,7 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-  
+
   deploy:
     name: Deploy to ECS
     needs: build-and-push
@@ -327,7 +326,7 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
-      
+
       - name: Deploy to Dev
         if: github.ref == 'refs/heads/develop'
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -337,7 +336,7 @@ jobs:
           cluster: i-es-dev
           image: ${{ needs.build-and-push.outputs.image }}
           wait-for-service-stability: true
-      
+
       - name: Deploy to Production
         if: github.ref == 'refs/heads/main'
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
@@ -357,7 +356,7 @@ name: Deploy Infrastructure
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'infrastructure/**'
   workflow_dispatch:
@@ -371,28 +370,28 @@ jobs:
         working-directory: ./infrastructure
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
-      
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.3.0
-      
+
       - name: Terraform Init
         run: terraform init
-      
+
       - name: Terraform Format
         run: terraform fmt -check
-      
+
       - name: Terraform Plan
         run: terraform plan -out=tfplan
-      
+
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
@@ -451,8 +450,8 @@ const canaryConfigs: Record<string, CanaryConfig> = {
     metricThresholds: {
       errorRate: 0.1, // %10 hata oranından fazla olursa rollback
       latencyP95: 500, // 500ms'den fazla p95 gecikme olursa rollback
-      cpuUsage: 70 // %70 CPU kullanımından fazla olursa rollback
-    }
+      cpuUsage: 70, // %70 CPU kullanımından fazla olursa rollback
+    },
   },
   'new-attendance-module': {
     featureName: 'Yeni Devam Takip Modülü',
@@ -461,9 +460,9 @@ const canaryConfigs: Record<string, CanaryConfig> = {
     metricThresholds: {
       errorRate: 0.05,
       latencyP95: 300,
-      cpuUsage: 60
-    }
-  }
+      cpuUsage: 60,
+    },
+  },
 };
 ```
 
@@ -496,23 +495,23 @@ const featureFlags: Record<string, FeatureFlag> = {
     enabled: false,
     tenantOverrides: {
       'tenant-premium-1': true,
-      'tenant-beta-tester': true
-    }
+      'tenant-beta-tester': true,
+    },
   },
   'new-gradebook': {
     name: 'Yeni Not Defteri',
     description: 'Yeniden tasarlanmış not defteri arayüzü',
     enabled: true,
-    rolloutPercentage: 50 // Kullanıcıların %50'si için aktif
+    rolloutPercentage: 50, // Kullanıcıların %50'si için aktif
   },
   'parent-messaging': {
     name: 'Veli Mesajlaşma',
     description: 'Velilerle doğrudan mesajlaşma özelliği',
     enabled: true,
     tenantOverrides: {
-      'tenant-free-plan': false
-    }
-  }
+      'tenant-free-plan': false,
+    },
+  },
 };
 
 // Feature flag kontrolü
@@ -524,16 +523,20 @@ export function isFeatureEnabled(
   }
 ): boolean {
   const flag = featureFlags[featureName];
-  
+
   if (!flag) {
     return false;
   }
-  
+
   // Tenant bazlı override kontrolü
-  if (context.tenantId && flag.tenantOverrides && flag.tenantOverrides[context.tenantId] !== undefined) {
+  if (
+    context.tenantId &&
+    flag.tenantOverrides &&
+    flag.tenantOverrides[context.tenantId] !== undefined
+  ) {
     return flag.tenantOverrides[context.tenantId];
   }
-  
+
   // Yüzde bazlı rollout kontrolü
   if (flag.rolloutPercentage !== undefined && context.userId) {
     // Deterministik olarak kullanıcı ID'si bazında kontrol
@@ -541,7 +544,7 @@ export function isFeatureEnabled(
     const normalizedHash = hash % 100;
     return normalizedHash < flag.rolloutPercentage;
   }
-  
+
   return flag.enabled;
 }
 ```
@@ -591,29 +594,29 @@ export function canDeployToTenant(
   deploymentStartTime: Date
 ): boolean {
   const tenant = getTenantDeploymentConfig(tenantId);
-  
+
   if (!tenant) {
     return false;
   }
-  
+
   // Korumalı tenant kontrolü
   if (tenant.isProtected) {
     // Sadece bakım penceresinde dağıtım yapılabilir
     const now = new Date();
     const dayMatches = now.getDay() === tenant.maintenanceWindow.dayOfWeek;
-    const hourInRange = now.getHours() >= tenant.maintenanceWindow.startHour && 
+    const hourInRange = now.getHours() >= tenant.maintenanceWindow.startHour &&
                        now.getHours() < (tenant.maintenanceWindow.startHour + tenant.maintenanceWindow.durationHours);
-    
+
     if (!(dayMatches && hourInRange)) {
       return false;
     }
   }
-  
+
   // Dağıtım grubu bekleme süresi kontrolü
   const waitPeriodHours = tenantDeploymentGroups[tenant.deploymentGroup].waitPeriodHours;
   const waitPeriodMs = waitPeriodHours * 60 * 60 * 1000;
   const eligibleAfter = new Date(deploymentStartTime.getTime() + waitPeriodMs);
-  
+
   return new Date() >= eligibleAfter;
 }
 ```
@@ -653,7 +656,7 @@ jobs:
             echo "Invalid tenant group. Must be one of: alpha, beta, stable"
             exit 1
           fi
-      
+
       - name: Get tenants in group
         id: get-tenants
         run: |
@@ -679,29 +682,29 @@ jobs:
       fail-fast: false
       # Aynı anda en fazla 2 tenant'a dağıtım
       max-parallel: 2
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Check deployment window
         id: check-window
         run: |
           # Tenant için dağıtım penceresi kontrolü
           node scripts/check-deployment-window.js ${{ matrix.tenant }}
-          
+
       - name: Deploy to tenant
         if: steps.check-window.outputs.can_deploy == 'true'
         run: |
           # Tenant'a dağıtım işlemi
           echo "Deploying version ${{ github.event.inputs.version }} to tenant ${{ matrix.tenant }}"
           node scripts/deploy-to-tenant.js ${{ matrix.tenant }} ${{ github.event.inputs.version }}
-      
+
       - name: Run smoke tests
         if: steps.check-window.outputs.can_deploy == 'true'
         run: |
           # Dağıtım sonrası basit smoke testleri
           node scripts/run-tenant-smoke-tests.js ${{ matrix.tenant }}
-      
+
       - name: Notify on failure
         if: failure()
         run: |
@@ -740,17 +743,17 @@ export async function monitorDeployment(
   const startTime = new Date();
   // İzleme bitiş zamanı
   const endTime = new Date(startTime.getTime() + monitoringDurationMinutes * 60 * 1000);
-  
+
   // Her 5 dakikada bir metrikleri kontrol et
   const intervalMinutes = 5;
   const checkIntervalMs = intervalMinutes * 60 * 1000;
-  
+
   let isHealthy = true;
-  
+
   while (new Date() < endTime && isHealthy) {
     // Metrikleri topla
     const metrics = await collectDeploymentMetrics(deploymentId);
-    
+
     // Alarm durumları kontrolü
     if (
       metrics.errorRate > 0.05 || // %5'ten fazla hata oranı
@@ -761,16 +764,16 @@ export async function monitorDeployment(
       // Alarm bildirimini tetikle
       await triggerDeploymentAlarm(deploymentId, metrics);
     }
-    
+
     // Metrikleri kaydet
     await storeDeploymentMetrics(metrics);
-    
+
     // Sağlıklıysa, bir sonraki kontrol için bekle
     if (isHealthy) {
       await sleep(checkIntervalMs);
     }
   }
-  
+
   return isHealthy;
 }
 ```
@@ -793,57 +796,54 @@ export async function performAutomaticRollback(
   reason: string
 ): Promise<RollbackResult> {
   const startTime = Date.now();
-  
+
   try {
     // 1. Dağıtım bilgilerini al
     const deployment = await getDeploymentDetails(deploymentId);
-    
+
     // 2. Önceki sürüm bilgisini al
     const previousVersion = await getPreviousVersion(deployment.environment);
-    
+
     // 3. Rollback bildirimi gönder
     await sendRollbackNotification({
       deploymentId,
       reason,
       version: deployment.version,
       previousVersion,
-      environment: deployment.environment
+      environment: deployment.environment,
     });
-    
+
     // 4. Rollback işlemini başlat
-    const rollback = await initiateRollback(
-      deployment.environment,
-      previousVersion
-    );
-    
+    const rollback = await initiateRollback(deployment.environment, previousVersion);
+
     // 5. Rollback tamamlandı mı kontrol et
     const isRollbackSuccessful = await waitForRollbackCompletion(rollback.id);
-    
+
     // 6. Sonuç bildirimini gönder
     const endTime = Date.now();
     const rollbackDuration = (endTime - startTime) / 1000; // sn cinsinden
-    
+
     const result: RollbackResult = {
       success: isRollbackSuccessful,
       reason,
       rollbackDuration,
       previousVersion,
-      affectedTenants: deployment.affectedTenants
+      affectedTenants: deployment.affectedTenants,
     };
-    
+
     await logRollbackEvent(result);
-    
+
     return result;
   } catch (error) {
     // Hata durumunda manuel müdahale bildirimini gönder
     await sendManualInterventionAlert(deploymentId, error.message);
-    
+
     return {
       success: false,
       reason: `Rollback sırasında hata: ${error.message}`,
       rollbackDuration: (Date.now() - startTime) / 1000,
       previousVersion: 'unknown',
-      affectedTenants: []
+      affectedTenants: [],
     };
   }
 }
@@ -869,51 +869,44 @@ const secretConfigs: Record<string, SecretConfig> = {
     name: 'Database Password',
     description: 'PostgreSQL veritabanı şifresi',
     environmentScope: ['development', 'staging', 'production'],
-    rotationPeriodDays: 90
+    rotationPeriodDays: 90,
   },
   'jwt-secret': {
     name: 'JWT Secret',
     description: 'JSON Web Token imzalama anahtarı',
     environmentScope: ['development', 'staging', 'production'],
-    rotationPeriodDays: 30
+    rotationPeriodDays: 30,
   },
   'supabase-service-key': {
     name: 'Supabase Service Key',
     description: 'Supabase servis rol anahtarı',
     environmentScope: ['staging', 'production'],
-    rotationPeriodDays: 60
-  }
+    rotationPeriodDays: 60,
+  },
 };
 
 // Güvenli sır dağıtımı
-export async function deploySecrets(
-  environment: string,
-  secretNames: string[]
-): Promise<void> {
+export async function deploySecrets(environment: string, secretNames: string[]): Promise<void> {
   // Her bir sırrı ilgili ortama dağıt
   for (const secretName of secretNames) {
     const config = secretConfigs[secretName];
-    
+
     if (!config) {
       console.warn(`Bilinmeyen sır: ${secretName}`);
       continue;
     }
-    
+
     if (!config.environmentScope.includes(environment)) {
       console.warn(`Sır '${secretName}' şu ortamda kullanılmıyor: ${environment}`);
       continue;
     }
-    
+
     // AWS Secrets Manager veya Vault gibi bir sır saklama hizmetinden sırrı al
     const secretValue = await getSecretFromStore(secretName, environment);
-    
+
     // Ortama göre sırrı dağıt (Vercel, AWS, vb.)
-    await deploySecretToEnvironment(
-      environment,
-      secretName,
-      secretValue
-    );
-    
+    await deploySecretToEnvironment(environment, secretName, secretValue);
+
     console.log(`Sır '${secretName}' şu ortama dağıtıldı: ${environment}`);
   }
 }
@@ -921,7 +914,7 @@ export async function deploySecrets(
 
 ### Güvenlik Taramaları
 
-```yaml
+````yaml
 # .github/workflows/security-scan.yml
 name: Security Scan
 
@@ -939,19 +932,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run npm audit
         run: npm audit --audit-level=high
-      
+
       - name: Run Snyk scan
         uses: snyk/actions/node@master
         with:
@@ -964,21 +957,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run CodeQL analysis
         uses: github/codeql-action/analyze@v2
         with:
           languages: javascript, typescript
-      
+
       - name: Run ESLint security rules
         run: npx eslint . --config .eslintrc.security.js
 
@@ -987,10 +980,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Build Docker image
         run: docker build -t i-es-backend:${{ github.sha }} ./backend
-      
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -998,7 +991,7 @@ jobs:
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
-      
+
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v2
         with:
@@ -1041,10 +1034,10 @@ export async function trackPipelineMetrics(
 ): Promise<PipelineMetrics> {
   // Pipeline durumunu al
   const pipeline = await getPipelineStatus(pipelineId);
-  
+
   // Job metriklerini topla
   const jobMetrics = await collectJobMetrics(pipelineId);
-  
+
   // Metrikleri oluştur
   const metrics: PipelineMetrics = {
     pipelineId,
@@ -1052,13 +1045,13 @@ export async function trackPipelineMetrics(
     commitId: pipeline.commitId,
     startTime: pipeline.startTime,
     endTime: pipeline.endTime,
-    duration: pipeline.endTime ? 
-      (pipeline.endTime.getTime() - pipeline.startTime.getTime()) / 1000 : 
+    duration: pipeline.endTime ?
+      (pipeline.endTime.getTime() - pipeline.startTime.getTime()) / 1000 :
       undefined,
     status: pipeline.status,
     jobMetrics
   };
-  
+
   // Dağıtım metrikleri varsa ekle
   if (pipeline.deploymentId) {
     const deployment = await getDeploymentStatus(pipeline.deploymentId);
@@ -1069,18 +1062,18 @@ export async function trackPipelineMetrics(
       status: deployment.status
     };
   }
-  
+
   // Metrikleri kaydet
   await storePipelineMetrics(metrics);
-  
+
   // İyileştirme önerileri
   if (metrics.duration && metrics.duration > 600) { // 10 dakikadan uzun süren pipeline'lar
     await suggestPipelineOptimizations(metrics);
   }
-  
+
   return metrics;
 }
-```
+````
 
 ### Cache Optimizasyonu
 
@@ -1098,13 +1091,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Analyze npm cache efficiency
         id: npm-cache-analysis
         run: |
           # Son 20 pipeline'dan cache hit/miss oranlarını analiz et
           node scripts/analyze-npm-cache.js --last=20
-      
+
       - name: Optimize package-lock.json
         if: steps.npm-cache-analysis.outputs.cache_hit_ratio < 0.8
         run: |
@@ -1116,28 +1109,28 @@ jobs:
           git add package-lock.json
           git commit -m "Optimize package-lock.json for better caching"
           git push
-      
+
       - name: Analyze Docker layer caching
         run: |
           # Docker imaj katmanlarını analiz et
           node scripts/analyze-docker-layers.js
-          
+
       - name: Optimize Dockerfile
         run: |
           # Dockerfile'ı optimize et (katman sayısını azalt, sıralamayı iyileştir)
           node scripts/optimize-dockerfile.js
-          
+
       - name: Generate cache optimization report
         run: |
           node scripts/generate-cache-report.js
-          
+
       - name: Send optimization report
         uses: actions/github-script@v6
         with:
           script: |
             const fs = require('fs');
             const report = fs.readFileSync('cache-report.md', 'utf8');
-            
+
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -1153,13 +1146,15 @@ jobs:
 
 CI/CD pipeline'ı kullanan geliştiriciler için dokümantasyon:
 
-```markdown
+````markdown
 # Geliştirici CI/CD Kılavuzu
 
 ## Genel Bakış
+
 Iqra Eğitim Portalı, geliştirme süreçlerini hızlandırmak ve kod kalitesini artırmak için otomatik bir CI/CD pipeline kullanmaktadır. Bu dokümantasyon, pipeline'ın nasıl çalıştığını ve geliştirme sürecinde nasıl kullanılacağını açıklar.
 
 ## Branching Stratejisi
+
 - `main`: Üretim kodu (korumalı)
 - `develop`: Aktif geliştirme
 - `feature/***`: Yeni özellikler
@@ -1168,12 +1163,15 @@ Iqra Eğitim Portalı, geliştirme süreçlerini hızlandırmak ve kod kalitesin
 - `hotfix/***`: Acil üretim düzeltmeleri
 
 ## Geliştirme İş Akışı
+
 1. `develop` dalından yeni bir dal oluşturun:
    ```bash
    git checkout develop
    git pull
    git checkout -b feature/your-feature-name
    ```
+````
+
 2. Değişikliklerinizi yapın ve commit edin:
    ```bash
    git add .
@@ -1191,7 +1189,9 @@ Iqra Eğitim Portalı, geliştirme süreçlerini hızlandırmak ve kod kalitesin
 5. GitHub'da bir Pull Request oluşturun
 
 ## CI Kontrolleri
+
 Her PR, aşağıdaki kontrollere tabi tutulur:
+
 - TypeScript derleme
 - ESLint (kod stil kontrolü)
 - Prettier (format kontrolü)
@@ -1203,34 +1203,44 @@ Her PR, aşağıdaki kontrollere tabi tutulur:
 ## Yaygın Hatalar ve Çözümleri
 
 ### Jest Test Hatası
+
 ```
 FAIL src/components/YourComponent.test.tsx
 ● YourComponent › should render correctly
 ```
+
 **Çözüm**: Test dosyasını güncelleyin veya bileşendeki değişikliği geri alın.
 
 ### ESLint Hatası
+
 ```
 error 'useState' is defined but never used @typescript-eslint/no-unused-vars
 ```
+
 **Çözüm**: Kullanılmayan değişkenleri kaldırın veya kullanın.
 
 ### TypeScript Hatası
+
 ```
 Type '{ prop1: string; }' is missing the following properties from type 'YourComponentProps': prop2, prop3
 ```
+
 **Çözüm**: Eksik props'ları ekleyin veya interfacenizi güncelleyin.
 
 ## Ortamlar
+
 - **Dev**: [dev.i-ep.app](https://dev.i-ep.app)
 - **Staging**: [staging.i-ep.app](https://staging.i-ep.app)
 - **Production**: [i-ep.app](https://i-ep.app)
 
 ## Yardım ve Destek
+
 CI/CD pipeline ile ilgili sorunlar için:
+
 - Slack kanalı: #ci-cd-support
 - E-posta: devops@i-ep.app
-```
+
+````
 
 ### İyileştirme ve Yol Haritası
 
@@ -1267,19 +1277,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run tests with coverage
         run: npm run test:coverage
-      
+
       - name: Check coverage thresholds
         run: |
           COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
@@ -1287,45 +1297,46 @@ jobs:
             echo "Code coverage below threshold: $COVERAGE% (required: 80%)"
             exit 1
           fi
-      
+
       - name: Upload coverage report
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
           path: coverage/
-  
+
   code-complexity:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run complexity analysis
         run: npx eslint . --config .eslintrc.complexity.js
-      
+
       - name: Check for code smells
         run: npx sonarqube-scanner
-```
+````
 
 #### Sorumlu Ekipler ve İletişim
 
-| Sorumlu Alan | Ekip | İletişim |
-|--------------|------|----------|
-| CI Pipeline | DevOps Ekibi | devops@i-ep.app |
-| Deployment | Platform Ekibi | platform@i-ep.app |
-| Test Otomasyonu | QA Ekibi | qa@i-ep.app |
-| Güvenlik Taramaları | Güvenlik Ekibi | security@i-ep.app |
-| Code Review | Geliştirme Ekibi | dev@i-ep.app |
+| Sorumlu Alan        | Ekip             | İletişim          |
+| ------------------- | ---------------- | ----------------- |
+| CI Pipeline         | DevOps Ekibi     | devops@i-ep.app   |
+| Deployment          | Platform Ekibi   | platform@i-ep.app |
+| Test Otomasyonu     | QA Ekibi         | qa@i-ep.app       |
+| Güvenlik Taramaları | Güvenlik Ekibi   | security@i-ep.app |
+| Code Review         | Geliştirme Ekibi | dev@i-ep.app      |
 
 #### İlgili Kaynaklar
-* [Felaketten Kurtarma Planı](/docs/deployment/disaster-recovery.md)
-* [Yedekleme ve Geri Yükleme Prosedürleri](/docs/deployment/backup-restore.md)
-* [Teknoloji Yığını](/docs/architecture/tech-stack.md)
+
+- [Felaketten Kurtarma Planı](/docs/deployment/disaster-recovery.md)
+- [Yedekleme ve Geri Yükleme Prosedürleri](/docs/deployment/backup-restore.md)
+- [Teknoloji Yığını](/docs/architecture/tech-stack.md)

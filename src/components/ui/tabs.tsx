@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { cn } from '@/lib/utils';
@@ -19,7 +19,7 @@ const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 function useTabsContext() {
   const context = useContext(TabsContext);
   if (!context) {
-    throw new Error("useTabsContext must be used within a Tabs component");
+    throw new Error('useTabsContext must be used within a Tabs component');
   }
   return context;
 }
@@ -40,19 +40,25 @@ export function Tabs({
     }
   }, [value]);
 
-  const handleValueChange = useCallback((newValue: string) => {
-    setActiveTab(newValue);
-    onValueChange?.(newValue);
-  }, [onValueChange]);
+  const handleValueChange = useCallback(
+    (newValue: string) => {
+      setActiveTab(newValue);
+      onValueChange?.(newValue);
+    },
+    [onValueChange]
+  );
 
-  const contextValue = useMemo(() => ({
-    value: activeTab,
-    onValueChange: handleValueChange,
-  }), [activeTab, handleValueChange]);
+  const contextValue = useMemo(
+    () => ({
+      value: activeTab,
+      onValueChange: handleValueChange,
+    }),
+    [activeTab, handleValueChange]
+  );
 
   return (
     <TabsContext.Provider value={contextValue}>
-      <div className={cn("w-full", className)} {...props}>
+      <div className={cn('w-full', className)} {...props}>
         {children}
       </div>
     </TabsContext.Provider>
@@ -63,7 +69,7 @@ export function TabsList({ className, children, ...props }: React.HTMLAttributes
   return (
     <div
       className={cn(
-        "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1",
+        'bg-muted inline-flex h-10 items-center justify-center rounded-md p-1',
         className
       )}
       {...props}
@@ -77,22 +83,17 @@ interface TabsTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
   value: string;
 }
 
-export function TabsTrigger({
-  className,
-  value,
-  children,
-  ...props
-}: TabsTriggerProps) {
+export function TabsTrigger({ className, value, children, ...props }: TabsTriggerProps) {
   const { value: activeValue, onValueChange } = useTabsContext();
   const isActive = activeValue === value;
 
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+        'ring-offset-background focus-visible:ring-ring inline-flex items-center justify-center rounded-sm px-3 py-1.5 text-sm font-medium whitespace-nowrap transition-all focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
         isActive
-          ? "bg-background text-foreground shadow-sm"
-          : "text-muted-foreground hover:text-foreground",
+          ? 'bg-background text-foreground shadow-sm'
+          : 'text-muted-foreground hover:text-foreground',
         className
       )}
       onClick={() => onValueChange(value)}
@@ -107,12 +108,7 @@ interface TabsContentProps extends React.HTMLAttributes<HTMLDivElement> {
   value: string;
 }
 
-export function TabsContent({
-  className,
-  value,
-  children,
-  ...props
-}: TabsContentProps) {
+export function TabsContent({ className, value, children, ...props }: TabsContentProps) {
   const { value: activeValue } = useTabsContext();
   const isActive = activeValue === value;
 
@@ -121,7 +117,7 @@ export function TabsContent({
   return (
     <div
       className={cn(
-        "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        'ring-offset-background focus-visible:ring-ring mt-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
         className
       )}
       {...props}
@@ -129,4 +125,4 @@ export function TabsContent({
       {children}
     </div>
   );
-} 
+}

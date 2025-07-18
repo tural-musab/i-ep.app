@@ -27,8 +27,8 @@ async function createUser(email, password, userData) {
       password,
       email_confirm: true, // E-posta onayını otomatik yap
       user_metadata: {
-        full_name: `${userData.first_name} ${userData.last_name}`
-      }
+        full_name: `${userData.first_name} ${userData.last_name}`,
+      },
     });
 
     if (authError) {
@@ -39,18 +39,16 @@ async function createUser(email, password, userData) {
     console.log(`${email} auth kullanıcısı oluşturuldu. ID: ${authUser.user.id}`);
 
     // 2. public.users tablosuna kullanıcı ekle
-    const { data: profileData, error: profileError } = await supabase
-      .from('users')
-      .insert({
-        id: authUser.user.id,
-        email: email,
-        first_name: userData.first_name,
-        last_name: userData.last_name,
-        role: userData.role,
-        is_active: userData.is_active || true,
-        verification_status: userData.verification_status || 'verified',
-        tenant_id: userData.tenant_id || null
-      });
+    const { data: profileData, error: profileError } = await supabase.from('users').insert({
+      id: authUser.user.id,
+      email: email,
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      role: userData.role,
+      is_active: userData.is_active || true,
+      verification_status: userData.verification_status || 'verified',
+      tenant_id: userData.tenant_id || null,
+    });
 
     if (profileError) {
       console.error(`${email} profil oluşturma hatası:`, profileError);
@@ -59,7 +57,6 @@ async function createUser(email, password, userData) {
 
     console.log(`${email} için public.users kaydı oluşturuldu`);
     return authUser.user;
-
   } catch (error) {
     console.error(`${email} kullanıcısı oluşturma genel hatası:`, error);
     return null;
@@ -78,7 +75,7 @@ async function createUsers() {
     last_name: 'Admin',
     role: 'super_admin',
     is_active: true,
-    verification_status: 'verified'
+    verification_status: 'verified',
   });
 
   // 2. Demo Okul Admin
@@ -88,7 +85,7 @@ async function createUsers() {
     last_name: 'Admin',
     role: 'admin',
     is_active: true,
-    verification_status: 'verified'
+    verification_status: 'verified',
   });
 
   console.log('Kullanıcı oluşturma işlemi tamamlandı!');
@@ -99,9 +96,9 @@ async function createUsers() {
 
 // Scripti çalıştır
 createUsers()
-  .catch(err => {
+  .catch((err) => {
     console.error('Script çalıştırma hatası:', err);
   })
   .finally(() => {
     console.log('İşlem tamamlandı.');
-  }); 
+  });

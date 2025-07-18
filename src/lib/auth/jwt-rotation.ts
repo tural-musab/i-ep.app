@@ -19,12 +19,12 @@ class JWTSecretManager {
       current: this.generateSecret(),
       previous: [],
       rotatedAt: new Date(),
-      rotationInterval: 7 * 24 * 60 * 60 * 1000 // 7 days default
+      rotationInterval: 7 * 24 * 60 * 60 * 1000, // 7 days default
     };
 
     // Load from environment if available
     this.loadFromEnvironment();
-    
+
     // Start automatic rotation
     this.startAutomaticRotation();
   }
@@ -53,11 +53,11 @@ class JWTSecretManager {
       logger.info('JWT secret configuration loaded from environment', {
         hasCurrentSecret: !!envSecret,
         rotationIntervalHours: this.secrets.rotationInterval / (60 * 60 * 1000),
-        previousSecretsCount: this.secrets.previous.length
+        previousSecretsCount: this.secrets.previous.length,
       });
     } catch (error) {
-      logger.error('Failed to load JWT secret configuration from environment', { 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      logger.error('Failed to load JWT secret configuration from environment', {
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }
@@ -88,9 +88,9 @@ class JWTSecretManager {
    */
   async rotateSecret(reason?: string): Promise<{ success: boolean; newSecret: string }> {
     try {
-      logger.info('Starting JWT secret rotation', { 
+      logger.info('Starting JWT secret rotation', {
         reason: reason || 'manual_rotation',
-        currentSecretAge: Date.now() - this.secrets.rotatedAt.getTime()
+        currentSecretAge: Date.now() - this.secrets.rotatedAt.getTime(),
       });
 
       // Mevcut secret'ı previous listesine ekle
@@ -104,8 +104,8 @@ class JWTSecretManager {
       // Previous secrets listesini limit ile (max 3 previous secret)
       if (this.secrets.previous.length > 3) {
         const removedSecrets = this.secrets.previous.splice(3);
-        logger.info('Removed old JWT secrets', { 
-          removedCount: removedSecrets.length 
+        logger.info('Removed old JWT secrets', {
+          removedCount: removedSecrets.length,
         });
       }
 
@@ -118,14 +118,14 @@ class JWTSecretManager {
       logger.info('JWT secret rotation completed successfully', {
         newSecretGenerated: true,
         previousSecretsCount: this.secrets.previous.length,
-        reason: reason || 'manual_rotation'
+        reason: reason || 'manual_rotation',
       });
 
       return { success: true, newSecret };
     } catch (error) {
-      logger.error('JWT secret rotation failed', { 
+      logger.error('JWT secret rotation failed', {
         error: error instanceof Error ? error.message : 'Unknown error',
-        reason: reason || 'manual_rotation'
+        reason: reason || 'manual_rotation',
       });
       return { success: false, newSecret: '' };
     }
@@ -151,7 +151,7 @@ class JWTSecretManager {
 
     logger.info('JWT automatic rotation started', {
       intervalHours: this.secrets.rotationInterval / (60 * 60 * 1000),
-      nextRotation: new Date(Date.now() + this.secrets.rotationInterval).toISOString()
+      nextRotation: new Date(Date.now() + this.secrets.rotationInterval).toISOString(),
     });
   }
 
@@ -184,7 +184,7 @@ class JWTSecretManager {
         reason,
         timestamp: new Date().toISOString(),
         rotationCount: this.secrets.previous.length + 1,
-        environment: process.env.NODE_ENV || 'unknown'
+        environment: process.env.NODE_ENV || 'unknown',
       };
 
       logger.info('JWT secret rotation audit log', auditData);
@@ -195,8 +195,8 @@ class JWTSecretManager {
         // await auditService.logSecurityEvent(auditData);
       }
     } catch (error) {
-      logger.error('Failed to log JWT rotation audit event', { 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      logger.error('Failed to log JWT rotation audit event', {
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }
@@ -210,16 +210,16 @@ class JWTSecretManager {
       if (process.env.NODE_ENV === 'production') {
         logger.info('JWT secrets should be updated in external key management service', {
           currentSecret: this.secrets.current.substring(0, 8) + '...',
-          previousSecretsCount: this.secrets.previous.length
+          previousSecretsCount: this.secrets.previous.length,
         });
-        
+
         // TODO: External key management service integration
         // await keyManagementService.updateSecret('jwt-current', this.secrets.current);
         // await keyManagementService.updateSecret('jwt-previous', this.secrets.previous.join(','));
       }
     } catch (error) {
-      logger.error('Failed to update environment secrets', { 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      logger.error('Failed to update environment secrets', {
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }
@@ -240,7 +240,7 @@ class JWTSecretManager {
       currentSecretAge,
       nextRotationIn: Math.max(0, nextRotationIn),
       previousSecretsCount: this.secrets.previous.length,
-      autoRotationEnabled: this.rotationTimer !== null
+      autoRotationEnabled: this.rotationTimer !== null,
     };
   }
 
@@ -250,12 +250,12 @@ class JWTSecretManager {
   async emergencyRotation(): Promise<{ success: boolean; newSecret: string }> {
     logger.warn('Emergency JWT secret rotation initiated', {
       reason: 'security_breach',
-      currentSecretAge: Date.now() - this.secrets.rotatedAt.getTime()
+      currentSecretAge: Date.now() - this.secrets.rotatedAt.getTime(),
     });
 
     // Tüm eski secret'ları geçersiz kıl
     this.secrets.previous = [];
-    
+
     return await this.rotateSecret('emergency_security_breach');
   }
 
@@ -264,11 +264,11 @@ class JWTSecretManager {
    */
   cleanup(): void {
     this.stopAutomaticRotation();
-    
+
     // Sensitive data'yı temizle
     this.secrets.current = '';
     this.secrets.previous = [];
-    
+
     logger.info('JWT secret manager cleaned up');
   }
 }
@@ -303,4 +303,4 @@ if (typeof process !== 'undefined') {
   process.on('exit', shutdownJWTSecretManager);
 }
 
-export default JWTSecretManager; 
+export default JWTSecretManager;

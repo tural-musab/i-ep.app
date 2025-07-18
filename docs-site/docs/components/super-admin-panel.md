@@ -36,13 +36,13 @@ Dashboard komponenti, platform hakkında genel bir bakış sağlar.
 
 ```tsx
 // DashboardPage.tsx
-import { DashboardMetrics } from "@/components/super-admin/DashboardMetrics";
-import { RecentActivity } from "@/components/super-admin/RecentActivity";
-import { SystemHealth } from "@/components/super-admin/SystemHealth";
+import { DashboardMetrics } from '@/components/super-admin/DashboardMetrics';
+import { RecentActivity } from '@/components/super-admin/RecentActivity';
+import { SystemHealth } from '@/components/super-admin/SystemHealth';
 
 export default function DashboardPage() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       <DashboardMetrics />
       <SystemHealth />
       <RecentActivity />
@@ -62,55 +62,47 @@ export default function DashboardPage() {
 
 ```tsx
 // DashboardMetrics.tsx
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useDashboardMetrics } from "@/hooks/super-admin/useDashboardMetrics";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useDashboardMetrics } from '@/hooks/super-admin/useDashboardMetrics';
 
 export function DashboardMetrics() {
   const { data, isLoading, error } = useDashboardMetrics();
-  
+
   if (isLoading) return <div>Yükleniyor...</div>;
   if (error) return <div>Hata: {error.message}</div>;
-  
+
   return (
     <div className="grid grid-cols-2 gap-4">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">
-            Toplam Tenant
-          </CardTitle>
+          <CardTitle className="text-sm font-medium">Toplam Tenant</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{data.tenantCount}</div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">
-            Aktif Kullanıcılar
-          </CardTitle>
+          <CardTitle className="text-sm font-medium">Aktif Kullanıcılar</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{data.activeUserCount}</div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">
-            Toplam Öğrenci
-          </CardTitle>
+          <CardTitle className="text-sm font-medium">Toplam Öğrenci</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{data.studentCount}</div>
         </CardContent>
       </Card>
-      
+
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">
-            Toplam Gelir
-          </CardTitle>
+          <CardTitle className="text-sm font-medium">Toplam Gelir</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">₺{data.totalRevenue}</div>
@@ -129,30 +121,30 @@ export function DashboardMetrics() {
 
 ```tsx
 // TenantList.tsx
-import { useState } from "react";
-import { 
-  Table, 
-  TableHeader, 
-  TableRow, 
-  TableHead, 
-  TableBody, 
-  TableCell 
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
-import { useTenants } from "@/hooks/super-admin/useTenants";
+import { useState } from 'react';
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { useTenants } from '@/hooks/super-admin/useTenants';
 
 export function TenantList() {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const { data, isLoading, error } = useTenants({ search, status: statusFilter });
-  
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -162,30 +154,22 @@ export function TenantList() {
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
         />
-        
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
-              Durum: {statusFilter === "all" ? "Tümü" : statusFilter}
+              Durum: {statusFilter === 'all' ? 'Tümü' : statusFilter}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => setStatusFilter("all")}>
-              Tümü
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setStatusFilter("active")}>
-              Aktif
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setStatusFilter("inactive")}>
-              Pasif
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setStatusFilter("trial")}>
-              Deneme
-            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatusFilter('all')}>Tümü</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatusFilter('active')}>Aktif</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatusFilter('inactive')}>Pasif</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatusFilter('trial')}>Deneme</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -222,16 +206,20 @@ export function TenantList() {
                 <TableCell>{tenant.name}</TableCell>
                 <TableCell>{tenant.subdomain}</TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    tenant.status === "active" ? "bg-green-100 text-green-800" :
-                    tenant.status === "inactive" ? "bg-red-100 text-red-800" :
-                    "bg-yellow-100 text-yellow-800"
-                  }`}>
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs font-medium ${
+                      tenant.status === 'active'
+                        ? 'bg-green-100 text-green-800'
+                        : tenant.status === 'inactive'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                    }`}
+                  >
                     {tenant.status}
                   </span>
                 </TableCell>
                 <TableCell>{tenant.plan}</TableCell>
-                <TableCell>{new Date(tenant.createdAt).toLocaleDateString("tr-TR")}</TableCell>
+                <TableCell>{new Date(tenant.createdAt).toLocaleDateString('tr-TR')}</TableCell>
                 <TableCell>
                   <Button variant="ghost" size="sm">
                     Düzenle
@@ -256,23 +244,23 @@ export function TenantList() {
 
 ```tsx
 // TenantDetail.tsx
-import { useParams, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTenantDetails } from "@/hooks/super-admin/useTenantDetails";
-import { TenantInfoForm } from "./TenantInfoForm";
-import { TenantUsersTable } from "./TenantUsersTable";
-import { TenantDomainsTable } from "./TenantDomainsTable";
-import { TenantBillingHistory } from "./TenantBillingHistory";
+import { useParams, useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTenantDetails } from '@/hooks/super-admin/useTenantDetails';
+import { TenantInfoForm } from './TenantInfoForm';
+import { TenantUsersTable } from './TenantUsersTable';
+import { TenantDomainsTable } from './TenantDomainsTable';
+import { TenantBillingHistory } from './TenantBillingHistory';
 
 export function TenantDetail() {
   const { tenantId } = useParams();
   const router = useRouter();
   const { data: tenant, isLoading, error } = useTenantDetails(tenantId);
-  
+
   if (isLoading) return <div>Yükleniyor...</div>;
   if (error) return <div>Hata: {error.message}</div>;
-  
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -280,35 +268,35 @@ export function TenantDetail() {
           <h2 className="text-3xl font-bold">{tenant.name}</h2>
           <p className="text-gray-500">{tenant.subdomain}.i-ep.app</p>
         </div>
-        
+
         <div className="flex space-x-2">
           <Button onClick={() => router.back()}>Geri</Button>
           <Button variant="destructive">
-            {tenant.status === "active" ? "Devre Dışı Bırak" : "Aktifleştir"}
+            {tenant.status === 'active' ? 'Devre Dışı Bırak' : 'Aktifleştir'}
           </Button>
         </div>
       </div>
-      
+
       <Tabs defaultValue="info">
-        <TabsList className="grid grid-cols-4 w-[400px]">
+        <TabsList className="grid w-[400px] grid-cols-4">
           <TabsTrigger value="info">Bilgiler</TabsTrigger>
           <TabsTrigger value="users">Kullanıcılar</TabsTrigger>
           <TabsTrigger value="domains">Domainler</TabsTrigger>
           <TabsTrigger value="billing">Faturalar</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="info" className="mt-6">
           <TenantInfoForm tenant={tenant} />
         </TabsContent>
-        
+
         <TabsContent value="users" className="mt-6">
           <TenantUsersTable tenantId={tenant.id} />
         </TabsContent>
-        
+
         <TabsContent value="domains" className="mt-6">
           <TenantDomainsTable tenantId={tenant.id} />
         </TabsContent>
-        
+
         <TabsContent value="billing" className="mt-6">
           <TenantBillingHistory tenantId={tenant.id} />
         </TabsContent>
@@ -326,32 +314,32 @@ export function TenantDetail() {
 
 ```tsx
 // SuperAdminUserList.tsx
-import { useState } from "react";
-import { 
-  Table, 
-  TableHeader, 
-  TableRow, 
-  TableHead, 
-  TableBody, 
-  TableCell 
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useSuperAdminUsers } from "@/hooks/super-admin/useSuperAdminUsers";
-import { SuperAdminUserForm } from "./SuperAdminUserForm";
+import { useState } from 'react';
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useSuperAdminUsers } from '@/hooks/super-admin/useSuperAdminUsers';
+import { SuperAdminUserForm } from './SuperAdminUserForm';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 
 export function SuperAdminUserList() {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [showAddUserDialog, setShowAddUserDialog] = useState(false);
   const { data, isLoading, error } = useSuperAdminUsers({ search });
-  
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -361,7 +349,7 @@ export function SuperAdminUserList() {
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
         />
-        
+
         <Dialog open={showAddUserDialog} onOpenChange={setShowAddUserDialog}>
           <DialogTrigger asChild>
             <Button>Yeni Kullanıcı Ekle</Button>
@@ -374,7 +362,7 @@ export function SuperAdminUserList() {
           </DialogContent>
         </Dialog>
       </div>
-      
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -412,15 +400,18 @@ export function SuperAdminUserList() {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    user.status === "active" ? "bg-green-100 text-green-800" :
-                    "bg-red-100 text-red-800"
-                  }`}>
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs font-medium ${
+                      user.status === 'active'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}
+                  >
                     {user.status}
                   </span>
                 </TableCell>
                 <TableCell>
-                  {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString("tr-TR") : "-"}
+                  {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('tr-TR') : '-'}
                 </TableCell>
                 <TableCell>
                   <Button variant="ghost" size="sm">
@@ -448,30 +439,24 @@ export function SuperAdminUserList() {
 
 ```tsx
 // SubscriptionPlans.tsx
-import { useState } from "react";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useSubscriptionPlans } from "@/hooks/super-admin/useSubscriptionPlans";
-import { SubscriptionPlanForm } from "./SubscriptionPlanForm";
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { useSubscriptionPlans } from '@/hooks/super-admin/useSubscriptionPlans';
+import { SubscriptionPlanForm } from './SubscriptionPlanForm';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 
 export function SubscriptionPlans() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const { data: plans, isLoading, error } = useSubscriptionPlans();
-  
+
   return (
     <div className="space-y-6">
       <div className="flex justify-end">
@@ -481,41 +466,36 @@ export function SubscriptionPlans() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
-                {selectedPlan ? "Planı Düzenle" : "Yeni Plan Ekle"}
-              </DialogTitle>
+              <DialogTitle>{selectedPlan ? 'Planı Düzenle' : 'Yeni Plan Ekle'}</DialogTitle>
             </DialogHeader>
-            <SubscriptionPlanForm 
-              plan={selectedPlan} 
+            <SubscriptionPlanForm
+              plan={selectedPlan}
               onSuccess={() => {
                 setShowEditDialog(false);
                 setSelectedPlan(null);
-              }} 
+              }}
             />
           </DialogContent>
         </Dialog>
       </div>
-      
+
       {isLoading ? (
         <div>Yükleniyor...</div>
       ) : error ? (
         <div className="text-red-500">Hata: {error.message}</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {plans?.map((plan) => (
             <Card key={plan.id}>
               <CardHeader>
                 <CardTitle>{plan.name}</CardTitle>
-                <CardDescription>
-                  {plan.description}
-                </CardDescription>
+                <CardDescription>{plan.description}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="text-3xl font-bold">
-                  ₺{plan.price}{" "}
-                  <span className="text-sm font-normal text-gray-500">/ ay</span>
+                  ₺{plan.price} <span className="text-sm font-normal text-gray-500">/ ay</span>
                 </div>
-                
+
                 <ul className="space-y-2">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-center">
@@ -537,7 +517,7 @@ export function SubscriptionPlans() {
                     </li>
                   ))}
                 </ul>
-                
+
                 <Button
                   variant="outline"
                   onClick={() => {
@@ -566,35 +546,35 @@ export function SubscriptionPlans() {
 
 ```tsx
 // DomainVerificationList.tsx
-import { 
-  Table, 
-  TableHeader, 
-  TableRow, 
-  TableHead, 
-  TableBody, 
-  TableCell 
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { usePendingDomainVerifications } from "@/hooks/super-admin/usePendingDomainVerifications";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { usePendingDomainVerifications } from '@/hooks/super-admin/usePendingDomainVerifications';
 
 export function DomainVerificationList() {
   const { data, isLoading, error, mutate } = usePendingDomainVerifications();
-  
+
   const handleVerifyDomain = async (domainId) => {
     try {
       await fetch(`/api/super-admin/domains/${domainId}/verify`, {
-        method: "POST",
+        method: 'POST',
       });
       mutate(); // Veriyi yenile
     } catch (error) {
-      console.error("Domain doğrulama hatası:", error);
+      console.error('Domain doğrulama hatası:', error);
     }
   };
-  
+
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-bold">Bekleyen Domain Doğrulamaları</h2>
-      
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -630,9 +610,7 @@ export function DomainVerificationList() {
                 <TableCell>{domain.tenantName}</TableCell>
                 <TableCell>{domain.domain}</TableCell>
                 <TableCell>{domain.verificationType}</TableCell>
-                <TableCell>
-                  {new Date(domain.createdAt).toLocaleDateString("tr-TR")}
-                </TableCell>
+                <TableCell>{new Date(domain.createdAt).toLocaleDateString('tr-TR')}</TableCell>
                 <TableCell>
                   <Button size="sm" onClick={() => handleVerifyDomain(domain.id)}>
                     Doğrula
@@ -659,11 +637,11 @@ export function DomainVerificationList() {
 
 ```tsx
 // SystemSettings.tsx
-import { useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -672,79 +650,79 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { useSystemSettings } from "@/hooks/super-admin/useSystemSettings";
-import { toast } from "@/components/ui/use-toast";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { useSystemSettings } from '@/hooks/super-admin/useSystemSettings';
+import { toast } from '@/components/ui/use-toast';
 
 const systemSettingsSchema = z.object({
-  siteName: z.string().min(2, { message: "Site adı en az 2 karakter olmalıdır" }),
+  siteName: z.string().min(2, { message: 'Site adı en az 2 karakter olmalıdır' }),
   siteDescription: z.string(),
   maintenanceMode: z.boolean(),
   userRegistrationEnabled: z.boolean(),
   maxTenantsPerUser: z.number().min(1),
-  contactEmail: z.string().email({ message: "Geçerli bir e-posta adresi giriniz" }),
+  contactEmail: z.string().email({ message: 'Geçerli bir e-posta adresi giriniz' }),
   supportPhone: z.string(),
 });
 
 export function SystemSettings() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: settings, isLoading, error, mutate } = useSystemSettings();
-  
+
   const form = useForm({
     resolver: zodResolver(systemSettingsSchema),
     defaultValues: settings || {
-      siteName: "",
-      siteDescription: "",
+      siteName: '',
+      siteDescription: '',
       maintenanceMode: false,
       userRegistrationEnabled: true,
       maxTenantsPerUser: 1,
-      contactEmail: "",
-      supportPhone: "",
+      contactEmail: '',
+      supportPhone: '',
     },
   });
-  
+
   // Form değerlerini güncelle
   React.useEffect(() => {
     if (settings) {
       form.reset(settings);
     }
   }, [settings, form]);
-  
+
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      await fetch("/api/super-admin/settings", {
-        method: "PUT",
+      await fetch('/api/super-admin/settings', {
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
-      
+
       toast({
-        title: "Ayarlar güncellendi",
-        description: "Sistem ayarları başarıyla güncellendi.",
+        title: 'Ayarlar güncellendi',
+        description: 'Sistem ayarları başarıyla güncellendi.',
       });
-      
+
       mutate(); // Veriyi yenile
     } catch (error) {
       toast({
-        title: "Hata",
-        description: "Ayarlar güncellenirken bir hata oluştu.",
-        variant: "destructive",
+        title: 'Hata',
+        description: 'Ayarlar güncellenirken bir hata oluştu.',
+        variant: 'destructive',
       });
-      console.error("Ayarlar güncellenirken hata:", error);
+      console.error('Ayarlar güncellenirken hata:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
-  
+
   if (isLoading) return <div>Yükleniyor...</div>;
   if (error) return <div className="text-red-500">Hata: {error.message}</div>;
-  
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -757,14 +735,12 @@ export function SystemSettings() {
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>
-                Platformun görünen adı
-              </FormDescription>
+              <FormDescription>Platformun görünen adı</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="siteDescription"
@@ -774,14 +750,12 @@ export function SystemSettings() {
               <FormControl>
                 <Textarea {...field} />
               </FormControl>
-              <FormDescription>
-                Meta açıklaması olarak kullanılır
-              </FormDescription>
+              <FormDescription>Meta açıklaması olarak kullanılır</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="maintenanceMode"
@@ -794,15 +768,12 @@ export function SystemSettings() {
                 </FormDescription>
               </div>
               <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="userRegistrationEnabled"
@@ -810,20 +781,15 @@ export function SystemSettings() {
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel className="text-base">Kullanıcı Kaydı</FormLabel>
-                <FormDescription>
-                  Yeni kullanıcı kayıtlarına izin ver
-                </FormDescription>
+                <FormDescription>Yeni kullanıcı kayıtlarına izin ver</FormDescription>
               </div>
               <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="maxTenantsPerUser"
@@ -831,10 +797,10 @@ export function SystemSettings() {
             <FormItem>
               <FormLabel>Kullanıcı Başına Maksimum Tenant</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  {...field} 
-                  onChange={(e) => field.onChange(parseInt(e.target.value))} 
+                <Input
+                  type="number"
+                  {...field}
+                  onChange={(e) => field.onChange(parseInt(e.target.value))}
                 />
               </FormControl>
               <FormDescription>
@@ -844,7 +810,7 @@ export function SystemSettings() {
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="contactEmail"
@@ -854,14 +820,12 @@ export function SystemSettings() {
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>
-                Site üzerinde görüntülenen iletişim e-postası
-              </FormDescription>
+              <FormDescription>Site üzerinde görüntülenen iletişim e-postası</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="supportPhone"
@@ -871,16 +835,14 @@ export function SystemSettings() {
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>
-                Destek için telefon numarası
-              </FormDescription>
+              <FormDescription>Destek için telefon numarası</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        
+
         <Button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Kaydediliyor..." : "Kaydet"}
+          {isSubmitting ? 'Kaydediliyor...' : 'Kaydet'}
         </Button>
       </form>
     </Form>
@@ -896,39 +858,39 @@ export function SystemSettings() {
 
 ```tsx
 // SystemLogs.tsx
-import { useState } from "react";
-import { 
-  Table, 
-  TableHeader, 
-  TableRow, 
-  TableHead, 
-  TableBody, 
-  TableCell 
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from "@/components/ui/select";
-import { useSystemLogs } from "@/hooks/super-admin/useSystemLogs";
+import { useState } from 'react';
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useSystemLogs } from '@/hooks/super-admin/useSystemLogs';
 
 export function SystemLogs() {
-  const [search, setSearch] = useState("");
-  const [level, setLevel] = useState("all");
-  const [limit, setLimit] = useState("50");
+  const [search, setSearch] = useState('');
+  const [level, setLevel] = useState('all');
+  const [limit, setLimit] = useState('50');
   const { data, isLoading, error } = useSystemLogs({ search, level, limit: parseInt(limit) });
-  
+
   const levelColors = {
-    error: "bg-red-100 text-red-800",
-    warn: "bg-yellow-100 text-yellow-800",
-    info: "bg-blue-100 text-blue-800",
-    debug: "bg-green-100 text-green-800",
+    error: 'bg-red-100 text-red-800',
+    warn: 'bg-yellow-100 text-yellow-800',
+    info: 'bg-blue-100 text-blue-800',
+    debug: 'bg-green-100 text-green-800',
   };
-  
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-4">
@@ -938,7 +900,7 @@ export function SystemLogs() {
           onChange={(e) => setSearch(e.target.value)}
           className="max-w-sm"
         />
-        
+
         <Select value={level} onValueChange={setLevel}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Log seviyesi" />
@@ -951,7 +913,7 @@ export function SystemLogs() {
             <SelectItem value="debug">Debug</SelectItem>
           </SelectContent>
         </Select>
-        
+
         <Select value={limit} onValueChange={setLimit}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Limit" />
@@ -963,10 +925,10 @@ export function SystemLogs() {
             <SelectItem value="500">500 kayıt</SelectItem>
           </SelectContent>
         </Select>
-        
+
         <Button variant="outline">Yenile</Button>
       </div>
-      
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -1001,18 +963,19 @@ export function SystemLogs() {
             data?.map((log) => (
               <TableRow key={log.id}>
                 <TableCell>
-                  {new Date(log.timestamp).toLocaleDateString("tr-TR")} {new Date(log.timestamp).toLocaleTimeString("tr-TR")}
+                  {new Date(log.timestamp).toLocaleDateString('tr-TR')}{' '}
+                  {new Date(log.timestamp).toLocaleTimeString('tr-TR')}
                 </TableCell>
                 <TableCell>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${levelColors[log.level]}`}>
+                  <span
+                    className={`rounded-full px-2 py-1 text-xs font-medium ${levelColors[log.level]}`}
+                  >
                     {log.level}
                   </span>
                 </TableCell>
-                <TableCell className="max-w-md truncate">
-                  {log.message}
-                </TableCell>
+                <TableCell className="max-w-md truncate">{log.message}</TableCell>
                 <TableCell>{log.service}</TableCell>
-                <TableCell>{log.tenantId || "-"}</TableCell>
+                <TableCell>{log.tenantId || '-'}</TableCell>
                 <TableCell>
                   <Button variant="ghost" size="sm">
                     Detay
@@ -1036,12 +999,12 @@ Super Admin Panel'deki komponentler, veri alışverişi ve işlemler için özel
 
 ```tsx
 // hooks/super-admin/useTenants.ts
-import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher";
+import useSWR from 'swr';
+import { fetcher } from '@/lib/fetcher';
 
-export function useTenants({ search = "", status = "all" } = {}) {
+export function useTenants({ search = '', status = 'all' } = {}) {
   const url = `/api/super-admin/tenants?search=${encodeURIComponent(search)}&status=${status}`;
-  
+
   return useSWR(url, fetcher);
 }
 ```
@@ -1050,8 +1013,8 @@ export function useTenants({ search = "", status = "all" } = {}) {
 
 ```tsx
 // hooks/super-admin/useTenantDetails.ts
-import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher";
+import useSWR from 'swr';
+import { fetcher } from '@/lib/fetcher';
 
 export function useTenantDetails(tenantId) {
   return useSWR(tenantId ? `/api/super-admin/tenants/${tenantId}` : null, fetcher);
@@ -1062,8 +1025,8 @@ export function useTenantDetails(tenantId) {
 
 ```tsx
 // hooks/super-admin/useDashboardMetrics.ts
-import useSWR from "swr";
-import { fetcher } from "@/lib/fetcher";
+import useSWR from 'swr';
+import { fetcher } from '@/lib/fetcher';
 
 export function useDashboardMetrics() {
   return useSWR(`/api/super-admin/dashboard/metrics`, fetcher);
@@ -1076,28 +1039,28 @@ Super Admin paneline erişim, `SuperAdminGuard` komponenti ile kontrol edilir.
 
 ```tsx
 // components/auth/SuperAdminGuard.tsx
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/useAuth";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 export function SuperAdminGuard({ children }) {
   const { user, isLoading } = useAuth();
   const router = useRouter();
-  
+
   useEffect(() => {
-    if (!isLoading && (!user || user.role !== "super_admin")) {
-      router.push("/auth/login?callbackUrl=/super-admin");
+    if (!isLoading && (!user || user.role !== 'super_admin')) {
+      router.push('/auth/login?callbackUrl=/super-admin');
     }
   }, [user, isLoading, router]);
-  
+
   if (isLoading) {
     return <div>Yükleniyor...</div>;
   }
-  
-  if (!user || user.role !== "super_admin") {
+
+  if (!user || user.role !== 'super_admin') {
     return null;
   }
-  
+
   return <>{children}</>;
 }
 ```
@@ -1108,9 +1071,9 @@ Super Admin Panel için özel bir layout kullanılır.
 
 ```tsx
 // app/super-admin/layout.tsx
-import { SuperAdminGuard } from "@/components/auth/SuperAdminGuard";
-import { SuperAdminSidebar } from "@/components/super-admin/SuperAdminSidebar";
-import { SuperAdminHeader } from "@/components/super-admin/SuperAdminHeader";
+import { SuperAdminGuard } from '@/components/auth/SuperAdminGuard';
+import { SuperAdminSidebar } from '@/components/super-admin/SuperAdminSidebar';
+import { SuperAdminHeader } from '@/components/super-admin/SuperAdminHeader';
 
 export default function SuperAdminLayout({ children }) {
   return (
@@ -1176,4 +1139,4 @@ export default function SuperAdminLayout({ children }) {
 **Çözüm**: Subdomain'in benzersiz olduğundan ve geçerli bir format kullandığından emin olun. Ayrıca, domain DNS ayarlarını kontrol edin.
 
 **Sorun**: Sistem ayarları kaydedilemiyor.
-**Çözüm**: Form alanlarının doğru formatta doldurulduğundan emin olun ve konsoldaki hata mesajlarını kontrol edin. 
+**Çözüm**: Form alanlarının doğru formatta doldurulduğundan emin olun ve konsoldaki hata mesajlarını kontrol edin.

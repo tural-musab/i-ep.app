@@ -51,4 +51,4 @@ Dokümantasyona katkıda bulunmak için aşağıdaki adımları izleyin:
 
 - [Docusaurus](https://docusaurus.io/): React tabanlı modern statik site oluşturucu
 - [Markdown](https://daringfireball.net/projects/markdown/): Belgeleri yazmak için kullanılan işaretleme dili
-- [Mermaid](https://mermaid-js.github.io/mermaid/): Diyagramlar oluşturmak için kullanılan JavaScript tabanlı diyagram ve akış şeması aracı 
+- [Mermaid](https://mermaid-js.github.io/mermaid/): Diyagramlar oluşturmak için kullanılan JavaScript tabanlı diyagram ve akış şeması aracı

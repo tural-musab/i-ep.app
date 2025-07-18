@@ -18,28 +18,28 @@ Sistem metriklerini görselleştiren ve analiz eden grafik komponenti.
 interface MetricsChartProps {
   /** Görüntülenecek metrikler */
   metrics: MetricConfig[];
-  
+
   /** Veri noktaları */
   data: MetricDataPoint[];
-  
+
   /** Grafik tipi */
   type?: ChartType;
-  
+
   /** Zaman aralığı */
   timeRange?: TimeRange;
-  
+
   /** Yenileme aralığı (ms) */
   refreshInterval?: number;
-  
+
   /** Eşik değerleri */
   thresholds?: MetricThresholds;
-  
+
   /** Grafik boyutu */
   dimensions?: Dimensions;
-  
+
   /** Grafik tıklandığında çağrılır */
   onPointClick?: (point: MetricDataPoint) => void;
-  
+
   /** Zaman aralığı değiştiğinde çağrılır */
   onTimeRangeChange?: (range: TimeRange) => void;
 }
@@ -103,36 +103,36 @@ export default function MetricsPage() {
           id: 'cpu',
           name: 'CPU Kullanımı',
           unit: '%',
-          color: '#0088FE'
+          color: '#0088FE',
         },
         {
           id: 'memory',
           name: 'Bellek Kullanımı',
           unit: 'GB',
-          color: '#00C49F'
-        }
+          color: '#00C49F',
+        },
       ]}
       data={metricData}
       type="line"
       timeRange={{
         start: subHours(new Date(), 24),
-        end: new Date()
+        end: new Date(),
       }}
       refreshInterval={60000}
       thresholds={{
         cpu: {
           warning: 80,
-          critical: 90
+          critical: 90,
         },
         memory: {
           warning: 85,
-          critical: 95
-        }
+          critical: 95,
+        },
       }}
       dimensions={{
         width: 800,
         height: 400,
-        margin: { top: 20, right: 30, bottom: 30, left: 40 }
+        margin: { top: 20, right: 30, bottom: 30, left: 40 },
       }}
       onPointClick={handlePointClick}
       onTimeRangeChange={handleTimeRangeChange}
@@ -144,6 +144,7 @@ export default function MetricsPage() {
 ## Grafik Tipleri
 
 ### Line Chart
+
 ```tsx
 <MetricsChart
   type="line"
@@ -152,12 +153,13 @@ export default function MetricsPage() {
   options={{
     curve: 'monotone',
     showPoints: true,
-    showArea: false
+    showArea: false,
   }}
 />
 ```
 
 ### Area Chart
+
 ```tsx
 <MetricsChart
   type="area"
@@ -165,12 +167,13 @@ export default function MetricsPage() {
   data={data}
   options={{
     stackOffset: 'none',
-    fillOpacity: 0.3
+    fillOpacity: 0.3,
   }}
 />
 ```
 
 ### Bar Chart
+
 ```tsx
 <MetricsChart
   type="bar"
@@ -178,7 +181,7 @@ export default function MetricsPage() {
   data={data}
   options={{
     barSize: 20,
-    stackOffset: 'none'
+    stackOffset: 'none',
   }}
 />
 ```
@@ -205,13 +208,13 @@ const aggregateData = (data: MetricDataPoint[], interval: string) => {
 
 // Veri formatı dönüşümü
 const formatChartData = (data: MetricDataPoint[], metrics: MetricConfig[]) => {
-  return data.map(point => ({
+  return data.map((point) => ({
     timestamp: point.timestamp,
     ...Object.entries(point.values).reduce((acc, [metric, value]) => {
-      const config = metrics.find(m => m.id === metric);
+      const config = metrics.find((m) => m.id === metric);
       acc[metric] = config?.formatter?.(value) ?? value;
       return acc;
-    }, {})
+    }, {}),
   }));
 };
 ```
@@ -221,7 +224,7 @@ const formatChartData = (data: MetricDataPoint[], metrics: MetricConfig[]) => {
 ```tsx
 <MetricsChart
   tooltipFormatter={(value, metric) => {
-    const config = metrics.find(m => m.id === metric);
+    const config = metrics.find((m) => m.id === metric);
     return `${config.name}: ${value}${config.unit}`;
   }}
   tooltipLabelFormatter={(timestamp) => {
@@ -240,11 +243,11 @@ const formatChartData = (data: MetricDataPoint[], metrics: MetricConfig[]) => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1200px | Tam boyut grafik |
-| 768px - 1200px | Orta boy grafik |
-| < 768px | Mobil uyumlu grafik |
+| Ekran Boyutu   | Davranış            |
+| -------------- | ------------------- |
+| > 1200px       | Tam boyut grafik    |
+| 768px - 1200px | Orta boy grafik     |
+| < 768px        | Mobil uyumlu grafik |
 
 ## Test
 
@@ -259,7 +262,7 @@ describe('MetricsChart', () => {
         data={testData}
       />
     );
-    
+
     expect(screen.getByRole('img', { name: /metrics chart/i }))
       .toBeInTheDocument();
   });
@@ -273,7 +276,7 @@ describe('MetricsChart', () => {
         onTimeRangeChange={onTimeRangeChange}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Son 24 Saat'));
     expect(onTimeRangeChange).toHaveBeenCalled();
   });
@@ -285,7 +288,7 @@ describe('MetricsChart', () => {
         data={testData}
       />
     );
-    
+
     await userEvent.hover(screen.getByRole('img'));
     expect(screen.getByRole('tooltip')).toBeInTheDocument();
   });
@@ -360,17 +363,17 @@ MultiMetric.args = {
   gridClassName="custom-grid"
   customStyles={{
     chart: {
-      backgroundColor: '#f8f9fa'
+      backgroundColor: '#f8f9fa',
     },
     axis: {
-      stroke: '#dee2e6'
+      stroke: '#dee2e6',
     },
     grid: {
-      stroke: '#e9ecef'
+      stroke: '#e9ecef',
     },
     tooltip: {
-      backgroundColor: 'rgba(0, 0, 0, 0.8)'
-    }
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    },
   }}
 />
 ```
@@ -381,4 +384,4 @@ MultiMetric.args = {
 2. Tooltip performansını iyileştir
 3. Responsive davranışı test et
 4. Erişilebilirlik kontrolü yap
-5. Bellek kullanımını optimize et 
+5. Bellek kullanımını optimize et

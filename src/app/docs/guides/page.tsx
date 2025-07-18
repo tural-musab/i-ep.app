@@ -6,7 +6,8 @@ export default function GuidesDocsPage() {
   const guides = [
     {
       title: 'Başlangıç Rehberi',
-      description: 'Iqra Eğitim Portalı SaaS projesini kurmak ve çalıştırmak için adım adım rehber.',
+      description:
+        'Iqra Eğitim Portalı SaaS projesini kurmak ve çalıştırmak için adım adım rehber.',
       link: '/docs/guides/getting-started',
       tags: ['Başlangıç', 'Kurulum'],
     },
@@ -18,13 +19,14 @@ export default function GuidesDocsPage() {
     },
     {
       title: 'Kimlik Doğrulama ve Yetkilendirme',
-      description: 'Kullanıcı kimlik doğrulama, yetkilendirme ve rol tabanlı erişim kontrolü rehberi.',
+      description:
+        'Kullanıcı kimlik doğrulama, yetkilendirme ve rol tabanlı erişim kontrolü rehberi.',
       link: '/docs/guides/authentication',
       tags: ['Güvenlik', 'Kimlik Doğrulama', 'Roller'],
     },
     {
       title: 'API Entegrasyonu',
-      description: 'Iqra Eğitim Portalı API\'lerini harici uygulamalarla entegre etme rehberi.',
+      description: "Iqra Eğitim Portalı API'lerini harici uygulamalarla entegre etme rehberi.",
       link: '/docs/guides/api-integration',
       tags: ['API', 'Entegrasyon'],
     },
@@ -38,50 +40,50 @@ export default function GuidesDocsPage() {
 
   return (
     <div>
-      <h1 className="text-4xl font-bold mb-6">Geliştirici Rehberleri</h1>
-      
-      <p className="text-lg mb-8">
-        Bu bölümde, Iqra Eğitim Portalı SaaS projesinin çeşitli yönlerini
-        anlamanıza ve kullanmanıza yardımcı olacak rehberler bulacaksınız.
-        Her rehber, belirli bir görevi gerçekleştirmek için adım adım talimatlar içerir.
+      <h1 className="mb-6 text-4xl font-bold">Geliştirici Rehberleri</h1>
+
+      <p className="mb-8 text-lg">
+        Bu bölümde, Iqra Eğitim Portalı SaaS projesinin çeşitli yönlerini anlamanıza ve kullanmanıza
+        yardımcı olacak rehberler bulacaksınız. Her rehber, belirli bir görevi gerçekleştirmek için
+        adım adım talimatlar içerir.
       </p>
-      
+
       <div className="grid grid-cols-1 gap-6">
         {guides.map((guide, index) => (
-          <div key={index} className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-2xl font-semibold mb-2">{guide.title}</h2>
-            <p className="text-gray-600 mb-4">{guide.description}</p>
-            
-            <div className="flex flex-wrap gap-2 mb-4">
+          <div key={index} className="rounded-lg bg-white p-6 shadow-md">
+            <h2 className="mb-2 text-2xl font-semibold">{guide.title}</h2>
+            <p className="mb-4 text-gray-600">{guide.description}</p>
+
+            <div className="mb-4 flex flex-wrap gap-2">
               {guide.tags.map((tag, tagIndex) => (
-                <span 
-                  key={tagIndex} 
-                  className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                <span
+                  key={tagIndex}
+                  className="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700"
                 >
                   {tag}
                 </span>
               ))}
             </div>
-            
-            <Link 
-              href={guide.link} 
-              className="inline-block px-4 py-2 bg-primary text-white rounded hover:bg-primary-600"
+
+            <Link
+              href={guide.link}
+              className="bg-primary hover:bg-primary-600 inline-block rounded px-4 py-2 text-white"
             >
               Rehberi Oku
             </Link>
           </div>
         ))}
       </div>
-      
-      <div className="mt-12 bg-blue-50 p-6 rounded-lg">
-        <h2 className="text-2xl font-semibold mb-4">Katkıda Bulunma</h2>
+
+      <div className="mt-12 rounded-lg bg-blue-50 p-6">
+        <h2 className="mb-4 text-2xl font-semibold">Katkıda Bulunma</h2>
         <p className="mb-4">
-          Rehberlerimizi geliştirmemize yardımcı olmak ister misiniz? Yeni rehberler ekleyebilir 
+          Rehberlerimizi geliştirmemize yardımcı olmak ister misiniz? Yeni rehberler ekleyebilir
           veya mevcut rehberleri güncelleyebilirsiniz.
         </p>
         <div className="mt-10">
           <a
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 inline-flex items-center"
+            className="inline-flex items-center rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
             href="https://github.com/tural-musab/i-ep.app"
             target="_blank"
             rel="noreferrer"
@@ -93,4 +95,4 @@ export default function GuidesDocsPage() {
       </div>
     </div>
   );
-} 
+}

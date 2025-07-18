@@ -5,15 +5,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from '@/components/ui/table';
-import { 
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -21,23 +21,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  MoreHorizontal, 
-  Edit, 
+import {
+  Plus,
+  Search,
+  Filter,
+  MoreHorizontal,
+  Edit,
   Trash2,
   RefreshCw,
   Users,
   BookOpen,
-  UserCheck
+  UserCheck,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import * as Sentry from '@sentry/nextjs';
@@ -73,14 +73,14 @@ const TeacherManagement: React.FC = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Filters and pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
-  
+
   // Create teacher dialog
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newTeacher, setNewTeacher] = useState({
@@ -90,103 +90,95 @@ const TeacherManagement: React.FC = () => {
     phone: '',
     address: '',
     subjects: [] as string[],
-    specialties: [] as string[]
+    specialties: [] as string[],
   });
 
   // Fetch teachers data
   const fetchTeachers = async (page = 1, search = '') => {
-    return Sentry.startSpan(
-      { op: "ui.action", name: "Fetch Teachers" },
-      async () => {
-        try {
-          setLoading(true);
-          setError(null);
+    return Sentry.startSpan({ op: 'ui.action', name: 'Fetch Teachers' }, async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-          const params = new URLSearchParams({
-            page: page.toString(),
-            limit: '10',
-            ...(search && { search })
-          });
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: '10',
+          ...(search && { search }),
+        });
 
-          const response = await fetch(`/api/teachers?${params}`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+        const response = await fetch(`/api/teachers?${params}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-
-          const data: TeacherListResponse = await response.json();
-          
-          setTeachers(data.data || []);
-          setCurrentPage(data.pagination.current);
-          setTotalPages(data.pagination.pages);
-          setTotalCount(data.pagination.total);
-
-        } catch (err) {
-          console.error('Fetch teachers error:', err);
-          const errorMessage = err instanceof Error ? err.message : 'Failed to fetch teachers';
-          setError(errorMessage);
-          Sentry.captureException(err);
-          toast.error('Failed to load teachers');
-        } finally {
-          setLoading(false);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        const data: TeacherListResponse = await response.json();
+
+        setTeachers(data.data || []);
+        setCurrentPage(data.pagination.current);
+        setTotalPages(data.pagination.pages);
+        setTotalCount(data.pagination.total);
+      } catch (err) {
+        console.error('Fetch teachers error:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch teachers';
+        setError(errorMessage);
+        Sentry.captureException(err);
+        toast.error('Failed to load teachers');
+      } finally {
+        setLoading(false);
       }
-    );
+    });
   };
 
   // Create new teacher
   const handleCreateTeacher = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    return Sentry.startSpan(
-      { op: "ui.action", name: "Create Teacher" },
-      async () => {
-        try {
-          setLoading(true);
 
-          const response = await fetch('/api/teachers', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newTeacher),
-          });
+    return Sentry.startSpan({ op: 'ui.action', name: 'Create Teacher' }, async () => {
+      try {
+        setLoading(true);
 
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to create teacher');
-          }
+        const response = await fetch('/api/teachers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newTeacher),
+        });
 
-          toast.success('Teacher created successfully');
-          setIsCreateDialogOpen(false);
-          setNewTeacher({
-            first_name: '',
-            last_name: '',
-            email: '',
-            phone: '',
-            address: '',
-            subjects: [],
-            specialties: []
-          });
-          
-          // Refresh the list
-          await fetchTeachers(currentPage, searchTerm);
-
-        } catch (err) {
-          console.error('Create teacher error:', err);
-          const errorMessage = err instanceof Error ? err.message : 'Failed to create teacher';
-          toast.error(errorMessage);
-          Sentry.captureException(err);
-        } finally {
-          setLoading(false);
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to create teacher');
         }
+
+        toast.success('Teacher created successfully');
+        setIsCreateDialogOpen(false);
+        setNewTeacher({
+          first_name: '',
+          last_name: '',
+          email: '',
+          phone: '',
+          address: '',
+          subjects: [],
+          specialties: [],
+        });
+
+        // Refresh the list
+        await fetchTeachers(currentPage, searchTerm);
+      } catch (err) {
+        console.error('Create teacher error:', err);
+        const errorMessage = err instanceof Error ? err.message : 'Failed to create teacher';
+        toast.error(errorMessage);
+        Sentry.captureException(err);
+      } finally {
+        setLoading(false);
       }
-    );
+    });
   };
 
   // Handle search
@@ -223,7 +215,7 @@ const TeacherManagement: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center h-32">
+          <div className="flex h-32 items-center justify-center">
             <RefreshCw className="h-6 w-6 animate-spin" />
             <span className="ml-2">Loading teachers...</span>
           </div>
@@ -235,50 +227,41 @@ const TeacherManagement: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+          <h1 className="flex items-center gap-2 text-2xl font-bold tracking-tight">
             <BookOpen className="h-6 w-6" />
             Teacher Management
           </h1>
-          <p className="text-muted-foreground">
-            Manage teachers in your school
-          </p>
+          <p className="text-muted-foreground">Manage teachers in your school</p>
         </div>
-        
+
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={handleRefresh}
-            disabled={loading}
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={loading}>
+            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          
+
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button>
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Add Teacher
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>Add New Teacher</DialogTitle>
-                <DialogDescription>
-                  Create a new teacher account for your school.
-                </DialogDescription>
+                <DialogDescription>Create a new teacher account for your school.</DialogDescription>
               </DialogHeader>
-              
+
               <form onSubmit={handleCreateTeacher} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-medium">First Name *</label>
                     <Input
                       value={newTeacher.first_name}
-                      onChange={(e) => setNewTeacher({...newTeacher, first_name: e.target.value})}
+                      onChange={(e) => setNewTeacher({ ...newTeacher, first_name: e.target.value })}
                       placeholder="Enter first name"
                       required
                     />
@@ -287,76 +270,86 @@ const TeacherManagement: React.FC = () => {
                     <label className="text-sm font-medium">Last Name *</label>
                     <Input
                       value={newTeacher.last_name}
-                      onChange={(e) => setNewTeacher({...newTeacher, last_name: e.target.value})}
+                      onChange={(e) => setNewTeacher({ ...newTeacher, last_name: e.target.value })}
                       placeholder="Enter last name"
                       required
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Email *</label>
                   <Input
                     type="email"
                     value={newTeacher.email}
-                    onChange={(e) => setNewTeacher({...newTeacher, email: e.target.value})}
+                    onChange={(e) => setNewTeacher({ ...newTeacher, email: e.target.value })}
                     placeholder="Enter email address"
                     required
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Phone</label>
                   <Input
                     type="tel"
                     value={newTeacher.phone}
-                    onChange={(e) => setNewTeacher({...newTeacher, phone: e.target.value})}
+                    onChange={(e) => setNewTeacher({ ...newTeacher, phone: e.target.value })}
                     placeholder="Enter phone number"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Address</label>
                   <Input
                     value={newTeacher.address}
-                    onChange={(e) => setNewTeacher({...newTeacher, address: e.target.value})}
+                    onChange={(e) => setNewTeacher({ ...newTeacher, address: e.target.value })}
                     placeholder="Enter address"
                   />
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Subjects</label>
                   <Input
                     value={newTeacher.subjects.join(', ')}
-                    onChange={(e) => setNewTeacher({
-                      ...newTeacher, 
-                      subjects: e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0)
-                    })}
+                    onChange={(e) =>
+                      setNewTeacher({
+                        ...newTeacher,
+                        subjects: e.target.value
+                          .split(',')
+                          .map((s) => s.trim())
+                          .filter((s) => s.length > 0),
+                      })
+                    }
                     placeholder="Enter subjects (comma separated)"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-muted-foreground mt-1 text-xs">
                     Example: Mathematics, Physics, Chemistry
                   </p>
                 </div>
-                
+
                 <div>
                   <label className="text-sm font-medium">Specialties</label>
                   <Input
                     value={newTeacher.specialties.join(', ')}
-                    onChange={(e) => setNewTeacher({
-                      ...newTeacher, 
-                      specialties: e.target.value.split(',').map(s => s.trim()).filter(s => s.length > 0)
-                    })}
+                    onChange={(e) =>
+                      setNewTeacher({
+                        ...newTeacher,
+                        specialties: e.target.value
+                          .split(',')
+                          .map((s) => s.trim())
+                          .filter((s) => s.length > 0),
+                      })
+                    }
                     placeholder="Enter specialties (comma separated)"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-muted-foreground mt-1 text-xs">
                     Example: Advanced Mathematics, Laboratory Sciences
                   </p>
                 </div>
-                
+
                 <div className="flex justify-end gap-2 pt-4">
-                  <Button 
-                    type="button" 
+                  <Button
+                    type="button"
                     variant="outline"
                     onClick={() => setIsCreateDialogOpen(false)}
                   >
@@ -375,9 +368,9 @@ const TeacherManagement: React.FC = () => {
       {/* Filters */}
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Search className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
               <Input
                 placeholder="Search teachers by name or email..."
                 value={searchTerm}
@@ -385,13 +378,13 @@ const TeacherManagement: React.FC = () => {
                 className="pl-9"
               />
             </div>
-            
+
             <Button
               variant="outline"
               onClick={() => setIsFiltersOpen(!isFiltersOpen)}
               className="shrink-0"
             >
-              <Filter className="h-4 w-4 mr-2" />
+              <Filter className="mr-2 h-4 w-4" />
               Filters
             </Button>
           </div>
@@ -399,38 +392,40 @@ const TeacherManagement: React.FC = () => {
       </Card>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center">
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Users className="text-muted-foreground h-4 w-4" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-muted-foreground">Total Teachers</p>
+                <p className="text-muted-foreground text-sm font-medium">Total Teachers</p>
                 <p className="text-2xl font-bold">{totalCount}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center">
-              <UserCheck className="h-4 w-4 text-muted-foreground" />
+              <UserCheck className="text-muted-foreground h-4 w-4" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-muted-foreground">Active Teachers</p>
-                <p className="text-2xl font-bold">{teachers.filter(t => t.is_active).length}</p>
+                <p className="text-muted-foreground text-sm font-medium">Active Teachers</p>
+                <p className="text-2xl font-bold">{teachers.filter((t) => t.is_active).length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center">
-              <RefreshCw className="h-4 w-4 text-muted-foreground" />
+              <RefreshCw className="text-muted-foreground h-4 w-4" />
               <div className="ml-3">
-                <p className="text-sm font-medium text-muted-foreground">Page</p>
-                <p className="text-2xl font-bold">{currentPage} / {totalPages}</p>
+                <p className="text-muted-foreground text-sm font-medium">Page</p>
+                <p className="text-2xl font-bold">
+                  {currentPage} / {totalPages}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -446,7 +441,7 @@ const TeacherManagement: React.FC = () => {
         </CardHeader>
         <CardContent>
           {error && (
-            <div className="text-red-600 bg-red-50 p-4 rounded-md mb-4">
+            <div className="mb-4 rounded-md bg-red-50 p-4 text-red-600">
               <p className="font-medium">Error loading teachers</p>
               <p className="text-sm">{error}</p>
             </div>
@@ -474,7 +469,7 @@ const TeacherManagement: React.FC = () => {
                           {teacher.first_name} {teacher.last_name}
                         </div>
                         {teacher.metadata?.phone && (
-                          <div className="text-sm text-muted-foreground">
+                          <div className="text-muted-foreground text-sm">
                             {teacher.metadata.phone}
                           </div>
                         )}
@@ -493,8 +488,9 @@ const TeacherManagement: React.FC = () => {
                             +{(teacher.metadata?.subjects?.length || 0) - 2} more
                           </Badge>
                         )}
-                        {(!teacher.metadata?.subjects || teacher.metadata.subjects.length === 0) && (
-                          <span className="text-sm text-muted-foreground">No subjects</span>
+                        {(!teacher.metadata?.subjects ||
+                          teacher.metadata.subjects.length === 0) && (
+                          <span className="text-muted-foreground text-sm">No subjects</span>
                         )}
                       </div>
                     </TableCell>
@@ -535,14 +531,14 @@ const TeacherManagement: React.FC = () => {
 
           {/* Empty State */}
           {(teachers || []).length === 0 && !loading && (
-            <div className="text-center py-12">
-              <BookOpen className="mx-auto h-12 w-12 text-muted-foreground" />
+            <div className="py-12 text-center">
+              <BookOpen className="text-muted-foreground mx-auto h-12 w-12" />
               <h3 className="mt-4 text-lg font-medium">No teachers found</h3>
-              <p className="mt-2 text-muted-foreground">
+              <p className="text-muted-foreground mt-2">
                 Get started by adding your first teacher.
               </p>
               <Button className="mt-4" onClick={() => setIsCreateDialogOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Add Teacher
               </Button>
             </div>
@@ -551,10 +547,11 @@ const TeacherManagement: React.FC = () => {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between pt-4">
-              <div className="text-sm text-muted-foreground">
-                Showing {((currentPage - 1) * 10) + 1} to {Math.min(currentPage * 10, totalCount)} of {totalCount} teachers
+              <div className="text-muted-foreground text-sm">
+                Showing {(currentPage - 1) * 10 + 1} to {Math.min(currentPage * 10, totalCount)} of{' '}
+                {totalCount} teachers
               </div>
-              
+
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -564,14 +561,14 @@ const TeacherManagement: React.FC = () => {
                 >
                   Previous
                 </Button>
-                
+
                 <div className="flex gap-1">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     const page = i + 1;
                     return (
                       <Button
                         key={page}
-                        variant={currentPage === page ? "default" : "outline"}
+                        variant={currentPage === page ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => handlePageChange(page)}
                         disabled={loading}
@@ -581,7 +578,7 @@ const TeacherManagement: React.FC = () => {
                     );
                   })}
                 </div>
-                
+
                 <Button
                   variant="outline"
                   size="sm"
@@ -599,4 +596,4 @@ const TeacherManagement: React.FC = () => {
   );
 };
 
-export default TeacherManagement; 
+export default TeacherManagement;

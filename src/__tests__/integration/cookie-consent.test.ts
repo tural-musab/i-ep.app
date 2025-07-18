@@ -1,6 +1,6 @@
 /**
  * Cookie Consent Integration Tests
- * 
+ *
  * GDPR uyumlu çerez onayı sistemi için temel entegrasyon testleri
  */
 
@@ -13,18 +13,18 @@ describe('Cookie Consent System', () => {
   // Mock localStorage for testing
   const mockLocalStorage = {
     storage: new Map<string, string>(),
-    getItem: function(key: string): string | null {
+    getItem: function (key: string): string | null {
       return this.storage.get(key) || null;
     },
-    setItem: function(key: string, value: string): void {
+    setItem: function (key: string, value: string): void {
       this.storage.set(key, value);
     },
-    removeItem: function(key: string): void {
+    removeItem: function (key: string): void {
       this.storage.delete(key);
     },
-    clear: function(): void {
+    clear: function (): void {
       this.storage.clear();
-    }
+    },
   };
 
   beforeEach(() => {
@@ -39,15 +39,15 @@ describe('Cookie Consent System', () => {
         marketing: false,
         preferences: true,
         timestamp: new Date().toISOString(),
-        version: CONSENT_VERSION
+        version: CONSENT_VERSION,
       };
 
       const preferencesJson = JSON.stringify(preferences);
       mockLocalStorage.setItem(CONSENT_STORAGE_KEY, preferencesJson);
-      
+
       const stored = mockLocalStorage.getItem(CONSENT_STORAGE_KEY);
       expect(stored).not.toBeNull();
-      
+
       if (stored) {
         const parsed = JSON.parse(stored);
         expect(parsed.necessary).toBe(true);
@@ -65,12 +65,12 @@ describe('Cookie Consent System', () => {
         marketing: false,
         preferences: true,
         timestamp: new Date().toISOString(),
-        version: '0.9' // Old version
+        version: '0.9', // Old version
       };
 
       mockLocalStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(oldPreferences));
       const stored = mockLocalStorage.getItem(CONSENT_STORAGE_KEY);
-      
+
       if (stored) {
         const parsed = JSON.parse(stored);
         expect(parsed.version).not.toBe(CONSENT_VERSION);
@@ -80,7 +80,7 @@ describe('Cookie Consent System', () => {
     it('should handle invalid JSON gracefully', () => {
       mockLocalStorage.setItem(CONSENT_STORAGE_KEY, 'invalid-json');
       const stored = mockLocalStorage.getItem(CONSENT_STORAGE_KEY);
-      
+
       expect(() => {
         if (stored) {
           JSON.parse(stored);
@@ -96,12 +96,12 @@ describe('Cookie Consent System', () => {
         { id: 'necessary', required: true },
         { id: 'analytics', required: false },
         { id: 'marketing', required: false },
-        { id: 'preferences', required: false }
+        { id: 'preferences', required: false },
       ];
 
-      const categoryIds = cookieCategories.map(cat => cat.id);
-      
-      expectedCategories.forEach(category => {
+      const categoryIds = cookieCategories.map((cat) => cat.id);
+
+      expectedCategories.forEach((category) => {
         expect(categoryIds).toContain(category);
       });
     });
@@ -115,10 +115,10 @@ describe('Cookie Consent System', () => {
       const optionalCategories = [
         { id: 'analytics', required: false },
         { id: 'marketing', required: false },
-        { id: 'preferences', required: false }
+        { id: 'preferences', required: false },
       ];
 
-      optionalCategories.forEach(category => {
+      optionalCategories.forEach((category) => {
         expect(category.required).toBe(false);
       });
     });
@@ -132,12 +132,12 @@ describe('Cookie Consent System', () => {
         marketing: true,
         preferences: true,
         timestamp: new Date().toISOString(),
-        version: CONSENT_VERSION
+        version: CONSENT_VERSION,
       };
 
       mockLocalStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(acceptAllPreferences));
       const stored = mockLocalStorage.getItem(CONSENT_STORAGE_KEY);
-      
+
       if (stored) {
         const parsed = JSON.parse(stored);
         expect(parsed.necessary).toBe(true);
@@ -154,12 +154,12 @@ describe('Cookie Consent System', () => {
         marketing: false,
         preferences: false,
         timestamp: new Date().toISOString(),
-        version: CONSENT_VERSION
+        version: CONSENT_VERSION,
       };
 
       mockLocalStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(rejectAllPreferences));
       const stored = mockLocalStorage.getItem(CONSENT_STORAGE_KEY);
-      
+
       if (stored) {
         const parsed = JSON.parse(stored);
         expect(parsed.necessary).toBe(true);
@@ -178,7 +178,7 @@ describe('Cookie Consent System', () => {
         purpose: 'Website analytics',
         duration: '2 years',
         provider: 'Test Provider',
-        gdprLawfulBasis: 'Consent'
+        gdprLawfulBasis: 'Consent',
       };
 
       expect(cookieDefinition.purpose).toBeDefined();
@@ -193,7 +193,7 @@ describe('Cookie Consent System', () => {
         reason: 'User request',
         exportDataBeforeDeletion: true,
         notifyUser: true,
-        notifyAdmin: true
+        notifyAdmin: true,
       };
 
       expect(['hard', 'soft', 'anonymize']).toContain(deletionRequest.type);
@@ -216,12 +216,12 @@ describe('Cookie Consent System', () => {
         marketing: false,
         preferences: false,
         timestamp: new Date().toISOString(),
-        version: CONSENT_VERSION
+        version: CONSENT_VERSION,
       };
 
       mockLocalStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(validConsent));
       const stored = mockLocalStorage.getItem(CONSENT_STORAGE_KEY);
-      
+
       expect(stored).not.toBeNull();
     });
 
@@ -232,12 +232,12 @@ describe('Cookie Consent System', () => {
         marketing: false,
         preferences: true,
         timestamp: new Date().toISOString(),
-        version: '0.9' // Old version
+        version: '0.9', // Old version
       };
 
       mockLocalStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(oldVersionConsent));
       const stored = mockLocalStorage.getItem(CONSENT_STORAGE_KEY);
-      
+
       if (stored) {
         const parsed = JSON.parse(stored);
         // Should require new consent due to version mismatch
@@ -245,4 +245,4 @@ describe('Cookie Consent System', () => {
       }
     });
   });
-}); 
+});

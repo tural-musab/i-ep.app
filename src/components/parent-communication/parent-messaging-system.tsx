@@ -13,16 +13,22 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  MessageSquare, 
-  Send, 
-  Reply, 
-  Forward, 
-  Archive, 
+import {
+  MessageSquare,
+  Send,
+  Reply,
+  Forward,
+  Archive,
   Trash2,
   Search,
   Filter,
@@ -40,7 +46,7 @@ import {
   Calendar,
   Eye,
   Edit,
-  MoreHorizontal
+  MoreHorizontal,
 } from 'lucide-react';
 
 interface Message {
@@ -115,14 +121,14 @@ export function ParentMessagingSystem() {
           id: '1',
           name: 'Ayşe Veli',
           avatar: '/api/placeholder/40/40',
-          role: 'parent'
+          role: 'parent',
         },
         {
           id: '2',
           name: 'Ahmet Öğretmen',
           avatar: '/api/placeholder/40/40',
-          role: 'teacher'
-        }
+          role: 'teacher',
+        },
       ],
       lastMessage: {
         id: '1',
@@ -130,25 +136,26 @@ export function ParentMessagingSystem() {
           id: '1',
           name: 'Ayşe Veli',
           avatar: '/api/placeholder/40/40',
-          role: 'parent'
+          role: 'parent',
         },
         recipient: {
           id: '2',
           name: 'Ahmet Öğretmen',
           avatar: '/api/placeholder/40/40',
-          role: 'teacher'
+          role: 'teacher',
         },
         student: {
           name: 'Ali Veli',
           class: '5-A',
-          number: '2025001'
+          number: '2025001',
         },
         subject: 'Matematik performansı hakkında',
-        content: 'Merhaba Ahmet Öğretmen, Ali\'nin matematik dersindeki son durumu hakkında bilgi alabilir miyim? Özellikle geometry konusunda zorlanıyor gibi.',
+        content:
+          "Merhaba Ahmet Öğretmen, Ali'nin matematik dersindeki son durumu hakkında bilgi alabilir miyim? Özellikle geometry konusunda zorlanıyor gibi.",
         timestamp: '2025-01-15T10:30:00',
         status: 'sent',
         priority: 'medium',
-        type: 'inquiry'
+        type: 'inquiry',
       },
       unreadCount: 1,
       isArchived: false,
@@ -159,28 +166,29 @@ export function ParentMessagingSystem() {
             id: '1',
             name: 'Ayşe Veli',
             avatar: '/api/placeholder/40/40',
-            role: 'parent'
+            role: 'parent',
           },
           recipient: {
             id: '2',
             name: 'Ahmet Öğretmen',
             avatar: '/api/placeholder/40/40',
-            role: 'teacher'
+            role: 'teacher',
           },
           student: {
             name: 'Ali Veli',
             class: '5-A',
-            number: '2025001'
+            number: '2025001',
           },
           subject: 'Matematik performansı hakkında',
-          content: 'Merhaba Ahmet Öğretmen, Ali\'nin matematik dersindeki son durumu hakkında bilgi alabilir miyim? Özellikle geometry konusunda zorlanıyor gibi.',
+          content:
+            "Merhaba Ahmet Öğretmen, Ali'nin matematik dersindeki son durumu hakkında bilgi alabilir miyim? Özellikle geometry konusunda zorlanıyor gibi.",
           timestamp: '2025-01-15T10:30:00',
           status: 'sent',
           priority: 'medium',
           type: 'inquiry',
-          threadId: '1'
-        }
-      ]
+          threadId: '1',
+        },
+      ],
     },
     {
       id: '2',
@@ -190,14 +198,14 @@ export function ParentMessagingSystem() {
           id: '3',
           name: 'Mehmet Kaya',
           avatar: '/api/placeholder/40/40',
-          role: 'parent'
+          role: 'parent',
         },
         {
           id: '4',
           name: 'Zeynep Öğretmen',
           avatar: '/api/placeholder/40/40',
-          role: 'teacher'
-        }
+          role: 'teacher',
+        },
       ],
       lastMessage: {
         id: '2',
@@ -205,25 +213,26 @@ export function ParentMessagingSystem() {
           id: '4',
           name: 'Zeynep Öğretmen',
           avatar: '/api/placeholder/40/40',
-          role: 'teacher'
+          role: 'teacher',
         },
         recipient: {
           id: '3',
           name: 'Mehmet Kaya',
           avatar: '/api/placeholder/40/40',
-          role: 'parent'
+          role: 'parent',
         },
         student: {
           name: 'Fatma Kaya',
           class: '6-B',
-          number: '2025002'
+          number: '2025002',
         },
         subject: 'Veli toplantısı randevusu',
-        content: 'Merhaba Mehmet Bey, Fatma\'nın okuma gelişimi hakkında konuşmak için bu hafta uygun olduğunuz bir saatiniz var mı?',
+        content:
+          "Merhaba Mehmet Bey, Fatma'nın okuma gelişimi hakkında konuşmak için bu hafta uygun olduğunuz bir saatiniz var mı?",
         timestamp: '2025-01-15T09:15:00',
         status: 'read',
         priority: 'high',
-        type: 'meeting_request'
+        type: 'meeting_request',
       },
       unreadCount: 0,
       isArchived: false,
@@ -234,26 +243,27 @@ export function ParentMessagingSystem() {
             id: '3',
             name: 'Mehmet Kaya',
             avatar: '/api/placeholder/40/40',
-            role: 'parent'
+            role: 'parent',
           },
           recipient: {
             id: '4',
             name: 'Zeynep Öğretmen',
             avatar: '/api/placeholder/40/40',
-            role: 'teacher'
+            role: 'teacher',
           },
           student: {
             name: 'Fatma Kaya',
             class: '6-B',
-            number: '2025002'
+            number: '2025002',
           },
           subject: 'Veli toplantısı randevusu',
-          content: 'Bu hafta müsait olduğunuz bir randevu saati var mı? Fatma\'nın okuma gelişimi hakkında konuşmak istiyorum.',
+          content:
+            "Bu hafta müsait olduğunuz bir randevu saati var mı? Fatma'nın okuma gelişimi hakkında konuşmak istiyorum.",
           timestamp: '2025-01-15T08:30:00',
           status: 'replied',
           priority: 'high',
           type: 'meeting_request',
-          threadId: '2'
+          threadId: '2',
         },
         {
           id: '3',
@@ -261,30 +271,31 @@ export function ParentMessagingSystem() {
             id: '4',
             name: 'Zeynep Öğretmen',
             avatar: '/api/placeholder/40/40',
-            role: 'teacher'
+            role: 'teacher',
           },
           recipient: {
             id: '3',
             name: 'Mehmet Kaya',
             avatar: '/api/placeholder/40/40',
-            role: 'parent'
+            role: 'parent',
           },
           student: {
             name: 'Fatma Kaya',
             class: '6-B',
-            number: '2025002'
+            number: '2025002',
           },
           subject: 'Veli toplantısı randevusu',
-          content: 'Merhaba Mehmet Bey, Fatma\'nın okuma gelişimi hakkında konuşmak için bu hafta uygun olduğunuz bir saatiniz var mı? Perşembe 15:00 veya Cuma 16:00 uygun olur mu?',
+          content:
+            "Merhaba Mehmet Bey, Fatma'nın okuma gelişimi hakkında konuşmak için bu hafta uygun olduğunuz bir saatiniz var mı? Perşembe 15:00 veya Cuma 16:00 uygun olur mu?",
           timestamp: '2025-01-15T09:15:00',
           status: 'read',
           priority: 'high',
           type: 'meeting_request',
           threadId: '2',
-          replyTo: '2'
-        }
-      ]
-    }
+          replyTo: '2',
+        },
+      ],
+    },
   ]);
 
   const [composeData, setComposeData] = useState({
@@ -293,62 +304,86 @@ export function ParentMessagingSystem() {
     subject: '',
     content: '',
     priority: 'medium',
-    type: 'general'
+    type: 'general',
   });
 
   const [replyData, setReplyData] = useState({
-    content: ''
+    content: '',
   });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'sent': return 'bg-blue-100 text-blue-800';
-      case 'delivered': return 'bg-green-100 text-green-800';
-      case 'read': return 'bg-gray-100 text-gray-800';
-      case 'replied': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'sent':
+        return 'bg-blue-100 text-blue-800';
+      case 'delivered':
+        return 'bg-green-100 text-green-800';
+      case 'read':
+        return 'bg-gray-100 text-gray-800';
+      case 'replied':
+        return 'bg-purple-100 text-purple-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'urgent':
+        return 'bg-red-100 text-red-800';
+      case 'high':
+        return 'bg-orange-100 text-orange-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'inquiry': return <MessageSquare className="h-4 w-4" />;
-      case 'concern': return <AlertCircle className="h-4 w-4" />;
-      case 'compliment': return <Star className="h-4 w-4" />;
-      case 'meeting_request': return <Calendar className="h-4 w-4" />;
-      default: return <MessageSquare className="h-4 w-4" />;
+      case 'inquiry':
+        return <MessageSquare className="h-4 w-4" />;
+      case 'concern':
+        return <AlertCircle className="h-4 w-4" />;
+      case 'compliment':
+        return <Star className="h-4 w-4" />;
+      case 'meeting_request':
+        return <Calendar className="h-4 w-4" />;
+      default:
+        return <MessageSquare className="h-4 w-4" />;
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'sent': return <Send className="h-4 w-4" />;
-      case 'delivered': return <CheckCircle className="h-4 w-4" />;
-      case 'read': return <Eye className="h-4 w-4" />;
-      case 'replied': return <Reply className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
+      case 'sent':
+        return <Send className="h-4 w-4" />;
+      case 'delivered':
+        return <CheckCircle className="h-4 w-4" />;
+      case 'read':
+        return <Eye className="h-4 w-4" />;
+      case 'replied':
+        return <Reply className="h-4 w-4" />;
+      default:
+        return <Clock className="h-4 w-4" />;
     }
   };
 
-  const filteredThreads = messageThreads.filter(thread => {
-    const matchesSearch = thread.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         thread.participants.some(p => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredThreads = messageThreads.filter((thread) => {
+    const matchesSearch =
+      thread.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      thread.participants.some((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = filterStatus === 'all' || thread.lastMessage.status === filterStatus;
-    const matchesPriority = filterPriority === 'all' || thread.lastMessage.priority === filterPriority;
+    const matchesPriority =
+      filterPriority === 'all' || thread.lastMessage.priority === filterPriority;
     return matchesSearch && matchesStatus && matchesPriority;
   });
 
-  const selectedThreadData = selectedThread ? messageThreads.find(t => t.id === selectedThread) : null;
+  const selectedThreadData = selectedThread
+    ? messageThreads.find((t) => t.id === selectedThread)
+    : null;
 
   const handleSendMessage = () => {
     if (isComposing) {
@@ -361,7 +396,7 @@ export function ParentMessagingSystem() {
         subject: '',
         content: '',
         priority: 'medium',
-        type: 'general'
+        type: 'general',
       });
     }
   };
@@ -395,30 +430,28 @@ export function ParentMessagingSystem() {
       {/* Header Controls */}
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <div>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5" />
                 Veli Mesajlaşma Sistemi
               </CardTitle>
-              <CardDescription>
-                Veliler ile doğrudan iletişim kurun
-              </CardDescription>
+              <CardDescription>Veliler ile doğrudan iletişim kurun</CardDescription>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={() => setIsComposing(true)}>
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Yeni Mesaj
               </Button>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-4 items-end">
+          <div className="flex items-end gap-4">
             <div className="flex-1 space-y-2">
               <Label>Mesaj Ara</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Search className="absolute top-3 left-3 h-4 w-4 text-gray-400" />
                 <Input
                   placeholder="Mesaj, veli adı veya konu ara..."
                   value={searchTerm}
@@ -462,14 +495,12 @@ export function ParentMessagingSystem() {
       </Card>
 
       {/* Main Messaging Interface */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Thread List */}
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle>Konuşmalar</CardTitle>
-            <CardDescription>
-              {filteredThreads.length} konuşma
-            </CardDescription>
+            <CardDescription>{filteredThreads.length} konuşma</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             <ScrollArea className="h-[600px]">
@@ -477,8 +508,10 @@ export function ParentMessagingSystem() {
                 {filteredThreads.map((thread) => (
                   <div
                     key={thread.id}
-                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                      selectedThread === thread.id ? 'border-blue-500 bg-blue-50' : 'hover:bg-gray-50'
+                    className={`cursor-pointer rounded-lg border p-3 transition-colors ${
+                      selectedThread === thread.id
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'hover:bg-gray-50'
                     }`}
                     onClick={() => setSelectedThread(thread.id)}
                   >
@@ -488,31 +521,40 @@ export function ParentMessagingSystem() {
                           <Avatar key={index} className="h-8 w-8 border-2 border-white">
                             <AvatarImage src={participant.avatar} />
                             <AvatarFallback>
-                              {participant.name.split(' ').map(n => n[0]).join('')}
+                              {participant.name
+                                .split(' ')
+                                .map((n) => n[0])
+                                .join('')}
                             </AvatarFallback>
                           </Avatar>
                         ))}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <p className="font-medium text-sm truncate">{thread.subject}</p>
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 flex items-center justify-between">
+                          <p className="truncate text-sm font-medium">{thread.subject}</p>
                           {thread.unreadCount > 0 && (
                             <Badge variant="default" className="text-xs">
                               {thread.unreadCount}
                             </Badge>
                           )}
                         </div>
-                        <p className="text-xs text-gray-600 mb-1">
-                          {thread.participants.map(p => p.name).join(', ')}
+                        <p className="mb-1 text-xs text-gray-600">
+                          {thread.participants.map((p) => p.name).join(', ')}
                         </p>
-                        <p className="text-xs text-gray-500 truncate">
+                        <p className="truncate text-xs text-gray-500">
                           {thread.lastMessage.content}
                         </p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <Badge variant="outline" className={getStatusColor(thread.lastMessage.status)}>
+                        <div className="mt-2 flex items-center gap-2">
+                          <Badge
+                            variant="outline"
+                            className={getStatusColor(thread.lastMessage.status)}
+                          >
                             {getStatusIcon(thread.lastMessage.status)}
                           </Badge>
-                          <Badge variant="outline" className={getPriorityColor(thread.lastMessage.priority)}>
+                          <Badge
+                            variant="outline"
+                            className={getPriorityColor(thread.lastMessage.priority)}
+                          >
                             {thread.lastMessage.priority}
                           </Badge>
                           <span className="text-xs text-gray-500">
@@ -532,24 +574,36 @@ export function ParentMessagingSystem() {
         <Card className="lg:col-span-2">
           <CardHeader>
             {selectedThreadData ? (
-              <div className="flex justify-between items-start">
+              <div className="flex items-start justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     {getTypeIcon(selectedThreadData.lastMessage.type)}
                     {selectedThreadData.subject}
                   </CardTitle>
                   <CardDescription>
-                    {selectedThreadData.participants.map(p => p.name).join(', ')}
+                    {selectedThreadData.participants.map((p) => p.name).join(', ')}
                   </CardDescription>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleMarkAsRead(selectedThreadData.id)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleMarkAsRead(selectedThreadData.id)}
+                  >
                     <CheckCircle className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleArchiveThread(selectedThreadData.id)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleArchiveThread(selectedThreadData.id)}
+                  >
                     <Archive className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleDeleteThread(selectedThreadData.id)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDeleteThread(selectedThreadData.id)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -557,9 +611,7 @@ export function ParentMessagingSystem() {
             ) : (
               <div>
                 <CardTitle>Mesaj Seçin</CardTitle>
-                <CardDescription>
-                  Görüntülemek için bir konuşma seçin
-                </CardDescription>
+                <CardDescription>Görüntülemek için bir konuşma seçin</CardDescription>
               </div>
             )}
           </CardHeader>
@@ -576,14 +628,19 @@ export function ParentMessagingSystem() {
                           message.sender.role === 'teacher' ? 'justify-end' : 'justify-start'
                         }`}
                       >
-                        <div className={`max-w-[70%] ${
-                          message.sender.role === 'teacher' ? 'order-2' : 'order-1'
-                        }`}>
-                          <div className="flex items-center gap-2 mb-1">
+                        <div
+                          className={`max-w-[70%] ${
+                            message.sender.role === 'teacher' ? 'order-2' : 'order-1'
+                          }`}
+                        >
+                          <div className="mb-1 flex items-center gap-2">
                             <Avatar className="h-6 w-6">
                               <AvatarImage src={message.sender.avatar} />
                               <AvatarFallback>
-                                {message.sender.name.split(' ').map(n => n[0]).join('')}
+                                {message.sender.name
+                                  .split(' ')
+                                  .map((n) => n[0])
+                                  .join('')}
                               </AvatarFallback>
                             </Avatar>
                             <span className="text-sm font-medium">{message.sender.name}</span>
@@ -591,14 +648,16 @@ export function ParentMessagingSystem() {
                               {new Date(message.timestamp).toLocaleString('tr-TR')}
                             </span>
                           </div>
-                          <div className={`p-3 rounded-lg ${
-                            message.sender.role === 'teacher' 
-                              ? 'bg-blue-500 text-white' 
-                              : 'bg-gray-100 text-gray-900'
-                          }`}>
+                          <div
+                            className={`rounded-lg p-3 ${
+                              message.sender.role === 'teacher'
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-gray-100 text-gray-900'
+                            }`}
+                          >
                             <p className="text-sm">{message.content}</p>
                           </div>
-                          <div className="flex items-center gap-2 mt-2">
+                          <div className="mt-2 flex items-center gap-2">
                             <Badge variant="outline" className={getStatusColor(message.status)}>
                               {getStatusIcon(message.status)}
                             </Badge>
@@ -625,19 +684,19 @@ export function ParentMessagingSystem() {
                       onChange={(e) => setReplyData({ content: e.target.value })}
                       className="min-h-[100px]"
                     />
-                    <div className="flex justify-between items-center">
+                    <div className="flex items-center justify-between">
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm">
-                          <Paperclip className="h-4 w-4 mr-2" />
+                          <Paperclip className="mr-2 h-4 w-4" />
                           Dosya Ekle
                         </Button>
                         <Button variant="outline" size="sm">
-                          <Image className="h-4 w-4 mr-2" />
+                          <Image className="mr-2 h-4 w-4" />
                           Resim Ekle
                         </Button>
                       </div>
                       <Button onClick={handleSendReply} disabled={!replyData.content}>
-                        <Send className="h-4 w-4 mr-2" />
+                        <Send className="mr-2 h-4 w-4" />
                         Gönder
                       </Button>
                     </div>
@@ -645,8 +704,8 @@ export function ParentMessagingSystem() {
                 </div>
               </div>
             ) : (
-              <div className="text-center py-12">
-                <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <div className="py-12 text-center">
+                <MessageSquare className="mx-auto mb-4 h-12 w-12 text-gray-400" />
                 <p className="text-gray-600">Görüntülemek için bir konuşma seçin</p>
               </div>
             )}
@@ -656,22 +715,22 @@ export function ParentMessagingSystem() {
 
       {/* New Message Modal */}
       {isComposing && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
+          <Card className="max-h-[80vh] w-full max-w-2xl overflow-y-auto">
             <CardHeader>
               <CardTitle>Yeni Mesaj</CardTitle>
-              <CardDescription>
-                Veli ile yeni bir konuşma başlatın
-              </CardDescription>
+              <CardDescription>Veli ile yeni bir konuşma başlatın</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>Alıcı</Label>
                     <Select
                       value={composeData.recipient}
-                      onValueChange={(value) => setComposeData({ ...composeData, recipient: value })}
+                      onValueChange={(value) =>
+                        setComposeData({ ...composeData, recipient: value })
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Veli seçin" />
@@ -710,7 +769,7 @@ export function ParentMessagingSystem() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label>Öncelik</Label>
                     <Select
@@ -758,14 +817,14 @@ export function ParentMessagingSystem() {
                   />
                 </div>
 
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm">
-                      <Paperclip className="h-4 w-4 mr-2" />
+                      <Paperclip className="mr-2 h-4 w-4" />
                       Dosya Ekle
                     </Button>
                     <Button variant="outline" size="sm">
-                      <Image className="h-4 w-4 mr-2" />
+                      <Image className="mr-2 h-4 w-4" />
                       Resim Ekle
                     </Button>
                   </div>
@@ -773,8 +832,11 @@ export function ParentMessagingSystem() {
                     <Button variant="outline" onClick={() => setIsComposing(false)}>
                       İptal
                     </Button>
-                    <Button onClick={handleSendMessage} disabled={!composeData.content || !composeData.recipient}>
-                      <Send className="h-4 w-4 mr-2" />
+                    <Button
+                      onClick={handleSendMessage}
+                      disabled={!composeData.content || !composeData.recipient}
+                    >
+                      <Send className="mr-2 h-4 w-4" />
                       Gönder
                     </Button>
                   </div>

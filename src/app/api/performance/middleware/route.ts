@@ -24,24 +24,24 @@ export async function GET(request: NextRequest) {
     switch (action) {
       case 'health':
         return NextResponse.json(middlewareMonitor.getHealthStatus());
-      
+
       case 'metrics':
         return NextResponse.json({
           metrics: middlewareMonitor.getMetrics(limit),
           summary: {
             averageResponseTime: middlewareMonitor.getAverageProcessingTime(minutes),
             cacheHitRate: middlewareMonitor.getCacheHitRate(minutes),
-            healthStatus: middlewareMonitor.getHealthStatus()
-          }
+            healthStatus: middlewareMonitor.getHealthStatus(),
+          },
         });
-      
+
       case 'summary':
         return NextResponse.json({
           averageResponseTime: middlewareMonitor.getAverageProcessingTime(minutes),
           cacheHitRate: middlewareMonitor.getCacheHitRate(minutes),
-          healthStatus: middlewareMonitor.getHealthStatus()
+          healthStatus: middlewareMonitor.getHealthStatus(),
         });
-      
+
       default:
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       case 'clear_cache':
         // Clear tenant cache (if we had access to it)
         return NextResponse.json({ success: true, message: 'Cache cleared' });
-      
+
       default:
         return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
     }

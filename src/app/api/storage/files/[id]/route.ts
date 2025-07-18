@@ -16,11 +16,11 @@ import { storage } from '@/lib/storage';
 function getTenantId(): string {
   const headersList = headers();
   const tenantId = headersList.get('x-tenant-id');
-  
+
   if (!tenantId) {
     throw new Error('Tenant ID not found in headers');
   }
-  
+
   return tenantId;
 }
 
@@ -28,20 +28,20 @@ function getTenantId(): string {
  * GET /api/storage/files/[id]
  * Download or get file info
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication for non-public files
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
-    
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
+
     // Validate file ID
     const fileId = z.string().uuid().parse(params.id);
-    
+
     // Get file metadata from database
     const { data: file, error: fileError } = await supabase
       .from('files')
@@ -51,28 +51,21 @@ export async function GET(
       .single();
 
     if (fileError || !file) {
-      return NextResponse.json(
-        { error: 'File not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
 
     // Check permissions for private files
     if (!file.is_public) {
       if (authError || !session) {
-        return NextResponse.json(
-          { error: 'Authentication required' },
-          { status: 401 }
-        );
+        return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
       }
 
       const userId = session.user.id;
       const userRole = session.user.app_metadata?.role || 'user';
 
       // Check if user can access this file
-      const canAccess = userRole === 'super_admin' || 
-                       userRole === 'admin' || 
-                       file.uploaded_by === userId;
+      const canAccess =
+        userRole === 'super_admin' || userRole === 'admin' || file.uploaded_by === userId;
 
       // For assignment files, check if user is teacher or student of the assignment
       if (!canAccess && file.assignment_id) {
@@ -86,21 +79,15 @@ export async function GET(
         if (assignment) {
           const isTeacher = assignment.teacher_id === userId;
           const isStudent = userRole === 'student'; // Additional class membership check needed
-          
+
           if (isTeacher || isStudent) {
             // Allow access
           } else {
-            return NextResponse.json(
-              { error: 'Insufficient permissions' },
-              { status: 403 }
-            );
+            return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
           }
         }
       } else if (!canAccess) {
-        return NextResponse.json(
-          { error: 'Insufficient permissions' },
-          { status: 403 }
-        );
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
       }
     }
 
@@ -119,7 +106,7 @@ export async function GET(
         isPublic: file.is_public,
         uploadedBy: file.uploaded_by,
         uploadedAt: file.created_at,
-        metadata: file.metadata
+        metadata: file.metadata,
       });
     }
 
@@ -131,31 +118,24 @@ export async function GET(
     } else {
       // For private files, stream through our server
       const fileBlob = await storage.download(fileId);
-      
+
       return new NextResponse(fileBlob, {
         headers: {
           'Content-Type': file.mime_type,
           'Content-Length': file.size_bytes.toString(),
           'Content-Disposition': `attachment; filename="${file.name}"`,
-          'Cache-Control': 'private, max-age=3600'
-        }
+          'Cache-Control': 'private, max-age=3600',
+        },
       });
     }
-
   } catch (error) {
     console.error('Error handling file request:', error);
-    
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid file ID' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid file ID' }, { status: 400 });
     }
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -163,26 +143,23 @@ export async function GET(
  * DELETE /api/storage/files/[id]
  * Delete a file
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Validate file ID
     const fileId = z.string().uuid().parse(params.id);
-    
+
     // Get file metadata
     const { data: file, error: fileError } = await supabase
       .from('files')
@@ -192,25 +169,18 @@ export async function DELETE(
       .single();
 
     if (fileError || !file) {
-      return NextResponse.json(
-        { error: 'File not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
 
     // Check permissions
     const userId = session.user.id;
     const userRole = session.user.app_metadata?.role || 'user';
 
-    const canDelete = userRole === 'super_admin' || 
-                     userRole === 'admin' || 
-                     file.uploaded_by === userId;
+    const canDelete =
+      userRole === 'super_admin' || userRole === 'admin' || file.uploaded_by === userId;
 
     if (!canDelete) {
-      return NextResponse.json(
-        { error: 'Insufficient permissions' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
     // Delete from storage
@@ -229,21 +199,14 @@ export async function DELETE(
     }
 
     return NextResponse.json({ success: true });
-
   } catch (error) {
     console.error('Error deleting file:', error);
-    
+
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid file ID' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid file ID' }, { status: 400 });
     }
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -251,33 +214,32 @@ export async function DELETE(
  * PUT /api/storage/files/[id]
  * Update file metadata
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Validate file ID
     const fileId = z.string().uuid().parse(params.id);
-    
+
     // Parse request body
     const body = await request.json();
-    const updateData = z.object({
-      name: z.string().optional(),
-      is_public: z.boolean().optional(),
-      metadata: z.record(z.any()).optional()
-    }).parse(body);
+    const updateData = z
+      .object({
+        name: z.string().optional(),
+        is_public: z.boolean().optional(),
+        metadata: z.record(z.any()).optional(),
+      })
+      .parse(body);
 
     // Get existing file
     const { data: file, error: fileError } = await supabase
@@ -288,25 +250,18 @@ export async function PUT(
       .single();
 
     if (fileError || !file) {
-      return NextResponse.json(
-        { error: 'File not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'File not found' }, { status: 404 });
     }
 
     // Check permissions
     const userId = session.user.id;
     const userRole = session.user.app_metadata?.role || 'user';
 
-    const canUpdate = userRole === 'super_admin' || 
-                     userRole === 'admin' || 
-                     file.uploaded_by === userId;
+    const canUpdate =
+      userRole === 'super_admin' || userRole === 'admin' || file.uploaded_by === userId;
 
     if (!canUpdate) {
-      return NextResponse.json(
-        { error: 'Insufficient permissions' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
     // Update file metadata
@@ -316,7 +271,7 @@ export async function PUT(
         name: updateData.name || file.name,
         is_public: updateData.is_public !== undefined ? updateData.is_public : file.is_public,
         metadata: updateData.metadata || file.metadata,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', fileId)
       .eq('tenant_id', tenantId)
@@ -325,10 +280,7 @@ export async function PUT(
 
     if (updateError) {
       console.error('Update error:', updateError);
-      return NextResponse.json(
-        { error: 'Failed to update file' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to update file' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -340,23 +292,19 @@ export async function PUT(
         mimeType: updatedFile.mime_type,
         isPublic: updatedFile.is_public,
         metadata: updatedFile.metadata,
-        updatedAt: updatedFile.updated_at
-      }
+        updatedAt: updatedFile.updated_at,
+      },
     });
-
   } catch (error) {
     console.error('Error updating file:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

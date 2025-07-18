@@ -27,20 +27,22 @@ async function generateSchema(tenantId) {
       .select('id, name')
       .eq('id', tenantId)
       .single();
-      
+
     if (tenantError || !tenant) {
       throw new Error(`ID'si "${tenantId}" olan tenant bulunamadı`);
     }
-    
+
     const schemaName = `tenant_${tenantId.replace(/-/g, '_')}`;
-    
+
     // Şema oluştur
-    const { error: createSchemaError } = await supabase.rpc('create_tenant_schema', { schema_name: schemaName });
-    
+    const { error: createSchemaError } = await supabase.rpc('create_tenant_schema', {
+      schema_name: schemaName,
+    });
+
     if (createSchemaError) {
       throw new Error(`Şema oluşturma hatası: ${createSchemaError.message}`);
     }
-    
+
     // Temel tabloları oluştur
     const baseTables = [
       createUsersTable(schemaName),
@@ -48,14 +50,14 @@ async function generateSchema(tenantId) {
       createClassesTable(schemaName),
       createTeachersTable(schemaName),
       createAttendanceTable(schemaName),
-      createGradesTable(schemaName)
+      createGradesTable(schemaName),
     ];
-    
+
     await Promise.all(baseTables);
-    
+
     // RLS (Row Level Security) politikalarını oluştur
     await setupRLSPolicies(schemaName);
-    
+
     return true;
   } catch (error) {
     throw error;
@@ -70,19 +72,19 @@ async function testConnection() {
   try {
     const startTime = Date.now();
     const { data, error } = await supabase.from('tenants').select('count');
-    
+
     if (error) {
       throw new Error(`Veritabanı sorgu hatası: ${error.message}`);
     }
-    
+
     const endTime = Date.now();
     const responseTime = endTime - startTime;
-    
+
     return {
       success: true,
       message: `Bağlantı başarılı, yanıt süresi: ${responseTime}ms`,
       tenantCount: data[0]?.count || 0,
-      responseTime
+      responseTime,
     };
   } catch (error) {
     throw error;
@@ -107,7 +109,7 @@ async function createUsersTable(schemaName) {
     CREATE INDEX IF NOT EXISTS idx_${schemaName}_users_email ON "${schemaName}".users (email);
     CREATE INDEX IF NOT EXISTS idx_${schemaName}_users_role ON "${schemaName}".users (role);
   `;
-  
+
   return supabase.rpc('execute_sql', { sql_query: sql });
 }
 
@@ -131,7 +133,7 @@ async function createStudentsTable(schemaName) {
     CREATE INDEX IF NOT EXISTS idx_${schemaName}_students_student_number ON "${schemaName}".students (student_number);
     CREATE INDEX IF NOT EXISTS idx_${schemaName}_students_class_id ON "${schemaName}".students (class_id);
   `;
-  
+
   return supabase.rpc('execute_sql', { sql_query: sql });
 }
 
@@ -152,7 +154,7 @@ async function createClassesTable(schemaName) {
     CREATE INDEX IF NOT EXISTS idx_${schemaName}_classes_name ON "${schemaName}".classes (name);
     CREATE INDEX IF NOT EXISTS idx_${schemaName}_classes_teacher_id ON "${schemaName}".classes (teacher_id);
   `;
-  
+
   return supabase.rpc('execute_sql', { sql_query: sql });
 }
 
@@ -169,7 +171,7 @@ async function createTeachersTable(schemaName) {
     
     CREATE INDEX IF NOT EXISTS idx_${schemaName}_teachers_user_id ON "${schemaName}".teachers (user_id);
   `;
-  
+
   return supabase.rpc('execute_sql', { sql_query: sql });
 }
 
@@ -190,7 +192,7 @@ async function createAttendanceTable(schemaName) {
     CREATE INDEX IF NOT EXISTS idx_${schemaName}_attendance_class_id ON "${schemaName}".attendance (class_id);
     CREATE INDEX IF NOT EXISTS idx_${schemaName}_attendance_date ON "${schemaName}".attendance (date);
   `;
-  
+
   return supabase.rpc('execute_sql', { sql_query: sql });
 }
 
@@ -212,7 +214,7 @@ async function createGradesTable(schemaName) {
     CREATE INDEX IF NOT EXISTS idx_${schemaName}_grades_student_id ON "${schemaName}".grades (student_id);
     CREATE INDEX IF NOT EXISTS idx_${schemaName}_grades_class_id ON "${schemaName}".grades (class_id);
   `;
-  
+
   return supabase.rpc('execute_sql', { sql_query: sql });
 }
 
@@ -264,11 +266,11 @@ async function setupRLSPolicies(schemaName) {
         WHERE tenant_id = '${schemaName.replace('tenant_', '').replace(/_/g, '-')}'
       ));
   `;
-  
+
   return supabase.rpc('execute_sql', { sql_query: sql });
 }
 
 module.exports = {
   generateSchema,
-  testConnection
-}; 
+  testConnection,
+};

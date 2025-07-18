@@ -3,12 +3,25 @@
 import React, { useState, useEffect } from 'react';
 // import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, Save, Settings, Shield, Mail, Server, Database, Globe } from 'lucide-react';
 import { toast } from 'sonner';
@@ -86,143 +99,142 @@ export default function SystemSettingsPage() {
       setIsLoading(true);
       try {
         // const supabase = createClientComponentClient();
-        
+
         // Sistem ayarlarını getir
         // Gerçek uygulamada burası veritabanından gelecek
         // Şimdilik örnek veri kullanıyoruz
-        
+
         // Örnek olarak 1 saniye bekletelim
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         // Mevcut state'i kullan
-        
       } catch (error) {
         console.error('Sistem ayarları yüklenirken hata:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchSettings();
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    
+
     if (name.includes('.')) {
       const [section, field] = name.split('.');
-      
+
       if (section === 'default_tenant_settings') {
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           default_tenant_settings: {
             ...prev.default_tenant_settings,
-            [field]: value
-          }
+            [field]: value,
+          },
         }));
       } else if (section === 'security_settings') {
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           security_settings: {
             ...prev.security_settings,
-            [field]: value
-          }
+            [field]: value,
+          },
         }));
       }
     } else {
-      setSettings(prev => ({
+      setSettings((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
-  
+
   const handleNumericChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const numValue = parseInt(value) || 0;
-    
+
     if (name.includes('.')) {
       const [section, field] = name.split('.');
-      
+
       if (section === 'default_tenant_settings') {
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           default_tenant_settings: {
             ...prev.default_tenant_settings,
-            [field]: numValue
-          }
+            [field]: numValue,
+          },
         }));
       } else if (section === 'security_settings') {
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           security_settings: {
             ...prev.security_settings,
-            [field]: numValue
-          }
+            [field]: numValue,
+          },
         }));
       }
     } else {
-      setSettings(prev => ({
+      setSettings((prev) => ({
         ...prev,
-        [name]: numValue
+        [name]: numValue,
       }));
     }
   };
-  
+
   const handleSwitchChange = (name: string, checked: boolean) => {
     if (name.includes('.')) {
       const [section, field] = name.split('.');
-      
+
       if (section === 'security_settings') {
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           security_settings: {
             ...prev.security_settings,
-            [field]: checked
-          }
+            [field]: checked,
+          },
         }));
       } else if (section === 'default_tenant_settings') {
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           default_tenant_settings: {
             ...prev.default_tenant_settings,
-            [field]: checked
-          }
+            [field]: checked,
+          },
         }));
       }
     } else {
-      setSettings(prev => ({
+      setSettings((prev) => ({
         ...prev,
-        [name]: checked
+        [name]: checked,
       }));
     }
   };
-  
+
   const handleSelectChange = (name: string, value: string) => {
     if (name.includes('.')) {
       const [section, field] = name.split('.');
-      
+
       if (section === 'default_tenant_settings') {
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           default_tenant_settings: {
             ...prev.default_tenant_settings,
-            [field]: value
-          }
+            [field]: value,
+          },
         }));
       } else if (section === 'security_settings') {
-        setSettings(prev => ({
+        setSettings((prev) => ({
           ...prev,
           security_settings: {
             ...prev.security_settings,
-            [field]: value
-          }
+            [field]: value,
+          },
         }));
       }
     } else {
-      setSettings(prev => ({
+      setSettings((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
@@ -232,10 +244,10 @@ export default function SystemSettingsPage() {
     try {
       // Burada ayarları kaydediyoruz
       // Gerçek uygulamada veritabanına kaydedilecek
-      
+
       // Örnek olarak 1 saniye bekletelim
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       toast.success('Sistem ayarları başarıyla kaydedildi');
     } catch (error) {
       console.error('Ayarlar kaydedilirken hata:', error);
@@ -249,25 +261,17 @@ export default function SystemSettingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Sistem Ayarları</h1>
-        <p className="text-muted-foreground">
-          Uygulama genelinde sistem ayarlarını yapılandırın
-        </p>
+        <p className="text-muted-foreground">Uygulama genelinde sistem ayarlarını yapılandırın</p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle>Ayarlar</CardTitle>
-          <CardDescription>
-            Sistem için genel ayarları ve yapılandırmaları yönetin
-          </CardDescription>
+          <CardDescription>Sistem için genel ayarları ve yapılandırmaları yönetin</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs 
-            value={activeTab} 
-            onValueChange={setActiveTab}
-            className="space-y-4"
-          >
-            <TabsList className="grid grid-cols-5 w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="genel" className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
                 <span>Genel</span>
@@ -289,10 +293,10 @@ export default function SystemSettingsPage() {
                 <span>Bakım</span>
               </TabsTrigger>
             </TabsList>
-            
+
             {isLoading ? (
               <div className="flex justify-center py-10">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                <Loader2 className="text-primary h-8 w-8 animate-spin" />
               </div>
             ) : (
               <>
@@ -301,97 +305,115 @@ export default function SystemSettingsPage() {
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="site_name">Site Adı</Label>
-                      <Input 
-                        id="site_name" 
-                        name="site_name" 
-                        value={settings.site_name} 
-                        onChange={handleChange} 
+                      <Input
+                        id="site_name"
+                        name="site_name"
+                        value={settings.site_name}
+                        onChange={handleChange}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="max_file_size_mb">Maksimum Dosya Boyutu (MB)</Label>
-                      <Input 
-                        id="max_file_size_mb" 
-                        name="max_file_size_mb" 
-                        type="number" 
-                        value={settings.max_file_size_mb} 
-                        onChange={handleNumericChange} 
+                      <Input
+                        id="max_file_size_mb"
+                        name="max_file_size_mb"
+                        type="number"
+                        value={settings.max_file_size_mb}
+                        onChange={handleNumericChange}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="allowed_file_types">İzin Verilen Dosya Türleri</Label>
-                      <Input 
-                        id="allowed_file_types" 
-                        name="allowed_file_types" 
-                        value={settings.allowed_file_types.join(', ')} 
+                      <Input
+                        id="allowed_file_types"
+                        name="allowed_file_types"
+                        value={settings.allowed_file_types.join(', ')}
                         onChange={(e) => {
-                          setSettings(prev => ({
+                          setSettings((prev) => ({
                             ...prev,
-                            allowed_file_types: e.target.value.split(',').map(t => t.trim())
+                            allowed_file_types: e.target.value.split(',').map((t) => t.trim()),
                           }));
-                        }} 
+                        }}
                       />
-                      <p className="text-xs text-muted-foreground">Dosya uzantılarını virgülle ayırın (örn: pdf, jpg, png)</p>
+                      <p className="text-muted-foreground text-xs">
+                        Dosya uzantılarını virgülle ayırın (örn: pdf, jpg, png)
+                      </p>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label htmlFor="enable_audit_logging">Denetim Günlüğü</Label>
-                        <Switch 
-                          id="enable_audit_logging" 
-                          checked={settings.enable_audit_logging} 
-                          onCheckedChange={(checked) => handleSwitchChange('enable_audit_logging', checked)} 
+                        <Switch
+                          id="enable_audit_logging"
+                          checked={settings.enable_audit_logging}
+                          onCheckedChange={(checked) =>
+                            handleSwitchChange('enable_audit_logging', checked)
+                          }
                         />
                       </div>
-                      <p className="text-xs text-muted-foreground">Sistem genelinde tüm işlemlerin kaydını tut</p>
+                      <p className="text-muted-foreground text-xs">
+                        Sistem genelinde tüm işlemlerin kaydını tut
+                      </p>
                     </div>
                   </div>
                 </TabsContent>
-                
+
                 {/* Tenant Ayarları */}
                 <TabsContent value="tenant" className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label htmlFor="tenant_creation_enabled">Tenant Oluşturma</Label>
-                        <Switch 
-                          id="tenant_creation_enabled" 
-                          checked={settings.tenant_creation_enabled} 
-                          onCheckedChange={(checked) => handleSwitchChange('tenant_creation_enabled', checked)} 
+                        <Switch
+                          id="tenant_creation_enabled"
+                          checked={settings.tenant_creation_enabled}
+                          onCheckedChange={(checked) =>
+                            handleSwitchChange('tenant_creation_enabled', checked)
+                          }
                         />
                       </div>
-                      <p className="text-xs text-muted-foreground">Yeni tenant oluşturma özelliğini etkinleştir/devre dışı bırak</p>
+                      <p className="text-muted-foreground text-xs">
+                        Yeni tenant oluşturma özelliğini etkinleştir/devre dışı bırak
+                      </p>
                     </div>
-                    
+
                     <div className="space-y-2">
-                      <Label htmlFor="default_tenant_settings.max_users">Varsayılan Maksimum Kullanıcı Sayısı</Label>
-                      <Input 
-                        id="default_tenant_settings.max_users" 
-                        name="default_tenant_settings.max_users" 
-                        type="number" 
-                        value={settings.default_tenant_settings.max_users} 
-                        onChange={handleNumericChange} 
+                      <Label htmlFor="default_tenant_settings.max_users">
+                        Varsayılan Maksimum Kullanıcı Sayısı
+                      </Label>
+                      <Input
+                        id="default_tenant_settings.max_users"
+                        name="default_tenant_settings.max_users"
+                        type="number"
+                        value={settings.default_tenant_settings.max_users}
+                        onChange={handleNumericChange}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
-                      <Label htmlFor="default_tenant_settings.storage_limit_mb">Varsayılan Depolama Limiti (MB)</Label>
-                      <Input 
-                        id="default_tenant_settings.storage_limit_mb" 
-                        name="default_tenant_settings.storage_limit_mb" 
-                        type="number" 
-                        value={settings.default_tenant_settings.storage_limit_mb} 
-                        onChange={handleNumericChange} 
+                      <Label htmlFor="default_tenant_settings.storage_limit_mb">
+                        Varsayılan Depolama Limiti (MB)
+                      </Label>
+                      <Input
+                        id="default_tenant_settings.storage_limit_mb"
+                        name="default_tenant_settings.storage_limit_mb"
+                        type="number"
+                        value={settings.default_tenant_settings.storage_limit_mb}
+                        onChange={handleNumericChange}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
-                      <Label htmlFor="default_tenant_settings.subscription_tier">Varsayılan Abonelik Seviyesi</Label>
-                      <Select 
+                      <Label htmlFor="default_tenant_settings.subscription_tier">
+                        Varsayılan Abonelik Seviyesi
+                      </Label>
+                      <Select
                         value={settings.default_tenant_settings.subscription_tier}
-                        onValueChange={(value) => handleSelectChange('default_tenant_settings.subscription_tier', value)}
+                        onValueChange={(value) =>
+                          handleSelectChange('default_tenant_settings.subscription_tier', value)
+                        }
                       >
                         <SelectTrigger id="default_tenant_settings.subscription_tier">
                           <SelectValue placeholder="Abonelik seviyesi seçin" />
@@ -406,136 +428,167 @@ export default function SystemSettingsPage() {
                     </div>
                   </div>
                 </TabsContent>
-                
+
                 {/* Güvenlik Ayarları */}
                 <TabsContent value="guvenlik" className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="security_settings.password_min_length">Minimum Şifre Uzunluğu</Label>
-                      <Input 
-                        id="security_settings.password_min_length" 
-                        name="security_settings.password_min_length" 
-                        type="number" 
-                        value={settings.security_settings.password_min_length} 
-                        onChange={handleNumericChange} 
+                      <Label htmlFor="security_settings.password_min_length">
+                        Minimum Şifre Uzunluğu
+                      </Label>
+                      <Input
+                        id="security_settings.password_min_length"
+                        name="security_settings.password_min_length"
+                        type="number"
+                        value={settings.security_settings.password_min_length}
+                        onChange={handleNumericChange}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
-                      <Label htmlFor="security_settings.max_login_attempts">Maksimum Giriş Denemesi</Label>
-                      <Input 
-                        id="security_settings.max_login_attempts" 
-                        name="security_settings.max_login_attempts" 
-                        type="number" 
-                        value={settings.security_settings.max_login_attempts} 
-                        onChange={handleNumericChange} 
+                      <Label htmlFor="security_settings.max_login_attempts">
+                        Maksimum Giriş Denemesi
+                      </Label>
+                      <Input
+                        id="security_settings.max_login_attempts"
+                        name="security_settings.max_login_attempts"
+                        type="number"
+                        value={settings.security_settings.max_login_attempts}
+                        onChange={handleNumericChange}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
-                      <Label htmlFor="security_settings.lockout_duration_minutes">Hesap Kilitleme Süresi (dakika)</Label>
-                      <Input 
-                        id="security_settings.lockout_duration_minutes" 
-                        name="security_settings.lockout_duration_minutes" 
-                        type="number" 
-                        value={settings.security_settings.lockout_duration_minutes} 
-                        onChange={handleNumericChange} 
+                      <Label htmlFor="security_settings.lockout_duration_minutes">
+                        Hesap Kilitleme Süresi (dakika)
+                      </Label>
+                      <Input
+                        id="security_settings.lockout_duration_minutes"
+                        name="security_settings.lockout_duration_minutes"
+                        type="number"
+                        value={settings.security_settings.lockout_duration_minutes}
+                        onChange={handleNumericChange}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
-                      <Label htmlFor="security_settings.session_timeout_minutes">Oturum Zaman Aşımı (dakika)</Label>
-                      <Input 
-                        id="security_settings.session_timeout_minutes" 
-                        name="security_settings.session_timeout_minutes" 
-                        type="number" 
-                        value={settings.security_settings.session_timeout_minutes} 
-                        onChange={handleNumericChange} 
+                      <Label htmlFor="security_settings.session_timeout_minutes">
+                        Oturum Zaman Aşımı (dakika)
+                      </Label>
+                      <Input
+                        id="security_settings.session_timeout_minutes"
+                        name="security_settings.session_timeout_minutes"
+                        type="number"
+                        value={settings.security_settings.session_timeout_minutes}
+                        onChange={handleNumericChange}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="security_settings.password_require_uppercase">Büyük Harf Gerektir</Label>
-                        <Switch 
-                          id="security_settings.password_require_uppercase" 
-                          checked={settings.security_settings.password_require_uppercase} 
-                          onCheckedChange={(checked) => handleSwitchChange('security_settings.password_require_uppercase', checked)} 
+                        <Label htmlFor="security_settings.password_require_uppercase">
+                          Büyük Harf Gerektir
+                        </Label>
+                        <Switch
+                          id="security_settings.password_require_uppercase"
+                          checked={settings.security_settings.password_require_uppercase}
+                          onCheckedChange={(checked) =>
+                            handleSwitchChange(
+                              'security_settings.password_require_uppercase',
+                              checked
+                            )
+                          }
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="security_settings.password_require_number">Sayı Gerektir</Label>
-                        <Switch 
-                          id="security_settings.password_require_number" 
-                          checked={settings.security_settings.password_require_number} 
-                          onCheckedChange={(checked) => handleSwitchChange('security_settings.password_require_number', checked)} 
+                        <Label htmlFor="security_settings.password_require_number">
+                          Sayı Gerektir
+                        </Label>
+                        <Switch
+                          id="security_settings.password_require_number"
+                          checked={settings.security_settings.password_require_number}
+                          onCheckedChange={(checked) =>
+                            handleSwitchChange('security_settings.password_require_number', checked)
+                          }
                         />
                       </div>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor="security_settings.password_require_symbol">Özel Karakter Gerektir</Label>
-                        <Switch 
-                          id="security_settings.password_require_symbol" 
-                          checked={settings.security_settings.password_require_symbol} 
-                          onCheckedChange={(checked) => handleSwitchChange('security_settings.password_require_symbol', checked)} 
+                        <Label htmlFor="security_settings.password_require_symbol">
+                          Özel Karakter Gerektir
+                        </Label>
+                        <Switch
+                          id="security_settings.password_require_symbol"
+                          checked={settings.security_settings.password_require_symbol}
+                          onCheckedChange={(checked) =>
+                            handleSwitchChange('security_settings.password_require_symbol', checked)
+                          }
                         />
                       </div>
                     </div>
                   </div>
                 </TabsContent>
-                
+
                 {/* E-posta Ayarları */}
                 <TabsContent value="e-posta" className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="contact_email">İletişim E-postası</Label>
-                      <Input 
-                        id="contact_email" 
-                        name="contact_email" 
-                        type="email" 
-                        value={settings.contact_email} 
-                        onChange={handleChange} 
+                      <Input
+                        id="contact_email"
+                        name="contact_email"
+                        type="email"
+                        value={settings.contact_email}
+                        onChange={handleChange}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="support_email">Destek E-postası</Label>
-                      <Input 
-                        id="support_email" 
-                        name="support_email" 
-                        type="email" 
-                        value={settings.support_email} 
-                        onChange={handleChange} 
+                      <Input
+                        id="support_email"
+                        name="support_email"
+                        type="email"
+                        value={settings.support_email}
+                        onChange={handleChange}
                       />
                     </div>
-                    
+
                     <div className="col-span-2 space-y-2">
                       <Label htmlFor="smtp_settings">SMTP Ayarları</Label>
-                      <p className="text-xs text-muted-foreground">Bu sistem Supabase Auth ve e-posta entegrasyonu kullanmaktadır. SMTP ayarları Supabase Dashboard üzerinden yapılandırılmalıdır.</p>
+                      <p className="text-muted-foreground text-xs">
+                        Bu sistem Supabase Auth ve e-posta entegrasyonu kullanmaktadır. SMTP
+                        ayarları Supabase Dashboard üzerinden yapılandırılmalıdır.
+                      </p>
                     </div>
                   </div>
                 </TabsContent>
-                
+
                 {/* Bakım Ayarları */}
                 <TabsContent value="bakım" className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <Label htmlFor="enable_maintenance_mode">Bakım Modu</Label>
-                        <Switch 
-                          id="enable_maintenance_mode" 
-                          checked={settings.enable_maintenance_mode} 
-                          onCheckedChange={(checked) => handleSwitchChange('enable_maintenance_mode', checked)} 
+                        <Switch
+                          id="enable_maintenance_mode"
+                          checked={settings.enable_maintenance_mode}
+                          onCheckedChange={(checked) =>
+                            handleSwitchChange('enable_maintenance_mode', checked)
+                          }
                         />
                       </div>
-                      <p className="text-xs text-muted-foreground">Aktifleştirildiğinde, süper adminler hariç tüm kullanıcılar bakım sayfasına yönlendirilir</p>
+                      <p className="text-muted-foreground text-xs">
+                        Aktifleştirildiğinde, süper adminler hariç tüm kullanıcılar bakım sayfasına
+                        yönlendirilir
+                      </p>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label htmlFor="backup_frequency">Yedekleme Sıklığı</Label>
                       <Select defaultValue="daily">
@@ -549,32 +602,35 @@ export default function SystemSettingsPage() {
                           <SelectItem value="monthly">Aylık</SelectItem>
                         </SelectContent>
                       </Select>
-                      <p className="text-xs text-muted-foreground">Bu ayarlar Supabase yedekleme planını etkilemez, sadece uygulama veri yedeklemesi için geçerlidir</p>
+                      <p className="text-muted-foreground text-xs">
+                        Bu ayarlar Supabase yedekleme planını etkilemez, sadece uygulama veri
+                        yedeklemesi için geçerlidir
+                      </p>
                     </div>
-                    
+
                     <div className="col-span-2 space-y-2">
                       <Label htmlFor="maintenance_message">Bakım Mesajı</Label>
-                      <Textarea 
-                        id="maintenance_message" 
+                      <Textarea
+                        id="maintenance_message"
                         placeholder="Bakım modunda gösterilecek mesaj"
                         className="min-h-[100px]"
                         defaultValue="Sistemimiz şu anda bakım modundadır. Kısa süre içinde tekrar hizmet vermeye başlayacağız. Anlayışınız için teşekkür ederiz."
                       />
                     </div>
-                    
+
                     <div className="col-span-2 space-y-2">
                       <Label htmlFor="database-operations">Veritabanı İşlemleri</Label>
                       <div className="flex flex-wrap gap-2">
                         <Button variant="outline" size="sm" className="flex items-center gap-1">
-                          <Database className="h-4 w-4" /> 
+                          <Database className="h-4 w-4" />
                           <span>RLS Politikalarını Yeniden Uygula</span>
                         </Button>
                         <Button variant="outline" size="sm" className="flex items-center gap-1">
-                          <Database className="h-4 w-4" /> 
+                          <Database className="h-4 w-4" />
                           <span>Veritabanı Bakımı Çalıştır</span>
                         </Button>
                         <Button variant="outline" size="sm" className="flex items-center gap-1">
-                          <Database className="h-4 w-4" /> 
+                          <Database className="h-4 w-4" />
                           <span>Önbelleği Temizle</span>
                         </Button>
                       </div>
@@ -586,8 +642,8 @@ export default function SystemSettingsPage() {
           </Tabs>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button 
-            onClick={handleSaveSettings} 
+          <Button
+            onClick={handleSaveSettings}
             disabled={isLoading || isSaving}
             className="flex items-center gap-2"
           >
@@ -598,4 +654,4 @@ export default function SystemSettingsPage() {
       </Card>
     </div>
   );
-} 
+}

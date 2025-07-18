@@ -1,121 +1,121 @@
-import { Client } from '@microsoft/microsoft-graph-client'
-import { AuthenticationProvider } from '@microsoft/microsoft-graph-client'
-import { environmentManager } from '@/lib/config/environment'
+import { Client } from '@microsoft/microsoft-graph-client';
+import { AuthenticationProvider } from '@microsoft/microsoft-graph-client';
+import { environmentManager } from '@/lib/config/environment';
 
 export interface MicrosoftTeamsConfig {
-  clientId: string
-  clientSecret: string
-  tenantId: string
-  redirectUri: string
-  scopes: string[]
+  clientId: string;
+  clientSecret: string;
+  tenantId: string;
+  redirectUri: string;
+  scopes: string[];
 }
 
 export interface TeamsClass {
-  id: string
-  displayName: string
-  description?: string
-  classCode?: string
-  externalId?: string
-  mailNickname: string
-  createdDateTime: string
-  webUrl: string
-  visibility: 'private' | 'public' | 'hiddenMembership'
+  id: string;
+  displayName: string;
+  description?: string;
+  classCode?: string;
+  externalId?: string;
+  mailNickname: string;
+  createdDateTime: string;
+  webUrl: string;
+  visibility: 'private' | 'public' | 'hiddenMembership';
 }
 
 export interface TeamsMember {
-  id: string
-  roles: string[]
-  displayName: string
-  email: string
-  userPrincipalName: string
-  userType: 'member' | 'guest'
+  id: string;
+  roles: string[];
+  displayName: string;
+  email: string;
+  userPrincipalName: string;
+  userType: 'member' | 'guest';
 }
 
 export interface TeamsAssignment {
-  id: string
-  displayName: string
+  id: string;
+  displayName: string;
   instructions?: {
-    content: string
-    contentType: 'text' | 'html'
-  }
-  dueDateTime?: string
-  assignedDateTime: string
-  status: 'draft' | 'published' | 'assigned'
-  allowLateSubmissions: boolean
-  allowStudentsToAddResourcesToSubmission: boolean
-  classId: string
-  webUrl: string
+    content: string;
+    contentType: 'text' | 'html';
+  };
+  dueDateTime?: string;
+  assignedDateTime: string;
+  status: 'draft' | 'published' | 'assigned';
+  allowLateSubmissions: boolean;
+  allowStudentsToAddResourcesToSubmission: boolean;
+  classId: string;
+  webUrl: string;
   grading?: {
-    maxPoints: number
-    '@odata.type': 'microsoft.graph.educationAssignmentPointsGradeType'
-  }
-  resources: TeamsResource[]
+    maxPoints: number;
+    '@odata.type': 'microsoft.graph.educationAssignmentPointsGradeType';
+  };
+  resources: TeamsResource[];
 }
 
 export interface TeamsResource {
-  id: string
-  displayName: string
+  id: string;
+  displayName: string;
   resource: {
-    '@odata.type': string
-    displayName: string
-    link?: string
+    '@odata.type': string;
+    displayName: string;
+    link?: string;
     file?: {
-      odataType: string
-      sourceUrl: string
-    }
-  }
+      odataType: string;
+      sourceUrl: string;
+    };
+  };
 }
 
 export interface TeamsSubmission {
-  id: string
-  assignmentId: string
+  id: string;
+  assignmentId: string;
   submittedBy: {
     user: {
-      id: string
-      displayName: string
-      email: string
-    }
-  }
-  submittedDateTime?: string
-  unsubmittedDateTime?: string
-  returnedDateTime?: string
-  reassignedDateTime?: string
-  status: 'working' | 'submitted' | 'returned' | 'reassigned'
-  excusedDateTime?: string
+      id: string;
+      displayName: string;
+      email: string;
+    };
+  };
+  submittedDateTime?: string;
+  unsubmittedDateTime?: string;
+  returnedDateTime?: string;
+  reassignedDateTime?: string;
+  status: 'working' | 'submitted' | 'returned' | 'reassigned';
+  excusedDateTime?: string;
   grade?: {
-    points: number
-    gradeType: 'points'
-  }
+    points: number;
+    gradeType: 'points';
+  };
   feedback?: {
     text: {
-      content: string
-      contentType: 'text' | 'html'
-    }
-    feedbackDateTime: string
-  }
-  resources: TeamsResource[]
+      content: string;
+      contentType: 'text' | 'html';
+    };
+    feedbackDateTime: string;
+  };
+  resources: TeamsResource[];
 }
 
 class CustomAuthProvider implements AuthenticationProvider {
-  private accessToken: string
+  private accessToken: string;
 
   constructor(accessToken: string) {
-    this.accessToken = accessToken
+    this.accessToken = accessToken;
   }
 
   async getAccessToken(): Promise<string> {
-    return this.accessToken
+    return this.accessToken;
   }
 }
 
 export class MicrosoftTeamsIntegration {
-  private graphClient: Client
-  private config: MicrosoftTeamsConfig
+  private graphClient: Client;
+  private config: MicrosoftTeamsConfig;
 
   constructor(config: MicrosoftTeamsConfig, accessToken: string) {
-    this.config = config
-    const authProvider = new CustomAuthProvider(accessToken)
-    this.graphClient = Client.initWithMiddleware({ authProvider })
+    this.config = config;
+    const authProvider = new CustomAuthProvider(accessToken);
+    this.graphClient = Client.initWithMiddleware({ authProvider });
   }
 
   /**
@@ -125,8 +125,10 @@ export class MicrosoftTeamsIntegration {
     try {
       const response = await this.graphClient
         .api('/education/me/classes')
-        .select('id,displayName,description,classCode,externalId,mailNickname,createdDateTime,webUrl,visibility')
-        .get()
+        .select(
+          'id,displayName,description,classCode,externalId,mailNickname,createdDateTime,webUrl,visibility'
+        )
+        .get();
 
       return response.value.map((cls: any) => ({
         id: cls.id,
@@ -137,11 +139,11 @@ export class MicrosoftTeamsIntegration {
         mailNickname: cls.mailNickname,
         createdDateTime: cls.createdDateTime,
         webUrl: cls.webUrl,
-        visibility: cls.visibility
-      }))
+        visibility: cls.visibility,
+      }));
     } catch (error) {
-      console.error('Error fetching classes:', error)
-      throw new Error('Failed to fetch classes from Microsoft Teams')
+      console.error('Error fetching classes:', error);
+      throw new Error('Failed to fetch classes from Microsoft Teams');
     }
   }
 
@@ -153,7 +155,7 @@ export class MicrosoftTeamsIntegration {
       const response = await this.graphClient
         .api(`/education/classes/${classId}/members`)
         .select('id,roles,displayName,email,userPrincipalName,userType')
-        .get()
+        .get();
 
       return response.value.map((member: any) => ({
         id: member.id,
@@ -161,11 +163,11 @@ export class MicrosoftTeamsIntegration {
         displayName: member.displayName,
         email: member.email,
         userPrincipalName: member.userPrincipalName,
-        userType: member.userType
-      }))
+        userType: member.userType,
+      }));
     } catch (error) {
-      console.error('Error fetching class members:', error)
-      throw new Error('Failed to fetch class members from Microsoft Teams')
+      console.error('Error fetching class members:', error);
+      throw new Error('Failed to fetch class members from Microsoft Teams');
     }
   }
 
@@ -176,9 +178,11 @@ export class MicrosoftTeamsIntegration {
     try {
       const response = await this.graphClient
         .api(`/education/classes/${classId}/assignments`)
-        .select('id,displayName,instructions,dueDateTime,assignedDateTime,status,allowLateSubmissions,allowStudentsToAddResourcesToSubmission,classId,webUrl,grading')
+        .select(
+          'id,displayName,instructions,dueDateTime,assignedDateTime,status,allowLateSubmissions,allowStudentsToAddResourcesToSubmission,classId,webUrl,grading'
+        )
         .expand('resources')
-        .get()
+        .get();
 
       return response.value.map((assignment: any) => ({
         id: assignment.id,
@@ -192,15 +196,16 @@ export class MicrosoftTeamsIntegration {
         classId: assignment.classId,
         webUrl: assignment.webUrl,
         grading: assignment.grading,
-        resources: assignment.resources?.map((resource: any) => ({
-          id: resource.id,
-          displayName: resource.displayName,
-          resource: resource.resource
-        })) || []
-      }))
+        resources:
+          assignment.resources?.map((resource: any) => ({
+            id: resource.id,
+            displayName: resource.displayName,
+            resource: resource.resource,
+          })) || [],
+      }));
     } catch (error) {
-      console.error('Error fetching assignments:', error)
-      throw new Error('Failed to fetch assignments from Microsoft Teams')
+      console.error('Error fetching assignments:', error);
+      throw new Error('Failed to fetch assignments from Microsoft Teams');
     }
   }
 
@@ -211,9 +216,11 @@ export class MicrosoftTeamsIntegration {
     try {
       const response = await this.graphClient
         .api(`/education/classes/${classId}/assignments/${assignmentId}/submissions`)
-        .select('id,submittedBy,submittedDateTime,unsubmittedDateTime,returnedDateTime,reassignedDateTime,status,excusedDateTime,grade,feedback')
+        .select(
+          'id,submittedBy,submittedDateTime,unsubmittedDateTime,returnedDateTime,reassignedDateTime,status,excusedDateTime,grade,feedback'
+        )
         .expand('resources')
-        .get()
+        .get();
 
       return response.value.map((submission: any) => ({
         id: submission.id,
@@ -227,70 +234,75 @@ export class MicrosoftTeamsIntegration {
         excusedDateTime: submission.excusedDateTime,
         grade: submission.grade,
         feedback: submission.feedback,
-        resources: submission.resources?.map((resource: any) => ({
-          id: resource.id,
-          displayName: resource.displayName,
-          resource: resource.resource
-        })) || []
-      }))
+        resources:
+          submission.resources?.map((resource: any) => ({
+            id: resource.id,
+            displayName: resource.displayName,
+            resource: resource.resource,
+          })) || [],
+      }));
     } catch (error) {
-      console.error('Error fetching submissions:', error)
-      throw new Error('Failed to fetch submissions from Microsoft Teams')
+      console.error('Error fetching submissions:', error);
+      throw new Error('Failed to fetch submissions from Microsoft Teams');
     }
   }
 
   /**
    * Create a new assignment
    */
-  async createAssignment(classId: string, assignment: {
-    displayName: string
-    instructions?: string
-    dueDateTime?: string
-    maxPoints?: number
-    allowLateSubmissions?: boolean
-    allowStudentsToAddResourcesToSubmission?: boolean
-    resources?: Array<{
-      displayName: string
-      link?: string
-      file?: {
-        sourceUrl: string
-      }
-    }>
-  }): Promise<TeamsAssignment> {
+  async createAssignment(
+    classId: string,
+    assignment: {
+      displayName: string;
+      instructions?: string;
+      dueDateTime?: string;
+      maxPoints?: number;
+      allowLateSubmissions?: boolean;
+      allowStudentsToAddResourcesToSubmission?: boolean;
+      resources?: Array<{
+        displayName: string;
+        link?: string;
+        file?: {
+          sourceUrl: string;
+        };
+      }>;
+    }
+  ): Promise<TeamsAssignment> {
     try {
       const assignmentData: any = {
         displayName: assignment.displayName,
         status: 'draft',
         allowLateSubmissions: assignment.allowLateSubmissions ?? true,
-        allowStudentsToAddResourcesToSubmission: assignment.allowStudentsToAddResourcesToSubmission ?? true
-      }
+        allowStudentsToAddResourcesToSubmission:
+          assignment.allowStudentsToAddResourcesToSubmission ?? true,
+      };
 
       if (assignment.instructions) {
         assignmentData.instructions = {
           content: assignment.instructions,
-          contentType: 'text'
-        }
+          contentType: 'text',
+        };
       }
 
       if (assignment.dueDateTime) {
-        assignmentData.dueDateTime = assignment.dueDateTime
+        assignmentData.dueDateTime = assignment.dueDateTime;
       }
 
       if (assignment.maxPoints) {
         assignmentData.grading = {
           '@odata.type': 'microsoft.graph.educationAssignmentPointsGradeType',
-          maxPoints: assignment.maxPoints
-        }
+          maxPoints: assignment.maxPoints,
+        };
       }
 
       const response = await this.graphClient
         .api(`/education/classes/${classId}/assignments`)
-        .post(assignmentData)
+        .post(assignmentData);
 
       // Add resources if provided
       if (assignment.resources && assignment.resources.length > 0) {
         for (const resource of assignment.resources) {
-          await this.addResourceToAssignment(classId, response.id, resource)
+          await this.addResourceToAssignment(classId, response.id, resource);
         }
       }
 
@@ -306,11 +318,11 @@ export class MicrosoftTeamsIntegration {
         classId: response.classId,
         webUrl: response.webUrl,
         grading: response.grading,
-        resources: []
-      }
+        resources: [],
+      };
     } catch (error) {
-      console.error('Error creating assignment:', error)
-      throw new Error('Failed to create assignment in Microsoft Teams')
+      console.error('Error creating assignment:', error);
+      throw new Error('Failed to create assignment in Microsoft Teams');
     }
   }
 
@@ -321,38 +333,38 @@ export class MicrosoftTeamsIntegration {
     classId: string,
     assignmentId: string,
     resource: {
-      displayName: string
-      link?: string
+      displayName: string;
+      link?: string;
       file?: {
-        sourceUrl: string
-      }
+        sourceUrl: string;
+      };
     }
   ): Promise<void> {
     try {
       const resourceData: any = {
         displayName: resource.displayName,
         resource: {
-          displayName: resource.displayName
-        }
-      }
+          displayName: resource.displayName,
+        },
+      };
 
       if (resource.link) {
-        resourceData.resource['@odata.type'] = 'microsoft.graph.educationLinkResource'
-        resourceData.resource.link = resource.link
+        resourceData.resource['@odata.type'] = 'microsoft.graph.educationLinkResource';
+        resourceData.resource.link = resource.link;
       } else if (resource.file) {
-        resourceData.resource['@odata.type'] = 'microsoft.graph.educationFileResource'
+        resourceData.resource['@odata.type'] = 'microsoft.graph.educationFileResource';
         resourceData.resource.file = {
           '@odata.type': 'microsoft.graph.educationFileResource',
-          sourceUrl: resource.file.sourceUrl
-        }
+          sourceUrl: resource.file.sourceUrl,
+        };
       }
 
       await this.graphClient
         .api(`/education/classes/${classId}/assignments/${assignmentId}/resources`)
-        .post(resourceData)
+        .post(resourceData);
     } catch (error) {
-      console.error('Error adding resource to assignment:', error)
-      throw new Error('Failed to add resource to assignment')
+      console.error('Error adding resource to assignment:', error);
+      throw new Error('Failed to add resource to assignment');
     }
   }
 
@@ -363,10 +375,10 @@ export class MicrosoftTeamsIntegration {
     try {
       await this.graphClient
         .api(`/education/classes/${classId}/assignments/${assignmentId}/publish`)
-        .post({})
+        .post({});
     } catch (error) {
-      console.error('Error publishing assignment:', error)
-      throw new Error('Failed to publish assignment in Microsoft Teams')
+      console.error('Error publishing assignment:', error);
+      throw new Error('Failed to publish assignment in Microsoft Teams');
     }
   }
 
@@ -384,25 +396,27 @@ export class MicrosoftTeamsIntegration {
       const updateData: any = {
         grade: {
           '@odata.type': 'microsoft.graph.educationAssignmentPointsGrade',
-          points: grade
-        }
-      }
+          points: grade,
+        },
+      };
 
       if (feedback) {
         updateData.feedback = {
           text: {
             content: feedback,
-            contentType: 'text'
-          }
-        }
+            contentType: 'text',
+          },
+        };
       }
 
       await this.graphClient
-        .api(`/education/classes/${classId}/assignments/${assignmentId}/submissions/${submissionId}`)
-        .patch(updateData)
+        .api(
+          `/education/classes/${classId}/assignments/${assignmentId}/submissions/${submissionId}`
+        )
+        .patch(updateData);
     } catch (error) {
-      console.error('Error grading submission:', error)
-      throw new Error('Failed to grade submission in Microsoft Teams')
+      console.error('Error grading submission:', error);
+      throw new Error('Failed to grade submission in Microsoft Teams');
     }
   }
 
@@ -416,11 +430,13 @@ export class MicrosoftTeamsIntegration {
   ): Promise<void> {
     try {
       await this.graphClient
-        .api(`/education/classes/${classId}/assignments/${assignmentId}/submissions/${submissionId}/return`)
-        .post({})
+        .api(
+          `/education/classes/${classId}/assignments/${assignmentId}/submissions/${submissionId}/return`
+        )
+        .post({});
     } catch (error) {
-      console.error('Error returning submission:', error)
-      throw new Error('Failed to return submission in Microsoft Teams')
+      console.error('Error returning submission:', error);
+      throw new Error('Failed to return submission in Microsoft Teams');
     }
   }
 
@@ -428,30 +444,30 @@ export class MicrosoftTeamsIntegration {
    * Sync class data with İ-EP.APP
    */
   async syncClass(classId: string): Promise<{
-    class: TeamsClass
-    members: TeamsMember[]
-    assignments: TeamsAssignment[]
+    class: TeamsClass;
+    members: TeamsMember[];
+    assignments: TeamsAssignment[];
   }> {
     try {
       const [classes, members, assignments] = await Promise.all([
         this.getClasses(),
         this.getClassMembers(classId),
-        this.getAssignments(classId)
-      ])
+        this.getAssignments(classId),
+      ]);
 
-      const classData = classes.find(c => c.id === classId)
+      const classData = classes.find((c) => c.id === classId);
       if (!classData) {
-        throw new Error('Class not found')
+        throw new Error('Class not found');
       }
 
       return {
         class: classData,
         members,
-        assignments
-      }
+        assignments,
+      };
     } catch (error) {
-      console.error('Error syncing class:', error)
-      throw new Error('Failed to sync class data')
+      console.error('Error syncing class:', error);
+      throw new Error('Failed to sync class data');
     }
   }
 
@@ -459,33 +475,33 @@ export class MicrosoftTeamsIntegration {
    * Batch sync all classes
    */
   async syncAllClasses(): Promise<{
-    classes: TeamsClass[]
-    totalMembers: number
-    totalAssignments: number
+    classes: TeamsClass[];
+    totalMembers: number;
+    totalAssignments: number;
   }> {
     try {
-      const classes = await this.getClasses()
-      let totalMembers = 0
-      let totalAssignments = 0
+      const classes = await this.getClasses();
+      let totalMembers = 0;
+      let totalAssignments = 0;
 
       for (const cls of classes) {
         const [members, assignments] = await Promise.all([
           this.getClassMembers(cls.id),
-          this.getAssignments(cls.id)
-        ])
-        
-        totalMembers += members.length
-        totalAssignments += assignments.length
+          this.getAssignments(cls.id),
+        ]);
+
+        totalMembers += members.length;
+        totalAssignments += assignments.length;
       }
 
       return {
         classes,
         totalMembers,
-        totalAssignments
-      }
+        totalAssignments,
+      };
     } catch (error) {
-      console.error('Error syncing all classes:', error)
-      throw new Error('Failed to sync all classes')
+      console.error('Error syncing all classes:', error);
+      throw new Error('Failed to sync all classes');
     }
   }
 
@@ -493,18 +509,18 @@ export class MicrosoftTeamsIntegration {
    * Get user profile
    */
   async getUserProfile(): Promise<{
-    id: string
-    displayName: string
-    email: string
-    userPrincipalName: string
-    jobTitle?: string
-    department?: string
+    id: string;
+    displayName: string;
+    email: string;
+    userPrincipalName: string;
+    jobTitle?: string;
+    department?: string;
   }> {
     try {
       const response = await this.graphClient
         .api('/me')
         .select('id,displayName,mail,userPrincipalName,jobTitle,department')
-        .get()
+        .get();
 
       return {
         id: response.id,
@@ -512,11 +528,11 @@ export class MicrosoftTeamsIntegration {
         email: response.mail,
         userPrincipalName: response.userPrincipalName,
         jobTitle: response.jobTitle,
-        department: response.department
-      }
+        department: response.department,
+      };
     } catch (error) {
-      console.error('Error fetching user profile:', error)
-      throw new Error('Failed to fetch user profile')
+      console.error('Error fetching user profile:', error);
+      throw new Error('Failed to fetch user profile');
     }
   }
 
@@ -525,46 +541,53 @@ export class MicrosoftTeamsIntegration {
    */
   async checkPermissions(): Promise<boolean> {
     try {
-      await this.graphClient.api('/education/me/classes').select('id').top(1).get()
-      return true
+      await this.graphClient.api('/education/me/classes').select('id').top(1).get();
+      return true;
     } catch (error) {
-      console.error('Permission check failed:', error)
-      return false
+      console.error('Permission check failed:', error);
+      return false;
     }
   }
 }
 
 // Factory function to create Microsoft Teams integration
 export function createMicrosoftTeamsIntegration(accessToken: string): MicrosoftTeamsIntegration {
-  const config = environmentManager.getConfig()
-  
-  return new MicrosoftTeamsIntegration({
-    clientId: process.env.MICROSOFT_CLIENT_ID || '',
-    clientSecret: process.env.MICROSOFT_CLIENT_SECRET || '',
-    tenantId: process.env.MICROSOFT_TENANT_ID || 'common',
-    redirectUri: process.env.MICROSOFT_REDIRECT_URI || `${config.external.supabase.url}/auth/callback/microsoft`,
-    scopes: [
-      'https://graph.microsoft.com/EduAssignments.ReadWrite',
-      'https://graph.microsoft.com/EduRoster.Read',
-      'https://graph.microsoft.com/User.Read',
-      'https://graph.microsoft.com/Directory.Read.All'
-    ]
-  }, accessToken)
+  const config = environmentManager.getConfig();
+
+  return new MicrosoftTeamsIntegration(
+    {
+      clientId: process.env.MICROSOFT_CLIENT_ID || '',
+      clientSecret: process.env.MICROSOFT_CLIENT_SECRET || '',
+      tenantId: process.env.MICROSOFT_TENANT_ID || 'common',
+      redirectUri:
+        process.env.MICROSOFT_REDIRECT_URI ||
+        `${config.external.supabase.url}/auth/callback/microsoft`,
+      scopes: [
+        'https://graph.microsoft.com/EduAssignments.ReadWrite',
+        'https://graph.microsoft.com/EduRoster.Read',
+        'https://graph.microsoft.com/User.Read',
+        'https://graph.microsoft.com/Directory.Read.All',
+      ],
+    },
+    accessToken
+  );
 }
 
 // Utility functions
 export function formatTeamsDateTime(dateTime: string): Date {
-  return new Date(dateTime)
+  return new Date(dateTime);
 }
 
 export function formatTeamsDateTimeString(date: Date): string {
-  return date.toISOString()
+  return date.toISOString();
 }
 
 export function getTeamsStudents(members: TeamsMember[]): TeamsMember[] {
-  return members.filter(member => member.roles.includes('student'))
+  return members.filter((member) => member.roles.includes('student'));
 }
 
 export function getTeamsTeachers(members: TeamsMember[]): TeamsMember[] {
-  return members.filter(member => member.roles.includes('teacher') || member.roles.includes('owner'))
+  return members.filter(
+    (member) => member.roles.includes('teacher') || member.roles.includes('owner')
+  );
 }

@@ -2,8 +2,8 @@
 
 /**
  * İ-EP.APP Documentation Auto-Sync Script
- * 
- * Bu script proje dosyalarındaki değişiklikleri izler ve 
+ *
+ * Bu script proje dosyalarındaki değişiklikleri izler ve
  * dokümantasyon iyileştirme planını otomatik olarak günceller.
  */
 
@@ -17,25 +17,19 @@ const CONFIG = {
   // İzlenecek dosyalar
   watchFiles: [
     'docs-site/docs/PROGRESS.md',
-    'docs-site/docs/SPRINT-PLANNING-2025.md', 
+    'docs-site/docs/SPRINT-PLANNING-2025.md',
     'docs-site/docs/PROJECT-STATUS-REPORT-*.md',
-    'docs-site/docs/DEVELOPMENT-ROADMAP-2025.md'
+    'docs-site/docs/DEVELOPMENT-ROADMAP-2025.md',
   ],
-  
+
   // Güncellenmesi gereken dosya
   targetFile: 'docs-site/docs/meta/dokumantasyon-iyilestirme-plani-2025.html',
-  
+
   // İzleme yapılacak dizinler
   watchDirs: ['./'],
-  
+
   // Hariç tutulacak dizinler
-  ignorePatterns: [
-    'node_modules/**',
-    '.git/**',
-    'dist/**',
-    'build/**',
-    '.next/**'
-  ]
+  ignorePatterns: ['node_modules/**', '.git/**', 'dist/**', 'build/**', '.next/**'],
 };
 
 class DocumentationSyncService {
@@ -53,7 +47,7 @@ class DocumentationSyncService {
       if (!fs.existsSync(progressPath)) return null;
 
       const content = fs.readFileSync(progressPath, 'utf8');
-      
+
       // Progress yüzdesini bul
       const progressMatch = content.match(/Toplam İlerleme:\s*(\d+)%/);
       const progress = progressMatch ? parseInt(progressMatch[1]) : 0;
@@ -70,7 +64,7 @@ class DocumentationSyncService {
         progress,
         latestSprint,
         lastUpdateDate,
-        filePath: progressPath
+        filePath: progressPath,
       };
     } catch (error) {
       console.error('Progress dosyası okunamadı:', error);
@@ -87,14 +81,16 @@ class DocumentationSyncService {
       if (!fs.existsSync(sprintPath)) return null;
 
       const content = fs.readFileSync(sprintPath, 'utf8');
-      
+
       // Aktif sprint'i bul
-      const activeSprintMatch = content.match(/## (Sprint \d+(?:\.\d+)?)[^\n]*\n[\s\S]*?Status:\s*(\w+)/);
-      
+      const activeSprintMatch = content.match(
+        /## (Sprint \d+(?:\.\d+)?)[^\n]*\n[\s\S]*?Status:\s*(\w+)/
+      );
+
       return {
         activeSprint: activeSprintMatch ? activeSprintMatch[1] : 'Sprint 1',
         status: activeSprintMatch ? activeSprintMatch[2] : 'unknown',
-        filePath: sprintPath
+        filePath: sprintPath,
       };
     } catch (error) {
       console.error('Sprint planlama dosyası okunamadı:', error);
@@ -108,17 +104,22 @@ class DocumentationSyncService {
   async checkStorageImplementation() {
     try {
       const storageIndexPath = path.join(process.cwd(), 'src/lib/storage/index.ts');
-      const storageProviderPath = path.join(process.cwd(), 'src/lib/storage/providers/supabase.provider.ts');
-      
+      const storageProviderPath = path.join(
+        process.cwd(),
+        'src/lib/storage/providers/supabase.provider.ts'
+      );
+
       const hasStorageIndex = fs.existsSync(storageIndexPath);
       const hasStorageProvider = fs.existsSync(storageProviderPath);
-      
+
       let implementationStatus = 'partial';
       if (hasStorageIndex && hasStorageProvider) {
         // Repository layer kontrol et
         const indexContent = fs.readFileSync(storageIndexPath, 'utf8');
-        const hasRepositoryError = indexContent.includes('StorageRepository henüz implement edilmedi');
-        
+        const hasRepositoryError = indexContent.includes(
+          'StorageRepository henüz implement edilmedi'
+        );
+
         implementationStatus = hasRepositoryError ? 'repository-missing' : 'complete';
       }
 
@@ -126,8 +127,12 @@ class DocumentationSyncService {
         hasCore: hasStorageIndex,
         hasProvider: hasStorageProvider,
         status: implementationStatus,
-        completion: implementationStatus === 'complete' ? 95 : 
-                   implementationStatus === 'repository-missing' ? 75 : 50
+        completion:
+          implementationStatus === 'complete'
+            ? 95
+            : implementationStatus === 'repository-missing'
+              ? 75
+              : 50,
       };
     } catch (error) {
       console.error('Storage implementation kontrol edilemedi:', error);
@@ -140,11 +145,11 @@ class DocumentationSyncService {
    */
   async gatherProjectStatus() {
     console.log('📊 Proje durumu toplanıyor...');
-    
+
     const [progressStatus, sprintStatus, storageStatus] = await Promise.all([
       this.readProgressStatus(),
-      this.readSprintStatus(), 
-      this.checkStorageImplementation()
+      this.readSprintStatus(),
+      this.checkStorageImplementation(),
     ]);
 
     return {
@@ -152,7 +157,7 @@ class DocumentationSyncService {
       sprint: sprintStatus,
       storage: storageStatus,
       timestamp: new Date().toISOString(),
-      lastSync: this.lastUpdate.toISOString()
+      lastSync: this.lastUpdate.toISOString(),
     };
   }
 
@@ -162,7 +167,7 @@ class DocumentationSyncService {
   async updateDocumentationPlan(projectStatus) {
     try {
       const targetPath = path.join(process.cwd(), CONFIG.targetFile);
-      
+
       if (!fs.existsSync(targetPath)) {
         console.error('❌ Hedef dokümantasyon dosyası bulunamadı:', targetPath);
         return false;
@@ -188,12 +193,12 @@ class DocumentationSyncService {
         }
 
         // Son güncelleme tarihini güncelle
-        const today = new Date().toLocaleDateString('tr-TR', { 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
+        const today = new Date().toLocaleDateString('tr-TR', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
         });
-        
+
         htmlContent = htmlContent.replace(
           /Son Güncelleme: [^<]+/g,
           `Son Güncelleme: ${today} - Otomatik Senkronizasyon`
@@ -228,17 +233,13 @@ class DocumentationSyncService {
       `;
 
       // Eski update-info'yu değiştir
-      htmlContent = htmlContent.replace(
-        /<div class="update-info">[\s\S]*?<\/div>/,
-        updateInfo
-      );
+      htmlContent = htmlContent.replace(/<div class="update-info">[\s\S]*?<\/div>/, updateInfo);
 
       // Dosyayı güncelle
       fs.writeFileSync(targetPath, htmlContent, 'utf8');
-      
+
       console.log('✅ Dokümantasyon planı güncellendi:', targetPath);
       return true;
-
     } catch (error) {
       console.error('❌ Dokümantasyon planı güncellenemedi:', error);
       return false;
@@ -250,16 +251,16 @@ class DocumentationSyncService {
    */
   startWatching() {
     console.log('👀 Dosya değişiklikleri izleniyor...');
-    
+
     const watcher = chokidar.watch(CONFIG.watchFiles, {
       ignored: CONFIG.ignorePatterns,
       persistent: true,
-      ignoreInitial: true
+      ignoreInitial: true,
     });
 
     watcher.on('change', async (filePath) => {
       if (this.isUpdating) return;
-      
+
       console.log(`📝 Dosya değişti: ${filePath}`);
       await this.performSync();
     });
@@ -270,7 +271,7 @@ class DocumentationSyncService {
     });
 
     console.log('✅ Dosya izleme başlatıldı. Değişiklikler otomatik olarak senkronize edilecek.');
-    
+
     return watcher;
   }
 
@@ -279,24 +280,23 @@ class DocumentationSyncService {
    */
   async performSync() {
     if (this.isUpdating) return;
-    
+
     this.isUpdating = true;
     console.log('🔄 Dokümantasyon senkronizasyonu başlatılıyor...');
 
     try {
       // Proje durumunu topla
       const projectStatus = await this.gatherProjectStatus();
-      
+
       // Dokümantasyon planını güncelle
       const success = await this.updateDocumentationPlan(projectStatus);
-      
+
       if (success) {
         console.log('✅ Senkronizasyon tamamlandı!');
         this.lastUpdate = new Date();
       } else {
         console.log('❌ Senkronizasyon başarısız!');
       }
-
     } catch (error) {
       console.error('❌ Senkronizasyon hatası:', error);
     } finally {
@@ -324,10 +324,10 @@ async function main() {
     case 'watch':
       console.log('🎯 İ-EP.APP Dokümantasyon Auto-Sync başlatılıyor...');
       syncService.startWatching();
-      
+
       // İlk senkronizasyonu çalıştır
       await syncService.manualSync();
-      
+
       // Process'i açık tut
       process.stdin.resume();
       break;

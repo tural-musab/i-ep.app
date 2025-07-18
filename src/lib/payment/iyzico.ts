@@ -1,7 +1,7 @@
 /**
  * İyzico Payment Gateway Integration
  * Sprint 1: Payment Integration Foundation
- * 
+ *
  * This service handles payment processing with İyzico API
  * Following Turkish payment regulations and multi-tenant architecture
  */
@@ -15,15 +15,20 @@ const logger = getLogger('iyzico-payment');
 
 // İyzico client configuration
 // Değişkeni önce let ile tanımla
-let iyzipay: Iyzipay; 
+let iyzipay: Iyzipay | null = null;
 
 // Sadece İyzico anahtarları varsa yeni bir instance oluştur.
 if (env.IYZICO_API_KEY && env.IYZICO_SECRET_KEY) {
-  iyzipay = new Iyzipay({
-    apiKey: env.IYZICO_API_KEY,
-    secretKey: env.IYZICO_SECRET_KEY,
-    uri: env.IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com',
-  });
+  try {
+    iyzipay = new Iyzipay({
+      apiKey: env.IYZICO_API_KEY,
+      secretKey: env.IYZICO_SECRET_KEY,
+      uri: env.IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com',
+    });
+  } catch (error) {
+    logger.error('İyzico client initialization failed:', error);
+    iyzipay = null;
+  }
 }
 
 // ==========================================
@@ -36,11 +41,11 @@ export interface IyzicoPaymentRequest {
   paidPrice: string; // Paid amount as string (includes installment fees)
   currency: 'TRY' | 'USD' | 'EUR';
   installment: string; // "1" for single payment
-  
+
   // Tenant and subscription info
   tenantId: string;
   subscriptionId?: string;
-  
+
   // Customer information (required by İyzico)
   buyerInfo: {
     id: string; // Tenant ID as buyer ID
@@ -55,7 +60,7 @@ export interface IyzicoPaymentRequest {
     ip: string; // Customer IP for fraud prevention
     gsmNumber?: string;
   };
-  
+
   // Billing address (required by İyzico)
   billingAddress: {
     contactName: string;
@@ -64,7 +69,7 @@ export interface IyzicoPaymentRequest {
     address: string;
     zipCode?: string;
   };
-  
+
   // Payment card (for card payments)
   paymentCard?: {
     cardHolderName: string;
@@ -74,10 +79,10 @@ export interface IyzicoPaymentRequest {
     cvc: string;
     registerCard: '0' | '1'; // Whether to save card
   };
-  
+
   // Callback URLs
   callbackUrl?: string;
-  
+
   // Metadata
   conversationId?: string; // Unique reference for tracking
 }
@@ -134,7 +139,7 @@ export async function createPayment(
       return {
         status: 'failure',
         errorMessage: 'Payment service not configured. Please contact support.',
-        errorCode: 'IYZICO_NOT_CONFIGURED'
+        errorCode: 'IYZICO_NOT_CONFIGURED',
       };
     }
 
@@ -153,13 +158,14 @@ export async function createPayment(
       paidPrice: paymentRequest.paidPrice,
       currency: paymentRequest.currency,
       installment: paymentRequest.installment,
+      installments: parseInt(paymentRequest.installment),
       basketId: `BASKET_${paymentRequest.tenantId}_${Date.now()}`,
       paymentChannel: Iyzipay.PAYMENT_CHANNEL.WEB,
       paymentGroup: Iyzipay.PAYMENT_GROUP.SUBSCRIPTION,
-      
+
       // Payment card information
       paymentCard: paymentRequest.paymentCard,
-      
+
       // Buyer information
       buyer: {
         id: paymentRequest.buyerInfo.id,
@@ -176,7 +182,7 @@ export async function createPayment(
         country: paymentRequest.buyerInfo.country,
         zipCode: paymentRequest.buyerInfo.zipCode,
       },
-      
+
       // Shipping address (same as billing for subscriptions)
       shippingAddress: {
         contactName: paymentRequest.billingAddress.contactName,
@@ -185,10 +191,10 @@ export async function createPayment(
         address: paymentRequest.billingAddress.address,
         zipCode: paymentRequest.billingAddress.zipCode,
       },
-      
+
       // Billing address
       billingAddress: paymentRequest.billingAddress,
-      
+
       // Basket items (required by İyzico)
       basketItems: [
         {
@@ -200,13 +206,18 @@ export async function createPayment(
           price: paymentRequest.price,
         },
       ],
-      
+
       // Callback URL for 3D Secure
       callbackUrl: paymentRequest.callbackUrl,
     };
 
     // Create payment with İyzico
     const payment = await new Promise<any>((resolve, reject) => {
+      if (!iyzipay) {
+        reject(new Error('İyzico client not initialized'));
+        return;
+      }
+      
       iyzipay.payment.create(iyzicoRequest, (err: any, result: any) => {
         if (err) {
           reject(err);
@@ -264,7 +275,7 @@ export async function createPayment(
       error: error instanceof Error ? error.message : 'Unknown error',
       tenantId: paymentRequest.tenantId,
     });
-    
+
     return {
       status: 'failure',
       errorMessage: error instanceof Error ? error.message : 'Payment processing failed',
@@ -286,7 +297,7 @@ export async function retrievePayment(
       return {
         status: 'failure',
         errorMessage: 'Payment service not configured. Please contact support.',
-        errorCode: 'IYZICO_NOT_CONFIGURED'
+        errorCode: 'IYZICO_NOT_CONFIGURED',
       };
     }
 
@@ -322,7 +333,7 @@ export async function retrievePayment(
       error: error instanceof Error ? error.message : 'Unknown error',
       paymentId,
     });
-    
+
     return {
       status: 'failure',
       errorMessage: error instanceof Error ? error.message : 'Payment retrieval failed',
@@ -343,7 +354,7 @@ export async function refundPayment(
       return {
         status: 'failure',
         errorMessage: 'Payment service not configured. Please contact support.',
-        errorCode: 'IYZICO_NOT_CONFIGURED'
+        errorCode: 'IYZICO_NOT_CONFIGURED',
       };
     }
 
@@ -362,8 +373,13 @@ export async function refundPayment(
       ip: refundRequest.ip,
     };
 
-    const refund = await new Promise<unknown>((resolve, reject) => {
-      iyzipay.refund.create(iyzicoRefundRequest, (err: unknown, result: unknown) => {
+    const refund = await new Promise<any>((resolve, reject) => {
+      if (!iyzipay) {
+        reject(new Error('İyzico client not initialized'));
+        return;
+      }
+      
+      iyzipay.refund.create(iyzicoRefundRequest, (err: any, result: any) => {
         if (err) {
           reject(err);
         } else {
@@ -399,7 +415,7 @@ export async function refundPayment(
       error: error instanceof Error ? error.message : 'Unknown error',
       paymentTransactionId: refundRequest.paymentTransactionId,
     });
-    
+
     return {
       status: 'failure',
       errorMessage: error instanceof Error ? error.message : 'Refund processing failed',
@@ -426,19 +442,19 @@ export function generateConversationId(): string {
  */
 export function validateTurkishIdentityNumber(tcNo: string): boolean {
   if (!tcNo || tcNo.length !== 11) return false;
-  
+
   const digits = tcNo.split('').map(Number);
-  
+
   // First digit cannot be 0
   if (digits[0] === 0) return false;
-  
+
   // Calculate checksum
   const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
   const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
-  
+
   const check1 = (oddSum * 7 - evenSum) % 10;
   const check2 = (oddSum + evenSum + digits[9]) % 10;
-  
+
   return check1 === digits[9] && check2 === digits[10];
 }
 
@@ -477,14 +493,9 @@ export function verifyWebhookSignature(
   secretKey: string = env.IYZICO_SECRET_KEY || ''
 ): boolean {
   try {
-    const expectedSignature = createHmac('sha256', secretKey)
-      .update(payload)
-      .digest('hex');
-    
-    return timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    );
+    const expectedSignature = createHmac('sha256', secretKey).update(payload).digest('hex');
+
+    return timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
   } catch (error) {
     logger.error('Webhook signature verification failed', {
       error: error instanceof Error ? error.message : 'Unknown error',

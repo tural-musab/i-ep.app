@@ -34,4 +34,4 @@ describe('Utils Tests', () => {
       expect(result).toBe('class1 class2 class3');
     });
   });
-}); 
+});

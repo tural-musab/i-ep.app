@@ -61,12 +61,7 @@ Dashboard, dört ana bölümden oluşur:
 ### 2. Grafik Bileşenleri
 
 ```tsx
-<LineChart
-  data={tenantGrowthData}
-  xAxis="date"
-  yAxis="count"
-  title="Tenant Büyüme Trendi"
-/>
+<LineChart data={tenantGrowthData} xAxis="date" yAxis="count" title="Tenant Büyüme Trendi" />
 ```
 
 ### 3. Tablo Bileşenleri
@@ -117,6 +112,7 @@ Dashboard, dört ana bölümden oluşur:
 ## Loading States
 
 1. **Skeleton Loading**
+
    ```tsx
    <MetricCardSkeleton count={4} />
    <ChartSkeleton height={300} />
@@ -130,6 +126,7 @@ Dashboard, dört ana bölümden oluşur:
 ## Error States
 
 1. **Hata Mesajları**
+
    ```tsx
    <ErrorState
      title="Veri Yüklenemedi"
@@ -168,8 +165,9 @@ Dashboard, dört ana bölümden oluşur:
 ## Performans Optimizasyonları
 
 1. **Code Splitting**
+
    ```tsx
-   const Chart = dynamic(() => import('@/components/Chart'))
+   const Chart = dynamic(() => import('@/components/Chart'));
    ```
 
 2. **Lazy Loading**
@@ -195,4 +193,4 @@ Dashboard, dört ana bölümden oluşur:
 3. **E2E Testleri**
    - Kullanıcı akışı testleri
    - Responsive davranış testleri
-   - Performans testleri 
+   - Performans testleri

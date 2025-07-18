@@ -11,7 +11,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
@@ -19,12 +25,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { 
-  User, 
-  Calendar, 
-  Clock, 
-  Users, 
-  BookOpen, 
+import {
+  User,
+  Calendar,
+  Clock,
+  Users,
+  BookOpen,
   School,
   Target,
   Activity,
@@ -358,7 +364,7 @@ import {
   Kappa,
   Rho,
   Epsilon,
-  Zeta
+  Zeta,
 } from 'lucide-react';
 import { ScheduleRepository, TeacherSchedule } from '@/lib/repository/schedule-repository';
 import { format } from 'date-fns';
@@ -370,10 +376,10 @@ interface TeacherScheduleManagerProps {
   semester?: 1 | 2;
 }
 
-export function TeacherScheduleManager({ 
-  teacherId, 
+export function TeacherScheduleManager({
+  teacherId,
   academicYear = '2024-2025',
-  semester = 1
+  semester = 1,
 }: TeacherScheduleManagerProps) {
   const [schedule, setSchedule] = useState<TeacherSchedule | null>(null);
   const [loading, setLoading] = useState(false);
@@ -383,17 +389,49 @@ export function TeacherScheduleManager({
   const [selectedSemester, setSelectedSemester] = useState<1 | 2>(semester);
   const [editMode, setEditMode] = useState(false);
   const [viewMode, setViewMode] = useState<'schedule' | 'workload' | 'preferences'>('schedule');
-  const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set(['monday', 'tuesday', 'wednesday', 'thursday', 'friday']));
+  const [expandedDays, setExpandedDays] = useState<Set<string>>(
+    new Set(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'])
+  );
 
   const scheduleRepository = new ScheduleRepository();
 
   // Mock data
   const mockTeachers = [
-    { id: '1', name: 'Ayşe Matematik', subject: 'Matematik', email: 'ayse.matematik@school.edu.tr', phone: '+90 532 123 4567' },
-    { id: '2', name: 'Mehmet Türkçe', subject: 'Türkçe', email: 'mehmet.turkce@school.edu.tr', phone: '+90 532 123 4568' },
-    { id: '3', name: 'Fatma Fen', subject: 'Fen Bilgisi', email: 'fatma.fen@school.edu.tr', phone: '+90 532 123 4569' },
-    { id: '4', name: 'Ali Sosyal', subject: 'Sosyal Bilgiler', email: 'ali.sosyal@school.edu.tr', phone: '+90 532 123 4570' },
-    { id: '5', name: 'Zeynep İngilizce', subject: 'İngilizce', email: 'zeynep.ingilizce@school.edu.tr', phone: '+90 532 123 4571' }
+    {
+      id: '1',
+      name: 'Ayşe Matematik',
+      subject: 'Matematik',
+      email: 'ayse.matematik@school.edu.tr',
+      phone: '+90 532 123 4567',
+    },
+    {
+      id: '2',
+      name: 'Mehmet Türkçe',
+      subject: 'Türkçe',
+      email: 'mehmet.turkce@school.edu.tr',
+      phone: '+90 532 123 4568',
+    },
+    {
+      id: '3',
+      name: 'Fatma Fen',
+      subject: 'Fen Bilgisi',
+      email: 'fatma.fen@school.edu.tr',
+      phone: '+90 532 123 4569',
+    },
+    {
+      id: '4',
+      name: 'Ali Sosyal',
+      subject: 'Sosyal Bilgiler',
+      email: 'ali.sosyal@school.edu.tr',
+      phone: '+90 532 123 4570',
+    },
+    {
+      id: '5',
+      name: 'Zeynep İngilizce',
+      subject: 'İngilizce',
+      email: 'zeynep.ingilizce@school.edu.tr',
+      phone: '+90 532 123 4571',
+    },
   ];
 
   const academicYears = ['2024-2025', '2023-2024', '2022-2023'];
@@ -404,7 +442,7 @@ export function TeacherScheduleManager({
     thursday: 'Perşembe',
     friday: 'Cuma',
     saturday: 'Cumartesi',
-    sunday: 'Pazar'
+    sunday: 'Pazar',
   };
 
   const loadTeacherSchedule = async () => {
@@ -424,7 +462,9 @@ export function TeacherScheduleManager({
       );
       setSchedule(teacherSchedule);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Öğretmen programı yüklenirken bir hata oluştu');
+      setError(
+        err instanceof Error ? err.message : 'Öğretmen programı yüklenirken bir hata oluştu'
+      );
     } finally {
       setLoading(false);
     }
@@ -438,7 +478,7 @@ export function TeacherScheduleManager({
       // Mock save operation
       setSchedule({
         ...schedule,
-        preferences: preferences
+        preferences: preferences,
       });
       setEditMode(false);
     } catch (err) {
@@ -454,11 +494,14 @@ export function TeacherScheduleManager({
     setLoading(true);
     try {
       const exportData = await scheduleRepository.exportSchedule(schedule.id, format);
-      
-      const blob = new Blob([exportData], { 
-        type: format === 'pdf' ? 'application/pdf' : 
-              format === 'excel' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' :
-              'text/calendar'
+
+      const blob = new Blob([exportData], {
+        type:
+          format === 'pdf'
+            ? 'application/pdf'
+            : format === 'excel'
+              ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+              : 'text/calendar',
       });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -509,15 +552,15 @@ export function TeacherScheduleManager({
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">
-                    {day.periods.length > 0 ? 
-                      `${day.periods[0].start_time} - ${day.periods[day.periods.length - 1].end_time}` : 
-                      'Boş'
-                    }
+                    {day.periods.length > 0
+                      ? `${day.periods[0].start_time} - ${day.periods[day.periods.length - 1].end_time}`
+                      : 'Boş'}
                   </span>
-                  {expandedDays.has(day.day) ? 
-                    <ChevronDown className="h-4 w-4" /> : 
+                  {expandedDays.has(day.day) ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
                     <ChevronRight className="h-4 w-4" />
-                  }
+                  )}
                 </div>
               </div>
             </CardHeader>
@@ -525,7 +568,10 @@ export function TeacherScheduleManager({
               <CardContent>
                 <div className="space-y-3">
                   {day.periods.map((period, periodIndex) => (
-                    <div key={periodIndex} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div
+                      key={periodIndex}
+                      className="flex items-center justify-between rounded-lg border p-4"
+                    >
                       <div className="flex items-center gap-4">
                         <div className="text-center">
                           <div className="text-lg font-bold">{period.period_number}</div>
@@ -588,11 +634,13 @@ export function TeacherScheduleManager({
 
     return (
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <div className={`text-3xl font-bold ${getWorkloadColor(workload.total_hours_per_week, maxHours)}`}>
+                <div
+                  className={`text-3xl font-bold ${getWorkloadColor(workload.total_hours_per_week, maxHours)}`}
+                >
                   {workload.total_hours_per_week}
                 </div>
                 <div className="text-sm text-gray-600">Haftalık Toplam Saat</div>
@@ -611,7 +659,9 @@ export function TeacherScheduleManager({
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-green-600">{workload.average_class_size}</div>
+                <div className="text-3xl font-bold text-green-600">
+                  {workload.average_class_size}
+                </div>
                 <div className="text-sm text-gray-600">Ortalama Sınıf Mevcudu</div>
               </div>
             </CardContent>
@@ -619,7 +669,9 @@ export function TeacherScheduleManager({
           <Card>
             <CardContent className="pt-6">
               <div className="text-center">
-                <div className="text-3xl font-bold text-purple-600">{workload.preparation_time_total}</div>
+                <div className="text-3xl font-bold text-purple-600">
+                  {workload.preparation_time_total}
+                </div>
                 <div className="text-sm text-gray-600">Hazırlık Süresi (dk)</div>
               </div>
             </CardContent>
@@ -633,34 +685,43 @@ export function TeacherScheduleManager({
           <CardContent>
             <div className="space-y-4">
               <div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="mb-2 flex items-center justify-between">
                   <span className="text-sm font-medium">Haftalık İş Yükü</span>
                   <span className="text-sm text-gray-600">
                     {workload.total_hours_per_week}/{maxHours} saat
                   </span>
                 </div>
-                <Progress value={(workload.total_hours_per_week / maxHours) * 100} className="h-2" />
+                <Progress
+                  value={(workload.total_hours_per_week / maxHours) * 100}
+                  className="h-2"
+                />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
-                  <h4 className="font-medium mb-2">Verdiği Dersler</h4>
+                  <h4 className="mb-2 font-medium">Verdiği Dersler</h4>
                   <div className="space-y-1">
                     {workload.subjects_taught.map((subject, index) => (
-                      <Badge key={index} variant="outline">{subject}</Badge>
+                      <Badge key={index} variant="outline">
+                        {subject}
+                      </Badge>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-2">Günlük Dağılım</h4>
+                  <h4 className="mb-2 font-medium">Günlük Dağılım</h4>
                   <div className="space-y-1">
                     <div className="flex items-center justify-between">
                       <span className="text-sm">En Yoğun Gün</span>
-                      <span className="text-sm font-medium">{dayNames[workload.peak_day as keyof typeof dayNames]}</span>
+                      <span className="text-sm font-medium">
+                        {dayNames[workload.peak_day as keyof typeof dayNames]}
+                      </span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm">En Hafif Gün</span>
-                      <span className="text-sm font-medium">{dayNames[workload.light_day as keyof typeof dayNames]}</span>
+                      <span className="text-sm font-medium">
+                        {dayNames[workload.light_day as keyof typeof dayNames]}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -683,11 +744,7 @@ export function TeacherScheduleManager({
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               Öğretmen Tercihleri
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setEditMode(!editMode)}
-              >
+              <Button variant="outline" size="sm" onClick={() => setEditMode(!editMode)}>
                 {editMode ? <X className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
                 {editMode ? 'İptal' : 'Düzenle'}
               </Button>
@@ -696,17 +753,23 @@ export function TeacherScheduleManager({
           <CardContent>
             <div className="space-y-6">
               <div>
-                <h4 className="font-medium mb-3">Tercih Edilen Günler</h4>
+                <h4 className="mb-3 font-medium">Tercih Edilen Günler</h4>
                 <div className="grid grid-cols-7 gap-2">
                   {Object.entries(dayNames).map(([day, name]) => (
                     <div key={day} className="text-center">
-                      <div className="text-xs text-gray-600 mb-1">{name}</div>
-                      <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center text-xs ${
-                        preferences.preferred_days.includes(day) 
-                          ? 'bg-green-100 border-green-500 text-green-700' 
-                          : 'bg-gray-100 border-gray-300 text-gray-400'
-                      }`}>
-                        {preferences.preferred_days.includes(day) ? <Check className="h-3 w-3" /> : ''}
+                      <div className="mb-1 text-xs text-gray-600">{name}</div>
+                      <div
+                        className={`flex h-8 w-8 items-center justify-center rounded-full border-2 text-xs ${
+                          preferences.preferred_days.includes(day)
+                            ? 'border-green-500 bg-green-100 text-green-700'
+                            : 'border-gray-300 bg-gray-100 text-gray-400'
+                        }`}
+                      >
+                        {preferences.preferred_days.includes(day) ? (
+                          <Check className="h-3 w-3" />
+                        ) : (
+                          ''
+                        )}
                       </div>
                     </div>
                   ))}
@@ -714,19 +777,21 @@ export function TeacherScheduleManager({
               </div>
 
               <div>
-                <h4 className="font-medium mb-3">Tercih Edilen Saatler</h4>
+                <h4 className="mb-3 font-medium">Tercih Edilen Saatler</h4>
                 <div className="space-y-2">
                   {preferences.preferred_times.map((time, index) => (
                     <div key={index} className="flex items-center gap-2">
                       <Clock className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm">{time.start_time} - {time.end_time}</span>
+                      <span className="text-sm">
+                        {time.start_time} - {time.end_time}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
 
               <div>
-                <h4 className="font-medium mb-3">Çalışma Tercihleri</h4>
+                <h4 className="mb-3 font-medium">Çalışma Tercihleri</h4>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Arka arkaya ders vermekten kaçın</span>
@@ -749,8 +814,8 @@ export function TeacherScheduleManager({
 
               {preferences.notes && (
                 <div>
-                  <h4 className="font-medium mb-3">Ek Notlar</h4>
-                  <div className="p-3 bg-gray-50 rounded-lg">
+                  <h4 className="mb-3 font-medium">Ek Notlar</h4>
+                  <div className="rounded-lg bg-gray-50 p-3">
                     <p className="text-sm text-gray-700">{preferences.notes}</p>
                   </div>
                 </div>
@@ -766,26 +831,36 @@ export function TeacherScheduleManager({
           <CardContent>
             <div className="space-y-4">
               {schedule.availability.map((availability, index) => (
-                <div key={index} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium">{dayNames[availability.day as keyof typeof dayNames]}</h4>
+                <div key={index} className="rounded-lg border p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h4 className="font-medium">
+                      {dayNames[availability.day as keyof typeof dayNames]}
+                    </h4>
                     <Badge variant="outline">
-                      {availability.available_periods.length} / {availability.available_periods.length + availability.unavailable_periods.length} saat
+                      {availability.available_periods.length} /{' '}
+                      {availability.available_periods.length +
+                        availability.unavailable_periods.length}{' '}
+                      saat
                     </Badge>
                   </div>
                   <div className="grid grid-cols-8 gap-1">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map(period => (
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((period) => (
                       <div key={period} className="text-center">
-                        <div className="text-xs text-gray-600 mb-1">{period}</div>
-                        <div className={`w-6 h-6 rounded border-2 flex items-center justify-center text-xs ${
-                          availability.available_periods.includes(period)
-                            ? 'bg-green-100 border-green-500 text-green-700'
+                        <div className="mb-1 text-xs text-gray-600">{period}</div>
+                        <div
+                          className={`flex h-6 w-6 items-center justify-center rounded border-2 text-xs ${
+                            availability.available_periods.includes(period)
+                              ? 'border-green-500 bg-green-100 text-green-700'
+                              : availability.unavailable_periods.includes(period)
+                                ? 'border-red-500 bg-red-100 text-red-700'
+                                : 'border-gray-300 bg-gray-100 text-gray-400'
+                          }`}
+                        >
+                          {availability.available_periods.includes(period)
+                            ? '✓'
                             : availability.unavailable_periods.includes(period)
-                            ? 'bg-red-100 border-red-500 text-red-700'
-                            : 'bg-gray-100 border-gray-300 text-gray-400'
-                        }`}>
-                          {availability.available_periods.includes(period) ? '✓' : 
-                           availability.unavailable_periods.includes(period) ? '✗' : ''}
+                              ? '✗'
+                              : ''}
                         </div>
                       </div>
                     ))}
@@ -810,15 +885,15 @@ export function TeacherScheduleManager({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Öğretmen Program Yöneticisi</h2>
-          <p className="text-gray-600 mt-1">Öğretmen ders programları ve tercihlerini yönetin</p>
+          <p className="mt-1 text-gray-600">Öğretmen ders programları ve tercihlerini yönetin</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => window.location.reload()}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Yenile
           </Button>
           <Button variant="outline">
-            <Settings className="h-4 w-4 mr-2" />
+            <Settings className="mr-2 h-4 w-4" />
             Ayarlar
           </Button>
         </div>
@@ -831,13 +906,11 @@ export function TeacherScheduleManager({
             <User className="h-5 w-5" />
             Öğretmen Seçimi
           </CardTitle>
-          <CardDescription>
-            Program görüntülemek istediğiniz öğretmeni seçin
-          </CardDescription>
+          <CardDescription>Program görüntülemek istediğiniz öğretmeni seçin</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-2">
                 <Label htmlFor="teacher">Öğretmen</Label>
                 <Select value={selectedTeacher} onValueChange={setSelectedTeacher}>
@@ -872,7 +945,10 @@ export function TeacherScheduleManager({
 
               <div className="space-y-2">
                 <Label htmlFor="semester">Dönem</Label>
-                <Select value={selectedSemester.toString()} onValueChange={(value) => setSelectedSemester(parseInt(value) as 1 | 2)}>
+                <Select
+                  value={selectedSemester.toString()}
+                  onValueChange={(value) => setSelectedSemester(parseInt(value) as 1 | 2)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -885,19 +961,19 @@ export function TeacherScheduleManager({
 
               <div className="space-y-2">
                 <Label>&nbsp;</Label>
-                <Button 
-                  onClick={loadTeacherSchedule} 
+                <Button
+                  onClick={loadTeacherSchedule}
                   disabled={loading || !selectedTeacher}
                   className="w-full"
                 >
                   {loading ? (
                     <>
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                       Yükleniyor...
                     </>
                   ) : (
                     <>
-                      <Search className="h-4 w-4 mr-2" />
+                      <Search className="mr-2 h-4 w-4" />
                       Programı Görüntüle
                     </>
                   )}
@@ -908,23 +984,23 @@ export function TeacherScheduleManager({
             {schedule && (
               <div className="flex gap-2 pt-2">
                 <Button variant="outline" size="sm" onClick={() => exportSchedule('pdf')}>
-                  <Download className="h-4 w-4 mr-2" />
+                  <Download className="mr-2 h-4 w-4" />
                   PDF
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => exportSchedule('excel')}>
-                  <Download className="h-4 w-4 mr-2" />
+                  <Download className="mr-2 h-4 w-4" />
                   Excel
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => exportSchedule('ical')}>
-                  <Calendar className="h-4 w-4 mr-2" />
+                  <Calendar className="mr-2 h-4 w-4" />
                   iCal
                 </Button>
                 <Button variant="outline" size="sm">
-                  <Print className="h-4 w-4 mr-2" />
+                  <Print className="mr-2 h-4 w-4" />
                   Yazdır
                 </Button>
                 <Button variant="outline" size="sm">
-                  <Share2 className="h-4 w-4 mr-2" />
+                  <Share2 className="mr-2 h-4 w-4" />
                   Paylaş
                 </Button>
               </div>
@@ -960,12 +1036,15 @@ export function TeacherScheduleManager({
               <div className="flex items-center gap-6">
                 <Avatar className="h-16 w-16">
                   <AvatarFallback>
-                    {schedule.schedule_data.teacher_info.name.split(' ').map(n => n[0]).join('')}
+                    {schedule.schedule_data.teacher_info.name
+                      .split(' ')
+                      .map((n) => n[0])
+                      .join('')}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <h3 className="text-xl font-bold">{schedule.schedule_data.teacher_info.name}</h3>
-                  <div className="flex items-center gap-4 mt-2 text-gray-600">
+                  <div className="mt-2 flex items-center gap-4 text-gray-600">
                     <div className="flex items-center gap-1">
                       <BookOpen className="h-4 w-4" />
                       <span>{schedule.schedule_data.teacher_info.subject}</span>
@@ -1000,15 +1079,15 @@ export function TeacherScheduleManager({
               <TabsTrigger value="workload">İş Yükü Analizi</TabsTrigger>
               <TabsTrigger value="preferences">Tercihler</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="schedule" className="mt-6">
               {renderScheduleView()}
             </TabsContent>
-            
+
             <TabsContent value="workload" className="mt-6">
               {renderWorkloadView()}
             </TabsContent>
-            
+
             <TabsContent value="preferences" className="mt-6">
               {renderPreferencesView()}
             </TabsContent>

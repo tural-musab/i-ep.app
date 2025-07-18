@@ -17,22 +17,22 @@ Sistem metriklerini görselleştiren ve analiz eden komponent.
 interface SystemMetricsProps {
   /** Görüntülenecek metrikler */
   metrics?: MetricType[];
-  
+
   /** Zaman aralığı */
   timeRange?: TimeRange;
-  
+
   /** Yenileme aralığı (ms) */
   refreshInterval?: number;
-  
+
   /** Grafik tipi */
   chartType?: 'line' | 'bar' | 'area';
-  
+
   /** Eşik değerleri */
   thresholds?: MetricThresholds;
-  
+
   /** Metrik değiştiğinde çağrılır */
   onMetricChange?: (metric: MetricData) => void;
-  
+
   /** Eşik aşıldığında çağrılır */
   onThresholdExceeded?: (alert: ThresholdAlert) => void;
 }
@@ -89,13 +89,13 @@ export default function MetricsPage() {
       timeRange={{
         start: subHours(new Date(), 24),
         end: new Date(),
-        interval: '5m'
+        interval: '5m',
       }}
       refreshInterval={30000}
       chartType="line"
       thresholds={{
         cpu: { warning: 80, critical: 90 },
-        memory: { warning: 85, critical: 95 }
+        memory: { warning: 85, critical: 95 },
       }}
       onMetricChange={handleMetricChange}
       onThresholdExceeded={handleThresholdExceeded}
@@ -107,18 +107,21 @@ export default function MetricsPage() {
 ## Metrik Tipleri
 
 ### Sistem Metrikleri
+
 - CPU Kullanımı
 - Bellek Kullanımı
 - Disk I/O
 - Ağ Trafiği
 
 ### Uygulama Metrikleri
+
 - Response Time
 - Error Rate
 - Request Count
 - Active Users
 
 ### Tenant Metrikleri
+
 - Aktif Tenant Sayısı
 - Storage Kullanımı
 - API Kullanımı
@@ -135,8 +138,8 @@ const fetchMetrics = async (params: MetricParams) => {
       metrics: params.metrics.join(','),
       from: params.timeRange.start.toISOString(),
       to: params.timeRange.end.toISOString(),
-      interval: params.timeRange.interval
-    }
+      interval: params.timeRange.interval,
+    },
   });
   return response.json();
 };
@@ -144,7 +147,7 @@ const fetchMetrics = async (params: MetricParams) => {
 // Gerçek zamanlı metrik takibi
 const subscribeToMetrics = (callback: (metric: MetricData) => void) => {
   const ws = new WebSocket('wss://api.iqraedu.com/metrics');
-  
+
   ws.onmessage = (event) => {
     const metric = JSON.parse(event.data);
     callback(metric);
@@ -157,6 +160,7 @@ const subscribeToMetrics = (callback: (metric: MetricData) => void) => {
 ## Grafik Komponentleri
 
 ### Line Chart
+
 ```tsx
 <MetricLineChart
   data={metricData}
@@ -168,6 +172,7 @@ const subscribeToMetrics = (callback: (metric: MetricData) => void) => {
 ```
 
 ### Gauge Chart
+
 ```tsx
 <MetricGauge
   value={cpuUsage}
@@ -175,12 +180,13 @@ const subscribeToMetrics = (callback: (metric: MetricData) => void) => {
   max={100}
   thresholds={{
     warning: 80,
-    critical: 90
+    critical: 90,
   }}
 />
 ```
 
 ### Stat Card
+
 ```tsx
 <MetricStatCard
   title="CPU Kullanımı"
@@ -188,7 +194,7 @@ const subscribeToMetrics = (callback: (metric: MetricData) => void) => {
   unit="%"
   change={{
     value: 5,
-    trend: 'up'
+    trend: 'up',
   }}
 />
 ```
@@ -198,20 +204,20 @@ const subscribeToMetrics = (callback: (metric: MetricData) => void) => {
 ```typescript
 // Metrik verisi işleme
 const processMetricData = (data: MetricData[]) => {
-  return data.map(metric => ({
+  return data.map((metric) => ({
     ...metric,
     value: roundToDecimal(metric.value, 2),
-    change: calculateChange(metric.value, previousValue)
+    change: calculateChange(metric.value, previousValue),
   }));
 };
 
 // Trend analizi
 const analyzeTrend = (data: MetricData[]) => {
-  const values = data.map(d => d.value);
+  const values = data.map((d) => d.value);
   return {
     mean: calculateMean(values),
     median: calculateMedian(values),
-    trend: calculateTrend(values)
+    trend: calculateTrend(values),
   };
 };
 ```
@@ -226,11 +232,11 @@ const analyzeTrend = (data: MetricData[]) => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1200px | 4 kolon grid |
+| Ekran Boyutu   | Davranış     |
+| -------------- | ------------ |
+| > 1200px       | 4 kolon grid |
 | 768px - 1200px | 2 kolon grid |
-| < 768px | Tek kolon |
+| < 768px        | Tek kolon    |
 
 ## Test
 
@@ -247,7 +253,7 @@ describe('SystemMetrics', () => {
         }}
       />
     );
-    
+
     expect(screen.getByText('CPU Kullanımı')).toBeInTheDocument();
     expect(screen.getByText('Bellek Kullanımı')).toBeInTheDocument();
   });
@@ -255,7 +261,7 @@ describe('SystemMetrics', () => {
   it('updates metrics periodically', async () => {
     jest.useFakeTimers();
     const onMetricChange = jest.fn();
-    
+
     render(
       <SystemMetrics
         metrics={['cpu']}
@@ -270,7 +276,7 @@ describe('SystemMetrics', () => {
 
   it('triggers threshold alerts', async () => {
     const onThresholdExceeded = jest.fn();
-    
+
     render(
       <SystemMetrics
         metrics={['cpu']}
@@ -352,7 +358,7 @@ WithThresholds.args = {
   colors={{
     primary: '#0088FE',
     warning: '#FFC107',
-    critical: '#FF4842'
+    critical: '#FF4842',
   }}
 />
 ```
@@ -363,4 +369,4 @@ WithThresholds.args = {
 2. Veri noktalarını sınırla
 3. Threshold uyarılarını grupla
 4. Grafik performansını optimize et
-5. Veri önbelleğe al 
+5. Veri önbelleğe al

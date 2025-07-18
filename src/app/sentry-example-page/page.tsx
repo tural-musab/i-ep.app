@@ -25,7 +25,7 @@ export default function Page() {
     async function checkConnectivity() {
       const result = await Sentry.diagnoseSdkConnectivity();
       setIsConnected(result !== 'sentry-unreachable');
-      
+
       // Log connectivity check
       logger.info('Sentry connectivity check completed', {
         connected: result !== 'sentry-unreachable',
@@ -47,7 +47,7 @@ export default function Page() {
           // Add attributes to the span
           span.setAttribute('test_type', 'error_example');
           span.setAttribute('user_action', 'button_click');
-          
+
           // Log the test start
           logger.info('Starting Sentry error test', {
             test_type: 'error_example',
@@ -64,18 +64,18 @@ export default function Page() {
             async (apiSpan) => {
               apiSpan.setAttribute('endpoint', '/api/sentry-example-api');
               apiSpan.setAttribute('method', 'GET');
-              
+
               const res = await fetch('/api/sentry-example-api');
-              
+
               apiSpan.setAttribute('response_status', res.status);
-              
+
               if (!res.ok) {
                 setTestResult({
                   type: 'API Error',
                   message: 'Backend API returned an error',
                   timestamp: new Date().toISOString(),
                 });
-                
+
                 logger.warn('API request failed', {
                   endpoint: '/api/sentry-example-api',
                   status: res.status,
@@ -107,12 +107,12 @@ export default function Page() {
 
           span.setStatus({ code: 2, message: 'Test Error Thrown' });
           throw error;
-
         } catch (error) {
           // Log the error for additional context
           logger.error('Error test completed with exception', {
             error: error instanceof Error ? error.message : 'Unknown error',
-            error_type: error instanceof SentryExampleFrontendError ? 'test_error' : 'unexpected_error',
+            error_type:
+              error instanceof SentryExampleFrontendError ? 'test_error' : 'unexpected_error',
             timestamp: new Date().toISOString(),
           });
 
@@ -139,12 +139,14 @@ export default function Page() {
         span.setAttribute('user_action', 'logging_test');
 
         // Demonstrate different log levels
-        logger.trace('Trace level log example', { 
+        logger.trace('Trace level log example', {
           component: 'sentry-example-page',
           test_type: 'logging',
         });
 
-        logger.debug(logger.fmt`Debug level log with user interaction at ${new Date().toISOString()}`);
+        logger.debug(
+          logger.fmt`Debug level log with user interaction at ${new Date().toISOString()}`
+        );
 
         logger.info('Info level log - user tested logging functionality', {
           component: 'sentry-example-page',
@@ -180,7 +182,7 @@ export default function Page() {
       },
       async (span) => {
         span.setAttribute('test_type', 'performance_example');
-        
+
         logger.info('Starting performance test', {
           test_type: 'performance',
           timestamp: new Date().toISOString(),
@@ -194,10 +196,10 @@ export default function Page() {
           },
           async (processingSpan) => {
             processingSpan.setAttribute('simulation_type', 'data_processing');
-            
+
             // Simulate processing delay
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
+            await new Promise((resolve) => setTimeout(resolve, 100));
+
             processingSpan.setAttribute('processed_items', 1000);
           }
         );
@@ -209,10 +211,10 @@ export default function Page() {
           },
           async (calcSpan) => {
             calcSpan.setAttribute('calculation_type', 'statistical_analysis');
-            
+
             // Simulate calculation delay
-            await new Promise(resolve => setTimeout(resolve, 50));
-            
+            await new Promise((resolve) => setTimeout(resolve, 50));
+
             calcSpan.setAttribute('calculations_performed', 25);
           }
         );
@@ -250,8 +252,8 @@ export default function Page() {
         <h1>Sentry Test Sayfası</h1>
 
         <p className="description">
-          Aşağıdaki butonları kullanarak Sentry&apos;nin farklı özelliklerini test edin. 
-          Hataları ve performans verilerini{' '}
+          Aşağıdaki butonları kullanarak Sentry&apos;nin farklı özelliklerini test edin. Hataları ve
+          performans verilerini{' '}
           <a target="_blank" href="https://tomnap.sentry.io/issues/?project=4509633858764880">
             Sentry Issues Sayfası
           </a>
@@ -263,27 +265,15 @@ export default function Page() {
         </p>
 
         <div className="button-group">
-          <button
-            type="button"
-            onClick={handleErrorTest}
-            disabled={!isConnected}
-          >
+          <button type="button" onClick={handleErrorTest} disabled={!isConnected}>
             <span>Hata Testi</span>
           </button>
 
-          <button
-            type="button"
-            onClick={handleLoggingTest}
-            disabled={!isConnected}
-          >
+          <button type="button" onClick={handleLoggingTest} disabled={!isConnected}>
             <span>Logging Testi</span>
           </button>
 
-          <button
-            type="button"
-            onClick={handlePerformanceTest}
-            disabled={!isConnected}
-          >
+          <button type="button" onClick={handlePerformanceTest} disabled={!isConnected}>
             <span>Performans Testi</span>
           </button>
         </div>
@@ -297,8 +287,9 @@ export default function Page() {
         ) : !isConnected ? (
           <div className="connectivity-error">
             <p>
-              Sentry&apos;ye ağ istekleri engelleniyor gibi görünüyor, bu da hataların yakalanmasını engelleyecektir. 
-              Testi tamamlamak için reklam engelleyicinizi devre dışı bırakmayı deneyin.
+              Sentry&apos;ye ağ istekleri engelleniyor gibi görünüyor, bu da hataların yakalanmasını
+              engelleyecektir. Testi tamamlamak için reklam engelleyicinizi devre dışı bırakmayı
+              deneyin.
             </p>
           </div>
         ) : (

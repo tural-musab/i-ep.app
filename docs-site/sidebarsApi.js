@@ -8,26 +8,17 @@ module.exports = {
     {
       type: 'category',
       label: 'Kimlik Doğrulama',
-      items: [
-        'auth/authentication',
-        'auth/jwt',
-      ],
+      items: ['auth/authentication', 'auth/jwt'],
     },
     {
       type: 'category',
       label: 'Tenant',
-      items: [
-        'tenant/tenant-management',
-        'tenant/domain-management',
-      ],
+      items: ['tenant/tenant-management', 'tenant/domain-management'],
     },
     {
       type: 'category',
       label: 'Kullanıcılar',
-      items: [
-        'user/user-management',
-        'user/permissions',
-      ],
+      items: ['user/user-management', 'user/permissions'],
     },
   ],
-}; 
+};

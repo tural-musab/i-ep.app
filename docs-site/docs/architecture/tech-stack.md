@@ -23,6 +23,7 @@ Teknoloji seçimlerimizi yaparken aşağıdaki kriterleri göz önünde bulundur
 **Seçim Nedeni**: Next.js 14, React tabanlı uygulamalar için güçlü bir çerçeve sunarak hem server-side rendering (SSR) hem de statik site generation (SSG) kapasitesi sağlar.
 
 **Avantajlar**:
+
 - React Server Components desteği
 - Server ve Client Components arasında esnek geçiş
 - Gelişmiş routing sistemi
@@ -31,6 +32,7 @@ Teknoloji seçimlerimizi yaparken aşağıdaki kriterleri göz önünde bulundur
 - Artımlı statik yeniden oluşturma (ISR)
 
 **Alternatifler Değerlendirmesi**:
+
 - **Remix**: Güçlü özelliklere sahip olmasına rağmen, Next.js'in daha geniş topluluk desteği ve dokümantasyonu vardır
 - **Nuxt.js (Vue.js)**: Vue ekosistemi ilgi çekici olmasına rağmen, Türkiye'de React geliştirici bulmanın daha kolay olması
 - **SvelteKit**: Performans odaklı olmasına rağmen, henüz Next.js kadar olgun bir ekosisteme sahip değil
@@ -46,20 +48,20 @@ import { TenantHeader } from '@/components/tenant/TenantHeader';
 export default async function DashboardPage({ params }) {
   // Server Component - Tenant bilgilerini al
   const tenant = await getCurrentTenant(params.tenant);
-  
+
   // Tenant bulunamazsa 404
   if (!tenant) {
     notFound();
   }
-  
+
   // Tenant metrikleri
   const metrics = await getDashboardMetrics(tenant.id);
-  
+
   return (
     <div className="dashboard-container">
       <TenantHeader tenant={tenant} />
       <h1>Okul Yönetim Paneli</h1>
-      
+
       {/* Client Component'e prop olarak veri aktar */}
       <DashboardMetrics metrics={metrics} />
     </div>
@@ -72,6 +74,7 @@ export default async function DashboardPage({ params }) {
 **Seçim Nedeni**: TypeScript, statik tip kontrolü sağlayarak geliştirme sürecinde hataları erkenden yakalama ve kod kalitesini artırma imkanı sunar.
 
 **Avantajlar**:
+
 - Statik tip kontrolü
 - Gelişmiş IDE desteği ve otomatik tamamlama
 - Kod okunabilirliği ve bakım kolaylığı
@@ -104,7 +107,7 @@ export interface TenantSettings {
 
 // İşlevlerde kullanımı
 async function updateTenantSettings(
-  tenantId: string, 
+  tenantId: string,
   settings: Partial<TenantSettings>
 ): Promise<TenantSettings> {
   // Type-safe güncellemeler
@@ -116,6 +119,7 @@ async function updateTenantSettings(
 **Seçim Nedeni**: Tailwind CSS, utility-first bir CSS çerçevesi olarak hızlı ve tutarlı UI geliştirmeyi sağlar.
 
 **Avantajlar**:
+
 - Utility-first yaklaşım ile hızlı geliştirme
 - Minimum CSS dosya boyutu (kullanılmayan CSS'leri kaldırma)
 - Tutarlı tasarım sistemi
@@ -123,6 +127,7 @@ async function updateTenantSettings(
 - Özelleştirilebilirlik
 
 **Alternatifler Değerlendirmesi**:
+
 - **Bootstrap**: Daha büyük dosya boyutu ve daha az özelleştirilebilirlik
 - **MUI (Material UI)**: Hazır komponentler sunmasına rağmen, özelleştirilmiş tasarım için Tailwind daha esnektir
 - **Styled Components**: Component bazlı stilin avantajları olsa da, Tailwind'in geliştirme hızı daha yüksektir
@@ -164,12 +169,7 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {}
 
 const Button = ({ className, variant, size, ...props }: ButtonProps) => {
-  return (
-    <button
-      className={cn(buttonVariants({ variant, size }), className)}
-      {...props}
-    />
-  );
+  return <button className={cn(buttonVariants({ variant, size }), className)} {...props} />;
 };
 
 export { Button, buttonVariants };
@@ -182,6 +182,7 @@ export { Button, buttonVariants };
 **Seçim Nedeni**: Shadcn/UI, yüksek kaliteli, erişilebilir ve esnek UI komponentleri sunar, ancak bir kütüphane yerine bir koleksiyon olarak çalışır.
 
 **Avantajlar**:
+
 - Özelleştirilebilir ve bakımı kolay
 - Erişilebilirlik odaklı
 - Minimal bağımlılıklar
@@ -192,10 +193,10 @@ export { Button, buttonVariants };
 
 ```tsx
 // components/StudentForm.tsx
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -203,9 +204,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/components/ui/use-toast';
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -218,17 +219,17 @@ export function StudentForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      studentNumber: "",
-      email: "",
-      parentEmail: "",
+      name: '',
+      studentNumber: '',
+      email: '',
+      parentEmail: '',
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Form verilerini API'ye gönder
     toast({
-      title: "Öğrenci kaydedildi",
+      title: 'Öğrenci kaydedildi',
       description: `${values.name} başarıyla kaydedildi.`,
     });
   }
@@ -264,6 +265,7 @@ export function StudentForm() {
 **Seçim Nedeni**: Supabase, PostgreSQL üzerine kurulu açık kaynak bir Backend-as-a-Service (BaaS) çözümüdür ve kullanımı kolay API'ler sunar.
 
 **Avantajlar**:
+
 - PostgreSQL temelli güçlü veritabanı
 - Gerçek zamanlı veritabanı dinleme
 - Yerleşik kimlik doğrulama
@@ -273,6 +275,7 @@ export function StudentForm() {
 - Açık kaynak ve self-hosting seçeneği
 
 **Alternatifler Değerlendirmesi**:
+
 - **Firebase**: Daha olgun bir çözüm olmasına rağmen, PostgreSQL'in güçlü ilişkisel modeli ve esnekliği Supabase'i öne çıkarır
 - **Appwrite**: Benzer özellikler sunmasına rağmen, Supabase'in PostgreSQL kullanımı ve daha olgun RLS çözümleri avantaj sağlar
 - **Özel Backend**: Daha fazla kontrol sunmasına rağmen, geliştirme süresi ve maliyet açısından Supabase daha avantajlıdır
@@ -294,24 +297,20 @@ export const createClientSideSupabaseClient = () => {
 
 // Server tarafı (güçlü yetkilere sahip)
 export const createServerSupabaseClient = () => {
-  return createClient<Database>(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: {
-        persistSession: false,
-      }
-    }
-  );
+  return createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
+    auth: {
+      persistSession: false,
+    },
+  });
 };
 
 // Tenant-aware Supabase client
 export const createTenantAwareClient = (tenantId: string) => {
   const client = createClientSideSupabaseClient();
-  
+
   // Set tenant ID in Supabase connection
   client.rpc('set_tenant_id', { tenant_id: tenantId });
-  
+
   return client;
 };
 ```
@@ -330,25 +329,23 @@ export function useStudents(classId?: string) {
 
   useEffect(() => {
     if (!tenant || !tenant.id) return;
-    
+
     const loadStudents = async () => {
       setLoading(true);
-      
+
       try {
         const supabase = createTenantAwareClient(tenant.id);
-        
-        let query = supabase
-          .from('students')
-          .select('*');
-          
+
+        let query = supabase.from('students').select('*');
+
         if (classId) {
           query = query.eq('class_id', classId);
         }
-        
+
         const { data, error } = await query;
-        
+
         if (error) throw error;
-        
+
         setStudents(data || []);
       } catch (e) {
         setError(e);
@@ -356,10 +353,10 @@ export function useStudents(classId?: string) {
         setLoading(false);
       }
     };
-    
+
     loadStudents();
   }, [tenant, classId]);
-  
+
   return { students, loading, error };
 }
 ```
@@ -367,11 +364,13 @@ export function useStudents(classId?: string) {
 ## Veritabanı ve Cache
 
 ### PostgreSQL
+
 **Seçim Nedeni**: PostgreSQL, güvenilirliği, esnekliği ve güçlü özellikleri ile enterprise uygulamalar için ideal bir ilişkisel veritabanı sistemidir.
 
 ## Harici Servisler ve API'ler
 
 ### Domain ve DNS Yönetimi
+
 - **Cloudflare API**: DNS kayıtları ve özel domain yönetimi
   - Subdomain otomatik oluşturma
   - Özel domain doğrulama
@@ -382,6 +381,7 @@ export function useStudents(classId?: string) {
 ## Paketler ve Kütüphaneler
 
 ### API ve Entegrasyon
+
 - **cloudflare**: Cloudflare API ile iletişim kurmak için resmi Cloudflare istemcisi
 - **axios**: HTTP istekleri için kullanılan istemci
 - **zod**: Veri doğrulama kütüphanesi

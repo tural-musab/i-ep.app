@@ -2,7 +2,7 @@
  * Enhanced Attendance Repository Implementation
  * Phase 3: Attendance System - Complete Implementation
  * İ-EP.APP - Devamsızlık Yönetimi
- * 
+ *
  * Features:
  * - Database functions integration
  * - Advanced statistics and analytics
@@ -400,7 +400,7 @@ export class AttendanceRepository {
     date: Date,
     attendanceRecords: BulkAttendanceRecord[]
   ): Promise<AttendanceRecord[]> {
-    const records = attendanceRecords.map(record => ({
+    const records = attendanceRecords.map((record) => ({
       tenant_id: this.tenantId,
       student_id: record.studentId,
       class_id: classId,
@@ -453,24 +453,23 @@ export class AttendanceRepository {
       throw new Error(`Failed to get student attendance stats: ${error.message}`);
     }
 
-    return data || {
-      total_days: 0,
-      present_days: 0,
-      absent_days: 0,
-      late_days: 0,
-      excused_days: 0,
-      sick_days: 0,
-      attendance_rate: 0,
-    };
+    return (
+      data || {
+        total_days: 0,
+        present_days: 0,
+        absent_days: 0,
+        late_days: 0,
+        excused_days: 0,
+        sick_days: 0,
+        attendance_rate: 0,
+      }
+    );
   }
 
   /**
    * Get class attendance summary
    */
-  async getClassAttendanceSummary(
-    classId: string,
-    date?: Date
-  ): Promise<ClassAttendanceSummary> {
+  async getClassAttendanceSummary(classId: string, date?: Date): Promise<ClassAttendanceSummary> {
     const { data, error } = await this.supabase.rpc('get_class_attendance_summary', {
       p_class_id: classId,
       p_tenant_id: this.tenantId,
@@ -481,24 +480,23 @@ export class AttendanceRepository {
       throw new Error(`Failed to get class attendance summary: ${error.message}`);
     }
 
-    return data || {
-      total_students: 0,
-      present_count: 0,
-      absent_count: 0,
-      late_count: 0,
-      excused_count: 0,
-      sick_count: 0,
-      attendance_rate: 0,
-    };
+    return (
+      data || {
+        total_students: 0,
+        present_count: 0,
+        absent_count: 0,
+        late_count: 0,
+        excused_count: 0,
+        sick_count: 0,
+        attendance_rate: 0,
+      }
+    );
   }
 
   /**
    * Get attendance trends
    */
-  async getAttendanceTrends(
-    studentId: string,
-    days: number = 30
-  ): Promise<AttendanceTrend[]> {
+  async getAttendanceTrends(studentId: string, days: number = 30): Promise<AttendanceTrend[]> {
     const { data, error } = await this.supabase.rpc('get_attendance_trends', {
       p_student_id: studentId,
       p_tenant_id: this.tenantId,
@@ -621,7 +619,9 @@ export class AttendanceRepository {
         student_id: attendanceRecord.student_id,
         notification_type: notificationType,
         notification_status: 'pending',
-        message_content: customMessage || `Attendance update for ${attendanceRecord.date}: ${attendanceRecord.status}`,
+        message_content:
+          customMessage ||
+          `Attendance update for ${attendanceRecord.date}: ${attendanceRecord.status}`,
       })
       .select()
       .single();

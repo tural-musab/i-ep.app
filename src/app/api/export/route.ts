@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { exportTenantTable, exportFullTenant, exportUserDataForGDPR, ExportOptions, ExportFormat, ExportResult } from '@/lib/export/tenant-export';
+import {
+  exportTenantTable,
+  exportFullTenant,
+  exportUserDataForGDPR,
+  ExportOptions,
+  ExportFormat,
+  ExportResult,
+} from '@/lib/export/tenant-export';
 import { getTenantId } from '@/lib/tenant/tenant-utils';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth/auth-options';
@@ -73,12 +80,9 @@ export async function POST(request: NextRequest) {
     // Oturum kontrolü
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
-      return NextResponse.json(
-        { error: 'Bu işlem için giriş yapmalısınız' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Bu işlem için giriş yapmalısınız' }, { status: 401 });
     }
-    
+
     // Kullanıcı yetki kontrolü (sadece admin ve manager rollerine izin ver)
     if (!['admin', 'manager'].includes(session.user.role)) {
       return NextResponse.json(
@@ -86,28 +90,25 @@ export async function POST(request: NextRequest) {
         { status: 403 }
       );
     }
-    
+
     // Tenant ID al - getTenantId async fonksiyon
     const tenantId = await getTenantId(request);
     if (!tenantId) {
-      return NextResponse.json(
-        { error: 'Tenant ID bulunamadı' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Tenant ID bulunamadı' }, { status: 400 });
     }
-    
+
     // İstek gövdesini ayrıştır
     const body = await request.json();
-    const { 
-      exportType, 
-      format, 
-      tableName, 
+    const {
+      exportType,
+      format,
+      tableName,
       userId,
       includeRelations,
       anonymizePersonalData,
-      maxRecords
+      maxRecords,
     } = body;
-    
+
     // Zorunlu alanların kontrolü
     if (!exportType || !format) {
       return NextResponse.json(
@@ -115,7 +116,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Format geçerliliği kontrolü
     const validFormats: ExportFormat[] = ['json', 'csv', 'excel'];
     if (!validFormats.includes(format)) {
@@ -124,53 +125,47 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-    
+
     // Export tipine göre ek alan kontrolü
     if (exportType === 'table' && !tableName) {
-      return NextResponse.json(
-        { error: 'tableName alanı zorunludur' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'tableName alanı zorunludur' }, { status: 400 });
     }
-    
+
     if (exportType === 'user' && !userId) {
-      return NextResponse.json(
-        { error: 'userId alanı zorunludur' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'userId alanı zorunludur' }, { status: 400 });
     }
-    
+
     // Export ayarlarını hazırla
     const exportOptions: ExportOptions = {
       format: format as ExportFormat,
       includeRelations,
       anonymizePersonalData,
-      maxRecords
+      maxRecords,
     };
-    
+
     let result: ExportResult;
-    
+
     // Export tipine göre ilgili fonksiyonu çağır
     switch (exportType) {
       case 'table':
         result = await exportTenantTable(tenantId, tableName, exportOptions);
         break;
-        
+
       case 'full':
         result = await exportFullTenant(tenantId, exportOptions);
         break;
-        
+
       case 'user':
         result = await exportUserDataForGDPR(userId, tenantId, format as ExportFormat);
         break;
-        
+
       default:
         return NextResponse.json(
           { error: 'Geçersiz export tipi. Desteklenen tipler: table, full, user' },
           { status: 400 }
         );
     }
-    
+
     // Hata durumunu kontrol et
     if (!result.success) {
       return NextResponse.json(
@@ -178,10 +173,10 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
-    
+
     // Dışa aktarma formatına göre yanıt döndür
     const filename = `export_${result.tenantId}_${result.tables?.join('_') || 'data'}_${new Date().toISOString().split('T')[0]}.${format}`;
-    
+
     switch (format) {
       case 'json':
       case 'csv':
@@ -189,33 +184,35 @@ export async function POST(request: NextRequest) {
         const headers = new Headers();
         headers.append('Content-Disposition', `attachment; filename=${filename}`);
         headers.append('Content-Type', format === 'json' ? 'application/json' : 'text/csv');
-        
+
         return new NextResponse(JSON.stringify(result.data), {
           status: 200,
-          headers
+          headers,
         });
-        
+
       case 'excel':
         // Excel için binary veri döndür
         const excelHeaders = new Headers();
         excelHeaders.append('Content-Disposition', `attachment; filename=${filename}`);
-        excelHeaders.append('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        
+        excelHeaders.append(
+          'Content-Type',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        );
+
         return new NextResponse(JSON.stringify(result.data), {
           status: 200,
-          headers: excelHeaders
+          headers: excelHeaders,
         });
-        
+
       default:
         return NextResponse.json({
           success: true,
           filename: filename,
           format: result.format,
           recordCount: result.recordCount,
-          downloadLink: `/api/download/export/${filename}`
+          downloadLink: `/api/download/export/${filename}`,
         });
     }
-    
   } catch (error) {
     console.error('Export API hatası:', error);
     return NextResponse.json(
@@ -241,23 +238,23 @@ export async function GET() {
   return NextResponse.json({
     availableFormats: ['json', 'csv', 'excel', 'sql'],
     exportTypes: [
-      { 
-        id: 'table', 
-        name: 'Tablo Dışa Aktarma', 
+      {
+        id: 'table',
+        name: 'Tablo Dışa Aktarma',
         description: 'Tek bir tabloyu dışa aktarır',
-        requiredFields: ['tableName']
+        requiredFields: ['tableName'],
       },
-      { 
-        id: 'full', 
-        name: 'Tenant Tam Dışa Aktarma', 
-        description: 'Tenant\'a ait tüm tabloları dışa aktarır'
+      {
+        id: 'full',
+        name: 'Tenant Tam Dışa Aktarma',
+        description: "Tenant'a ait tüm tabloları dışa aktarır",
       },
-      { 
-        id: 'user', 
-        name: 'Kullanıcı Veri Dışa Aktarma (KVKK)', 
+      {
+        id: 'user',
+        name: 'Kullanıcı Veri Dışa Aktarma (KVKK)',
         description: 'KVKK veri taşınabilirlik hakkı için kullanıcı verilerini dışa aktarır',
-        requiredFields: ['userId']
-      }
+        requiredFields: ['userId'],
+      },
     ],
     options: {
       includeMetadata: 'Meta verileri dahil et',
@@ -265,7 +262,7 @@ export async function GET() {
       sortBy: 'Sıralama alanı',
       sortDirection: 'Sıralama yönü (asc/desc)',
       limit: 'Maksimum kayıt sayısı',
-      includeDeletedRecords: 'Silinmiş kayıtları dahil et'
-    }
+      includeDeletedRecords: 'Silinmiş kayıtları dahil et',
+    },
   });
-} 
+}

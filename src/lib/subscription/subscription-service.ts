@@ -1,7 +1,7 @@
 /**
  * Subscription Management Service
  * Sprint 1: Payment Integration Foundation
- * 
+ *
  * Handles subscription lifecycle, plan management, and feature gating
  * Integrates with billing system and payment processing
  */
@@ -49,7 +49,7 @@ export interface TenantSubscription {
   currency: string;
   createdAt: string;
   updatedAt: string;
-  
+
   // Joined plan data
   plan?: SubscriptionPlan;
 }
@@ -90,19 +90,19 @@ export interface FeatureUsage {
 export async function getSubscriptionPlans(): Promise<SubscriptionPlan[]> {
   try {
     const supabase = createServerSupabaseClient();
-    
+
     const { data, error } = await supabase
       .from('subscription_plans')
       .select('*')
       .eq('is_active', true)
       .order('sort_order', { ascending: true });
-    
+
     if (error) {
       logger.error('Failed to fetch subscription plans', { error: error.message });
       throw new Error('Failed to fetch subscription plans');
     }
-    
-    return data.map(plan => ({
+
+    return data.map((plan) => ({
       id: plan.id,
       name: plan.name,
       displayName: plan.display_name,
@@ -134,14 +134,14 @@ export async function getSubscriptionPlans(): Promise<SubscriptionPlan[]> {
 export async function getSubscriptionPlan(planId: string): Promise<SubscriptionPlan | null> {
   try {
     const supabase = createServerSupabaseClient();
-    
+
     const { data, error } = await supabase
       .from('subscription_plans')
       .select('*')
       .eq('id', planId)
       .eq('is_active', true)
       .single();
-    
+
     if (error) {
       if (error.code === 'PGRST116') {
         return null; // Plan not found
@@ -149,7 +149,7 @@ export async function getSubscriptionPlan(planId: string): Promise<SubscriptionP
       logger.error('Failed to fetch subscription plan', { planId, error: error.message });
       throw new Error('Failed to fetch subscription plan');
     }
-    
+
     return {
       id: data.id,
       name: data.name,
@@ -180,17 +180,19 @@ export async function getSubscriptionPlan(planId: string): Promise<SubscriptionP
 /**
  * Get subscription plan by name (e.g., 'free', 'standard', 'premium')
  */
-export async function getSubscriptionPlanByName(planName: string): Promise<SubscriptionPlan | null> {
+export async function getSubscriptionPlanByName(
+  planName: string
+): Promise<SubscriptionPlan | null> {
   try {
     const supabase = createServerSupabaseClient();
-    
+
     const { data, error } = await supabase
       .from('subscription_plans')
       .select('*')
       .eq('name', planName)
       .eq('is_active', true)
       .single();
-    
+
     if (error) {
       if (error.code === 'PGRST116') {
         return null; // Plan not found
@@ -198,7 +200,7 @@ export async function getSubscriptionPlanByName(planName: string): Promise<Subsc
       logger.error('Failed to fetch subscription plan by name', { planName, error: error.message });
       throw new Error('Failed to fetch subscription plan');
     }
-    
+
     return {
       id: data.id,
       name: data.name,
@@ -236,19 +238,21 @@ export async function getSubscriptionPlanByName(planName: string): Promise<Subsc
 export async function getTenantSubscription(tenantId: string): Promise<TenantSubscription | null> {
   try {
     const supabase = createServerSupabaseClient();
-    
+
     const { data, error } = await supabase
       .from('tenant_subscriptions')
-      .select(`
+      .select(
+        `
         *,
         plan:subscription_plans(*)
-      `)
+      `
+      )
       .eq('tenant_id', tenantId)
       .in('status', ['trial', 'active'])
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
-    
+
     if (error) {
       if (error.code === 'PGRST116') {
         return null; // No active subscription found
@@ -256,7 +260,7 @@ export async function getTenantSubscription(tenantId: string): Promise<TenantSub
       logger.error('Failed to fetch tenant subscription', { tenantId, error: error.message });
       throw new Error('Failed to fetch tenant subscription');
     }
-    
+
     const subscription: TenantSubscription = {
       id: data.id,
       tenantId: data.tenant_id,
@@ -273,7 +277,7 @@ export async function getTenantSubscription(tenantId: string): Promise<TenantSub
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     };
-    
+
     // Add plan data if available
     if (data.plan) {
       subscription.plan = {
@@ -295,7 +299,7 @@ export async function getTenantSubscription(tenantId: string): Promise<TenantSub
         updatedAt: data.plan.updated_at,
       };
     }
-    
+
     return subscription;
   } catch (error) {
     logger.error('Error in getTenantSubscription', {
@@ -314,46 +318,46 @@ export async function createTenantSubscription(
 ): Promise<TenantSubscription> {
   try {
     const supabase = createServerSupabaseClient();
-    
+
     // Get the plan details first
     const plan = await getSubscriptionPlan(request.planId);
     if (!plan) {
       throw new Error('Subscription plan not found');
     }
-    
+
     // Calculate subscription amount based on billing cycle
     const amount = request.billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly;
-    
+
     // Calculate subscription dates
     const now = new Date();
     let trialStartsAt: string | null = null;
     let trialEndsAt: string | null = null;
     let currentPeriodStart: string;
     let currentPeriodEnd: string;
-    
+
     if (request.startTrial && plan.trialDays > 0) {
       // Start with trial period
       trialStartsAt = now.toISOString();
       const trialEnd = new Date(now);
       trialEnd.setDate(trialEnd.getDate() + plan.trialDays);
       trialEndsAt = trialEnd.toISOString();
-      
+
       currentPeriodStart = trialStartsAt;
       currentPeriodEnd = trialEndsAt;
     } else {
       // Start with paid subscription immediately
       currentPeriodStart = now.toISOString();
       const periodEnd = new Date(now);
-      
+
       if (request.billingCycle === 'yearly') {
         periodEnd.setFullYear(periodEnd.getFullYear() + 1);
       } else {
         periodEnd.setMonth(periodEnd.getMonth() + 1);
       }
-      
+
       currentPeriodEnd = periodEnd.toISOString();
     }
-    
+
     // Create subscription record
     const { data, error } = await supabase
       .from('tenant_subscriptions')
@@ -371,7 +375,7 @@ export async function createTenantSubscription(
       })
       .select()
       .single();
-    
+
     if (error) {
       logger.error('Failed to create tenant subscription', {
         tenantId: request.tenantId,
@@ -380,7 +384,7 @@ export async function createTenantSubscription(
       });
       throw new Error('Failed to create subscription');
     }
-    
+
     logger.info('Created tenant subscription', {
       subscriptionId: data.id,
       tenantId: request.tenantId,
@@ -388,7 +392,7 @@ export async function createTenantSubscription(
       status: data.status,
       billingCycle: request.billingCycle,
     });
-    
+
     return {
       id: data.id,
       tenantId: data.tenant_id,
@@ -424,13 +428,13 @@ export async function updateTenantSubscription(
 ): Promise<TenantSubscription> {
   try {
     const supabase = createServerSupabaseClient();
-    
+
     // Prepare update object
     const updateData: any = {};
-    
+
     if (updates.planId) {
       updateData.plan_id = updates.planId;
-      
+
       // If changing plan, recalculate amount
       const newPlan = await getSubscriptionPlan(updates.planId);
       if (newPlan) {
@@ -439,38 +443,41 @@ export async function updateTenantSubscription(
           .select('billing_cycle')
           .eq('id', subscriptionId)
           .single();
-        
+
         if (currentSub.data) {
           const billingCycle = updates.billingCycle || currentSub.data.billing_cycle;
-          updateData.amount = billingCycle === 'yearly' ? newPlan.priceYearly : newPlan.priceMonthly;
+          updateData.amount =
+            billingCycle === 'yearly' ? newPlan.priceYearly : newPlan.priceMonthly;
           updateData.currency = newPlan.currency;
         }
       }
     }
-    
+
     if (updates.billingCycle) {
       updateData.billing_cycle = updates.billingCycle;
     }
-    
+
     if (updates.status) {
       updateData.status = updates.status;
-      
+
       if (updates.status === 'cancelled') {
         updateData.cancelled_at = new Date().toISOString();
       }
     }
-    
+
     // Perform update
     const { data, error } = await supabase
       .from('tenant_subscriptions')
       .update(updateData)
       .eq('id', subscriptionId)
-      .select(`
+      .select(
+        `
         *,
         plan:subscription_plans(*)
-      `)
+      `
+      )
       .single();
-    
+
     if (error) {
       logger.error('Failed to update tenant subscription', {
         subscriptionId,
@@ -479,12 +486,12 @@ export async function updateTenantSubscription(
       });
       throw new Error('Failed to update subscription');
     }
-    
+
     logger.info('Updated tenant subscription', {
       subscriptionId,
       updates,
     });
-    
+
     const subscription: TenantSubscription = {
       id: data.id,
       tenantId: data.tenant_id,
@@ -501,7 +508,7 @@ export async function updateTenantSubscription(
       createdAt: data.created_at,
       updatedAt: data.updated_at,
     };
-    
+
     // Add plan data if available
     if (data.plan) {
       subscription.plan = {
@@ -523,7 +530,7 @@ export async function updateTenantSubscription(
         updatedAt: data.plan.updated_at,
       };
     }
-    
+
     return subscription;
   } catch (error) {
     logger.error('Error in updateTenantSubscription', {
@@ -545,17 +552,17 @@ export async function updateTenantSubscription(
 export async function canUseFeature(tenantId: string, featureName: string): Promise<boolean> {
   try {
     const subscription = await getTenantSubscription(tenantId);
-    
+
     if (!subscription || !subscription.plan) {
       // No subscription or plan found - deny access
       return false;
     }
-    
+
     // Check if subscription is active
     if (subscription.status !== 'active' && subscription.status !== 'trial') {
       return false;
     }
-    
+
     // Check if trial has expired
     if (subscription.status === 'trial' && subscription.trialEndsAt) {
       const trialEnd = new Date(subscription.trialEndsAt);
@@ -563,18 +570,18 @@ export async function canUseFeature(tenantId: string, featureName: string): Prom
         return false;
       }
     }
-    
+
     // Check feature in plan
     const featureValue = subscription.plan.features[featureName];
-    
+
     if (typeof featureValue === 'boolean') {
       return featureValue;
     }
-    
+
     if (typeof featureValue === 'string') {
       return featureValue !== 'false' && featureValue !== '';
     }
-    
+
     // Default to false if feature not defined
     return false;
   } catch (error) {
@@ -597,13 +604,13 @@ export async function isWithinLimits(
 ): Promise<boolean> {
   try {
     const subscription = await getTenantSubscription(tenantId);
-    
+
     if (!subscription || !subscription.plan) {
       return false;
     }
-    
+
     let limit: number | null = null;
-    
+
     switch (resourceType) {
       case 'students':
         limit = subscription.plan.maxStudents;
@@ -615,12 +622,12 @@ export async function isWithinLimits(
         limit = subscription.plan.maxClasses;
         break;
     }
-    
+
     // If limit is null, it means unlimited
     if (limit === null) {
       return true;
     }
-    
+
     return currentCount < limit;
   } catch (error) {
     logger.error('Error checking resource limits', {
@@ -644,11 +651,11 @@ export async function getTenantLimits(tenantId: string): Promise<{
 } | null> {
   try {
     const subscription = await getTenantSubscription(tenantId);
-    
+
     if (!subscription || !subscription.plan) {
       return null;
     }
-    
+
     return {
       maxStudents: subscription.plan.maxStudents,
       maxTeachers: subscription.plan.maxTeachers,
@@ -678,18 +685,19 @@ export async function recordFeatureUsage(
   try {
     const supabase = createServerSupabaseClient();
     const monthYear = new Date().toISOString().slice(0, 7); // YYYY-MM format
-    
-    const { error } = await supabase
-      .from('feature_usage')
-      .upsert({
+
+    const { error } = await supabase.from('feature_usage').upsert(
+      {
         tenant_id: tenantId,
         month_year: monthYear,
         ...usageData,
         recorded_at: new Date().toISOString(),
-      }, {
+      },
+      {
         onConflict: 'tenant_id,month_year',
-      });
-    
+      }
+    );
+
     if (error) {
       logger.error('Failed to record feature usage', {
         tenantId,
@@ -698,7 +706,7 @@ export async function recordFeatureUsage(
       });
       throw new Error('Failed to record usage');
     }
-    
+
     logger.debug('Recorded feature usage', { tenantId, monthYear, usageData });
   } catch (error) {
     logger.error('Error in recordFeatureUsage', {
@@ -720,14 +728,14 @@ export async function getFeatureUsage(
   try {
     const supabase = createServerSupabaseClient();
     const targetMonth = monthYear || new Date().toISOString().slice(0, 7);
-    
+
     const { data, error } = await supabase
       .from('feature_usage')
       .select('*')
       .eq('tenant_id', tenantId)
       .eq('month_year', targetMonth)
       .single();
-    
+
     if (error) {
       if (error.code === 'PGRST116') {
         return null; // No usage data found
@@ -739,7 +747,7 @@ export async function getFeatureUsage(
       });
       throw new Error('Failed to fetch usage data');
     }
-    
+
     return {
       tenantId: data.tenant_id,
       monthYear: data.month_year,
@@ -771,15 +779,15 @@ export async function getFeatureUsage(
 export async function isInTrialPeriod(tenantId: string): Promise<boolean> {
   try {
     const subscription = await getTenantSubscription(tenantId);
-    
+
     if (!subscription || subscription.status !== 'trial') {
       return false;
     }
-    
+
     if (!subscription.trialEndsAt) {
       return false;
     }
-    
+
     const trialEnd = new Date(subscription.trialEndsAt);
     return trialEnd > new Date();
   } catch (error) {
@@ -797,16 +805,16 @@ export async function isInTrialPeriod(tenantId: string): Promise<boolean> {
 export async function getTrialDaysRemaining(tenantId: string): Promise<number> {
   try {
     const subscription = await getTenantSubscription(tenantId);
-    
+
     if (!subscription || subscription.status !== 'trial' || !subscription.trialEndsAt) {
       return 0;
     }
-    
+
     const trialEnd = new Date(subscription.trialEndsAt);
     const now = new Date();
     const diffTime = trialEnd.getTime() - now.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     return Math.max(0, diffDays);
   } catch (error) {
     logger.error('Error calculating trial days remaining', {
@@ -826,21 +834,21 @@ export default {
   getSubscriptionPlans,
   getSubscriptionPlan,
   getSubscriptionPlanByName,
-  
+
   // Subscription management
   getTenantSubscription,
   createTenantSubscription,
   updateTenantSubscription,
-  
+
   // Feature gating
   canUseFeature,
   isWithinLimits,
   getTenantLimits,
-  
+
   // Usage tracking
   recordFeatureUsage,
   getFeatureUsage,
-  
+
   // Status checks
   isInTrialPeriod,
   getTrialDaysRemaining,

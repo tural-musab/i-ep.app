@@ -1,6 +1,6 @@
 /**
  * Iqra Eğitim Portalı - Tenant Veri Dışa Aktarma Modülü
- * 
+ *
  * Bu modül, kiracı verilerinin CSV, JSON veya Excel formatlarında
  * dışa aktarılması için gerekli fonksiyonları içerir.
  * KVKK ve GDPR uyumlu veri taşınabilirliği sağlar.
@@ -41,7 +41,7 @@ export interface ExportResult {
 
 /**
  * Kiracı verilerini dışa aktarır
- * 
+ *
  * @param tenantId Kiracı ID'si
  * @param options Dışa aktarma seçenekleri
  * @returns Dışa aktarma sonucu
@@ -51,47 +51,49 @@ export async function exportTenantData(
   options: ExportOptions
 ): Promise<ExportResult> {
   try {
-    logger.info(`Tenant veri dışa aktarma başlatıldı. Tenant: ${tenantId}, Format: ${options.format}`);
-    
+    logger.info(
+      `Tenant veri dışa aktarma başlatıldı. Tenant: ${tenantId}, Format: ${options.format}`
+    );
+
     // Tenant-specific Supabase client
     const supabase = await getTenantSupabaseClient(tenantId);
-    
+
     // Dışa aktarılacak tabloları belirle
-    const tables = options.tables || await getDefaultTables(tenantId);
-    
+    const tables = options.tables || (await getDefaultTables(tenantId));
+
     // Her tablodan veri çek
     const exportedData: Record<string, any[]> = {};
     let totalRecordCount = 0;
-    
+
     for (const table of tables) {
       try {
         // Tablo verilerini sorgula
         let query = supabase.from(table).select('*');
-        
+
         // Filtreleri uygula
         if (options.filters && options.filters[table]) {
           query = applyFilters(query, options.filters[table]);
         }
-        
+
         // Maksimum kayıt sayısını sınırla
         if (options.maxRecords) {
           query = query.limit(options.maxRecords);
         }
-        
+
         // Verileri çek
         const { data, error } = await query;
-        
+
         if (error) {
           logger.warn(`${table} tablosu verileri alınırken hata:`, error);
           continue;
         }
-        
+
         if (data && data.length > 0) {
           // Kişisel verileri anonimleştir (istenirse)
-          const processedData = options.anonymizePersonalData 
-            ? anonymizeTableData(table, data) 
+          const processedData = options.anonymizePersonalData
+            ? anonymizeTableData(table, data)
             : data;
-          
+
           exportedData[table] = processedData;
           totalRecordCount += processedData.length;
         }
@@ -99,15 +101,17 @@ export async function exportTenantData(
         logger.warn(`${table} tablosu işlenirken hata:`, tableError);
       }
     }
-    
+
     // Verileri istenen formata dönüştür
     const formattedData = formatExportData(exportedData, options.format);
-    
+
     // Dosya boyutunu hesapla (yaklaşık)
     const fileSize = calculateFileSize(formattedData);
-    
-    logger.info(`Tenant veri dışa aktarma tamamlandı. Tenant: ${tenantId}, Kayıt sayısı: ${totalRecordCount}`);
-    
+
+    logger.info(
+      `Tenant veri dışa aktarma tamamlandı. Tenant: ${tenantId}, Kayıt sayısı: ${totalRecordCount}`
+    );
+
     return {
       success: true,
       tenantId,
@@ -116,24 +120,24 @@ export async function exportTenantData(
       tables,
       recordCount: totalRecordCount,
       fileSize,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
     logger.error(`Tenant veri dışa aktarma hatası. Tenant: ${tenantId}:`, error);
-    
+
     return {
       success: false,
       tenantId,
       format: options.format,
       error: error instanceof Error ? error.message : String(error),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }
 
 /**
  * Belirli bir kullanıcının verilerini dışa aktarır
- * 
+ *
  * @param userId Kullanıcı ID'si
  * @param tenantId Kiracı ID'si
  * @param options Dışa aktarma seçenekleri
@@ -156,24 +160,24 @@ export async function exportUserData(
     teacher_assignments: { teacher_id: userId },
     student_grades: { student_id: userId },
     student_attendances: { student_id: userId },
-    student_notes: { student_id: userId }
+    student_notes: { student_id: userId },
   };
-  
+
   // Kullanıcıya ait tabloları belirle
   const userTables = Object.keys(userFilters);
-  
+
   // Dışa aktarma işlemini gerçekleştir
   return exportTenantData(tenantId, {
     ...options,
     tables: userTables,
-    filters: userFilters
+    filters: userFilters,
   });
 }
 
 /**
  * Kiracı verilerini tamamen dışa aktarır
  * GDPR ve KVKK uyumlu veri taşınabilirliği için kullanılır
- * 
+ *
  * @param tenantId Kiracı ID'si
  * @param options Dışa aktarma seçenekleri
  * @returns Dışa aktarma sonucu
@@ -188,7 +192,7 @@ export async function exportFullTenant(
 
 /**
  * GDPR uyumlu kullanıcı verisi dışa aktarır
- * 
+ *
  * @param userId Kullanıcı ID'si
  * @param tenantId Kiracı ID'si
  * @param format Dışa aktarma formatı
@@ -202,13 +206,13 @@ export async function exportUserDataForGDPR(
   return exportUserData(userId, tenantId, {
     format,
     anonymizePersonalData: false,
-    includeRelations: true
+    includeRelations: true,
   });
 }
 
 /**
  * Belirli bir tabloyu dışa aktarır
- * 
+ *
  * @param tenantId Kiracı ID'si
  * @param tableName Tablo adı
  * @param options Dışa aktarma seçenekleri
@@ -221,13 +225,13 @@ export async function exportTenantTable(
 ): Promise<ExportResult> {
   return exportTenantData(tenantId, {
     ...options,
-    tables: [tableName]
+    tables: [tableName],
   });
 }
 
 /**
  * Sorgu sonuçlarını dışa aktarır
- * 
+ *
  * @param tenantId Kiracı ID'si
  * @param query Sorgu
  * @param tableName Sonuçların kaydedileceği tablo adı
@@ -242,13 +246,13 @@ export async function exportQueryResults(
 ): Promise<ExportResult> {
   try {
     logger.info(`Sorgu sonuçları dışa aktarma başlatıldı. Tenant: ${tenantId}`);
-    
+
     // Tenant-specific Supabase client
     const supabase = await getTenantSupabaseClient(tenantId);
-    
+
     // SQL sorgusu çalıştır
     const { data, error } = await supabase.rpc('execute_raw_query', { query_text: query });
-    
+
     if (error) {
       logger.error(`Sorgu çalıştırılırken hata:`, error);
       return {
@@ -256,16 +260,16 @@ export async function exportQueryResults(
         tenantId,
         format,
         error: error.message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
     }
-    
+
     // Verileri formata dönüştür
     const formattedData = formatExportData({ [tableName]: data }, format);
-    
+
     // Dosya boyutunu hesapla
     const fileSize = calculateFileSize(formattedData);
-    
+
     return {
       success: true,
       tenantId,
@@ -274,7 +278,7 @@ export async function exportQueryResults(
       tables: [tableName],
       recordCount: data?.length || 0,
       fileSize,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
     logger.error(`Sorgu sonuçları dışa aktarma hatası:`, error);
@@ -283,7 +287,7 @@ export async function exportQueryResults(
       tenantId,
       format,
       error: error instanceof Error ? error.message : String(error),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }
@@ -305,7 +309,7 @@ async function getDefaultTables(tenantId: string): Promise<string[]> {
     'attendances',
     'assignments',
     'exams',
-    'courses'
+    'courses',
   ];
 }
 
@@ -317,7 +321,7 @@ function applyFilters(
   filters: Record<string, any>
 ): PostgrestFilterBuilder<any, any, any> {
   let filteredQuery = query;
-  
+
   // Her filtre için
   Object.entries(filters).forEach(([field, value]) => {
     if (value === null) {
@@ -355,7 +359,7 @@ function applyFilters(
       filteredQuery = filteredQuery.eq(field, value);
     }
   });
-  
+
   return filteredQuery;
 }
 
@@ -368,19 +372,19 @@ function anonymizeTableData(table: string, data: any[]): any[] {
     users: ['email', 'phone', 'full_name'],
     user_profiles: ['first_name', 'last_name', 'phone', 'address', 'birth_date', 'profile_picture'],
     students: ['first_name', 'last_name', 'email', 'phone', 'address', 'birth_date', 'photo'],
-    teachers: ['first_name', 'last_name', 'email', 'phone', 'address', 'birth_date', 'photo']
+    teachers: ['first_name', 'last_name', 'email', 'phone', 'address', 'birth_date', 'photo'],
   };
-  
+
   // Bu tablo için anonimleştirilecek alanlar yoksa veriyi olduğu gibi döndür
   if (!personalDataFields[table]) {
     return data;
   }
-  
+
   // Verileri anonimleştir
-  return data.map(record => {
+  return data.map((record) => {
     const anonymizedRecord = { ...record };
-    
-    personalDataFields[table].forEach(field => {
+
+    personalDataFields[table].forEach((field) => {
       if (field in anonymizedRecord) {
         // Alan tipine göre anonimleştirme yap
         if (field.includes('name')) {
@@ -400,7 +404,7 @@ function anonymizeTableData(table: string, data: any[]): any[] {
         }
       }
     });
-    
+
     return anonymizedRecord;
   });
 }
@@ -412,48 +416,50 @@ function formatExportData(data: Record<string, any[]>, format: ExportFormat): an
   switch (format) {
     case 'json':
       return data;
-      
+
     case 'csv':
       // Her tablo için ayrı CSV oluştur
       const csvData: Record<string, string> = {};
-      
+
       Object.entries(data).forEach(([table, records]) => {
         if (records.length === 0) return;
-        
+
         // Başlık satırı
         const headers = Object.keys(records[0]);
         let csv = headers.join(',') + '\n';
-        
+
         // Veri satırları
-        records.forEach(record => {
-          const row = headers.map(header => {
-            const value = record[header];
-            
-            // CSV formatına uygun hale getir
-            if (value === null || value === undefined) {
-              return '';
-            } else if (typeof value === 'object') {
-              return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
-            } else if (typeof value === 'string') {
-              return `"${value.replace(/"/g, '""')}"`;
-            } else {
-              return value;
-            }
-          }).join(',');
-          
+        records.forEach((record) => {
+          const row = headers
+            .map((header) => {
+              const value = record[header];
+
+              // CSV formatına uygun hale getir
+              if (value === null || value === undefined) {
+                return '';
+              } else if (typeof value === 'object') {
+                return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+              } else if (typeof value === 'string') {
+                return `"${value.replace(/"/g, '""')}"`;
+              } else {
+                return value;
+              }
+            })
+            .join(',');
+
           csv += row + '\n';
         });
-        
+
         csvData[table] = csv;
       });
-      
+
       return csvData;
-      
+
     case 'excel':
       // Excel formatı için JSON verisini döndür
       // Gerçek uygulamada burada Excel dosyası oluşturulur
       return data;
-      
+
     default:
       return data;
   }
@@ -465,4 +471,4 @@ function formatExportData(data: Record<string, any[]>, format: ExportFormat): an
 function calculateFileSize(data: any): number {
   const jsonString = JSON.stringify(data);
   return new TextEncoder().encode(jsonString).length;
-} 
+}

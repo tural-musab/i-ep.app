@@ -35,17 +35,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 API, aşağıdaki hata kodlarını döndürebilir:
 
-| Kod | Açıklama |
-|-----|----------|
+| Kod | Açıklama                                                             |
+| --- | -------------------------------------------------------------------- |
 | 400 | İstek hatası (Bad Request). İstek formatı veya parametreleri hatalı. |
-| 401 | Kimlik doğrulama hatası (Unauthorized). Geçersiz veya eksik token. |
-| 403 | Yetkilendirme hatası (Forbidden). Yeterli izin yok. |
-| 404 | Kaynak bulunamadı (Not Found). |
-| 409 | Çakışma (Conflict). Örneğin, aynı e-posta ile kayıtlı kullanıcı. |
-| 422 | İşlenemeyen varlık (Unprocessable Entity). Doğrulama hataları. |
-| 429 | Çok fazla istek (Too Many Requests). Rate limit aşıldı. |
-| 500 | Sunucu hatası (Internal Server Error). |
-| 503 | Servis kullanılamıyor (Service Unavailable). |
+| 401 | Kimlik doğrulama hatası (Unauthorized). Geçersiz veya eksik token.   |
+| 403 | Yetkilendirme hatası (Forbidden). Yeterli izin yok.                  |
+| 404 | Kaynak bulunamadı (Not Found).                                       |
+| 409 | Çakışma (Conflict). Örneğin, aynı e-posta ile kayıtlı kullanıcı.     |
+| 422 | İşlenemeyen varlık (Unprocessable Entity). Doğrulama hataları.       |
+| 429 | Çok fazla istek (Too Many Requests). Rate limit aşıldı.              |
+| 500 | Sunucu hatası (Internal Server Error).                               |
+| 503 | Servis kullanılamıyor (Service Unavailable).                         |
 
 Hata yanıtları şu formatta döndürülür:
 
@@ -54,7 +54,9 @@ Hata yanıtları şu formatta döndürülür:
   "error": {
     "code": "ERROR_CODE",
     "message": "Hata açıklaması",
-    "details": { /* Varsa ek hata detayları */ }
+    "details": {
+      /* Varsa ek hata detayları */
+    }
   }
 }
 ```
@@ -266,12 +268,12 @@ GET /api/users
 
 **Sorgu Parametreleri:**
 
-| Parametre | Açıklama | Varsayılan | Örnek |
-|-----------|----------|------------|-------|
-| page | Sayfa numarası | 1 | `?page=2` |
-| limit | Sayfa başına öğe sayısı | 10 | `?limit=20` |
-| role | Rol filtresi | - | `?role=teacher` |
-| search | İsim veya e-posta araması | - | `?search=ahmet` |
+| Parametre | Açıklama                  | Varsayılan | Örnek           |
+| --------- | ------------------------- | ---------- | --------------- |
+| page      | Sayfa numarası            | 1          | `?page=2`       |
+| limit     | Sayfa başına öğe sayısı   | 10         | `?limit=20`     |
+| role      | Rol filtresi              | -          | `?role=teacher` |
+| search    | İsim veya e-posta araması | -          | `?search=ahmet` |
 
 **Yanıt (Response):**
 
@@ -409,12 +411,12 @@ GET /api/students
 
 **Sorgu Parametreleri:**
 
-| Parametre | Açıklama | Varsayılan | Örnek |
-|-----------|----------|------------|-------|
-| page | Sayfa numarası | 1 | `?page=2` |
-| limit | Sayfa başına öğe sayısı | 10 | `?limit=20` |
-| classId | Sınıf filtresi | - | `?classId=123` |
-| search | İsim veya numara araması | - | `?search=ali` |
+| Parametre | Açıklama                 | Varsayılan | Örnek          |
+| --------- | ------------------------ | ---------- | -------------- |
+| page      | Sayfa numarası           | 1          | `?page=2`      |
+| limit     | Sayfa başına öğe sayısı  | 10         | `?limit=20`    |
+| classId   | Sınıf filtresi           | -          | `?classId=123` |
+| search    | İsim veya numara araması | -          | `?search=ali`  |
 
 **Yanıt (Response):**
 
@@ -804,11 +806,11 @@ POST /api/webhooks
 
 API istekleri rate limiting ile sınırlandırılır. Sınırlar tenant tipine göre değişir:
 
-| Tenant Tipi | Limit |
-|-------------|-------|
-| Free | 60 istek/dakika |
-| Standard | 300 istek/dakika |
-| Premium | 1000 istek/dakika |
+| Tenant Tipi | Limit             |
+| ----------- | ----------------- |
+| Free        | 60 istek/dakika   |
+| Standard    | 300 istek/dakika  |
+| Premium     | 1000 istek/dakika |
 
 Rate limit aşıldığında 429 Too Many Requests yanıtı döndürülür ve şu başlıklar eklenir:
 
@@ -822,20 +824,20 @@ X-RateLimit-Reset: 1630000000
 
 Aşağıdaki olay türleri webhook'lar için kullanılabilir:
 
-| Olay | Açıklama |
-|------|----------|
-| user.created | Yeni kullanıcı oluşturulduğunda |
-| user.updated | Kullanıcı bilgileri güncellendiğinde |
-| user.deleted | Kullanıcı silindiğinde |
-| student.created | Yeni öğrenci oluşturulduğunda |
-| student.updated | Öğrenci bilgileri güncellendiğinde |
-| student.deleted | Öğrenci silindiğinde |
-| class.created | Yeni sınıf oluşturulduğunda |
-| class.updated | Sınıf bilgileri güncellendiğinde |
-| class.deleted | Sınıf silindiğinde |
-| exam.created | Yeni sınav oluşturulduğunda |
-| exam.updated | Sınav bilgileri güncellendiğinde |
-| exam.results_published | Sınav sonuçları yayınlandığında |
+| Olay                   | Açıklama                             |
+| ---------------------- | ------------------------------------ |
+| user.created           | Yeni kullanıcı oluşturulduğunda      |
+| user.updated           | Kullanıcı bilgileri güncellendiğinde |
+| user.deleted           | Kullanıcı silindiğinde               |
+| student.created        | Yeni öğrenci oluşturulduğunda        |
+| student.updated        | Öğrenci bilgileri güncellendiğinde   |
+| student.deleted        | Öğrenci silindiğinde                 |
+| class.created          | Yeni sınıf oluşturulduğunda          |
+| class.updated          | Sınıf bilgileri güncellendiğinde     |
+| class.deleted          | Sınıf silindiğinde                   |
+| exam.created           | Yeni sınav oluşturulduğunda          |
+| exam.updated           | Sınav bilgileri güncellendiğinde     |
+| exam.results_published | Sınav sonuçları yayınlandığında      |
 
 ## Versiyonlama
 
@@ -847,4 +849,5 @@ Accept: application/json; version=1
 ```
 
 Mevcut API sürümleri:
-- v1: Mevcut kararlı sürüm 
+
+- v1: Mevcut kararlı sürüm

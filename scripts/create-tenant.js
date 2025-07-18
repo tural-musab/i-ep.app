@@ -28,12 +28,12 @@ const args = process.argv.slice(2);
 let tenantName, subdomain, email;
 
 // 1. Komut satırı argümanlarını kontrol et
-args.forEach(arg => {
+args.forEach((arg) => {
   // Tırnaklı veya tırnaksız parametreleri işle
   const nameMatch = arg.match(/--name=["']?(.*?)["']?$/);
   const subdomainMatch = arg.match(/--subdomain=["']?(.*?)["']?$/);
   const emailMatch = arg.match(/--email=["']?(.*?)["']?$/);
-  
+
   if (nameMatch) {
     tenantName = nameMatch[1];
   } else if (subdomainMatch) {
@@ -50,7 +50,7 @@ if (!tenantName || !subdomain) {
     if (fs.existsSync(configPath)) {
       console.log('Tenant yapılandırma dosyası kullanılıyor...');
       const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-      
+
       tenantName = tenantName || config.name;
       subdomain = subdomain || config.subdomain;
       email = email || config.email;
@@ -85,36 +85,39 @@ async function createTenant() {
   try {
     // UUID oluştur
     const tenant_uuid = crypto.randomUUID();
-    
+
     // Tenant oluşturma HTTP isteği - yardımcı API endpoint'ini kullanıyoruz
     console.log('Tenant kaydı oluşturuluyor...');
-    
+
     // Vercel API token ile yetkilendirme yaparak tenant oluşturuyoruz
-    const createTenantResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/create_tenant`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-      },
-      body: JSON.stringify({
-        p_id: tenant_uuid,
-        p_name: subdomain,
-        p_display_name: tenantName,
-        p_schema_name: `tenant_${subdomain}`,
-        p_status: 'active',
-        p_plan: 'premium'
-      })
-    });
+    const createTenantResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/create_tenant`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+        },
+        body: JSON.stringify({
+          p_id: tenant_uuid,
+          p_name: subdomain,
+          p_display_name: tenantName,
+          p_schema_name: `tenant_${subdomain}`,
+          p_status: 'active',
+          p_plan: 'premium',
+        }),
+      }
+    );
 
     if (!createTenantResponse.ok) {
       const errorData = await createTenantResponse.json();
       console.error('Tenant kaydı oluşturma hatası:', errorData);
-      
+
       // Eğer tenant yaratma başarısız olursa, direkt SQL ile deneyelim
       console.log('SQL komutlarını denemeniz gerekiyor!');
       console.log('--------------------------------------');
-      console.log('Lütfen Supabase SQL Editor\'de aşağıdaki komutları çalıştırın:');
+      console.log("Lütfen Supabase SQL Editor'de aşağıdaki komutları çalıştırın:");
       console.log(`
 -- 1. Tenant oluştur
 INSERT INTO management.tenants (
@@ -146,7 +149,7 @@ INSERT INTO management.domains (
   'active'
 );
       `);
-      
+
       process.exit(1);
     }
 
@@ -155,10 +158,10 @@ INSERT INTO management.domains (
 
     // 2. Subdomain kaydı oluştur
     const domainResult = await createSubdomain(tenant.id, subdomain);
-    
+
     // 3. Admin kullanıcısı oluştur
     const adminUser = await createAdminUser(tenant.id, email);
-    
+
     console.log('\nTenant Oluşturma Özeti:');
     console.log('------------------------');
     console.log(`Tenant Adı: ${tenantName}`);
@@ -166,7 +169,6 @@ INSERT INTO management.domains (
     console.log(`Admin E-posta: ${email}`);
     console.log(`Tenant ID: ${tenant.id}`);
     console.log(`Domain Kaydı: ${domainResult ? 'Başarılı' : 'Başarısız'}`);
-    
   } catch (error) {
     console.error('Tenant oluşturma işlemi sırasında hata:', error);
     process.exit(1);
@@ -179,53 +181,55 @@ INSERT INTO management.domains (
 async function createSubdomain(tenantId, subdomain) {
   try {
     console.log(`Vercel'de domain oluşturuluyor: ${subdomain}.${baseDomain}`);
-    
+
     // 1. Domain kaydını oluştur - doğrudan HTTP isteği ile
     console.log('Domain kaydı oluşturuluyor...');
-    
-    const createDomainResponse = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/create_domain`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': process.env.SUPABASE_SERVICE_ROLE_KEY,
-        'Authorization': `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`
-      },
-      body: JSON.stringify({
-        p_tenant_id: tenantId,
-        p_domain: `${subdomain}.${baseDomain}`,
-        p_is_primary: true
-      })
-    });
-      
+
+    const createDomainResponse = await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/rpc/create_domain`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+          Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+        },
+        body: JSON.stringify({
+          p_tenant_id: tenantId,
+          p_domain: `${subdomain}.${baseDomain}`,
+          p_is_primary: true,
+        }),
+      }
+    );
+
     if (!createDomainResponse.ok) {
       console.error('Domain kaydı oluşturma hatası. SQL komutunu denemeniz gerekiyor.');
       return false;
     }
-    
+
     console.log('Domain veritabanı kaydı oluşturuldu');
-    
+
     // 2. Vercel API'ye domain ekle
     const response = await fetch(`https://api.vercel.com/v10/projects/${vercelProjectId}/domains`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${vercelApiToken}`,
-        'Content-Type': 'application/json'
+        Authorization: `Bearer ${vercelApiToken}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        name: `${subdomain}.${baseDomain}`
-      })
+        name: `${subdomain}.${baseDomain}`,
+      }),
     });
-    
+
     const responseData = await response.json();
-    
+
     if (!response.ok) {
       console.error('Vercel domain ekleme hatası:', responseData);
       return false;
     }
-    
+
     console.log(`Vercel'e domain eklendi: ${subdomain}.${baseDomain}`);
     return true;
-    
   } catch (error) {
     console.error('Subdomain oluşturma hatası:', error);
     return false;
@@ -238,21 +242,21 @@ async function createSubdomain(tenantId, subdomain) {
 async function createAdminUser(tenantId, email) {
   try {
     console.log(`Admin kullanıcısı oluşturuluyor: ${email}`);
-    
+
     // 1. Auth kullanıcısı oluştur
     const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
       email,
       password: 'password', // Güvenli bir şifre belirleyin veya rastgele oluşturun
-      email_confirm: true
+      email_confirm: true,
     });
-    
+
     if (authError) {
       console.error('Auth kullanıcısı oluşturma hatası:', authError);
       return null;
     }
-    
+
     console.log(`Auth kullanıcısı oluşturuldu. ID: ${authUser.user.id}`);
-    
+
     // 2. Public users tablosuna ekle
     const { data: user, error: userError } = await supabase
       .from('users')
@@ -264,19 +268,18 @@ async function createAdminUser(tenantId, email) {
         last_name: 'User',
         role: 'admin',
         is_active: true,
-        verification_status: 'verified'
+        verification_status: 'verified',
       })
       .select('*')
       .single();
-      
+
     if (userError) {
       console.error('Kullanıcı profili oluşturma hatası:', userError);
       return null;
     }
-    
+
     console.log(`Admin kullanıcı profili oluşturuldu`);
     return user;
-    
   } catch (error) {
     console.error('Admin kullanıcısı oluşturma hatası:', error);
     return null;
@@ -284,4 +287,4 @@ async function createAdminUser(tenantId, email) {
 }
 
 // Tenant oluştur
-createTenant(); 
+createTenant();

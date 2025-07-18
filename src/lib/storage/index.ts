@@ -4,23 +4,32 @@
 import { SupabaseStorageProvider } from './providers/supabase.provider';
 import { CloudflareR2Provider } from './providers/cloudflare-r2.provider';
 import { StorageRepository } from './repository/storage-repository';
-import type { IStorageProvider, StorageProvider, UploadOptions, UploadResult, StorageFile } from '@/types/storage';
+import type {
+  IStorageProvider,
+  StorageProvider,
+  UploadOptions,
+  UploadResult,
+  StorageFile,
+} from '@/types/storage';
 
 // Storage configuration from environment
 const STORAGE_CONFIG = {
   primaryProvider: (process.env.NEXT_PUBLIC_STORAGE_PROVIDER || 'supabase') as StorageProvider,
-  
+
   // Size-based routing (for future use)
   routing: {
     maxSupabaseFileSize: 10 * 1024 * 1024, // 10MB
     largeFileProvider: 'r2' as StorageProvider,
   },
-  
+
   // Feature flags
   features: {
-    useCloudflareR2: process.env.NEXT_PUBLIC_USE_R2 === 'true',
+    useCloudflareR2: !!(process.env.CLOUDFLARE_R2_ACCESS_KEY_ID && 
+                       process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY && 
+                       process.env.CLOUDFLARE_R2_ENDPOINT && 
+                       process.env.CLOUDFLARE_R2_BUCKET_NAME),
     routeLargeFiles: process.env.NEXT_PUBLIC_ROUTE_LARGE_FILES === 'true',
-  }
+  },
 };
 
 /**
@@ -29,19 +38,19 @@ const STORAGE_CONFIG = {
  */
 export class StorageService implements IStorageProvider {
   private providers: Map<StorageProvider, IStorageProvider>;
-  
+
   constructor() {
     this.providers = new Map();
-    
+
     // Initialize providers
     this.providers.set('supabase', new SupabaseStorageProvider());
-    
+
     // Only initialize R2 if enabled
     if (STORAGE_CONFIG.features.useCloudflareR2) {
       this.providers.set('r2', new CloudflareR2Provider());
     }
   }
-  
+
   /**
    * Get the appropriate provider for a file
    */
@@ -50,7 +59,7 @@ export class StorageService implements IStorageProvider {
     if (!STORAGE_CONFIG.features.useCloudflareR2) {
       return this.providers.get('supabase')!;
     }
-    
+
     // Route large files to R2 if enabled
     if (file && STORAGE_CONFIG.features.routeLargeFiles) {
       if (file.size > STORAGE_CONFIG.routing.maxSupabaseFileSize) {
@@ -58,11 +67,11 @@ export class StorageService implements IStorageProvider {
         if (r2Provider) return r2Provider;
       }
     }
-    
+
     // Default to primary provider
     return this.providers.get(STORAGE_CONFIG.primaryProvider)!;
   }
-  
+
   /**
    * Upload a file
    */
@@ -70,7 +79,7 @@ export class StorageService implements IStorageProvider {
     const provider = this.getProvider(file);
     return provider.upload(file, path, options);
   }
-  
+
   /**
    * Download a file
    */
@@ -80,7 +89,7 @@ export class StorageService implements IStorageProvider {
     const provider = this.providers.get(file.storage_provider)!;
     return provider.download(fileId);
   }
-  
+
   /**
    * Delete a file
    */
@@ -89,7 +98,7 @@ export class StorageService implements IStorageProvider {
     const provider = this.providers.get(file.storage_provider)!;
     return provider.delete(fileId);
   }
-  
+
   /**
    * Get public URL for a file
    */
@@ -98,7 +107,7 @@ export class StorageService implements IStorageProvider {
     // For now, return a URL that will be resolved by our API
     return `/api/storage/files/${fileId}`;
   }
-  
+
   /**
    * Get signed URL for temporary access
    */
@@ -107,7 +116,7 @@ export class StorageService implements IStorageProvider {
     const provider = this.providers.get(file.storage_provider)!;
     return provider.getSignedUrl(fileId, expiresIn);
   }
-  
+
   /**
    * List files in a folder
    */
@@ -116,14 +125,14 @@ export class StorageService implements IStorageProvider {
     // Implementasyon repository katmanında olacak
     throw new Error('StorageRepository.list() metodunu kullanın');
   }
-  
+
   /**
    * Get file information from database
    */
   private async getFileInfo(fileId: string): Promise<StorageFile> {
     const { createServerSupabaseClient } = await import('@/lib/supabase/server');
     const supabase = await createServerSupabaseClient();
-    
+
     const { data: file, error } = await supabase
       .from('files')
       .select('*')
@@ -149,31 +158,31 @@ export class StorageService implements IStorageProvider {
       access_count: file.access_count || 0,
       created_at: file.created_at,
       updated_at: file.updated_at,
-      metadata: file.metadata || {}
+      metadata: file.metadata || {},
     };
   }
-  
+
   /**
    * Check if a file should be migrated to R2
    */
   async shouldMigrateToR2(fileId: string): Promise<boolean> {
     if (!STORAGE_CONFIG.features.useCloudflareR2) return false;
-    
+
     const file = await this.getFileInfo(fileId);
-    
+
     // Already on R2
     if (file.storage_provider === 'r2') return false;
-    
+
     // Check size threshold
     if (file.size_bytes > STORAGE_CONFIG.routing.maxSupabaseFileSize) {
       return true;
     }
-    
+
     // Check if it's a frequently accessed file
     if (file.access_count > 100) {
       return true;
     }
-    
+
     return false;
   }
 }

@@ -16,11 +16,11 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 function getTenantId(): string {
   const headersList = headers();
   const tenantId = headersList.get('x-tenant-id');
-  
+
   if (!tenantId) {
     throw new Error('Tenant ID not found in headers');
   }
-  
+
   return tenantId;
 }
 
@@ -28,21 +28,18 @@ function getTenantId(): string {
  * GET /api/assignments/[id]/statistics
  * Get comprehensive statistics for a specific assignment
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Validate assignment ID
@@ -54,26 +51,21 @@ export async function GET(
     // Verify assignment exists
     const assignment = await assignmentRepo.findById(assignmentId);
     if (!assignment) {
-      return NextResponse.json(
-        { error: 'Assignment not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
     }
 
     // Check permissions
     const userId = session.user.id;
     const userRole = session.user.app_metadata?.role || 'user';
-    
+
     // Only teachers who created the assignment, admins, or super admins can view statistics
-    const canViewStats = userRole === 'super_admin' || 
-                        userRole === 'admin' || 
-                        (userRole === 'teacher' && assignment.teacher_id === userId);
+    const canViewStats =
+      userRole === 'super_admin' ||
+      userRole === 'admin' ||
+      (userRole === 'teacher' && assignment.teacher_id === userId);
 
     if (!canViewStats) {
-      return NextResponse.json(
-        { error: 'Insufficient permissions' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
     // Get comprehensive statistics
@@ -105,7 +97,7 @@ export async function GET(
         max_score: assignment.max_score,
         status: assignment.status,
         is_overdue: isOverdue,
-        days_to_deadline: daysToDeadline
+        days_to_deadline: daysToDeadline,
       },
       basic_stats: {
         total_submissions: statistics.total_submissions,
@@ -115,7 +107,7 @@ export async function GET(
         average_score: statistics.average_score,
         median_score: statistics.median_score,
         highest_score: statistics.highest_score,
-        lowest_score: statistics.lowest_score
+        lowest_score: statistics.lowest_score,
       },
       submission_status: submissionStats,
       score_distribution: scoreDistribution,
@@ -124,25 +116,21 @@ export async function GET(
         created_at: assignment.created_at,
         due_date: assignment.due_date,
         last_submission: statistics.last_submission_date,
-        last_graded: statistics.last_graded_date
-      }
+        last_graded: statistics.last_graded_date,
+      },
     };
 
     return NextResponse.json(response);
-
   } catch (error) {
     console.error('Error fetching assignment statistics:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid assignment ID', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -16,6 +16,7 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 ### 1. Ana Dashboard
 
 #### 1.1. Sistem Genel Bakış
+
 - Toplam aktif tenant sayısı
 - Toplam kullanıcı sayısı (rol bazlı dağılım)
 - Sistem sağlık durumu
@@ -23,6 +24,7 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 - Kritik uyarılar ve bildirimler
 
 #### 1.2. Performans Metrikleri
+
 - Sistem uptime durumu
 - Kaynak kullanım grafikleri
 - API yanıt süreleri
@@ -32,6 +34,7 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 ### 2. Tenant Yönetimi
 
 #### 2.1. Tenant Listesi ve İşlemler
+
 - Tenant arama ve filtreleme
 - Tenant detay görüntüleme
 - Yeni tenant oluşturma
@@ -39,6 +42,7 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 - Tenant durumu değiştirme (aktif/pasif)
 
 #### 2.2. Tenant İzleme
+
 - Tenant sağlık skorları
 - Kaynak kullanım grafikleri
 - Kullanıcı aktivite metrikleri
@@ -46,6 +50,7 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 - Performans metrikleri
 
 #### 2.3. Plan ve Abonelik Yönetimi
+
 - Plan değişikliği
 - Özellik bayrakları yönetimi
 - Kullanım limitleri ayarlama
@@ -55,6 +60,7 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 ### 3. Domain Yönetimi
 
 #### 3.1. Domain İşlemleri
+
 - Domain listesi görüntüleme
 - Yeni domain/subdomain ekleme
 - Domain doğrulama
@@ -62,6 +68,7 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 - DNS kayıtları yönetimi
 
 #### 3.2. Domain İzleme
+
 - Domain sağlık durumu
 - SSL sertifika durumu
 - DNS propagasyon durumu
@@ -71,6 +78,7 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 ### 4. Veri Yönetimi
 
 #### 4.1. Yedekleme Yönetimi
+
 - Yedekleme durumu izleme
 - Manuel yedekleme başlatma
 - Yedekleme planları yapılandırma
@@ -78,6 +86,7 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 - Yedekleme logları
 
 #### 4.2. Veri İzolasyon Kontrolleri
+
 - Tenant veri izolasyon durumu
 - Cross-tenant erişim kontrolleri
 - Veri güvenliği metrikleri
@@ -86,12 +95,14 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 ### 5. Güvenlik ve Denetim
 
 #### 5.1. Güvenlik İzleme
+
 - Güvenlik olayları listesi
 - Şüpheli aktivite bildirimleri
 - IP kısıtlama yönetimi
 - API güvenlik metrikleri
 
 #### 5.2. Audit Log Yönetimi
+
 - Sistem geneli audit logları
 - Kullanıcı aktivite logları
 - Admin işlem logları
@@ -100,12 +111,14 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 ### 6. Topluluk ve Destek
 
 #### 6.1. Topluluk Yönetimi
+
 - Şampiyon kullanıcı programı
 - Geribildirim yönetimi
 - Forum moderasyon araçları
 - İçerik yönetimi
 
 #### 6.2. Destek Yönetimi
+
 - Destek talepleri izleme
 - SLA takibi
 - Çözüm süreleri analizi
@@ -114,12 +127,14 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 ### 7. Sistem Yapılandırması
 
 #### 7.1. Genel Ayarlar
+
 - Sistem parametreleri
 - E-posta şablonları
 - Bildirim ayarları
 - API yapılandırması
 
 #### 7.2. Bölgesel Ayarlar
+
 - Dil yönetimi
 - Bölgesel içerik yapılandırması
 - Zaman dilimi ayarları
@@ -128,12 +143,14 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 ### 8. Raporlama
 
 #### 8.1. Sistem Raporları
+
 - Performans raporları
 - Kullanım raporları
 - Güvenlik raporları
 - SLA raporları
 
 #### 8.2. Özel Raporlar
+
 - Tenant bazlı raporlar
 - Bölgesel kullanım raporları
 - Trend analizi raporları
@@ -142,24 +159,28 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 ## Teknik Özellikler
 
 ### Frontend Teknolojileri
+
 - Next.js 14 App Router
 - TypeScript
 - Tailwind CSS
 - Shadcn/UI komponentleri
 
 ### Veri Yönetimi
+
 - Supabase veritabanı entegrasyonu
 - Real-time veri güncelleme
 - Önbellek yönetimi
 - Veri izolasyon kontrolleri
 
 ### Güvenlik
+
 - Rol bazlı erişim kontrolü
 - İki faktörlü kimlik doğrulama
 - IP bazlı erişim kısıtlaması
 - Oturum yönetimi
 
 ### Performans
+
 - Sayfa önbelleğe alma
 - Lazy loading
 - Optimized API calls
@@ -170,4 +191,4 @@ Süper Admin Paneli, Iqra Eğitim Portalı'nın tüm sistem yönetimi, tenant ko
 - [Dashboard Tasarımı](../ui-ux/layouts/super-admin/dashboard.md)
 - [Tenant Yönetimi Akışı](../ui-ux/user-flows/super-admin-flows.md)
 - [API Dokümantasyonu](../api/super-admin-api.md)
-- [Güvenlik Politikaları](../security/super-admin-security.md) 
+- [Güvenlik Politikaları](../security/super-admin-security.md)

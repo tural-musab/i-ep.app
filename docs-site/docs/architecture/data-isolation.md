@@ -42,12 +42,14 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA tenant_{tenant_id} TO app_role;
 ```
 
 #### Avantajları:
+
 - Güçlü mantıksal izolasyon
 - Tenant-specific şema değişiklikleri yapılabilir
 - Performans iyileştirmeleri (indeksler, partitioning) tenant bazında uygulanabilir
 - Her tenant için backup/restore basitleşir
 
 #### Dezavantajları:
+
 - Çok sayıda şema olduğunda veritabanı yönetimi karmaşıklaşabilir
 - Cross-tenant sorgular karmaşıktır
 - Schema sayısı veritabanı limitlerine tabi olabilir
@@ -75,6 +77,7 @@ CREATE POLICY tenant_isolation_policy ON public.shared_metrics
 ```
 
 #### Kullanım Alanları:
+
 - Analitik veriler
 - Kullanım metrikleri
 - Audit logları
@@ -92,17 +95,17 @@ export async function tenantIsolationMiddleware(
   next: () => void
 ) {
   const tenantId = req.headers['x-tenant-id'] as string;
-  
+
   if (!tenantId) {
     return res.status(401).json({ error: 'Tenant ID missing' });
   }
-  
+
   // Tenant kimliğini SQL context'ine ayarla
   await prisma.$executeRaw`SELECT set_config('app.current_tenant_id', ${tenantId}, TRUE)`;
-  
+
   // Tenant bilgisini request context'ine ekle
   req.tenantId = tenantId;
-  
+
   // İzolasyon kontrollerinden geçti, devam et
   next();
 }
@@ -114,17 +117,17 @@ class StudentRepository {
     const student = await prisma.student.findUnique({
       where: {
         id: studentId,
-        tenant_id: tenantId // İkinci bir güvenlik katmanı
-      }
+        tenant_id: tenantId, // İkinci bir güvenlik katmanı
+      },
     });
-    
+
     if (!student) throw new NotFoundError('Student not found');
-    
+
     // Bulunan öğrencinin tenant'ını doğrula (üçüncü güvenlik katmanı)
     if (student.tenant_id !== tenantId) {
       throw new SecurityError('Tenant isolation breach detected');
     }
-    
+
     return student;
   }
 }
@@ -172,37 +175,37 @@ Otomatik testler, tenant izolasyonunu düzenli olarak kontrol eder:
 describe('Tenant Data Isolation', () => {
   let tenant1Id: string;
   let tenant2Id: string;
-  
+
   beforeAll(async () => {
     // Test tenant'ları oluştur
     tenant1Id = await createTestTenant('test-school-1');
     tenant2Id = await createTestTenant('test-school-2');
-    
+
     // Her tenant için test verileri oluştur
     await createTestDataForTenant(tenant1Id);
     await createTestDataForTenant(tenant2Id);
   });
-  
+
   test('Tenant 1 should not access Tenant 2 students', async () => {
     // Tenant 1 kontekstinde Tenant 2'ye ait bir öğrenciyi sorgula
     const tenant2Student = await getFirstStudentFromTenant(tenant2Id);
-    
-    await expect(
-      fetchStudentWithContext(tenant2Student.id, tenant1Id)
-    ).rejects.toThrow('Student not found');
+
+    await expect(fetchStudentWithContext(tenant2Student.id, tenant1Id)).rejects.toThrow(
+      'Student not found'
+    );
   });
-  
+
   test('API should reject cross-tenant requests', async () => {
     // Tenant 1 token'ı ile Tenant 2 verilerine erişmeyi dene
     const tenant1Token = await getAuthTokenForTenant(tenant1Id);
     const tenant2StudentAPI = `/api/tenants/${tenant2Id}/students`;
-    
+
     const response = await fetch(tenant2StudentAPI, {
       headers: {
-        'Authorization': `Bearer ${tenant1Token}`
-      }
+        Authorization: `Bearer ${tenant1Token}`,
+      },
     });
-    
+
     expect(response.status).toBe(403);
   });
 });
@@ -233,38 +236,31 @@ async function logAuditEvent(
       user_id: userId,
       details: details ? JSON.stringify(details) : null,
       ip_address: getCurrentIpAddress(),
-      timestamp: new Date()
-    }
+      timestamp: new Date(),
+    },
   });
 }
 
 // Repository'de kullanımı
 class StudentRepository {
   async updateStudent(
-    studentId: string, 
-    data: Partial<Student>, 
+    studentId: string,
+    data: Partial<Student>,
     tenantId: string,
     userId: string
   ): Promise<Student> {
     // Veri güncellemesi
     const updatedStudent = await prisma.student.update({
       where: { id: studentId, tenant_id: tenantId },
-      data
+      data,
     });
-    
+
     // Audit log kaydı
-    await logAuditEvent(
-      'update',
-      'student',
-      studentId,
-      tenantId,
-      userId,
-      {
-        changes: diffObjects(updatedStudent, data),
-        fields_updated: Object.keys(data)
-      }
-    );
-    
+    await logAuditEvent('update', 'student', studentId, tenantId, userId, {
+      changes: diffObjects(updatedStudent, data),
+      fields_updated: Object.keys(data),
+    });
+
     return updatedStudent;
   }
 }
@@ -304,19 +300,16 @@ class IntegrationService {
     body: string
   ): Promise<void> {
     // Tenant'a özgü entegrasyon anahtarlarını al
-    const emailConfig = await this.getTenantIntegrationConfig(
-      tenantId, 
-      'email'
-    );
-    
+    const emailConfig = await this.getTenantIntegrationConfig(tenantId, 'email');
+
     // Tenant'a özgü konfigürasyonla e-posta gönder
     const emailProvider = this.createEmailProviderInstance(emailConfig);
     await emailProvider.sendEmail(recipients, subject, body);
-    
+
     // Entegrasyon kullanımını logla
     await this.logIntegrationUsage(tenantId, 'email', {
       recipient_count: recipients.length,
-      subject
+      subject,
     });
   }
 }
@@ -357,16 +350,16 @@ async function exportTenantData(
   if (!tenantExists) {
     throw new Error(`Tenant ${tenantId} does not exist`);
   }
-  
+
   // Tenant ile ilişkili tüm tabloları bul
   const tables = await getTenantTables(tenantId);
-  
+
   // Her tablodan veri çıkar
   const exportData = {};
   for (const table of tables) {
     exportData[table] = await exportTableData(tenantId, table);
   }
-  
+
   // İstenilen formatta dışa aktar
   return formatExportData(exportData, targetFormat);
 }
@@ -379,17 +372,17 @@ async function importTenantData(
 ): Promise<ImportResult> {
   // Hedef tenant hazırla
   await prepareTargetTenant(targetTenantId);
-  
+
   // Kaynak veriyi parse et
   const parsedData = parseImportData(importData, sourceFormat);
-  
+
   // Her tablo için verileri içe aktar
   const importResults = [];
   for (const [table, data] of Object.entries(parsedData)) {
     const result = await importTableData(targetTenantId, table, data);
     importResults.push(result);
   }
-  
+
   // İçe aktarım sonuçlarını döndür
   return summarizeImportResults(importResults);
 }
@@ -425,13 +418,13 @@ Veri izolasyonu prensipleri, yedekleme ve felaketten kurtarma süreçlerinde de 
 
 ### Veri İzolasyon Yol Haritası
 
-| Aşama | Hedef | Zaman Çerçevesi |
-|-------|-------|-----------------|
-| 1     | Temel şema izolasyonu | MVP |
-| 2     | RLS entegrasyonu | MVP + 2 ay |
-| 3     | Gelişmiş audit loglama | MVP + 3 ay |
-| 4     | Anormal erişim tespiti | MVP + 6 ay |
-| 5     | İzolasyon otomatik testleri | MVP + 4 ay |
+| Aşama | Hedef                       | Zaman Çerçevesi |
+| ----- | --------------------------- | --------------- |
+| 1     | Temel şema izolasyonu       | MVP             |
+| 2     | RLS entegrasyonu            | MVP + 2 ay      |
+| 3     | Gelişmiş audit loglama      | MVP + 3 ay      |
+| 4     | Anormal erişim tespiti      | MVP + 6 ay      |
+| 5     | İzolasyon otomatik testleri | MVP + 4 ay      |
 
 ## İlgili Kaynaklar
 

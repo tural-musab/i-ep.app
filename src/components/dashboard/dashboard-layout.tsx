@@ -172,17 +172,11 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
         <Sidebar>
           <SidebarHeader className="border-b">
             <div className="flex items-center gap-2 px-2 py-4">
-              <Image
-                src="/logo.webp"
-                alt="Iqra"
-                width={32}
-                height={32}
-                className="h-8 w-8"
-              />
+              <Image src="/logo.webp" alt="Iqra" width={32} height={32} className="h-8 w-8" />
               <span className="font-semibold">Iqra Portal</span>
             </div>
           </SidebarHeader>
-          
+
           <SidebarContent>
             <SidebarGroup>
               <SidebarGroupLabel>Menu</SidebarGroupLabel>
@@ -190,10 +184,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
                 <SidebarMenu>
                   {menuItems.map((item) => (
                     <SidebarMenuItem key={item.href}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={pathname === item.href}
-                      >
+                      <SidebarMenuButton asChild isActive={pathname === item.href}>
                         <Link href={item.href}>
                           <item.icon className="h-4 w-4" />
                           <span>{item.title}</span>
@@ -205,35 +196,33 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
               </SidebarGroupContent>
             </SidebarGroup>
           </SidebarContent>
-          
+
           <SidebarFooter className="border-t">
             <div className="p-4">
-              <p className="text-xs text-muted-foreground">
-                © 2024 Iqra Portal
-              </p>
+              <p className="text-muted-foreground text-xs">© 2024 Iqra Portal</p>
             </div>
           </SidebarFooter>
         </Sidebar>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex flex-1 flex-col">
           {/* Header */}
-          <header className="border-b bg-background">
+          <header className="bg-background border-b">
             <div className="flex h-16 items-center justify-between px-4">
               <div className="flex items-center gap-4">
                 <SidebarTrigger />
                 <h1 className="text-lg font-semibold">Dashboard</h1>
               </div>
-              
+
               <div className="flex items-center gap-4">
                 {/* Bildirimler */}
                 <Button variant="ghost" size="icon" className="relative">
                   <Bell className="h-5 w-5" />
-                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[10px] font-medium text-white flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-medium text-white">
                     3
                   </span>
                 </Button>
-                
+
                 {/* Kullanıcı Menüsü */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -244,9 +233,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
                           {user.name?.charAt(0) || user.email.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="hidden md:inline-block">
-                        {user.name || user.email}
-                      </span>
+                      <span className="hidden md:inline-block">{user.name || user.email}</span>
                       <ChevronDown className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -262,10 +249,7 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
                       <span>Ayarlar</span>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                      className="text-red-600"
-                      onClick={handleLogout}
-                    >
+                    <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Çıkış Yap</span>
                     </DropdownMenuItem>
@@ -274,13 +258,11 @@ export function DashboardLayout({ children, user }: DashboardLayoutProps) {
               </div>
             </div>
           </header>
-          
+
           {/* Page Content */}
-          <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
-            {children}
-          </main>
+          <main className="flex-1 overflow-y-auto bg-gray-50 p-6">{children}</main>
         </div>
       </div>
     </SidebarProvider>
   );
-} 
+}

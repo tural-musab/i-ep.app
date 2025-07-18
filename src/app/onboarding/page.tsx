@@ -1,67 +1,67 @@
-'use client'
+'use client';
 
-import { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/hooks/use-auth'
-import OnboardingWizard from '@/components/onboarding/onboarding-wizard'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { CheckCircle, ArrowRight, Settings, Users, BookOpen, MessageSquare } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/use-auth';
+import OnboardingWizard from '@/components/onboarding/onboarding-wizard';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle, ArrowRight, Settings, Users, BookOpen, MessageSquare } from 'lucide-react';
 
 export default function OnboardingPage() {
-  const { user, loading } = useAuth()
-  const router = useRouter()
-  const [showWizard, setShowWizard] = useState(false)
-  const [isCheckingStatus, setIsCheckingStatus] = useState(true)
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [showWizard, setShowWizard] = useState(false);
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
 
   useEffect(() => {
     if (!loading && user) {
       // Check if user has already completed onboarding
-      checkOnboardingStatus()
+      checkOnboardingStatus();
     }
-  }, [user, loading, checkOnboardingStatus])
+  }, [user, loading, checkOnboardingStatus]);
 
   const checkOnboardingStatus = useCallback(async () => {
     try {
       // This would typically check the user's onboarding status from the backend
       // For now, we'll simulate this check
-      const hasCompletedOnboarding = user?.user_metadata?.onboarding_completed || false
-      
+      const hasCompletedOnboarding = user?.user_metadata?.onboarding_completed || false;
+
       if (hasCompletedOnboarding) {
-        router.push('/dashboard')
-        return
+        router.push('/dashboard');
+        return;
       }
-      
-      setIsCheckingStatus(false)
+
+      setIsCheckingStatus(false);
     } catch (error) {
-      console.error('Error checking onboarding status:', error)
-      setIsCheckingStatus(false)
+      console.error('Error checking onboarding status:', error);
+      setIsCheckingStatus(false);
     }
-  }, [user, router])
+  }, [user, router]);
 
   const handleStartOnboarding = () => {
-    setShowWizard(true)
-  }
+    setShowWizard(true);
+  };
 
   const handleOnboardingComplete = () => {
-    router.push('/dashboard')
-  }
+    router.push('/dashboard');
+  };
 
   if (loading || isCheckingStatus) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
           <p className="text-gray-600">Yükleniyor...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!user) {
-    router.push('/login')
-    return null
+    router.push('/login');
+    return null;
   }
 
   if (showWizard) {
@@ -74,30 +74,29 @@ export default function OnboardingPage() {
           onComplete={handleOnboardingComplete}
         />
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-4xl mx-auto py-12 px-6">
+      <div className="mx-auto max-w-4xl px-6 py-12">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="text-6xl mb-4">🎓</div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            İ-EP.APP&apos;e Hoş Geldiniz!
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Kapsamlı okul yönetim sisteminize hoş geldiniz. Başlamak için kısa bir kurulum sürecinden geçelim.
+        <div className="mb-12 text-center">
+          <div className="mb-4 text-6xl">🎓</div>
+          <h1 className="mb-4 text-4xl font-bold text-gray-900">İ-EP.APP&apos;e Hoş Geldiniz!</h1>
+          <p className="mx-auto max-w-2xl text-xl text-gray-600">
+            Kapsamlı okul yönetim sisteminize hoş geldiniz. Başlamak için kısa bir kurulum
+            sürecinden geçelim.
           </p>
         </div>
 
         {/* What You'll Set Up */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-center mb-8">Neler Yapacağız?</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <h2 className="mb-8 text-center text-2xl font-bold">Neler Yapacağız?</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <Card className="text-center">
               <CardHeader>
-                <Settings className="w-12 h-12 mx-auto text-blue-600 mb-2" />
+                <Settings className="mx-auto mb-2 h-12 w-12 text-blue-600" />
                 <CardTitle className="text-lg">Okul Kurulumu</CardTitle>
               </CardHeader>
               <CardContent>
@@ -109,7 +108,7 @@ export default function OnboardingPage() {
 
             <Card className="text-center">
               <CardHeader>
-                <Users className="w-12 h-12 mx-auto text-green-600 mb-2" />
+                <Users className="mx-auto mb-2 h-12 w-12 text-green-600" />
                 <CardTitle className="text-lg">Profil Oluşturma</CardTitle>
               </CardHeader>
               <CardContent>
@@ -121,7 +120,7 @@ export default function OnboardingPage() {
 
             <Card className="text-center">
               <CardHeader>
-                <BookOpen className="w-12 h-12 mx-auto text-purple-600 mb-2" />
+                <BookOpen className="mx-auto mb-2 h-12 w-12 text-purple-600" />
                 <CardTitle className="text-lg">Sınıf Kurulumu</CardTitle>
               </CardHeader>
               <CardContent>
@@ -133,7 +132,7 @@ export default function OnboardingPage() {
 
             <Card className="text-center">
               <CardHeader>
-                <MessageSquare className="w-12 h-12 mx-auto text-orange-600 mb-2" />
+                <MessageSquare className="mx-auto mb-2 h-12 w-12 text-orange-600" />
                 <CardTitle className="text-lg">Entegrasyonlar</CardTitle>
               </CardHeader>
               <CardContent>
@@ -147,12 +146,12 @@ export default function OnboardingPage() {
 
         {/* Benefits */}
         <div className="mb-12">
-          <h2 className="text-2xl font-bold text-center mb-8">Neden İ-EP.APP?</h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <h2 className="mb-8 text-center text-2xl font-bold">Neden İ-EP.APP?</h2>
+          <div className="grid gap-6 md:grid-cols-3">
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <CheckCircle className="h-5 w-5 text-green-500" />
                   Kapsamlı Yönetim
                 </CardTitle>
               </CardHeader>
@@ -166,7 +165,7 @@ export default function OnboardingPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <CheckCircle className="h-5 w-5 text-green-500" />
                   Kolay Kullanım
                 </CardTitle>
               </CardHeader>
@@ -180,7 +179,7 @@ export default function OnboardingPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <CheckCircle className="h-5 w-5 text-green-500" />
                   Güvenli & Güncel
                 </CardTitle>
               </CardHeader>
@@ -195,26 +194,27 @@ export default function OnboardingPage() {
 
         {/* Time Estimate */}
         <div className="mb-12">
-          <Card className="bg-blue-50 border-blue-200">
+          <Card className="border-blue-200 bg-blue-50">
             <CardHeader>
               <CardTitle className="text-center">⏱️ Kurulum Süresi</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-              <div className="text-3xl font-bold text-blue-600 mb-2">~15 dakika</div>
-              <p className="text-gray-600 mb-4">
-                Ortalama kurulum süresi sadece 15 dakika. İstediğiniz zaman duraklatabilir ve daha sonra devam edebilirsiniz.
+              <div className="mb-2 text-3xl font-bold text-blue-600">~15 dakika</div>
+              <p className="mb-4 text-gray-600">
+                Ortalama kurulum süresi sadece 15 dakika. İstediğiniz zaman duraklatabilir ve daha
+                sonra devam edebilirsiniz.
               </p>
               <div className="flex justify-center gap-8 text-sm">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div className="h-3 w-3 rounded-full bg-green-500"></div>
                   <span>6 kolay adım</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <div className="h-3 w-3 rounded-full bg-blue-500"></div>
                   <span>%95 tamamlanma oranı</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                  <div className="h-3 w-3 rounded-full bg-purple-500"></div>
                   <span>İsteğe bağlı adımlar</span>
                 </div>
               </div>
@@ -227,24 +227,24 @@ export default function OnboardingPage() {
           <Button
             size="lg"
             onClick={handleStartOnboarding}
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-3 text-lg"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 text-lg text-white hover:from-blue-700 hover:to-indigo-700"
           >
             Başlayalım
-            <ArrowRight className="ml-2 w-5 h-5" />
+            <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
-          <p className="text-sm text-gray-500 mt-4">
+          <p className="mt-4 text-sm text-gray-500">
             Kurulum sırasında istediğiniz zaman çıkış yapabilir ve daha sonra devam edebilirsiniz.
           </p>
         </div>
 
         {/* Help */}
         <div className="mt-12 text-center">
-          <Alert className="max-w-2xl mx-auto">
+          <Alert className="mx-auto max-w-2xl">
             <AlertDescription>
-              <strong>Yardıma mı ihtiyacınız var?</strong> Kurulum sırasında herhangi bir sorunla karşılaşırsanız, 
-              destek ekibimiz size yardımcı olmaktan mutluluk duyar.
+              <strong>Yardıma mı ihtiyacınız var?</strong> Kurulum sırasında herhangi bir sorunla
+              karşılaşırsanız, destek ekibimiz size yardımcı olmaktan mutluluk duyar.
               <br />
-              <Button variant="link" className="p-0 mt-2" onClick={() => router.push('/support')}>
+              <Button variant="link" className="mt-2 p-0" onClick={() => router.push('/support')}>
                 Destek Merkezi →
               </Button>
             </AlertDescription>
@@ -252,5 +252,5 @@ export default function OnboardingPage() {
         </div>
       </div>
     </div>
-  )
-} 
+  );
+}

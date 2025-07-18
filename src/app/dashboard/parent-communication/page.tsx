@@ -13,11 +13,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { 
-  MessageSquare, 
-  Calendar, 
-  Star, 
-  Users, 
+import {
+  MessageSquare,
+  Calendar,
+  Star,
+  Users,
   Clock,
   Plus,
   Eye,
@@ -29,7 +29,7 @@ import {
   TrendingUp,
   BarChart3,
   Settings,
-  Download
+  Download,
 } from 'lucide-react';
 import { ParentMessagingSystem } from '@/components/parent-communication/parent-messaging-system';
 import { ParentMeetingScheduler } from '@/components/parent-communication/parent-meeting-scheduler';
@@ -49,7 +49,7 @@ export default function ParentCommunicationPage() {
     averageResponseTime: 2.4,
     satisfactionRating: 4.6,
     monthlyTrend: 'up',
-    trendValue: 8.2
+    trendValue: 8.2,
   };
 
   const recentMessages = [
@@ -59,20 +59,20 @@ export default function ParentCommunicationPage() {
         name: 'Ayşe Veli',
         avatar: '/api/placeholder/40/40',
         phone: '+90 555 123 4567',
-        email: 'ayse.veli@parent.com'
+        email: 'ayse.veli@parent.com',
       },
       student: {
         name: 'Ali Veli',
         class: '5-A',
-        number: '2025001'
+        number: '2025001',
       },
       teacher: 'Ahmet Öğretmen',
       subject: 'Matematik performansı hakkında',
-      preview: 'Merhaba, Ali\'nin matematik dersindeki son durumu hakkında bilgi alabilir miyim?',
+      preview: "Merhaba, Ali'nin matematik dersindeki son durumu hakkında bilgi alabilir miyim?",
       timestamp: '2025-01-15T10:30:00',
       status: 'unread',
       priority: 'medium',
-      type: 'inquiry'
+      type: 'inquiry',
     },
     {
       id: '2',
@@ -80,12 +80,12 @@ export default function ParentCommunicationPage() {
         name: 'Mehmet Kaya',
         avatar: '/api/placeholder/40/40',
         phone: '+90 555 234 5678',
-        email: 'mehmet.kaya@parent.com'
+        email: 'mehmet.kaya@parent.com',
       },
       student: {
         name: 'Fatma Kaya',
         class: '6-B',
-        number: '2025002'
+        number: '2025002',
       },
       teacher: 'Zeynep Öğretmen',
       subject: 'Veli toplantısı randevusu',
@@ -93,7 +93,7 @@ export default function ParentCommunicationPage() {
       timestamp: '2025-01-15T09:15:00',
       status: 'read',
       priority: 'high',
-      type: 'meeting_request'
+      type: 'meeting_request',
     },
     {
       id: '3',
@@ -101,21 +101,21 @@ export default function ParentCommunicationPage() {
         name: 'Fatma Demir',
         avatar: '/api/placeholder/40/40',
         phone: '+90 555 345 6789',
-        email: 'fatma.demir@parent.com'
+        email: 'fatma.demir@parent.com',
       },
       student: {
         name: 'Ahmet Demir',
         class: '5-A',
-        number: '2025003'
+        number: '2025003',
       },
       teacher: 'Mustafa Öğretmen',
       subject: 'Teşekkür mesajı',
-      preview: 'Ahmet\'e gösterdiğiniz ilgi için çok teşekkür ederim.',
+      preview: "Ahmet'e gösterdiğiniz ilgi için çok teşekkür ederim.",
       timestamp: '2025-01-15T08:45:00',
       status: 'replied',
       priority: 'low',
-      type: 'compliment'
-    }
+      type: 'compliment',
+    },
   ];
 
   const upcomingMeetings = [
@@ -123,11 +123,11 @@ export default function ParentCommunicationPage() {
       id: '1',
       parent: {
         name: 'Ayşe Veli',
-        avatar: '/api/placeholder/40/40'
+        avatar: '/api/placeholder/40/40',
       },
       student: {
         name: 'Ali Veli',
-        class: '5-A'
+        class: '5-A',
       },
       teacher: 'Ahmet Öğretmen',
       subject: 'Matematik',
@@ -137,17 +137,17 @@ export default function ParentCommunicationPage() {
       type: 'individual',
       mode: 'in_person',
       status: 'confirmed',
-      location: 'Öğretmenler Odası'
+      location: 'Öğretmenler Odası',
     },
     {
       id: '2',
       parent: {
         name: 'Mehmet Kaya',
-        avatar: '/api/placeholder/40/40'
+        avatar: '/api/placeholder/40/40',
       },
       student: {
         name: 'Fatma Kaya',
-        class: '6-B'
+        class: '6-B',
       },
       teacher: 'Zeynep Öğretmen',
       subject: 'Türkçe',
@@ -157,17 +157,17 @@ export default function ParentCommunicationPage() {
       type: 'individual',
       mode: 'online',
       status: 'pending',
-      meetingLink: 'https://meet.google.com/abc-def-ghi'
+      meetingLink: 'https://meet.google.com/abc-def-ghi',
     },
     {
       id: '3',
       parent: {
         name: 'Fatma Demir',
-        avatar: '/api/placeholder/40/40'
+        avatar: '/api/placeholder/40/40',
       },
       student: {
         name: 'Ahmet Demir',
-        class: '5-A'
+        class: '5-A',
       },
       teacher: 'Mustafa Öğretmen',
       subject: 'Fen Bilgisi',
@@ -177,8 +177,8 @@ export default function ParentCommunicationPage() {
       type: 'group',
       mode: 'in_person',
       status: 'confirmed',
-      location: 'Fen Laboruvarı'
-    }
+      location: 'Fen Laboruvarı',
+    },
   ];
 
   const parentEngagementStats = [
@@ -191,7 +191,7 @@ export default function ParentCommunicationPage() {
       lastActivity: '2025-01-15T10:30:00',
       responseRate: 100,
       engagementScore: 95,
-      trend: 'up'
+      trend: 'up',
     },
     {
       parent: 'Mehmet Kaya',
@@ -202,7 +202,7 @@ export default function ParentCommunicationPage() {
       lastActivity: '2025-01-15T09:15:00',
       responseRate: 89,
       engagementScore: 87,
-      trend: 'stable'
+      trend: 'stable',
     },
     {
       parent: 'Fatma Demir',
@@ -213,7 +213,7 @@ export default function ParentCommunicationPage() {
       lastActivity: '2025-01-14T16:20:00',
       responseRate: 92,
       engagementScore: 82,
-      trend: 'up'
+      trend: 'up',
     },
     {
       parent: 'Hasan Yılmaz',
@@ -224,8 +224,8 @@ export default function ParentCommunicationPage() {
       lastActivity: '2025-01-13T14:45:00',
       responseRate: 75,
       engagementScore: 68,
-      trend: 'down'
-    }
+      trend: 'down',
+    },
   ];
 
   const communicationChannels = [
@@ -235,7 +235,7 @@ export default function ParentCommunicationPage() {
       usage: 78,
       preference: 85,
       responseTime: 1.2,
-      color: 'bg-blue-100 text-blue-800'
+      color: 'bg-blue-100 text-blue-800',
     },
     {
       channel: 'E-posta',
@@ -243,7 +243,7 @@ export default function ParentCommunicationPage() {
       usage: 65,
       preference: 72,
       responseTime: 4.5,
-      color: 'bg-green-100 text-green-800'
+      color: 'bg-green-100 text-green-800',
     },
     {
       channel: 'SMS',
@@ -251,7 +251,7 @@ export default function ParentCommunicationPage() {
       usage: 42,
       preference: 58,
       responseTime: 0.8,
-      color: 'bg-yellow-100 text-yellow-800'
+      color: 'bg-yellow-100 text-yellow-800',
     },
     {
       channel: 'Telefon',
@@ -259,8 +259,8 @@ export default function ParentCommunicationPage() {
       usage: 25,
       preference: 45,
       responseTime: 0.1,
-      color: 'bg-purple-100 text-purple-800'
-    }
+      color: 'bg-purple-100 text-purple-800',
+    },
   ];
 
   const feedbackSummary = {
@@ -272,7 +272,7 @@ export default function ParentCommunicationPage() {
       curriculum: 28,
       facility: 22,
       administrative: 15,
-      other: 8
+      other: 8,
     },
     recentFeedback: [
       {
@@ -282,7 +282,7 @@ export default function ParentCommunicationPage() {
         category: 'teacher_performance',
         title: 'Mükemmel öğretmen',
         date: '2025-01-15',
-        status: 'responded'
+        status: 'responded',
       },
       {
         id: '2',
@@ -291,7 +291,7 @@ export default function ParentCommunicationPage() {
         category: 'communication',
         title: 'İletişim geliştirilebilir',
         date: '2025-01-14',
-        status: 'reviewed'
+        status: 'reviewed',
       },
       {
         id: '3',
@@ -300,56 +300,79 @@ export default function ParentCommunicationPage() {
         category: 'curriculum',
         title: 'Müfredat çok iyi',
         date: '2025-01-13',
-        status: 'responded'
-      }
-    ]
+        status: 'responded',
+      },
+    ],
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'unread': return 'bg-blue-100 text-blue-800';
-      case 'read': return 'bg-gray-100 text-gray-800';
-      case 'replied': return 'bg-green-100 text-green-800';
-      case 'archived': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'unread':
+        return 'bg-blue-100 text-blue-800';
+      case 'read':
+        return 'bg-gray-100 text-gray-800';
+      case 'replied':
+        return 'bg-green-100 text-green-800';
+      case 'archived':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'bg-red-100 text-red-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'urgent':
+        return 'bg-red-100 text-red-800';
+      case 'high':
+        return 'bg-orange-100 text-orange-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'inquiry': return <MessageSquare className="h-4 w-4" />;
-      case 'meeting_request': return <Calendar className="h-4 w-4" />;
-      case 'compliment': return <Star className="h-4 w-4" />;
-      case 'concern': return <AlertCircle className="h-4 w-4" />;
-      default: return <MessageSquare className="h-4 w-4" />;
+      case 'inquiry':
+        return <MessageSquare className="h-4 w-4" />;
+      case 'meeting_request':
+        return <Calendar className="h-4 w-4" />;
+      case 'compliment':
+        return <Star className="h-4 w-4" />;
+      case 'concern':
+        return <AlertCircle className="h-4 w-4" />;
+      default:
+        return <MessageSquare className="h-4 w-4" />;
     }
   };
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {
-      case 'up': return <TrendingUp className="h-4 w-4 text-green-500" />;
-      case 'down': return <TrendingUp className="h-4 w-4 text-red-500 rotate-180" />;
-      default: return <BarChart3 className="h-4 w-4 text-gray-500" />;
+      case 'up':
+        return <TrendingUp className="h-4 w-4 text-green-500" />;
+      case 'down':
+        return <TrendingUp className="h-4 w-4 rotate-180 text-red-500" />;
+      default:
+        return <BarChart3 className="h-4 w-4 text-gray-500" />;
     }
   };
 
   const getMeetingStatusColor = (status: string) => {
     switch (status) {
-      case 'confirmed': return 'bg-green-100 text-green-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'cancelled': return 'bg-red-100 text-red-800';
-      case 'completed': return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'confirmed':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
+      case 'completed':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -361,47 +384,47 @@ export default function ParentCommunicationPage() {
   };
 
   // const filteredMessages = recentMessages.filter(message => {
-    // const matchesSearch = message.parent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //                      message.student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //                      message.subject.toLowerCase().includes(searchTerm.toLowerCase());
-    // const matchesFilter = selectedFilter === 'all' || message.status === selectedFilter;
-    // return matchesSearch && matchesFilter;
+  // const matchesSearch = message.parent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //                      message.student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //                      message.subject.toLowerCase().includes(searchTerm.toLowerCase());
+  // const matchesFilter = selectedFilter === 'all' || message.status === selectedFilter;
+  // return matchesSearch && matchesFilter;
   // });
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto space-y-6 p-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Veli İletişim Sistemi</h1>
-          <p className="text-gray-600 mt-2">Veliler ile etkili iletişim kurun ve yönetin</p>
+          <p className="mt-2 text-gray-600">Veliler ile etkili iletişim kurun ve yönetin</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Rapor İndir
           </Button>
           <Button variant="outline">
-            <Settings className="h-4 w-4 mr-2" />
+            <Settings className="mr-2 h-4 w-4" />
             Ayarlar
           </Button>
           <Button>
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Yeni Mesaj
           </Button>
         </div>
       </div>
 
       {/* Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Toplam Veli</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{communicationOverview.totalParents}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {communicationOverview.activeConversations} aktif konuşma
             </p>
           </CardContent>
@@ -410,26 +433,27 @@ export default function ParentCommunicationPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Okunmamış Mesaj</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <MessageSquare className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{communicationOverview.unreadMessages}</div>
-            <p className="text-xs text-muted-foreground">
-              Yanıt bekleyen
-            </p>
+            <div className="text-2xl font-bold text-blue-600">
+              {communicationOverview.unreadMessages}
+            </div>
+            <p className="text-muted-foreground text-xs">Yanıt bekleyen</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Yanıt Oranı</CardTitle>
-            <CheckCircle className="h-4 w-4 text-muted-foreground" />
+            <CheckCircle className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">%{communicationOverview.responseRate}</div>
+            <div className="text-2xl font-bold text-green-600">
+              %{communicationOverview.responseRate}
+            </div>
             <div className="flex items-center text-xs text-green-600">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              +{communicationOverview.trendValue}% bu ay
+              <TrendingUp className="mr-1 h-3 w-3" />+{communicationOverview.trendValue}% bu ay
             </div>
           </CardContent>
         </Card>
@@ -437,13 +461,13 @@ export default function ParentCommunicationPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Memnuniyet</CardTitle>
-            <Star className="h-4 w-4 text-muted-foreground" />
+            <Star className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-yellow-600">{communicationOverview.satisfactionRating}/5</div>
-            <p className="text-xs text-muted-foreground">
-              Ortalama puan
-            </p>
+            <div className="text-2xl font-bold text-yellow-600">
+              {communicationOverview.satisfactionRating}/5
+            </div>
+            <p className="text-muted-foreground text-xs">Ortalama puan</p>
           </CardContent>
         </Card>
       </div>
@@ -461,7 +485,7 @@ export default function ParentCommunicationPage() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             {/* Recent Messages */}
             <Card>
               <CardHeader>
@@ -469,23 +493,24 @@ export default function ParentCommunicationPage() {
                   <MessageSquare className="h-5 w-5" />
                   Son Mesajlar
                 </CardTitle>
-                <CardDescription>
-                  En son gelen veli mesajları
-                </CardDescription>
+                <CardDescription>En son gelen veli mesajları</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {recentMessages.slice(0, 5).map((message) => (
-                    <div key={message.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div key={message.id} className="flex items-center gap-3 rounded-lg border p-3">
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={message.parent.avatar} />
                         <AvatarFallback>
-                          {message.parent.name.split(' ').map(n => n[0]).join('')}
+                          {message.parent.name
+                            .split(' ')
+                            .map((n) => n[0])
+                            .join('')}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-medium text-sm">{message.parent.name}</p>
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 flex items-center gap-2">
+                          <p className="text-sm font-medium">{message.parent.name}</p>
                           <Badge variant="outline" className={getStatusColor(message.status)}>
                             {message.status}
                           </Badge>
@@ -493,7 +518,7 @@ export default function ParentCommunicationPage() {
                             {message.priority}
                           </Badge>
                         </div>
-                        <p className="text-sm text-gray-600 truncate">{message.subject}</p>
+                        <p className="truncate text-sm text-gray-600">{message.subject}</p>
                         <p className="text-xs text-gray-500">
                           {new Date(message.timestamp).toLocaleString('tr-TR')}
                         </p>
@@ -517,25 +542,28 @@ export default function ParentCommunicationPage() {
                   <Calendar className="h-5 w-5" />
                   Yaklaşan Toplantılar
                 </CardTitle>
-                <CardDescription>
-                  Planlanan veli toplantıları
-                </CardDescription>
+                <CardDescription>Planlanan veli toplantıları</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {upcomingMeetings.map((meeting) => (
-                    <div key={meeting.id} className="p-3 border rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
+                    <div key={meeting.id} className="rounded-lg border p-3">
+                      <div className="mb-2 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Avatar className="h-8 w-8">
                             <AvatarImage src={meeting.parent.avatar} />
                             <AvatarFallback>
-                              {meeting.parent.name.split(' ').map(n => n[0]).join('')}
+                              {meeting.parent.name
+                                .split(' ')
+                                .map((n) => n[0])
+                                .join('')}
                             </AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium text-sm">{meeting.parent.name}</p>
-                            <p className="text-xs text-gray-600">{meeting.student.name} - {meeting.student.class}</p>
+                            <p className="text-sm font-medium">{meeting.parent.name}</p>
+                            <p className="text-xs text-gray-600">
+                              {meeting.student.name} - {meeting.student.class}
+                            </p>
                           </div>
                         </div>
                         <Badge variant="outline" className={getMeetingStatusColor(meeting.status)}>
@@ -554,7 +582,11 @@ export default function ParentCommunicationPage() {
                             {meeting.duration} dk
                           </div>
                           <div className="flex items-center gap-1">
-                            {meeting.mode === 'online' ? <Video className="h-3 w-3" /> : <Users className="h-3 w-3" />}
+                            {meeting.mode === 'online' ? (
+                              <Video className="h-3 w-3" />
+                            ) : (
+                              <Users className="h-3 w-3" />
+                            )}
                             {meeting.mode === 'online' ? 'Online' : 'Yüz yüze'}
                           </div>
                         </div>
@@ -573,28 +605,26 @@ export default function ParentCommunicationPage() {
                 <BarChart3 className="h-5 w-5" />
                 İletişim Kanalları
               </CardTitle>
-              <CardDescription>
-                Kanal kullanımı ve tercihler
-              </CardDescription>
+              <CardDescription>Kanal kullanımı ve tercihler</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {communicationChannels.map((channel, index) => (
-                  <div key={index} className="p-4 border rounded-lg">
-                    <div className="flex items-center gap-2 mb-3">
+                  <div key={index} className="rounded-lg border p-4">
+                    <div className="mb-3 flex items-center gap-2">
                       <channel.icon className="h-5 w-5" />
                       <h3 className="font-medium">{channel.channel}</h3>
                     </div>
                     <div className="space-y-2">
                       <div>
-                        <div className="flex justify-between items-center mb-1">
+                        <div className="mb-1 flex items-center justify-between">
                           <span className="text-sm text-gray-600">Kullanım</span>
                           <span className="text-sm font-medium">{channel.usage}%</span>
                         </div>
                         <Progress value={channel.usage} className="h-2" />
                       </div>
                       <div>
-                        <div className="flex justify-between items-center mb-1">
+                        <div className="mb-1 flex items-center justify-between">
                           <span className="text-sm text-gray-600">Tercih</span>
                           <span className="text-sm font-medium">{channel.preference}%</span>
                         </div>
@@ -617,18 +647,21 @@ export default function ParentCommunicationPage() {
                 <Users className="h-5 w-5" />
                 Veli Katılımı
               </CardTitle>
-              <CardDescription>
-                En aktif veliler ve katılım skorları
-              </CardDescription>
+              <CardDescription>En aktif veliler ve katılım skorları</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {parentEngagementStats.map((parent, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div
+                    key={index}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
                     <div className="flex items-center gap-3">
                       <div>
                         <p className="font-medium">{parent.parent}</p>
-                        <p className="text-sm text-gray-600">{parent.student} - {parent.class}</p>
+                        <p className="text-sm text-gray-600">
+                          {parent.student} - {parent.class}
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center gap-6">
@@ -645,14 +678,14 @@ export default function ParentCommunicationPage() {
                         <div className="text-xs text-gray-600">Yanıt</div>
                       </div>
                       <div className="text-center">
-                        <div className={`text-sm font-medium ${getEngagementColor(parent.engagementScore)}`}>
+                        <div
+                          className={`text-sm font-medium ${getEngagementColor(parent.engagementScore)}`}
+                        >
                           {parent.engagementScore}
                         </div>
                         <div className="text-xs text-gray-600">Katılım</div>
                       </div>
-                      <div className="flex items-center gap-1">
-                        {getTrendIcon(parent.trend)}
-                      </div>
+                      <div className="flex items-center gap-1">{getTrendIcon(parent.trend)}</div>
                     </div>
                   </div>
                 ))}
@@ -683,30 +716,35 @@ export default function ParentCommunicationPage() {
 
         {/* Analytics Tab */}
         <TabsContent value="analytics" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <Card>
               <CardHeader>
                 <CardTitle>İletişim Analitikleri</CardTitle>
-                <CardDescription>
-                  Detaylı performans metrikleri
-                </CardDescription>
+                <CardDescription>Detaylı performans metrikleri</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-blue-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{communicationOverview.averageResponseTime}h</div>
+                    <div className="rounded-lg bg-blue-50 p-4 text-center">
+                      <div className="text-2xl font-bold text-blue-600">
+                        {communicationOverview.averageResponseTime}h
+                      </div>
                       <div className="text-sm text-blue-800">Ortalama Yanıt Süresi</div>
                     </div>
-                    <div className="text-center p-4 bg-green-50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">{communicationOverview.activeConversations}</div>
+                    <div className="rounded-lg bg-green-50 p-4 text-center">
+                      <div className="text-2xl font-bold text-green-600">
+                        {communicationOverview.activeConversations}
+                      </div>
                       <div className="text-sm text-green-800">Aktif Konuşma</div>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <h4 className="font-medium">Kanal Performansı</h4>
                     {communicationChannels.map((channel, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                      <div
+                        key={index}
+                        className="flex items-center justify-between rounded bg-gray-50 p-2"
+                      >
                         <div className="flex items-center gap-2">
                           <channel.icon className="h-4 w-4" />
                           <span className="text-sm">{channel.channel}</span>
@@ -722,21 +760,26 @@ export default function ParentCommunicationPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Geri Bildirim Özeti</CardTitle>
-                <CardDescription>
-                  Veli memnuniyet durumu
-                </CardDescription>
+                <CardDescription>Veli memnuniyet durumu</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                    <div className="text-2xl font-bold text-yellow-600">{feedbackSummary.averageRating}/5</div>
+                  <div className="rounded-lg bg-yellow-50 p-4 text-center">
+                    <div className="text-2xl font-bold text-yellow-600">
+                      {feedbackSummary.averageRating}/5
+                    </div>
                     <div className="text-sm text-yellow-800">Ortalama Puan</div>
-                    <div className="text-xs text-gray-600">{feedbackSummary.totalFeedback} değerlendirme</div>
+                    <div className="text-xs text-gray-600">
+                      {feedbackSummary.totalFeedback} değerlendirme
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <h4 className="font-medium">Kategori Dağılımı</h4>
                     {Object.entries(feedbackSummary.categories).map(([category, count]) => (
-                      <div key={category} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                      <div
+                        key={category}
+                        className="flex items-center justify-between rounded bg-gray-50 p-2"
+                      >
                         <span className="text-sm capitalize">{category.replace('_', ' ')}</span>
                         <span className="text-sm font-medium">{count}</span>
                       </div>

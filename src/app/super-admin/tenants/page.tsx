@@ -35,14 +35,14 @@ export default function TenantsPage() {
         <div className="flex items-center gap-2">
           <span className="font-medium">{row.original.name}</span>
           {!row.original.is_active && (
-            <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-              <AlertCircle className="h-3 w-3 mr-1" />
+            <Badge variant="outline" className="border-red-200 bg-red-50 text-red-700">
+              <AlertCircle className="mr-1 h-3 w-3" />
               Pasif
             </Badge>
           )}
           {row.original.is_active && (
-            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-              <CheckCircle className="h-3 w-3 mr-1" />
+            <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">
+              <CheckCircle className="mr-1 h-3 w-3" />
               Aktif
             </Badge>
           )}
@@ -57,9 +57,7 @@ export default function TenantsPage() {
       accessorKey: 'subscription_tier',
       header: 'Abonelik',
       cell: ({ row }: { row: { original: Tenant } }) => (
-        <Badge variant="secondary">
-          {row.original.subscription_tier || 'Standart'}
-        </Badge>
+        <Badge variant="secondary">{row.original.subscription_tier || 'Standart'}</Badge>
       ),
     },
     {
@@ -70,7 +68,8 @@ export default function TenantsPage() {
     {
       accessorKey: 'created_at',
       header: 'Oluşturulma Tarihi',
-      cell: ({ row }: { row: { original: Tenant } }) => format(new Date(row.original.created_at), 'dd MMM yyyy', { locale: tr }),
+      cell: ({ row }: { row: { original: Tenant } }) =>
+        format(new Date(row.original.created_at), 'dd MMM yyyy', { locale: tr }),
     },
     {
       id: 'actions',
@@ -83,15 +82,16 @@ export default function TenantsPage() {
           <Button variant="ghost" size="icon" title="Düzenle">
             <Edit2 className="h-4 w-4" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            title={row.original.is_active ? "Arşivle" : "Aktifleştir"}
+          <Button
+            variant="ghost"
+            size="icon"
+            title={row.original.is_active ? 'Arşivle' : 'Aktifleştir'}
           >
-            {row.original.is_active 
-              ? <Archive className="h-4 w-4" /> 
-              : <CheckCircle className="h-4 w-4" />
-            }
+            {row.original.is_active ? (
+              <Archive className="h-4 w-4" />
+            ) : (
+              <CheckCircle className="h-4 w-4" />
+            )}
           </Button>
         </div>
       ),
@@ -122,12 +122,10 @@ export default function TenantsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Tenantlar</h1>
-          <p className="text-muted-foreground">
-            Sistem üzerindeki tüm kurumları yönetin
-          </p>
+          <p className="text-muted-foreground">Sistem üzerindeki tüm kurumları yönetin</p>
         </div>
         <Button className="flex items-center">
           <PlusCircle className="mr-2 h-4 w-4" />
@@ -138,9 +136,7 @@ export default function TenantsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Tenant Listesi</CardTitle>
-          <CardDescription>
-            Sistemdeki tüm tenantların listesi ve detayları
-          </CardDescription>
+          <CardDescription>Sistemdeki tüm tenantların listesi ve detayları</CardDescription>
         </CardHeader>
         <CardContent>
           <DataTable
@@ -155,4 +151,4 @@ export default function TenantsPage() {
       </Card>
     </div>
   );
-} 
+}

@@ -18,31 +18,31 @@ Webhook listesini görüntülemek ve yönetmek için kullanılan tablo komponent
 interface WebhookListProps {
   /** Tenant ID */
   tenantId?: string;
-  
+
   /** Sayfa başına webhook sayısı */
   pageSize?: number;
-  
+
   /** Varsayılan sıralama */
   defaultSort?: SortConfig;
-  
+
   /** Varsayılan filtreler */
   defaultFilters?: FilterConfig;
-  
+
   /** Webhook silindiğinde çağrılır */
   onDelete?: (id: string) => Promise<void>;
-  
+
   /** Webhook güncellendiğinde çağrılır */
   onUpdate?: (id: string, updates: Partial<WebhookConfig>) => Promise<void>;
-  
+
   /** Webhook seçildiğinde çağrılır */
   onSelect?: (webhook: WebhookData) => void;
-  
+
   /** Yenileme aralığı (ms) */
   refreshInterval?: number;
-  
+
   /** Tablo görünümü */
   view?: 'default' | 'compact' | 'detailed';
-  
+
   /** İstatistikleri göster */
   showStats?: boolean;
 }
@@ -137,7 +137,7 @@ const columns: Column<WebhookData>[] = [
     id: 'status',
     header: 'Durum',
     cell: (row) => <WebhookStatusBadge status={row.status} />,
-    sortable: true
+    sortable: true,
   },
   {
     id: 'name',
@@ -148,35 +148,31 @@ const columns: Column<WebhookData>[] = [
         <div className="text-sm text-gray-500">{row.url}</div>
       </div>
     ),
-    sortable: true
+    sortable: true,
   },
   {
     id: 'events',
     header: 'Eventler',
     cell: (row) => <EventTags events={row.events} />,
-    sortable: false
+    sortable: false,
   },
   {
     id: 'stats',
     header: 'İstatistikler',
     cell: (row) => <WebhookStats stats={row.stats} />,
-    sortable: true
+    sortable: true,
   },
   {
     id: 'lastDelivery',
     header: 'Son Teslimat',
-    cell: (row) => (
-      row.stats.lastDelivery && (
-        <LastDeliveryInfo delivery={row.stats.lastDelivery} />
-      )
-    ),
-    sortable: true
+    cell: (row) => row.stats.lastDelivery && <LastDeliveryInfo delivery={row.stats.lastDelivery} />,
+    sortable: true,
   },
   {
     id: 'actions',
     header: '',
-    cell: (row) => <WebhookActions webhook={row} onDelete={onDelete} />
-  }
+    cell: (row) => <WebhookActions webhook={row} onDelete={onDelete} />,
+  },
 ];
 ```
 
@@ -190,18 +186,21 @@ const fetchWebhooks = async (params: {
   sort?: SortConfig;
   filters?: FilterConfig;
 }) => {
-  const response = await fetch('/api/webhooks?' + new URLSearchParams({
-    ...params,
-    sort: JSON.stringify(params.sort),
-    filters: JSON.stringify(params.filters)
-  }));
+  const response = await fetch(
+    '/api/webhooks?' +
+      new URLSearchParams({
+        ...params,
+        sort: JSON.stringify(params.sort),
+        filters: JSON.stringify(params.filters),
+      })
+  );
   return response.json();
 };
 
 // Webhook silme
 const deleteWebhook = async (id: string) => {
   const response = await fetch(`/api/webhooks/${id}`, {
-    method: 'DELETE'
+    method: 'DELETE',
   });
   return response.json();
 };
@@ -210,7 +209,7 @@ const deleteWebhook = async (id: string) => {
 const updateWebhook = async (id: string, updates: Partial<WebhookConfig>) => {
   const response = await fetch(`/api/webhooks/${id}`, {
     method: 'PATCH',
-    body: JSON.stringify(updates)
+    body: JSON.stringify(updates),
   });
   return response.json();
 };
@@ -219,11 +218,7 @@ const updateWebhook = async (id: string, updates: Partial<WebhookConfig>) => {
 ## Filtreleme
 
 ```tsx
-<WebhookFilters
-  value={filters}
-  onChange={setFilters}
-  availableEvents={events}
-/>
+<WebhookFilters value={filters} onChange={setFilters} availableEvents={events} />
 ```
 
 ## İstatistikler
@@ -234,7 +229,7 @@ const updateWebhook = async (id: string, updates: Partial<WebhookConfig>) => {
     total: webhook.stats.total,
     success: webhook.stats.success,
     failed: webhook.stats.failed,
-    lastDelivery: webhook.stats.lastDelivery
+    lastDelivery: webhook.stats.lastDelivery,
   }}
   showChart
   showTrends
@@ -252,11 +247,11 @@ const updateWebhook = async (id: string, updates: Partial<WebhookConfig>) => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Tüm kolonlar görünür |
+| Ekran Boyutu   | Davranış               |
+| -------------- | ---------------------- |
+| > 1024px       | Tüm kolonlar görünür   |
 | 768px - 1024px | Bazı kolonlar gizlenir |
-| < 768px | Kart görünümü |
+| < 768px        | Kart görünümü          |
 
 ## Test
 
@@ -288,14 +283,14 @@ describe('WebhookList', () => {
 
   it('handles sorting', async () => {
     render(<WebhookList webhooks={mockWebhooks} />);
-    
+
     await userEvent.click(screen.getByText('İsim'));
     expect(screen.getByLabelText('İsme göre artan sıralama')).toBeInTheDocument();
   });
 
   it('handles filtering', async () => {
     render(<WebhookList webhooks={mockWebhooks} />);
-    
+
     await userEvent.type(screen.getByPlaceholderText('Ara...'), 'test');
     expect(screen.getByText('Test Webhook')).toBeInTheDocument();
   });
@@ -303,16 +298,16 @@ describe('WebhookList', () => {
   it('handles webhook deletion', async () => {
     const onDelete = jest.fn();
     render(<WebhookList webhooks={mockWebhooks} onDelete={onDelete} />);
-    
+
     await userEvent.click(screen.getByLabelText('Webhook sil'));
     await userEvent.click(screen.getByText('Onayla'));
-    
+
     expect(onDelete).toHaveBeenCalledWith('1');
   });
 
   it('shows webhook stats', () => {
     render(<WebhookList webhooks={mockWebhooks} showStats />);
-    
+
     expect(screen.getByText('95% başarı oranı')).toBeInTheDocument();
   });
 });
@@ -391,12 +386,12 @@ WithError.args = {
     table: 'border rounded-lg overflow-hidden',
     row: {
       healthy: 'bg-green-50',
-      failing: 'bg-red-50'
+      failing: 'bg-red-50',
     },
     stats: {
       success: 'text-green-600',
-      failed: 'text-red-600'
-    }
+      failed: 'text-red-600',
+    },
   }}
 />
 ```
@@ -407,4 +402,4 @@ WithError.args = {
 2. Webhook durumlarını düzenli kontrol et
 3. İstatistikleri önbelleğe al
 4. Hata durumlarını yönet
-5. Webhook sağlığını izle 
+5. Webhook sağlığını izle

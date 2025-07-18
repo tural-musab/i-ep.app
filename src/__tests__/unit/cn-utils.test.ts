@@ -9,13 +9,9 @@ describe('cn utility function', () => {
   it('should handle conditional classes', () => {
     const isActive = true;
     const isDisabled = false;
-    
-    const result = cn(
-      'base-class',
-      isActive && 'active-class',
-      isDisabled && 'disabled-class'
-    );
-    
+
+    const result = cn('base-class', isActive && 'active-class', isDisabled && 'disabled-class');
+
     expect(result).toBe('base-class active-class');
   });
 
@@ -35,7 +31,7 @@ describe('cn utility function', () => {
       'text-blue-500': false,
       'font-bold': true,
     });
-    
+
     expect(result).toBe('text-red-500 font-bold');
   });
 
@@ -50,12 +46,8 @@ describe('cn utility function', () => {
   });
 
   it('should handle complex tailwind merging', () => {
-    const result = cn(
-      'rounded-md rounded-xl',
-      'p-4 p-6',
-      'text-gray-500 text-blue-600'
-    );
-    
+    const result = cn('rounded-md rounded-xl', 'p-4 p-6', 'text-gray-500 text-blue-600');
+
     expect(result).toBe('rounded-xl p-6 text-blue-600');
   });
 

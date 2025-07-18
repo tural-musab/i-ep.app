@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import * as Sentry from "@sentry/nextjs";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ClassDetails } from "@/components/classes/ClassDetails";
-import { ClassStudentList } from "@/components/classes/ClassStudentList";
-import { ClassTeacherList } from "@/components/classes/ClassTeacherList";
+import { useEffect, useState, useCallback } from 'react';
+import * as Sentry from '@sentry/nextjs';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ClassDetails } from '@/components/classes/ClassDetails';
+import { ClassStudentList } from '@/components/classes/ClassStudentList';
+import { ClassTeacherList } from '@/components/classes/ClassTeacherList';
 
 interface Teacher {
   id: string;
@@ -40,22 +40,22 @@ export default function ClassDetailPage() {
   const fetchClassDetails = useCallback(async () => {
     return Sentry.startSpan(
       {
-        op: "http.client",
+        op: 'http.client',
         name: `GET /api/classes/${classId}`,
       },
       async () => {
         try {
           const response = await fetch(`/api/classes/${classId}`);
           if (!response.ok) {
-            throw new Error("Sınıf detayları alınamadı");
+            throw new Error('Sınıf detayları alınamadı');
           }
           const data = await response.json();
           setClassData(data);
           setError(null);
         } catch (error) {
-          console.error("Error fetching class details:", error);
+          console.error('Error fetching class details:', error);
           Sentry.captureException(error);
-          setError("Sınıf detayları yüklenirken bir hata oluştu");
+          setError('Sınıf detayları yüklenirken bir hata oluştu');
         } finally {
           setIsLoading(false);
         }
@@ -69,16 +69,16 @@ export default function ClassDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-lg text-muted-foreground">Yükleniyor...</div>
+      <div className="flex h-96 items-center justify-center">
+        <div className="text-muted-foreground text-lg">Yükleniyor...</div>
       </div>
     );
   }
 
   if (error || !classData) {
     return (
-      <div className="flex flex-col items-center justify-center h-96 space-y-4">
-        <div className="text-lg text-destructive">{error || "Sınıf bulunamadı"}</div>
+      <div className="flex h-96 flex-col items-center justify-center space-y-4">
+        <div className="text-destructive text-lg">{error || 'Sınıf bulunamadı'}</div>
         <Button variant="outline" asChild>
           <Link href="/dashboard/classes">Sınıf Listesine Dön</Link>
         </Button>
@@ -87,7 +87,7 @@ export default function ClassDetailPage() {
   }
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <div className="container mx-auto space-y-8 py-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">{classData.name}</h1>
         <Button variant="outline" asChild>
@@ -103,25 +103,17 @@ export default function ClassDetailPage() {
         </TabsList>
 
         <TabsContent value="details" className="mt-6">
-          <ClassDetails
-            classData={classData}
-            onUpdate={fetchClassDetails}
-          />
+          <ClassDetails classData={classData} onUpdate={fetchClassDetails} />
         </TabsContent>
 
         <TabsContent value="students" className="mt-6">
-          <ClassStudentList
-            classId={classId}
-            capacity={classData.capacity}
-          />
+          <ClassStudentList classId={classId} capacity={classData.capacity} />
         </TabsContent>
 
         <TabsContent value="teachers" className="mt-6">
-          <ClassTeacherList
-            classId={classId}
-          />
+          <ClassTeacherList classId={classId} />
         </TabsContent>
       </Tabs>
     </div>
   );
-} 
+}

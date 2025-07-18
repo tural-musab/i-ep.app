@@ -18,25 +18,25 @@ Denetim loglarını filtrelemek için kullanılan komponent.
 interface LogFiltersProps {
   /** Aktif filtreler */
   filters?: LogFilterConfig;
-  
+
   /** Varsayılan filtreler */
   defaultFilters?: LogFilterConfig;
-  
+
   /** Filtre değiştiğinde çağrılır */
   onFilterChange?: (filters: LogFilterConfig) => void;
-  
+
   /** Filtre kaydedildiğinde çağrılır */
   onFilterSave?: (filter: SavedFilter) => void;
-  
+
   /** Kaydedilmiş filtreler */
   savedFilters?: SavedFilter[];
-  
+
   /** Filtre önerileri */
   suggestions?: FilterSuggestion[];
-  
+
   /** Filtre geçmişi */
   history?: FilterHistory[];
-  
+
   /** Kompakt görünüm */
   compact?: boolean;
 }
@@ -87,7 +87,7 @@ import { LogFilters } from '@components/super-admin/audit';
 export default function AuditPage() {
   const [filters, setFilters] = useState<LogFilterConfig>({
     dateRange: [startOfDay(subDays(new Date(), 7)), endOfDay(new Date())],
-    severity: ['error', 'critical']
+    severity: ['error', 'critical'],
   });
 
   const handleFilterChange = (newFilters: LogFilterConfig) => {
@@ -104,7 +104,7 @@ export default function AuditPage() {
     <LogFilters
       filters={filters}
       defaultFilters={{
-        dateRange: [startOfDay(subDays(new Date(), 30)), endOfDay(new Date())]
+        dateRange: [startOfDay(subDays(new Date(), 30)), endOfDay(new Date())],
       }}
       onFilterChange={handleFilterChange}
       onFilterSave={handleFilterSave}
@@ -120,15 +120,13 @@ export default function AuditPage() {
 ## Filtre Grupları
 
 ### Tarih Aralığı
+
 ```tsx
-<DateRangeFilter
-  value={filters.dateRange}
-  onChange={handleDateRangeChange}
-  presets={datePresets}
-/>
+<DateRangeFilter value={filters.dateRange} onChange={handleDateRangeChange} presets={datePresets} />
 ```
 
 ### Kategori ve Önem
+
 ```tsx
 <CategoryFilter
   selected={filters.categories}
@@ -144,6 +142,7 @@ export default function AuditPage() {
 ```
 
 ### Aktör ve Hedef
+
 ```tsx
 <ActorFilter
   selected={filters.actors}
@@ -165,7 +164,7 @@ export default function AuditPage() {
 const saveFilter = async (filter: SavedFilter) => {
   const response = await fetch('/api/audit-logs/filters', {
     method: 'POST',
-    body: JSON.stringify(filter)
+    body: JSON.stringify(filter),
   });
   return response.json();
 };
@@ -194,15 +193,15 @@ const processFilters = (filters: LogFilterConfig) => {
     }
     return acc;
   }, {});
-  
+
   // Tarih aralığını normalize et
   if (cleanFilters.dateRange) {
     cleanFilters.dateRange = [
       startOfDay(cleanFilters.dateRange[0]),
-      endOfDay(cleanFilters.dateRange[1])
+      endOfDay(cleanFilters.dateRange[1]),
     ];
   }
-  
+
   return cleanFilters;
 };
 ```
@@ -213,23 +212,23 @@ const processFilters = (filters: LogFilterConfig) => {
 const generateSuggestions = (logs: AuditLogEntry[]) => {
   // En sık kullanılan kategoriler
   const topCategories = countBy(logs, 'category');
-  
+
   // En çok hata üreten aktörler
   const errorActors = logs
-    .filter(log => log.severity === 'error')
+    .filter((log) => log.severity === 'error')
     .reduce((acc, log) => {
       acc[log.actor.id] = (acc[log.actor.id] || 0) + 1;
       return acc;
     }, {});
-    
+
   return [
     {
       id: 'common_errors',
       name: 'Sık Karşılaşılan Hatalar',
       config: {
         severity: ['error'],
-        actors: Object.keys(errorActors).slice(0, 5)
-      }
+        actors: Object.keys(errorActors).slice(0, 5),
+      },
     },
     // Diğer öneriler...
   ];
@@ -246,11 +245,11 @@ const generateSuggestions = (logs: AuditLogEntry[]) => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Yatay düzen |
+| Ekran Boyutu   | Davranış     |
+| -------------- | ------------ |
+| > 1024px       | Yatay düzen  |
 | 768px - 1024px | Izgara düzen |
-| < 768px | Dikey düzen |
+| < 768px        | Dikey düzen  |
 
 ## Test
 
@@ -264,7 +263,7 @@ describe('LogFilters', () => {
         }}
       />
     );
-    
+
     expect(screen.getByText('Hata')).toBeChecked();
   });
 
@@ -275,10 +274,10 @@ describe('LogFilters', () => {
         onFilterChange={onFilterChange}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Kategori'));
     await userEvent.click(screen.getByText('Güvenlik'));
-    
+
     expect(onFilterChange).toHaveBeenCalledWith(
       expect.objectContaining({
         categories: ['security']
@@ -293,11 +292,11 @@ describe('LogFilters', () => {
         onFilterSave={onFilterSave}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Filtreyi Kaydet'));
     await userEvent.type(screen.getByLabelText('Filtre Adı'), 'Test Filter');
     await userEvent.click(screen.getByText('Kaydet'));
-    
+
     expect(onFilterSave).toHaveBeenCalledWith(
       expect.objectContaining({
         name: 'Test Filter'
@@ -318,7 +317,7 @@ describe('LogFilters', () => {
         ]}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Geçmiş'));
     expect(screen.getByText('100 sonuç')).toBeInTheDocument();
   });
@@ -396,12 +395,12 @@ WithSuggestions.args = {
   customStyles={{
     group: {
       base: 'rounded-lg border p-4',
-      active: 'border-blue-500'
+      active: 'border-blue-500',
     },
     control: {
       base: 'form-input',
-      invalid: 'border-red-500'
-    }
+      invalid: 'border-red-500',
+    },
   }}
 />
 ```
@@ -412,4 +411,4 @@ WithSuggestions.args = {
 2. Filtre geçmişini sakla
 3. Performansı optimize et
 4. Sık kullanılan filtreleri öner
-5. Filtre kombinasyonlarını doğrula 
+5. Filtre kombinasyonlarını doğrula

@@ -50,6 +50,7 @@ Tüm yeni kullanıcılara 14 günlük ücretsiz deneme süresi sunulacaktır (kr
 ### Aşama 1: Temel Mimari, Dokümantasyon ve Test (Ay 1-3) ✅
 
 Temel mimari ve altyapı çalışmaları şu adımları içermiştir:
+
 - Next.js 14 tabanlı proje yapısı oluşturma
 - Çok kiracılı (multi-tenant) mimari tasarımı ve uygulaması
 - Supabase veritabanı entegrasyonu ve şema tasarımı
@@ -62,6 +63,7 @@ Bu aşama tamamen tamamlanmış olup, tüm alt görevler başarıyla gerçekleş
 ### Aşama 2: Temel İşlevsellik ve Güvenlik (Ay 4-6) 🚧
 
 Bu aşamada şu an çalışılan ana bileşenler:
+
 - Kimlik doğrulama ve güvenlik sisteminin tamamlanması 🚧
 - Domain yönetimi ve kurumsal doğrulama ✅
 - Temel kullanıcı arayüzü ve yönetim paneli
@@ -71,7 +73,9 @@ Bu aşamada şu an çalışılan ana bileşenler:
 - Abonelik ve ödeme sistemi
 
 #### Super Admin Paneli Geliştirme 🚧
+
 Platformun tüm tenant'larını ve sistem genelini yönetmek için kritik öneme sahip olan bu panel, aşağıdaki modülleri içerecektir:
+
 - Sistem sağlığı izleme ve metrikleri (SSL durum, sistem metrikleri)
 - Yedekleme ve kurtarma yönetimi
 - Denetim ve güvenlik logları
@@ -82,6 +86,7 @@ Platformun tüm tenant'larını ve sistem genelini yönetmek için kritik öneme
 ### Aşama 3: MVP Lansman ve Geri Bildirim (Ay 7-8)
 
 Bu aşama, platformun ilk kullanılabilir versiyonunun hazırlanması ve beta kullanıcılarına sunulmasını içerecektir:
+
 - Demo okul ortamı oluşturma
 - Not ve değerlendirme sistemi geliştirme
 - Devamsızlık ve yoklama takibi
@@ -91,6 +96,7 @@ Bu aşama, platformun ilk kullanılabilir versiyonunun hazırlanması ve beta ku
 ### Aşama 4: Gelişmiş Özellikler ve Entegrasyonlar (Ay 9-12)
 
 Bu aşamada daha ileri düzey özellikler eklenecektir:
+
 - İletişim ve bildirim sistemi
 - Ödeme ve finans yönetimi
 - Analitik ve raporlama sistemi
@@ -100,6 +106,7 @@ Bu aşamada daha ileri düzey özellikler eklenecektir:
 ### Aşama 5: Ölçeklendirme ve Genişletme (Ay 12-14)
 
 Ölçeklenebilirlik ve genişletme çalışmaları şunları içerecektir:
+
 - API ve entegrasyon katmanı
 - İçerik yönetim sistemi (CMS)
 - Kapsamlı özelleştirme
@@ -109,6 +116,7 @@ Bu aşamada daha ileri düzey özellikler eklenecektir:
 ### Aşama 6: Yapay Zeka ve Gelecek Özellikler (14+ ay)
 
 Uzun vadeli planlar arasında yer alan özellikler:
+
 - Yapay zeka ve machine learning uygulamaları
 - Topluluk ve ekosistem geliştirme
 - Gerçek zamanlı işbirliği özellikleri
@@ -117,6 +125,7 @@ Uzun vadeli planlar arasında yer alan özellikler:
 ## Tamamlanan Özellikler ve Mevcut Durum
 
 ### Tamamlanan Temel Mimari ve Altyapı ✅
+
 - Next.js 14 ile proje yapısı (App Router)
 - TypeScript ve Tailwind CSS entegrasyonu
 - Çok kiracılı (multi-tenant) mimari (hibrit yaklaşım)
@@ -126,6 +135,7 @@ Uzun vadeli planlar arasında yer alan özellikler:
 - Yedekleme ve veri taşınabilirliği çözümleri
 
 ### Tamamlanan Domain Yönetimi ✅
+
 - Cloudflare API entegrasyonu
 - Subdomain ve özel domain yönetimi
 - SSL sertifika ve DNS yönetimi
@@ -136,12 +146,14 @@ Uzun vadeli planlar arasında yer alan özellikler:
 ### Devam Eden Geliştirmeler 🚧
 
 #### Kimlik Doğrulama ve Güvenlik 🚧
+
 - Supabase Auth entegrasyonu (ilerlemekte)
 - Rol tabanlı erişim kontrolleri (tasarım aşamasında)
 - JWT token yapılandırması (planlanıyor)
 - Güvenlik özellikleri ve iki faktörlü kimlik doğrulama (planlanıyor)
 
 #### Super Admin Paneli 🚧
+
 - Panel dokümantasyonu (tamamlandı)
 - Panel gereksinimleri ve komponent yapıları (tamamlandı)
 - Ana dashboard ve sistem sağlığı modülü (geliştiriliyor)
@@ -160,18 +172,21 @@ Uzun vadeli planlar arasında yer alan özellikler:
 ## Sürdürülebilirlik Stratejileri
 
 ### Teknik Sürdürülebilirlik
+
 - **Teknik Borç Yönetimi**: Her sprint'in %20'si teknik borç azaltımına ayrılacak
 - **Kod Kalitesi**: Pull request'lerin minimum %90 test kapsamı gerektirmesi
 - **Dokümantasyon**: Kodun sürekli olarak belgelendirilmesi
 - **Modüler Tasarım**: Yeni özelliklerin modüler şekilde eklenmesi
 
 ### Operasyonel Sürdürülebilirlik
+
 - **SLA Yönetimi**: Net SLA metrikleri tanımlama ve ölçüm mekanizmaları
 - **Otomasyon**: Rutin işlemlerin otomatikleştirilmesi
 - **İzleme**: Kapsamlı sistem izleme ve uyarı mekanizmaları
 - **Felaket Kurtarma**: Kapsamlı yedekleme ve iş sürekliliği planları
 
 ### Topluluk ve Kültürel Sürdürülebilirlik
+
 - **Kullanıcı Eğitimi**: Eğitim materyalleri ve webinarlar
 - **Topluluk Geliştirme**: Aktif kullanıcı topluluğu oluşturma
 - **Kültürel Adaptasyon**: Bölgesel ihtiyaçlara uyum sağlama
@@ -180,6 +195,7 @@ Uzun vadeli planlar arasında yer alan özellikler:
 ## Başarı Metrikleri
 
 ### Kullanıcı ve Finansal Metrikler
+
 - Aktif tenant sayısı ve büyüme oranı
 - Kullanıcı başına aylık gelir (ARPU)
 - Müşteri edinme maliyeti (CAC)
@@ -187,6 +203,7 @@ Uzun vadeli planlar arasında yer alan özellikler:
 - Aylık tekrarlayan gelir (MRR) ve büyüme oranı
 
 ### Operasyonel ve Memnuniyet Metrikleri
+
 - Sistem uptime yüzdesi ve ortalama yanıt süresi
 - Net Promoter Score (NPS)
 - Churn oranı
@@ -195,19 +212,20 @@ Uzun vadeli planlar arasında yer alan özellikler:
 
 ## Riskler ve Azaltma Stratejileri
 
-| Risk | Olasılık | Etki | Azaltma Stratejisi |
-|------|----------|------|---------------------|
-| Teknik ölçeklenebilirlik sorunları | Orta | Yüksek | Erken yük testleri, hibrit izolasyon yaklaşımı |
-| Düşük kullanıcı adaptasyonu | Orta | Yüksek | Kullanıcı merkezli tasarım, kapsamlı onboarding |
-| Veri güvenliği ihlalleri | Düşük | Çok Yüksek | Düzenli güvenlik denetimleri, penetrasyon testleri |
-| Rekabet baskısı | Orta | Orta | Farklılaştırma, topluluk odaklı yaklaşım |
-| Mevzuat değişiklikleri | Düşük | Orta | Proaktif mevzuat takibi, uyarlanabilir tasarım |
-| Teknik borç birikimi | Yüksek | Orta | Sprint'lerin %20'sinin teknik borca ayrılması |
-| Tenant izolasyon hataları | Düşük | Çok Yüksek | Kapsamlı test senaryoları, izolasyon denetimleri |
+| Risk                               | Olasılık | Etki       | Azaltma Stratejisi                                 |
+| ---------------------------------- | -------- | ---------- | -------------------------------------------------- |
+| Teknik ölçeklenebilirlik sorunları | Orta     | Yüksek     | Erken yük testleri, hibrit izolasyon yaklaşımı     |
+| Düşük kullanıcı adaptasyonu        | Orta     | Yüksek     | Kullanıcı merkezli tasarım, kapsamlı onboarding    |
+| Veri güvenliği ihlalleri           | Düşük    | Çok Yüksek | Düzenli güvenlik denetimleri, penetrasyon testleri |
+| Rekabet baskısı                    | Orta     | Orta       | Farklılaştırma, topluluk odaklı yaklaşım           |
+| Mevzuat değişiklikleri             | Düşük    | Orta       | Proaktif mevzuat takibi, uyarlanabilir tasarım     |
+| Teknik borç birikimi               | Yüksek   | Orta       | Sprint'lerin %20'sinin teknik borca ayrılması      |
+| Tenant izolasyon hataları          | Düşük    | Çok Yüksek | Kapsamlı test senaryoları, izolasyon denetimleri   |
 
 ## Risk Yönetim Süreci
 
 Proje boyunca aşağıdaki risk yönetim süreçleri uygulanacaktır:
+
 - Düzenli risk değerlendirme toplantıları (iki haftada bir)
 - Risk göstergelerinin tanımlanması ve takibi
 - Erken uyarı sistemleri

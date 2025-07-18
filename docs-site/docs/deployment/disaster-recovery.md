@@ -9,10 +9,11 @@ Bu doküman, Iqra Eğitim Portalı SaaS platformunun beklenmedik bir felaketle k
 Iqra Eğitim Portalı Felaketten Kurtarma Planı, çeşitli felaket senaryolarında iş sürekliliğini sağlamak ve veri kaybını en aza indirmek için kapsamlı bir çerçeve sunmaktadır. Plan, farklı abonelik seviyelerine göre ölçeklenebilir hizmet seviyesi hedefleri (RTO ve RPO) tanımlamakta ve modern teknolojik altyapı ile desteklenmektedir.
 
 Temel hedeflerimiz:
-* **Güvenilirlik**: Kritik eğitim verilerinin korunması ve sürekliliğinin sağlanması
-* **Hızlı Kurtarma**: Abonelik seviyesine göre optimize edilmiş kurtarma süreleri
-* **Şeffaflık**: Olay sırasında ve sonrasında açık iletişim
-* **Sürekli İyileştirme**: Düzenli testler ve değerlendirmelerle planın güncellenmesi
+
+- **Güvenilirlik**: Kritik eğitim verilerinin korunması ve sürekliliğinin sağlanması
+- **Hızlı Kurtarma**: Abonelik seviyesine göre optimize edilmiş kurtarma süreleri
+- **Şeffaflık**: Olay sırasında ve sonrasında açık iletişim
+- **Sürekli İyileştirme**: Düzenli testler ve değerlendirmelerle planın güncellenmesi
 
 Planımız, teknik detayların yanı sıra organizasyonel sorumlulukları, iletişim stratejilerini ve yasal gereklilikleri de kapsamaktadır. Bu sayede Iqra Eğitim Portalı, kullanıcılarına güvenilir ve dayanıklı bir eğitim yönetim platformu sunmaya devam edecektir.
 
@@ -32,33 +33,37 @@ Felaketten kurtarma stratejimiz aşağıdaki temel prensipler üzerine inşa edi
 
 Iqra Eğitim Portalı için aşağıdaki risk kategorileri tanımlanmıştır:
 
-| Risk Kategorisi | Açıklama | Olasılık | Etki |
-|-----------------|----------|----------|------|
-| Doğal Afetler | Deprem, sel, yangın gibi doğal felaketler | Düşük | Yüksek |
-| Altyapı Hataları | Elektrik kesintisi, ağ problemleri, donanım arızaları | Orta | Yüksek |
-| Siber Saldırılar | DDoS, ransomware, veri ihlalleri | Orta | Yüksek |
-| Veri Bozulması | Veritabanı bozulmaları, sistem hataları | Orta | Orta |
-| İnsan Hatası | Yanlış yapılandırma, yanlışlıkla silme | Orta | Orta-Yüksek |
-| Tedarikçi Hatası | Bulut hizmeti sağlayıcı kesintileri, SaaS servis kesintileri | Düşük | Orta-Yüksek |
+| Risk Kategorisi  | Açıklama                                                     | Olasılık | Etki        |
+| ---------------- | ------------------------------------------------------------ | -------- | ----------- |
+| Doğal Afetler    | Deprem, sel, yangın gibi doğal felaketler                    | Düşük    | Yüksek      |
+| Altyapı Hataları | Elektrik kesintisi, ağ problemleri, donanım arızaları        | Orta     | Yüksek      |
+| Siber Saldırılar | DDoS, ransomware, veri ihlalleri                             | Orta     | Yüksek      |
+| Veri Bozulması   | Veritabanı bozulmaları, sistem hataları                      | Orta     | Orta        |
+| İnsan Hatası     | Yanlış yapılandırma, yanlışlıkla silme                       | Orta     | Orta-Yüksek |
+| Tedarikçi Hatası | Bulut hizmeti sağlayıcı kesintileri, SaaS servis kesintileri | Düşük    | Orta-Yüksek |
 
 ### Kritik Felaket Senaryoları
 
 #### Senaryo 1: Veritabanı Bozulması veya Veri Kaybı
+
 - **Etki**: Tenant verilerine erişilememe, hizmet kesintisi
 - **Olası Nedenler**: Yazılım hataları, insan hatası, siber saldırı
 - **Kurtarma Stratejisi**: Yedeklerden geri yükleme, point-in-time recovery
 
 #### Senaryo 2: Ana Veritabanı Sunucusu Arızası
+
 - **Etki**: Tam platform kesintisi
 - **Olası Nedenler**: Donanım arızası, altyapı sorunları
 - **Kurtarma Stratejisi**: Yedek sunucuya geçiş, yüksek kullanılabilirlik mimarisi
 
 #### Senaryo 3: Bölgesel Veri Merkezi Kesintisi
+
 - **Etki**: Tam platform kesintisi
 - **Olası Nedenler**: Doğal afet, güç kesintisi, network sorunları
 - **Kurtarma Stratejisi**: Çoklu bölge yedekliliği, alternatif bölgeye failover
 
 #### Senaryo 4: Kapsamlı Siber Saldırı veya Veri İhlali
+
 - **Etki**: Veri güvenliği ihlali, güven kaybı, düzenleyici sonuçlar
 - **Olası Nedenler**: Hedefli saldırı, zero-day açık, içeriden tehdit
 - **Kurtarma Stratejisi**: İhlal yalıtımı, temiz sistemden geri yükleme, güvenlik denetimi
@@ -72,20 +77,20 @@ Iqra Eğitim Portalı'nın hizmet seviyesi anlaşmaları (SLA) ve tenant beklent
 RTO, bir felaket sonrası sistemin kabul edilebilir bir seviyede çalışır duruma getirilmesi için geçmesi kabul edilebilir maksimum süredir.
 
 | Abonelik Planı | Kritik Fonksiyonlar RTO | Tam Sistem RTO |
-|----------------|-------------------------|----------------|
-| Free | 24 saat | 48 saat |
-| Standard | 8 saat | 24 saat |
-| Premium | 4 saat | 12 saat |
+| -------------- | ----------------------- | -------------- |
+| Free           | 24 saat                 | 48 saat        |
+| Standard       | 8 saat                  | 24 saat        |
+| Premium        | 4 saat                  | 12 saat        |
 
 ### Kurtarma Noktası Hedefi (RPO)
 
 RPO, bir felaket durumunda kabul edilebilir veri kaybı süresini belirtir.
 
-| Abonelik Planı | RPO |
-|----------------|-----|
-| Free | 24 saat |
-| Standard | 6 saat |
-| Premium | 1 saat |
+| Abonelik Planı | RPO     |
+| -------------- | ------- |
+| Free           | 24 saat |
+| Standard       | 6 saat  |
+| Premium        | 1 saat  |
 
 ## Felaketten Kurtarma Stratejileri
 
@@ -115,28 +120,28 @@ export const replicationConfig = {
     {
       region: 'eu-central-1', // İkincil bölge (Avrupa - Frankfurt)
       syncType: 'async', // Asenkron replikasyon
-      priority: 1 // Failover önceliği
+      priority: 1, // Failover önceliği
     },
     {
       region: 'eu-south-1', // Üçüncül bölge (Avrupa - Milano)
       syncType: 'async',
-      priority: 2
-    }
+      priority: 2,
+    },
   ],
   replicationTriggers: {
     premium: {
       maxLagSeconds: 60, // Premium tenant'lar için maksimum replikasyon gecikmesi
-      alertThresholdSeconds: 30
+      alertThresholdSeconds: 30,
     },
     standard: {
       maxLagSeconds: 360, // Standard tenant'lar için maksimum replikasyon gecikmesi
-      alertThresholdSeconds: 180
+      alertThresholdSeconds: 180,
     },
     free: {
       maxLagSeconds: 1440, // Free tenant'lar için maksimum replikasyon gecikmesi
-      alertThresholdSeconds: 720
-    }
-  }
+      alertThresholdSeconds: 720,
+    },
+  },
 };
 ```
 
@@ -175,11 +180,11 @@ bootstrap:
         max_connections: 500
         shared_buffers: 8GB
         wal_level: replica
-        hot_standby: "on"
+        hot_standby: 'on'
         wal_keep_segments: 100
         max_wal_senders: 10
         max_replication_slots: 10
-        hot_standby_feedback: "on"
+        hot_standby_feedback: 'on'
 ```
 
 #### Uygulama Katmanı Yüksek Kullanılabilirliği
@@ -196,7 +201,7 @@ bootstrap:
 
 ### Felaket Kurtarma Altyapısı
 
-#### Özel Felaket Kurtarma Ortamı 
+#### Özel Felaket Kurtarma Ortamı
 
 Premium abonelikler için, fiziksel ayrı bir felaket kurtarma ortamı:
 
@@ -212,10 +217,7 @@ interface DREnvironment {
 }
 
 // DR Ortamına failover kararı
-function shouldFailoverToDR(
-  currentIncident: Incident,
-  drEnvironment: DREnvironment
-): boolean {
+function shouldFailoverToDR(currentIncident: Incident, drEnvironment: DREnvironment): boolean {
   // Failover kararı mantığı
   if (
     currentIncident.severity === 'critical' &&
@@ -225,7 +227,7 @@ function shouldFailoverToDR(
   ) {
     return true;
   }
-  
+
   return false;
 }
 ```
@@ -234,21 +236,21 @@ function shouldFailoverToDR(
 
 ### Kriz Yönetim Ekibi
 
-| Rol | Sorumluluklar | İletişim Kanalı |
-|-----|---------------|-----------------|
-| Kriz Yöneticisi | Olay koordinasyonu, iletişim yönetimi, karar verme | Telefon, Slack |
-| Teknik Lider | Teknik kurtarma stratejisi, ekip koordinasyonu | Slack, Video Konferans |
-| İletişim Sorumlusu | Müşteri ve paydaş iletişimi | E-posta, Web site |
-| İş Sürekliliği Sorumlusu | İş etkisi değerlendirmesi, önceliklendirme | Slack, E-posta |
+| Rol                      | Sorumluluklar                                      | İletişim Kanalı        |
+| ------------------------ | -------------------------------------------------- | ---------------------- |
+| Kriz Yöneticisi          | Olay koordinasyonu, iletişim yönetimi, karar verme | Telefon, Slack         |
+| Teknik Lider             | Teknik kurtarma stratejisi, ekip koordinasyonu     | Slack, Video Konferans |
+| İletişim Sorumlusu       | Müşteri ve paydaş iletişimi                        | E-posta, Web site      |
+| İş Sürekliliği Sorumlusu | İş etkisi değerlendirmesi, önceliklendirme         | Slack, E-posta         |
 
 ### Teknik Kurtarma Ekibi
 
-| Rol | Sorumluluklar | Yedek Personel |
-|-----|---------------|----------------|
-| Veritabanı Uzmanı | Veritabanı kurtarma operasyonları | 2 yedek uzman |
-| Sistem Yöneticisi | Altyapı ve sunucu kurtarma | 2 yedek yönetici |
-| Ağ Uzmanı | Ağ bağlantıları ve DNS yapılandırması | 1 yedek uzman |
-| Güvenlik Uzmanı | Güvenlik ihlalleri, güvenli kurtarma süreçleri | 1 yedek uzman |
+| Rol               | Sorumluluklar                                  | Yedek Personel   |
+| ----------------- | ---------------------------------------------- | ---------------- |
+| Veritabanı Uzmanı | Veritabanı kurtarma operasyonları              | 2 yedek uzman    |
+| Sistem Yöneticisi | Altyapı ve sunucu kurtarma                     | 2 yedek yönetici |
+| Ağ Uzmanı         | Ağ bağlantıları ve DNS yapılandırması          | 1 yedek uzman    |
+| Güvenlik Uzmanı   | Güvenlik ihlalleri, güvenli kurtarma süreçleri | 1 yedek uzman    |
 
 ## Kurtarma Prosedürleri
 
@@ -256,30 +258,28 @@ function shouldFailoverToDR(
 
 ```typescript
 // lib/monitoring/incident-detection.ts
-export async function detectAndClassifyIncident(
-  alertData: AlertData
-): Promise<Incident | null> {
+export async function detectAndClassifyIncident(alertData: AlertData): Promise<Incident | null> {
   // Alarm verilerini analiz et
   const incident = await analyzeAlertData(alertData);
-  
+
   if (!incident) {
     return null; // Olay yok veya önemsiz
   }
-  
+
   // Olayı sınıflandır
   await classifyIncidentSeverity(incident);
-  
+
   // Olay kaydı oluştur
   await createIncidentRecord(incident);
-  
+
   // İlgili ekiplere bildirim gönder
   await notifyIncidentTeam(incident);
-  
+
   // Kurtarma sürecini başlat
   if (incident.severity === 'critical' || incident.severity === 'high') {
     await initiateRecoveryProcess(incident);
   }
-  
+
   return incident;
 }
 ```
@@ -321,10 +321,10 @@ pg_restore -U postgres -d "${TARGET_DB}" --clean --if-exists "/tmp/${BACKUP_FILE
 # 4. Başarılı mı kontrol et
 if [ $? -eq 0 ]; then
   echo "Veritabanı başarıyla kurtarıldı: ${TARGET_DB}"
-  
+
   # 5. Status tablosunu güncelle
   psql -U postgres -d "${TARGET_DB}" -c "INSERT INTO public.recovery_status (recovery_time, source_backup, status, notes) VALUES (NOW(), '${BACKUP_FILE}', 'completed', 'Tam veritabanı kurtarma');"
-  
+
   # 6. İşlem tamamlandı bildirimini gönder
   curl -X POST "${NOTIFICATION_WEBHOOK}" \
     -H "Content-Type: application/json" \
@@ -349,82 +349,79 @@ export async function recoverTenant(
     targetDateTime,
     status: 'in-progress',
     startTime: new Date(),
-    steps: []
+    steps: [],
   };
-  
+
   try {
     // 1. Tenant'ın yedeklerini bul
     const backup = await findClosestTenantBackup(tenantId, targetDateTime);
-    recovery.steps.push({ 
-      name: 'find-backup', 
-      status: 'completed', 
-      details: { backupId: backup.id } 
+    recovery.steps.push({
+      name: 'find-backup',
+      status: 'completed',
+      details: { backupId: backup.id },
     });
-    
+
     // 2. Tenant verilerini geçici şemaya geri yükle
     const tempSchemaName = `recovery_${tenantId}_${Date.now()}`;
     await restoreTenantToTempSchema(backup, tempSchemaName);
-    recovery.steps.push({ 
-      name: 'restore-to-temp', 
-      status: 'completed', 
-      details: { tempSchema: tempSchemaName } 
+    recovery.steps.push({
+      name: 'restore-to-temp',
+      status: 'completed',
+      details: { tempSchema: tempSchemaName },
     });
-    
+
     // 3. Veri doğrulama kontrollerini yap
-    const validationResult = await validateRestoredTenantData(
-      tempSchemaName, 
-      tenantId
-    );
-    
+    const validationResult = await validateRestoredTenantData(tempSchemaName, tenantId);
+
     if (!validationResult.isValid && !options.skipValidation) {
       throw new Error(`Veri doğrulama hatası: ${validationResult.errors.join(', ')}`);
     }
-    
-    recovery.steps.push({ 
-      name: 'validate-data', 
-      status: 'completed', 
-      details: { validation: validationResult } 
+
+    recovery.steps.push({
+      name: 'validate-data',
+      status: 'completed',
+      details: { validation: validationResult },
     });
-    
+
     // 4. Mevcut şemayı yedekle (güvenlik için)
     await backupCurrentTenantSchema(tenantId);
-    recovery.steps.push({ 
-      name: 'backup-current', 
-      status: 'completed' 
+    recovery.steps.push({
+      name: 'backup-current',
+      status: 'completed',
     });
-    
+
     // 5. Kurtarılan verileri mevcut şemaya taşı
     await swapTenantSchemas(tempSchemaName, `tenant_${tenantId}`);
-    recovery.steps.push({ 
-      name: 'swap-schemas', 
-      status: 'completed' 
+    recovery.steps.push({
+      name: 'swap-schemas',
+      status: 'completed',
     });
-    
+
     // 6. Tenant storage verilerini geri yükle
     await recoverTenantStorage(tenantId, targetDateTime);
-    recovery.steps.push({ 
-      name: 'recover-storage', 
-      status: 'completed' 
+    recovery.steps.push({
+      name: 'recover-storage',
+      status: 'completed',
     });
-    
+
     // 7. Tenant'ı aktifleştir
     await activateTenant(tenantId);
-    
+
     recovery.status = 'completed';
     recovery.endTime = new Date();
-    
+
     // 8. Kurtarma kaydını oluştur
     await logRecoveryEvent(recovery);
-    
+
     return recovery;
   } catch (error) {
     recovery.status = 'failed';
     recovery.endTime = new Date();
     recovery.error = error.message;
-    
+
     // Hata durumunda da kurtarma kaydı oluştur
     await logRecoveryEvent(recovery);
-    
+
     throw error;
   }
 }
@@ -446,92 +443,92 @@ export async function initiateRegionalFailover(
     status: 'initiated',
     startTime: new Date(),
     reason,
-    steps: []
+    steps: [],
   };
-  
+
   try {
     // 1. Ön kontroller
     const preCheckResult = await performFailoverPreChecks(sourceRegion, targetRegion);
-    failover.steps.push({ 
-      name: 'pre-checks', 
+    failover.steps.push({
+      name: 'pre-checks',
       status: preCheckResult.success ? 'completed' : 'failed',
-      details: preCheckResult
+      details: preCheckResult,
     });
-    
+
     if (!preCheckResult.success) {
       throw new Error(`Failover ön kontrolü başarısız: ${preCheckResult.reason}`);
     }
-    
+
     // 2. Failover bildirimi gönder
     await sendFailoverNotifications({
       type: 'start',
       regions: { from: sourceRegion, to: targetRegion },
-      estimatedDowntime: preCheckResult.estimatedDowntime
+      estimatedDowntime: preCheckResult.estimatedDowntime,
     });
-    
+
     // 3. Kaynak bölgede yazma işlemlerini durdur
     await setSourceRegionReadOnly(sourceRegion);
     failover.steps.push({ name: 'source-readonly', status: 'completed' });
-    
+
     // 4. Replikasyonun tamamlanmasını bekle
     await waitForReplicationCatchup(sourceRegion, targetRegion);
     failover.steps.push({ name: 'replication-sync', status: 'completed' });
-    
+
     // 5. Hedef bölge veritabanını aktifleştir
     await promoteTargetDatabase(targetRegion);
     failover.steps.push({ name: 'promote-target-db', status: 'completed' });
-    
+
     // 6. DNS/Trafik yönlendirmesini değiştir
     await updateTrafficRouting(sourceRegion, targetRegion);
     failover.steps.push({ name: 'update-routing', status: 'completed' });
-    
+
     // 7. Uygulama yapılandırmasını güncelle
     await updateAppConfiguration(targetRegion);
     failover.steps.push({ name: 'update-config', status: 'completed' });
-    
+
     // 8. Sağlık kontrolleri
     const healthCheckResult = await performPostFailoverHealthChecks(targetRegion);
-    
+
     if (!healthCheckResult.success) {
       failover.status = 'completed-with-issues';
       failover.issues = healthCheckResult.issues;
     } else {
       failover.status = 'completed';
     }
-    
-    failover.steps.push({ 
-      name: 'health-checks', 
+
+    failover.steps.push({
+      name: 'health-checks',
       status: healthCheckResult.success ? 'completed' : 'completed-with-issues',
-      details: healthCheckResult
+      details: healthCheckResult,
     });
-    
+
     // 9. Tamamlanma bildirimi
     await sendFailoverNotifications({
       type: 'complete',
       regions: { from: sourceRegion, to: targetRegion },
       status: failover.status,
-      issues: failover.issues
+      issues: failover.issues,
     });
-    
+
     failover.endTime = new Date();
     await logFailoverEvent(failover);
-    
+
     return failover;
   } catch (error) {
     failover.status = 'failed';
     failover.endTime = new Date();
     failover.error = error.message;
-    
+
     // Bildirim gönder
     await sendFailoverNotifications({
       type: 'failed',
       regions: { from: sourceRegion, to: targetRegion },
-      error: error.message
+      error: error.message,
     });
-    
+
     // Hata kaydı
     await logFailoverEvent(failover);
-    
+
     throw error;
   }
 }
@@ -549,42 +546,42 @@ export async function restoreToCleanEnvironment(
 ): Promise<RestoreResult> {
   // 1. Temiz bir ortam oluştur
   const newEnvironment = await createCleanEnvironment();
-  
+
   // 2. Saldırı öncesi son temiz yedekleri belirle
   const backupSet = await identifyCleanBackups(lastKnownCleanDate);
-  
+
   // 3. Temel sistem tablolarını geri yükle
   await restoreSystemTables(newEnvironment, backupSet.systemBackup);
-  
+
   // 4. Her tenant için kurtarma işlemi
   const tenantRestoreResults = [];
-  
+
   for (const tenantBackup of backupSet.tenantBackups) {
     const result = await restoreTenantToCleanEnvironment(
       newEnvironment,
       tenantBackup.tenantId,
       tenantBackup.backupPath
     );
-    
+
     tenantRestoreResults.push(result);
   }
-  
+
   // 5. Güvenlik taraması yap
   const securityScanResult = await performSecurityScan(newEnvironment);
-  
+
   if (!securityScanResult.clean) {
     throw new Error('Güvenlik taraması başarısız: Yeni ortamda potansiyel tehditler tespit edildi');
   }
-  
+
   // 6. Yeni ortamı aktifleştir
   await switchToNewEnvironment(newEnvironment.id);
-  
+
   return {
     environmentId: newEnvironment.id,
     restoreDate: new Date(),
     basedOnBackupDate: lastKnownCleanDate,
     tenantResults: tenantRestoreResults,
-    securityScanResult
+    securityScanResult,
   };
 }
 ```
@@ -593,12 +590,12 @@ export async function restoreToCleanEnvironment(
 
 ### Test Takvimi
 
-| Test Türü | Sıklık | Kapsam | Son Test |
-|-----------|--------|--------|----------|
-| Veritabanı Kurtarma Testi | Aylık | Rastgele seçilen tenant verilerinin geri yüklenmesi | 2023-12-15 |
-| Failover Testi | 3 Aylık | Bölgeler arası failover | 2023-11-10 |
-| Tam DR Tatbikatı | 6 Aylık | Tam sistem kurtarma senaryosu | 2023-10-22 |
-| Veri Bütünlüğü Doğrulama | Haftalık | Yedeklerin bütünlük kontrolü | 2023-12-28 |
+| Test Türü                 | Sıklık   | Kapsam                                              | Son Test   |
+| ------------------------- | -------- | --------------------------------------------------- | ---------- |
+| Veritabanı Kurtarma Testi | Aylık    | Rastgele seçilen tenant verilerinin geri yüklenmesi | 2023-12-15 |
+| Failover Testi            | 3 Aylık  | Bölgeler arası failover                             | 2023-11-10 |
+| Tam DR Tatbikatı          | 6 Aylık  | Tam sistem kurtarma senaryosu                       | 2023-10-22 |
+| Veri Bütünlüğü Doğrulama  | Haftalık | Yedeklerin bütünlük kontrolü                        | 2023-12-28 |
 
 ### Test Prosedürü
 
@@ -609,35 +606,33 @@ export async function scheduleDRTest(
   params?: any
 ): Promise<TestSchedule> {
   // Test zamanlaması mantığı
-  
+
   // Test için bildirim gönder
   await notifyDRTestTeam({
     testType,
     scheduledTime,
     requiredParticipants,
-    preTestChecklist
+    preTestChecklist,
   });
-  
+
   return {
     id: uuidv4(),
     testType,
     status: 'scheduled',
     scheduledTime,
     params,
-    requiredParticipants
+    requiredParticipants,
   };
 }
 
 // Test yürütme
-export async function executeDRTest(
-  testId: string
-): Promise<TestResult> {
+export async function executeDRTest(testId: string): Promise<TestResult> {
   const test = await getScheduledTest(testId);
-  
+
   if (!test) {
     throw new Error(`Test bulunamadı: ${testId}`);
   }
-  
+
   switch (test.testType) {
     case 'database':
       return executeDataRestoreTest(test);
@@ -659,12 +654,14 @@ export async function executeDRTest(
 # Felaketten Kurtarma Test Raporu
 
 ## Test Bilgileri
+
 - **Test ID**: DR-TEST-2023-12-15
 - **Test Türü**: Veritabanı Kurtarma Testi
 - **Tarih ve Saat**: 15 Aralık 2023, 22:00-00:30
 - **Katılımcılar**: Ali Yılmaz (DBA), Ayşe Kaya (Sistem Yöneticisi), Mehmet Demir (Teknik Lider)
 
 ## Test Senaryosu
+
 Premium müşteriye ait bir tenant veritabanının çökmesi ve son yedekten geri yüklenmesi senaryosu test edilmiştir.
 
 ## Test Adımları ve Sonuçları
@@ -694,6 +691,7 @@ Premium müşteriye ait bir tenant veritabanının çökmesi ve son yedekten ger
    - Süre: 3 dakika
 
 ## Toplam Kurtarma Süresi
+
 43 dakika (RTO hedefi: 4 saat)
 
 ## Bulgular ve İyileştirme Önerileri
@@ -705,6 +703,7 @@ Premium müşteriye ait bir tenant veritabanının çökmesi ve son yedekten ger
 3. Geri yükleme sırasında yeterli disk I/O performansı alınamadı. Dedicated IOPs yapılandırması önerilir.
 
 ## Sonuç
+
 Test başarıyla tamamlanmıştır. Belirlenen RTO hedefinin altında kalınmıştır. Önerilen iyileştirmeler ile kurtarma süresinin daha da kısaltılması mümkündür.
 ```
 
@@ -722,24 +721,24 @@ DR planı, aşağıdaki durumlarda güncellenmelidir:
 ### Doküman Versiyonlama
 
 ```markdown
-| Versiyon | Tarih | Açıklama | Güncelleyen |
-|----------|-------|----------|-------------|
-| 1.0.0 | 2023-01-15 | İlk sürüm | Ali Yılmaz |
-| 1.1.0 | 2023-04-22 | Multi-bölge stratejisi eklendi | Ayşe Kaya |
-| 1.2.0 | 2023-09-10 | Premium tenant RTO/RPO güncellendi | Mehmet Demir |
-| 2.0.0 | 2023-12-25 | Tam revizyon, yeni test prosedürleri | Ali Yılmaz |
+| Versiyon | Tarih      | Açıklama                             | Güncelleyen  |
+| -------- | ---------- | ------------------------------------ | ------------ |
+| 1.0.0    | 2023-01-15 | İlk sürüm                            | Ali Yılmaz   |
+| 1.1.0    | 2023-04-22 | Multi-bölge stratejisi eklendi       | Ayşe Kaya    |
+| 1.2.0    | 2023-09-10 | Premium tenant RTO/RPO güncellendi   | Mehmet Demir |
+| 2.0.0    | 2023-12-25 | Tam revizyon, yeni test prosedürleri | Ali Yılmaz   |
 ```
 
 ## İletişim Planı
 
 ### Bildirim Matrisi
 
-| Olay Türü | İç Paydaşlar | Müşteriler | Sıklık | Kanal |
-|-----------|--------------|------------|--------|-------|
-| Planlı Bakım | Tüm Ekip | Tüm Tenant'lar | Başlangıç, %50, Tamamlanma | E-posta, Dashboard |
-| Kısa Süreli Kesinti (<30dk) | Teknik Ekip | Premium Tenant'lar | Başlangıç, Tamamlanma | Dashboard, SMS (Premium) |
-| Uzun Süreli Kesinti (>30dk) | Tüm Ekip, Yönetim | Tüm Tenant'lar | Her 30 dakikada bir | E-posta, SMS, Dashboard, Sosyal Medya |
-| Veri İhlali | Kriz Ekibi, Hukuk | Etkilenen Tenant'lar | Tespit, Analiz, Çözüm | Doğrudan İletişim, Resmi Bildirim |
+| Olay Türü                   | İç Paydaşlar      | Müşteriler           | Sıklık                     | Kanal                                 |
+| --------------------------- | ----------------- | -------------------- | -------------------------- | ------------------------------------- |
+| Planlı Bakım                | Tüm Ekip          | Tüm Tenant'lar       | Başlangıç, %50, Tamamlanma | E-posta, Dashboard                    |
+| Kısa Süreli Kesinti (<30dk) | Teknik Ekip       | Premium Tenant'lar   | Başlangıç, Tamamlanma      | Dashboard, SMS (Premium)              |
+| Uzun Süreli Kesinti (>30dk) | Tüm Ekip, Yönetim | Tüm Tenant'lar       | Her 30 dakikada bir        | E-posta, SMS, Dashboard, Sosyal Medya |
+| Veri İhlali                 | Kriz Ekibi, Hukuk | Etkilenen Tenant'lar | Tespit, Analiz, Çözüm      | Doğrudan İletişim, Resmi Bildirim     |
 
 ### İletişim Şablonları
 
@@ -765,9 +764,9 @@ Sorularınız için destek ekibimize 7/24 ulaşabilirsiniz.
 
 Saygılarımızla,
 Iqra Eğitim Portalı Ekibi
-`
+`,
   },
-  
+
   incidentNotification: {
     subject: '{{tenant.name}} - Sistem Durumu Bildirimi {{status}}',
     body: `
@@ -789,9 +788,9 @@ Bu durumdan dolayı özür dileriz. Anlayışınız için teşekkür ederiz.
 
 Saygılarımızla,
 Iqra Eğitim Portalı Ekibi
-`
+`,
   },
-  
+
   recoveryComplete: {
     subject: '{{tenant.name}} - Sistem Normale Döndü',
     body: `
@@ -811,9 +810,9 @@ Yaşanan kesintiden dolayı özür dileriz. Hizmet kalitemizi artırmak için ge
 
 Saygılarımızla,
 Iqra Eğitim Portalı Ekibi
-`
+`,
   },
-  
+
   dataBreachNotification: {
     subject: '{{tenant.name}} - Önemli Güvenlik Bildirimi',
     body: `
@@ -834,10 +833,9 @@ KVKK düzenlemeleri gereğince bu bildirimi yapma zorunluluğumuz bulunmaktadır
 
 Saygılarımızla,
 Iqra Eğitim Portalı Güvenlik Ekibi
-`
-  }
+`,
+  },
 };
-
 ```
 
 ## Tenant-Spesifik Kurtarma Stratejileri
@@ -864,7 +862,7 @@ const premiumTenantConfig: Partial<TenantRecoveryConfig> = {
   rpo_hours: 1,
   recovery_priority: 1,
   backup_frequency: '0 */1 * * *', // Saatlik
-  dedicated_resources: true
+  dedicated_resources: true,
 };
 
 // Standard tenant'ların recovery yapılandırması
@@ -874,7 +872,7 @@ const standardTenantConfig: Partial<TenantRecoveryConfig> = {
   rpo_hours: 6,
   recovery_priority: 2,
   backup_frequency: '0 */6 * * *', // 6 saatte bir
-  dedicated_resources: false
+  dedicated_resources: false,
 };
 
 // Free tenant'ların recovery yapılandırması
@@ -884,23 +882,21 @@ const freeTenantConfig: Partial<TenantRecoveryConfig> = {
   rpo_hours: 24,
   recovery_priority: 3,
   backup_frequency: '0 0 * * *', // Günlük
-  dedicated_resources: false
+  dedicated_resources: false,
 };
 
 // Tenant'a özgü kurtarma yapılandırmasını al
-export async function getTenantRecoveryConfig(
-  tenantId: string
-): Promise<TenantRecoveryConfig> {
+export async function getTenantRecoveryConfig(tenantId: string): Promise<TenantRecoveryConfig> {
   // Veritabanından tenant bilgisini al
   const tenant = await getTenantById(tenantId);
-  
+
   if (!tenant) {
     throw new Error(`Tenant bulunamadı: ${tenantId}`);
   }
-  
+
   // Plan tipine göre temel yapılandırmayı al
   let config: Partial<TenantRecoveryConfig>;
-  
+
   switch (tenant.plan_type) {
     case 'premium':
       config = { ...premiumTenantConfig };
@@ -913,14 +909,14 @@ export async function getTenantRecoveryConfig(
       config = { ...freeTenantConfig };
       break;
   }
-  
+
   // Tenant'a özgü özel yapılandırmaları ekle
   const customConfig = await getCustomTenantRecoveryConfig(tenantId);
-  
+
   return {
     tenant_id: tenantId,
     ...config,
-    ...customConfig
+    ...customConfig,
   } as TenantRecoveryConfig;
 }
 
@@ -928,25 +924,25 @@ export async function getTenantRecoveryConfig(
 export async function getPrioritizedTenantsForRecovery(): Promise<TenantRecoveryConfig[]> {
   const allTenants = await getAllActiveTenants();
   const recoveryConfigs: TenantRecoveryConfig[] = [];
-  
+
   for (const tenant of allTenants) {
     const config = await getTenantRecoveryConfig(tenant.id);
     recoveryConfigs.push(config);
   }
-  
+
   // Öncelik ve plan tipine göre sırala
   return recoveryConfigs.sort((a, b) => {
     if (a.recovery_priority !== b.recovery_priority) {
       return a.recovery_priority - b.recovery_priority;
     }
-    
+
     // Aynı öncelikte ise plan tipine göre sırala
     const planPriority = {
-      'premium': 1,
-      'standard': 2,
-      'free': 3
+      premium: 1,
+      standard: 2,
+      free: 3,
     };
-    
+
     return planPriority[a.plan_type] - planPriority[b.plan_type];
   });
 }
@@ -982,23 +978,20 @@ export async function generateRecoveryPerformanceReport(
   const incident = await getIncidentDetails(incidentId);
   const recoveryActions = await getRecoveryActions(incidentId);
   const affectedTenants = await getAffectedTenants(incidentId);
-  
+
   // Metrikleri hesapla
   const metrics: RecoveryMetrics = {
     incident_id: incidentId,
     start_time: incident.start_time,
     detection_time: incident.detection_time,
     resolution_time: incident.resolution_time,
-    total_duration_minutes: calculateDurationMinutes(
-      incident.start_time, 
-      incident.resolution_time
-    ),
+    total_duration_minutes: calculateDurationMinutes(incident.start_time, incident.resolution_time),
     detection_duration_minutes: calculateDurationMinutes(
-      incident.start_time, 
+      incident.start_time,
       incident.detection_time
     ),
     recovery_duration_minutes: calculateDurationMinutes(
-      incident.detection_time, 
+      incident.detection_time,
       incident.resolution_time
     ),
     affected_tenants: affectedTenants.length,
@@ -1006,22 +999,22 @@ export async function generateRecoveryPerformanceReport(
     data_loss_assessment: assessDataLoss(incident, recoveryActions),
     rto_success: evaluateRTOSuccess(incident, affectedTenants),
     rpo_success: evaluateRPOSuccess(incident, recoveryActions),
-    customer_impact_score: calculateCustomerImpactScore(incident, affectedTenants)
+    customer_impact_score: calculateCustomerImpactScore(incident, affectedTenants),
   };
-  
+
   // SLA değerlendirmesi
   const slaEvaluation = evaluateSLACompliance(metrics, affectedTenants);
-  
+
   // İyileştirme önerileri
   const improvementSuggestions = generateImprovementSuggestions(metrics, recoveryActions);
-  
+
   return {
     metrics,
     slaEvaluation,
     improvementSuggestions,
     incidentSummary: summarizeIncident(incident),
     affectedTenantsSummary: summarizeAffectedTenants(affectedTenants),
-    recoveryActionsSummary: summarizeRecoveryActions(recoveryActions)
+    recoveryActionsSummary: summarizeRecoveryActions(recoveryActions),
   };
 }
 ```
@@ -1033,12 +1026,13 @@ export async function generateRecoveryPerformanceReport(
 ```typescript
 // lib/recovery/kpi.ts
 // DR KPI'larını değerlendir
-export async function evaluateDRPerformanceKPIs(
-  timeRange: { start: Date, end: Date }
-): Promise<DRPerformanceReport> {
+export async function evaluateDRPerformanceKPIs(timeRange: {
+  start: Date;
+  end: Date;
+}): Promise<DRPerformanceReport> {
   // İlgili zaman aralığındaki olayları al
   const incidents = await getIncidentsInTimeRange(timeRange);
-  
+
   // KPI hesaplamaları
   const meanTimeToDetect = calculateMeanTimeToDetect(incidents);
   const meanTimeToRecover = calculateMeanTimeToRecover(incidents);
@@ -1046,20 +1040,20 @@ export async function evaluateDRPerformanceKPIs(
   const dataLossFrequency = calculateDataLossFrequency(incidents);
   const rtoComplianceRate = calculateRTOComplianceRate(incidents);
   const rpoComplianceRate = calculateRPOComplianceRate(incidents);
-  
+
   // Trendler ve karşılaştırmalar
   const detectionTimeComparison = compareWithPreviousPeriod(
-    meanTimeToDetect, 
+    meanTimeToDetect,
     'mean_time_to_detect',
     timeRange
   );
-  
+
   const recoveryTimeComparison = compareWithPreviousPeriod(
-    meanTimeToRecover, 
+    meanTimeToRecover,
     'mean_time_to_recover',
     timeRange
   );
-  
+
   // Sürekli iyileştirme puanı
   const continuousImprovementScore = calculateContinuousImprovementScore({
     meanTimeToDetect,
@@ -1068,9 +1062,9 @@ export async function evaluateDRPerformanceKPIs(
     rtoComplianceRate,
     rpoComplianceRate,
     detectionTimeComparison,
-    recoveryTimeComparison
+    recoveryTimeComparison,
   });
-  
+
   // İyileştirme alanları
   const improvementAreas = identifyImprovementAreas({
     meanTimeToDetect,
@@ -1078,9 +1072,9 @@ export async function evaluateDRPerformanceKPIs(
     recoverySuccessRate,
     dataLossFrequency,
     rtoComplianceRate,
-    rpoComplianceRate
+    rpoComplianceRate,
   });
-  
+
   return {
     timeRange,
     incidentCount: incidents.length,
@@ -1094,7 +1088,7 @@ export async function evaluateDRPerformanceKPIs(
     recoveryTimeComparison,
     continuousImprovementScore,
     improvementAreas,
-    recommendations: generateRecommendations(improvementAreas)
+    recommendations: generateRecommendations(improvementAreas),
   };
 }
 ```
@@ -1106,26 +1100,26 @@ export async function evaluateDRPerformanceKPIs(
 Iqra Eğitim Portalı, felaketten kurtarma planlamasında KVKK (Kişisel Verilerin Korunması Kanunu) gerekliliklerine uymak için aşağıdaki önlemleri almaktadır:
 
 1. **Veri Bütünlüğü ve Gizliliği**:
-   * Tüm yedekler şifrelenerek saklanır
-   * İletim sırasında TLS kullanılır
-   * Kurtarma işlemleri sırasında veri erişimi kısıtlanır
+   - Tüm yedekler şifrelenerek saklanır
+   - İletim sırasında TLS kullanılır
+   - Kurtarma işlemleri sırasında veri erişimi kısıtlanır
 
 2. **Veri Silme Hakları**:
-   * Silme talepleri yedekler dahil tüm sistemlerde uygulanır
-   * Arşivlenen veriler için silme prosedürleri mevcuttur
+   - Silme talepleri yedekler dahil tüm sistemlerde uygulanır
+   - Arşivlenen veriler için silme prosedürleri mevcuttur
 
 3. **Veri İhlali Bildirimleri**:
-   * İhlal tespit süreçleri
-   * 72 saat içinde KVK Kurumu'na bildirim
-   * Etkilenen veri sahiplerine bildirim mekanizmaları
+   - İhlal tespit süreçleri
+   - 72 saat içinde KVK Kurumu'na bildirim
+   - Etkilenen veri sahiplerine bildirim mekanizmaları
 
 4. **Sınır Aşırı Veri Transferi**:
-   * Türkiye'deki birincil veri merkezinde veri saklama
-   * Gerektiğinde uyumlu ülkelerde yedek saklama
+   - Türkiye'deki birincil veri merkezinde veri saklama
+   - Gerektiğinde uyumlu ülkelerde yedek saklama
 
 ## İlgili Kaynaklar
-* [Yedekleme ve Geri Yükleme Prosedürleri](/docs/deployment/backup-restore.md)
-* [Multi-Tenant Mimari Stratejisi](/docs/architecture/multi-tenant-strategy.md)
-* [Veri İzolasyon Stratejisi](/docs/deployment/data-isolation.md)
-* [Teknoloji Yığını](/docs/architecture/tech-stack.md)
 
+- [Yedekleme ve Geri Yükleme Prosedürleri](/docs/deployment/backup-restore.md)
+- [Multi-Tenant Mimari Stratejisi](/docs/architecture/multi-tenant-strategy.md)
+- [Veri İzolasyon Stratejisi](/docs/deployment/data-isolation.md)
+- [Teknoloji Yığını](/docs/architecture/tech-stack.md)

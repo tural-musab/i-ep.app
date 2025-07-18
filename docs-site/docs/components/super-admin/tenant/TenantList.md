@@ -17,19 +17,19 @@ Tenant listesini tablo formatında görüntüleyen ve yönetmeyi sağlayan kompo
 interface TenantListProps {
   /** Sayfa başına gösterilecek kayıt sayısı */
   pageSize?: number;
-  
+
   /** Varsayılan sıralama kolonu */
   defaultSortColumn?: string;
-  
+
   /** Varsayılan sıralama yönü */
   defaultSortDirection?: 'asc' | 'desc';
-  
+
   /** Özel filtre komponenti */
   FilterComponent?: React.ComponentType<FilterProps>;
-  
+
   /** Seçili tenant değiştiğinde çağrılır */
   onTenantSelect?: (tenant: Tenant) => void;
-  
+
   /** Toplu işlem yapıldığında çağrılır */
   onBulkAction?: (action: string, tenants: Tenant[]) => void;
 }
@@ -94,8 +94,8 @@ const { data, isLoading } = useQuery(['tenants', filters], () =>
     params: {
       page,
       limit: pageSize,
-      ...filters
-    }
+      ...filters,
+    },
   })
 );
 
@@ -103,21 +103,21 @@ const { data, isLoading } = useQuery(['tenants', filters], () =>
 const { mutate } = useMutation((data: UpdateTenantData) =>
   fetch(`/api/tenants/${data.id}`, {
     method: 'PATCH',
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   })
 );
 ```
 
 ## Tablo Kolonları
 
-| Kolon | Açıklama | Sıralanabilir | Filtrelenebilir |
-|-------|----------|---------------|-----------------|
-| İsim | Tenant adı | ✓ | ✓ |
-| Domain | Tenant domaini | ✓ | ✓ |
-| Durum | Aktif/Askıya alınmış/Silinmiş | ✓ | ✓ |
-| Plan | Abonelik planı | ✓ | ✓ |
-| Oluşturulma | Oluşturulma tarihi | ✓ | ✓ |
-| İşlemler | Düzenleme/Silme butonları | ✗ | ✗ |
+| Kolon       | Açıklama                      | Sıralanabilir | Filtrelenebilir |
+| ----------- | ----------------------------- | ------------- | --------------- |
+| İsim        | Tenant adı                    | ✓             | ✓               |
+| Domain      | Tenant domaini                | ✓             | ✓               |
+| Durum       | Aktif/Askıya alınmış/Silinmiş | ✓             | ✓               |
+| Plan        | Abonelik planı                | ✓             | ✓               |
+| Oluşturulma | Oluşturulma tarihi            | ✓             | ✓               |
+| İşlemler    | Düzenleme/Silme butonları     | ✗             | ✗               |
 
 ## Toplu İşlemler
 
@@ -142,11 +142,11 @@ const { mutate } = useMutation((data: UpdateTenantData) =>
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Tam tablo görünümü |
+| Ekran Boyutu   | Davranış               |
+| -------------- | ---------------------- |
+| > 1024px       | Tam tablo görünümü     |
 | 768px - 1024px | Bazı kolonlar gizlenir |
-| < 768px | Kart görünümüne geçer |
+| < 768px        | Kart görünümüne geçer  |
 
 ## Performans
 
@@ -237,7 +237,7 @@ WithFilters.args = {
   className="custom-table"
   rowClassName={(tenant) =>
     clsx('hover:bg-gray-50', {
-      'bg-red-50': tenant.status === 'suspended'
+      'bg-red-50': tenant.status === 'suspended',
     })
   }
 />
@@ -249,4 +249,4 @@ WithFilters.args = {
 2. Seçimleri local storage'da sakla
 3. Bulk işlemleri confirm et
 4. Rate limit kontrolü yap
-5. Error boundary kullan 
+5. Error boundary kullan

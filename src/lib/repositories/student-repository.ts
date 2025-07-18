@@ -35,11 +35,7 @@ export class StudentRepository {
    */
   async getById(id: string): Promise<Student | null> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    const { data, error } = await supabase
-      .from('students')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabase.from('students').select('*').eq('id', id).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -142,11 +138,7 @@ export class StudentRepository {
    */
   async create(student: InsertStudent): Promise<Student> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    const { data, error } = await supabase
-      .from('students')
-      .insert(student)
-      .select()
-      .single();
+    const { data, error } = await supabase.from('students').insert(student).select().single();
 
     if (error) {
       console.error('Öğrenci eklenirken hata oluştu:', error);
@@ -188,10 +180,7 @@ export class StudentRepository {
    */
   async delete(id: string): Promise<void> {
     const supabase = getTenantSupabaseClient(this.tenantId);
-    const { error } = await supabase
-      .from('students')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('students').delete().eq('id', id);
 
     if (error) {
       console.error('Öğrenci silinirken hata oluştu:', error);
@@ -234,4 +223,4 @@ export class StudentRepository {
 
     return count || 0;
   }
-} 
+}

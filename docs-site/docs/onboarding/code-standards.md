@@ -63,19 +63,15 @@ interface ButtonProps {
 
 export function Button({ label, onClick }: ButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const handleClick = async () => {
     setIsLoading(true);
     await onClick();
     setIsLoading(false);
   };
-  
+
   return (
-    <button 
-      onClick={handleClick}
-      disabled={isLoading}
-      className="btn btn-primary"
-    >
+    <button onClick={handleClick} disabled={isLoading} className="btn btn-primary">
       {isLoading ? 'Loading...' : label}
     </button>
   );
@@ -94,13 +90,9 @@ export function Button({ label, onClick }: ButtonProps) {
 // İyi örnek - Tailwind CSS
 function Card({ title, content }) {
   return (
-    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-        {title}
-      </h2>
-      <p className="text-gray-700 dark:text-gray-300">
-        {content}
-      </p>
+    <div className="rounded-lg bg-white p-4 shadow-md dark:bg-gray-800">
+      <h2 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
+      <p className="text-gray-700 dark:text-gray-300">{content}</p>
     </div>
   );
 }
@@ -109,12 +101,8 @@ function Card({ title, content }) {
 function BadCard({ title, content }) {
   return (
     <div style={{ padding: '16px', backgroundColor: 'white', borderRadius: '8px' }}>
-      <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>
-        {title}
-      </h2>
-      <p style={{ color: '#333' }}>
-        {content}
-      </p>
+      <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>{title}</h2>
+      <p style={{ color: '#333' }}>{content}</p>
     </div>
   );
 }
@@ -138,7 +126,7 @@ import { getCurrentTenant } from '@/lib/tenant-server';
 const userSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email(),
-  role: z.enum(['admin', 'teacher', 'student', 'parent'])
+  role: z.enum(['admin', 'teacher', 'student', 'parent']),
 });
 
 export async function POST(req: NextRequest) {
@@ -146,34 +134,28 @@ export async function POST(req: NextRequest) {
     // Tenant kontrolü
     const tenant = await getCurrentTenant();
     if (!tenant) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    
+
     // İstek gövdesini doğrula
     const body = await req.json();
     const result = userSchema.safeParse(body);
-    
+
     if (!result.success) {
       return NextResponse.json(
         { error: 'Validation Error', details: result.error.format() },
         { status: 400 }
       );
     }
-    
+
     // Veri işleme...
     const user = result.data;
     const createdUser = await createUser(user, tenant.id);
-    
+
     return NextResponse.json(createdUser, { status: 201 });
   } catch (error) {
     console.error('Error creating user:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 ```
@@ -213,6 +195,7 @@ npm run format
 ### PR Oluşturma
 
 1. Yeni bir özellik veya düzeltme için branch oluşturun:
+
    ```bash
    git checkout -b feature/add-user-management
    # veya
@@ -220,12 +203,14 @@ npm run format
    ```
 
 2. Değişikliklerinizi yapın ve commit'leyin:
+
    ```bash
    git add .
    git commit -m "feat: Add user management interface"
    ```
 
 3. Branch'inizi push edin:
+
    ```bash
    git push origin feature/add-user-management
    ```
@@ -257,6 +242,7 @@ Projedeki commit mesajları Conventional Commits formatını takip etmelidir:
 ```
 
 Örnek:
+
 ```
 feat(auth): Add multi-factor authentication
 fix(tenant): Fix subdomain resolution issue
@@ -265,6 +251,7 @@ refactor(api): Simplify error handling logic
 ```
 
 Tip türleri:
+
 - `feat`: Yeni özellik
 - `fix`: Hata düzeltme
 - `docs`: Sadece dokümantasyon değişiklikleri
@@ -298,22 +285,22 @@ describe('Button Component', () => {
     render(<Button label="Submit" onClick={jest.fn()} />);
     expect(screen.getByText('Submit')).toBeInTheDocument();
   });
-  
+
   test('calls onClick when clicked', () => {
     const handleClick = jest.fn();
     render(<Button label="Submit" onClick={handleClick} />);
-    
+
     fireEvent.click(screen.getByText('Submit'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
-  
+
   test('shows loading state when clicked', async () => {
     const handleClick = jest.fn().mockImplementation(() => {
-      return new Promise(resolve => setTimeout(resolve, 100));
+      return new Promise((resolve) => setTimeout(resolve, 100));
     });
-    
+
     render(<Button label="Submit" onClick={handleClick} />);
-    
+
     fireEvent.click(screen.getByText('Submit'));
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
@@ -323,7 +310,7 @@ describe('Button Component', () => {
 ### Test Organizasyonu
 
 - `__tests__/`: Unit ve integration testleri
-- `__e2e__/`: End-to-end testleri 
+- `__e2e__/`: End-to-end testleri
 - `test-utils/`: Test yardımcı fonksiyonları
 - `mocks/`: Mock veriler ve servisler
 
@@ -373,4 +360,4 @@ npm install --save-dev package-name@1.2.3
 
 ---
 
-Bu standartlara uyarak, İ-EP.APP projesinin kod tabanının tutarlı, bakımı kolay ve kaliteli olmasına katkıda bulunabilirsiniz. 
+Bu standartlara uyarak, İ-EP.APP projesinin kod tabanının tutarlı, bakımı kolay ve kaliteli olmasına katkıda bulunabilirsiniz.

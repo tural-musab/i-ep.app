@@ -1,6 +1,6 @@
 /**
  * Tenant domain çözümleme kütüphanesi
- * 
+ *
  * Bu kütüphane, domain adresinden tenant bilgilerini çıkarır ve middleware için kullanılır.
  * Referans: docs/architecture/multi-tenant-strategy.md, docs/domain-management.md
  */
@@ -31,7 +31,7 @@ export async function resolveTenantFromDomain(domain: string): Promise<TenantInf
       const subdomain = domain.replace(`.${BASE_DOMAIN}`, '');
       return await getTenantBySubdomain(subdomain);
     }
-    
+
     // Özel domain kontrolü - tenant_domains tablosundan sorgula
     return await getTenantByCustomDomain(domain);
   } catch (error) {
@@ -50,10 +50,10 @@ async function getTenantBySubdomain(subdomain: string): Promise<TenantInfo | nul
     if (!subdomain || subdomain === 'www') {
       return null;
     }
-    
+
     // Supabase istemcisi
     const supabase = createServerSupabaseClient();
-    
+
     // Tenants tablosundan tenant bilgilerini al
     const { data, error } = await supabase
       .from('tenants')
@@ -61,18 +61,18 @@ async function getTenantBySubdomain(subdomain: string): Promise<TenantInfo | nul
       .eq('subdomain', subdomain)
       .eq('is_active', true)
       .single();
-    
+
     if (error || !data) {
       console.warn(`Subdomain için tenant bulunamadı: ${subdomain}`, error);
       return null;
     }
-    
+
     return {
       id: data.id,
       name: data.name,
       domain: `${subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app'}`,
       isPrimary: true, // Subdomain her zaman primer kabul edilir
-      isCustomDomain: false
+      isCustomDomain: false,
     };
   } catch (error) {
     console.error('Subdomain tenant tespit hatası:', error);
@@ -90,10 +90,10 @@ async function getTenantByCustomDomain(domain: string): Promise<TenantInfo | nul
     if (!domain) {
       return null;
     }
-    
+
     // Supabase istemcisi
     const supabase = createServerSupabaseClient();
-    
+
     // tenant_domains tablosundan domain bilgilerini al
     const { data, error } = await supabase
       .from('tenant_domains')
@@ -102,21 +102,21 @@ async function getTenantByCustomDomain(domain: string): Promise<TenantInfo | nul
       .eq('is_verified', true) // Sadece doğrulanmış domainler
       .eq('type', 'custom')
       .single();
-    
+
     if (error || !data || !data.tenants) {
       console.warn(`Özel domain için tenant bulunamadı: ${domain}`, error);
       return null;
     }
-    
+
     return {
       id: data.tenant_id,
       name: data.tenants.name,
       domain: domain,
       isPrimary: data.is_primary,
-      isCustomDomain: true
+      isCustomDomain: true,
     };
   } catch (error) {
     console.error('Özel domain tenant tespit hatası:', error);
     return null;
   }
-} 
+}

@@ -78,6 +78,7 @@ Bu doküman, İ-EP.APP (Iqra Eğitim Portalı) projesinin mimari yapısını, te
 İ-EP.APP projesi aşağıdaki teknolojileri kullanmaktadır:
 
 ### Frontend
+
 - **Next.js 14**: React tabanlı full-stack framework, App Router kullanımı
 - **TypeScript**: Güvenli tip sistemine sahip JavaScript süper kümesi
 - **Tailwind CSS**: Utility-first CSS framework
@@ -86,12 +87,14 @@ Bu doküman, İ-EP.APP (Iqra Eğitim Portalı) projesinin mimari yapısını, te
 - **Zod**: Form doğrulama ve veri validasyonu
 
 ### Backend
+
 - **Next.js API Routes**: Backend API endpointleri
 - **Supabase**: PostgreSQL tabanlı Backend-as-a-Service (BaaS)
 - **PostgreSQL**: İlişkisel veritabanı
 - **Redis**: Önbellek ve oturum yönetimi (Upstash üzerinde)
 
 ### DevOps
+
 - **Vercel**: Frontend dağıtımı
 - **Cloudflare**: DNS yönetimi, CDN ve özel domain desteği
 - **GitHub Actions**: CI/CD pipeline
@@ -106,6 +109,7 @@ Bu doküman, İ-EP.APP (Iqra Eğitim Portalı) projesinin mimari yapısını, te
 ### Tenant Tanımlama ve Erişim
 
 Her tenant (kiracı) şunlara sahiptir:
+
 - Benzersiz bir tanımlayıcı (UUID)
 - Alt alan adı (subdomain): `{tenant-subdomain}.i-ep.app`
 - Opsiyonel özel alan adı (premium plan): `portal.okuladi.com`
@@ -208,7 +212,7 @@ i-ep.app/
 Proje, şema bazlı izolasyon yaklaşımını kullanır. Ana şema türleri:
 
 1. **public**: Tenant kayıtları, kullanıcılar, abonelikler gibi global verileri içerir
-2. **tenant_{id}**: Her tenant için özel tablolar içerir (öğrenciler, sınıflar, notlar, vb.)
+2. **tenant\_{id}**: Her tenant için özel tablolar içerir (öğrenciler, sınıflar, notlar, vb.)
 3. **auth**: Supabase Auth tabloları
 4. **storage**: Supabase Storage tabloları
 
@@ -231,4 +235,4 @@ Proje, şema bazlı izolasyon yaklaşımını kullanır. Ana şema türleri:
 
 ---
 
-Bu mimari yaklaşım, İ-EP.APP'ın güvenli, ölçeklenebilir ve bakımı kolay bir SaaS uygulaması olarak hizmet vermesini sağlamaktadır. 
+Bu mimari yaklaşım, İ-EP.APP'ın güvenli, ölçeklenebilir ve bakımı kolay bir SaaS uygulaması olarak hizmet vermesini sağlamaktadır.

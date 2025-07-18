@@ -46,7 +46,7 @@ export function FileUpload({
   className,
   type = 'assignment',
   assignmentId,
-  children
+  children,
 }: FileUploadProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [uploadProgress, setUploadProgress] = useState<UploadProgress[]>([]);
@@ -54,136 +54,170 @@ export function FileUpload({
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const validateFile = useCallback((file: File): string | null => {
-    if (file.size > maxSize) {
-      return `File "${file.name}" is too large. Maximum size is ${Math.round(maxSize / (1024 * 1024))}MB.`;
-    }
+  const validateFile = useCallback(
+    (file: File): string | null => {
+      if (file.size > maxSize) {
+        return `File "${file.name}" is too large. Maximum size is ${Math.round(maxSize / (1024 * 1024))}MB.`;
+      }
 
-    // Type-specific validation
-    if (type === 'image' && !file.type.startsWith('image/')) {
-      return `"${file.name}" is not an image file.`;
-    }
+      // Type-specific validation
+      if (type === 'image' && !file.type.startsWith('image/')) {
+        return `"${file.name}" is not an image file.`;
+      }
 
-    if (type === 'document' && !['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'].includes(file.type)) {
-      return `"${file.name}" is not a supported document format.`;
-    }
+      if (
+        type === 'document' &&
+        ![
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'text/plain',
+        ].includes(file.type)
+      ) {
+        return `"${file.name}" is not a supported document format.`;
+      }
 
-    return null;
-  }, [maxSize, type]);
+      return null;
+    },
+    [maxSize, type]
+  );
 
-  const validateFiles = useCallback((files: File[]): string | null => {
-    if (files.length > maxFiles) {
-      return `Too many files. Maximum ${maxFiles} files allowed.`;
-    }
+  const validateFiles = useCallback(
+    (files: File[]): string | null => {
+      if (files.length > maxFiles) {
+        return `Too many files. Maximum ${maxFiles} files allowed.`;
+      }
 
-    for (const file of files) {
-      const error = validateFile(file);
-      if (error) return error;
-    }
+      for (const file of files) {
+        const error = validateFile(file);
+        if (error) return error;
+      }
 
-    return null;
-  }, [maxFiles, validateFile]);
+      return null;
+    },
+    [maxFiles, validateFile]
+  );
 
-  const handleFileSelect = useCallback((files: File[]) => {
-    setError(null);
-    
-    const validationError = validateFiles(files);
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+  const handleFileSelect = useCallback(
+    (files: File[]) => {
+      setError(null);
 
-    const newFiles = multiple ? [...selectedFiles, ...files].slice(0, maxFiles) : files.slice(0, 1);
-    setSelectedFiles(newFiles);
-    
-    if (onFileSelect) {
-      onFileSelect(newFiles);
-    }
-  }, [selectedFiles, multiple, maxFiles, validateFiles, onFileSelect]);
+      const validationError = validateFiles(files);
+      if (validationError) {
+        setError(validationError);
+        return;
+      }
 
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    if (!disabled) {
-      setIsDragging(true);
-    }
-  }, [disabled]);
+      const newFiles = multiple
+        ? [...selectedFiles, ...files].slice(0, maxFiles)
+        : files.slice(0, 1);
+      setSelectedFiles(newFiles);
+
+      if (onFileSelect) {
+        onFileSelect(newFiles);
+      }
+    },
+    [selectedFiles, multiple, maxFiles, validateFiles, onFileSelect]
+  );
+
+  const handleDragOver = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      if (!disabled) {
+        setIsDragging(true);
+      }
+    },
+    [disabled]
+  );
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    
-    if (disabled) return;
-    
-    const files = Array.from(e.dataTransfer.files);
-    handleFileSelect(files);
-  }, [disabled, handleFileSelect]);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      setIsDragging(false);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    handleFileSelect(files);
-  }, [handleFileSelect]);
+      if (disabled) return;
 
-  const removeFile = useCallback((index: number) => {
-    const newFiles = selectedFiles.filter((_, i) => i !== index);
-    setSelectedFiles(newFiles);
-    
-    if (onFileSelect) {
-      onFileSelect(newFiles);
-    }
-  }, [selectedFiles, onFileSelect]);
+      const files = Array.from(e.dataTransfer.files);
+      handleFileSelect(files);
+    },
+    [disabled, handleFileSelect]
+  );
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || []);
+      handleFileSelect(files);
+    },
+    [handleFileSelect]
+  );
+
+  const removeFile = useCallback(
+    (index: number) => {
+      const newFiles = selectedFiles.filter((_, i) => i !== index);
+      setSelectedFiles(newFiles);
+
+      if (onFileSelect) {
+        onFileSelect(newFiles);
+      }
+    },
+    [selectedFiles, onFileSelect]
+  );
 
   const handleUpload = useCallback(async () => {
     if (selectedFiles.length === 0) return;
-    
+
     setError(null);
-    
+
     // Initialize progress tracking
-    const progressState: UploadProgress[] = selectedFiles.map(file => ({
+    const progressState: UploadProgress[] = selectedFiles.map((file) => ({
       file,
       progress: 0,
-      status: 'uploading'
+      status: 'uploading',
     }));
     setUploadProgress(progressState);
 
     try {
       await onUpload(selectedFiles);
-      
+
       // Mark all as completed
-      setUploadProgress(prev => prev.map(p => ({
-        ...p,
-        progress: 100,
-        status: 'completed'
-      })));
-      
+      setUploadProgress((prev) =>
+        prev.map((p) => ({
+          ...p,
+          progress: 100,
+          status: 'completed',
+        }))
+      );
+
       // Clear selected files after successful upload
       setTimeout(() => {
         setSelectedFiles([]);
         setUploadProgress([]);
       }, 2000);
-      
     } catch (error) {
       console.error('Upload error:', error);
       setError(error instanceof Error ? error.message : 'Upload failed');
-      
+
       // Mark all as error
-      setUploadProgress(prev => prev.map(p => ({
-        ...p,
-        status: 'error',
-        error: error instanceof Error ? error.message : 'Upload failed'
-      })));
+      setUploadProgress((prev) =>
+        prev.map((p) => ({
+          ...p,
+          status: 'error',
+          error: error instanceof Error ? error.message : 'Upload failed',
+        }))
+      );
     }
   }, [selectedFiles, onUpload]);
 
   const getFileIcon = (file: File) => {
     if (file.type.startsWith('image/')) {
-      return <Image className="w-5 h-5" />;
+      return <Image className="h-5 w-5" />;
     }
-    return <FileText className="w-5 h-5" />;
+    return <FileText className="h-5 w-5" />;
   };
 
   const formatFileSize = (bytes: number) => {
@@ -192,16 +226,16 @@ export function FileUpload({
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
-  const isUploading = uploadProgress.some(p => p.status === 'uploading');
+  const isUploading = uploadProgress.some((p) => p.status === 'uploading');
 
   return (
     <div className={cn('space-y-4', className)}>
       {/* Upload Area */}
       <Card
         className={cn(
-          'border-2 border-dashed transition-colors cursor-pointer',
+          'cursor-pointer border-2 border-dashed transition-colors',
           isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300',
-          disabled && 'opacity-50 cursor-not-allowed'
+          disabled && 'cursor-not-allowed opacity-50'
         )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -218,10 +252,10 @@ export function FileUpload({
             className="hidden"
             disabled={disabled}
           />
-          
+
           {children || (
             <div className="space-y-2">
-              <Upload className="w-8 h-8 mx-auto text-gray-400" />
+              <Upload className="mx-auto h-8 w-8 text-gray-400" />
               <div className="text-sm text-gray-600">
                 <span className="font-medium">Click to upload</span> or drag and drop
               </div>
@@ -254,23 +288,23 @@ export function FileUpload({
               </Button>
             )}
           </div>
-          
+
           {selectedFiles.map((file, index) => {
-            const progress = uploadProgress.find(p => p.file === file);
-            
+            const progress = uploadProgress.find((p) => p.file === file);
+
             return (
               <div
                 key={`${file.name}-${index}`}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
               >
                 <div className="flex items-center space-x-3">
                   {getFileIcon(file)}
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium truncate">{file.name}</div>
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-sm font-medium">{file.name}</div>
                     <div className="text-xs text-gray-500">{formatFileSize(file.size)}</div>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   {progress && (
                     <div className="flex items-center space-x-2">
@@ -278,14 +312,14 @@ export function FileUpload({
                         <Progress value={progress.progress} className="w-16" />
                       )}
                       {progress.status === 'completed' && (
-                        <Check className="w-4 h-4 text-green-500" />
+                        <Check className="h-4 w-4 text-green-500" />
                       )}
                       {progress.status === 'error' && (
-                        <AlertCircle className="w-4 h-4 text-red-500" />
+                        <AlertCircle className="h-4 w-4 text-red-500" />
                       )}
                     </div>
                   )}
-                  
+
                   {!progress && (
                     <Button
                       variant="ghost"
@@ -293,7 +327,7 @@ export function FileUpload({
                       onClick={() => removeFile(index)}
                       disabled={disabled || isUploading}
                     >
-                      <X className="w-4 h-4" />
+                      <X className="h-4 w-4" />
                     </Button>
                   )}
                 </div>

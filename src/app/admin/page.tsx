@@ -9,27 +9,27 @@ export default function AdminPage() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Yönetici Paneli</h1>
+        <h1 className="mb-2 text-3xl font-bold">Yönetici Paneli</h1>
         <p className="text-gray-600">Sistem yönetim araçlarına hoş geldiniz</p>
       </div>
-      
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">Sistem Durumu</h2>
+
+      <div className="rounded-lg bg-white p-6 shadow">
+        <h2 className="mb-4 text-xl font-semibold">Sistem Durumu</h2>
         <div className="space-y-4">
-          <div className="flex justify-between items-center pb-2 border-b border-gray-200">
+          <div className="flex items-center justify-between border-b border-gray-200 pb-2">
             <span>Aktif Tenant Sayısı</span>
             <span className="font-semibold text-blue-600">12</span>
           </div>
-          <div className="flex justify-between items-center pb-2 border-b border-gray-200">
+          <div className="flex items-center justify-between border-b border-gray-200 pb-2">
             <span>Toplam Kullanıcı</span>
             <span className="font-semibold text-blue-600">248</span>
           </div>
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <span>Sistem Durumu</span>
-            <span className="text-green-600 font-medium">Aktif</span>
+            <span className="font-medium text-green-600">Aktif</span>
           </div>
         </div>
       </div>
     </div>
   );
-} 
+}

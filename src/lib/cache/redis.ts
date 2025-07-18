@@ -8,12 +8,15 @@ export const redis = new Redis({
 });
 
 // Redis bağlantısını test et (ping)
-redis.ping().then(() => {
-  console.log('✅ Redis bağlantısı başarılı (Upstash REST API)');
-}).catch((err: Error) => {
-  console.error('❌ Redis bağlantı hatası:', err);
-  reportRedisError(err, 'connect');
-});
+redis
+  .ping()
+  .then(() => {
+    console.log('✅ Redis bağlantısı başarılı (Upstash REST API)');
+  })
+  .catch((err: Error) => {
+    console.error('❌ Redis bağlantı hatası:', err);
+    reportRedisError(err, 'connect');
+  });
 
 /**
  * Önbellek anahtarı oluştur (tenant izolasyonu sağlar)
@@ -25,10 +28,7 @@ export function createCacheKey(tenantId: string, key: string): string {
 /**
  * Değeri önbellekten al
  */
-export async function getCachedValue<T>(
-  tenantId: string,
-  key: string
-): Promise<T | null> {
+export async function getCachedValue<T>(tenantId: string, key: string): Promise<T | null> {
   try {
     const cacheKey = createCacheKey(tenantId, key);
     const cachedData = await redis.get(cacheKey);
@@ -52,7 +52,7 @@ export async function setCachedValue<T>(
   try {
     const cacheKey = createCacheKey(tenantId, key);
     await redis.set(cacheKey, JSON.stringify(value), {
-      ex: expirySeconds
+      ex: expirySeconds,
     });
   } catch (error) {
     console.error('Önbelleğe veri kaydedilirken hata oluştu:', error);
@@ -63,10 +63,7 @@ export async function setCachedValue<T>(
 /**
  * Önbellekteki bir değeri sil
  */
-export async function deleteCachedValue(
-  tenantId: string,
-  key: string
-): Promise<void> {
+export async function deleteCachedValue(tenantId: string, key: string): Promise<void> {
   try {
     const cacheKey = createCacheKey(tenantId, key);
     await redis.del(cacheKey);
@@ -79,14 +76,11 @@ export async function deleteCachedValue(
 /**
  * Belirli bir kalıba uyan tüm önbellek anahtarlarını temizle
  */
-export async function clearCachePattern(
-  tenantId: string,
-  pattern: string
-): Promise<void> {
+export async function clearCachePattern(tenantId: string, pattern: string): Promise<void> {
   try {
     const cachePattern = createCacheKey(tenantId, pattern);
     const keys = await redis.keys(cachePattern);
-    
+
     if (keys && keys.length > 0) {
       await redis.del(...keys);
     }
@@ -103,7 +97,7 @@ export async function clearTenantCache(tenantId: string): Promise<void> {
   try {
     const cachePattern = createCacheKey(tenantId, '*');
     const keys = await redis.keys(cachePattern);
-    
+
     if (keys && keys.length > 0) {
       await redis.del(...keys);
     }
@@ -120,17 +114,13 @@ export function Cached(
   expirySeconds: number = 3600,
   keyGenerator?: (tenantId: string, ...args: any[]) => string
 ) {
-  return function (
-    target: any,
-    propertyKey: string,
-    descriptor: PropertyDescriptor
-  ) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
       // İlk parametrenin tenantId olduğunu varsayıyoruz
       const tenantId = args[0];
-      
+
       if (!tenantId) {
         return originalMethod.apply(this, args);
       }
@@ -139,23 +129,23 @@ export function Cached(
       const key = keyGenerator
         ? keyGenerator(tenantId, ...args.slice(1))
         : `${propertyKey}:${JSON.stringify(args.slice(1))}`;
-      
+
       try {
         // Önbellekten veriyi almaya çalış
         const cachedValue = await getCachedValue(tenantId, key);
-        
+
         if (cachedValue !== null) {
           return cachedValue;
         }
 
         // Önbellekte yoksa, metodu çalıştır
         const result = await originalMethod.apply(this, args);
-        
+
         // Sonucu önbelleğe ekle
         if (result !== null && result !== undefined) {
           await setCachedValue(tenantId, key, result, expirySeconds);
         }
-        
+
         return result;
       } catch (error) {
         console.error(`Önbellekleme hatası (${propertyKey}):`, error);
@@ -167,4 +157,4 @@ export function Cached(
 
     return descriptor;
   };
-} 
+}

@@ -4,22 +4,22 @@
  * Referans: docs/components/super-admin/README.md, Domain Yönetimi bölümü
  */
 
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DomainTable } from "@/components/admin/domain/DomainTable";
-import { AddDomainDialog } from "@/components/admin/domain/AddDomainDialog";
-import { DomainRecord } from "@/lib/domain/domain-service";
+import { useState, useEffect, useCallback } from 'react';
+import { useToast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DomainTable } from '@/components/admin/domain/DomainTable';
+import { AddDomainDialog } from '@/components/admin/domain/AddDomainDialog';
+import { DomainRecord } from '@/lib/domain/domain-service';
 // TODO: DomainService ve TenantDomainError gelecekte kullanılacak
 
 interface DomainTab {
   id: string;
   label: string;
-  type?: "subdomain" | "custom";
+  type?: 'subdomain' | 'custom';
   isVerified?: boolean;
 }
 
@@ -28,41 +28,41 @@ export default function DomainsPage() {
   const [domains, setDomains] = useState<DomainRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<string>('all');
   // TODO: Doğrulama detayları için modal eklenecek
   // const [verificationDetails, setVerificationDetails] = useState<VerificationDetails | null>(null);
 
   // Domain tabs
   const tabs: DomainTab[] = [
-    { id: "all", label: "Tüm Domainler" },
-    { id: "subdomains", label: "Subdomainler", type: "subdomain" },
-    { id: "custom", label: "Özel Domainler", type: "custom" },
-    { id: "pending", label: "Bekleyen", isVerified: false },
-    { id: "verified", label: "Doğrulanmış", isVerified: true },
+    { id: 'all', label: 'Tüm Domainler' },
+    { id: 'subdomains', label: 'Subdomainler', type: 'subdomain' },
+    { id: 'custom', label: 'Özel Domainler', type: 'custom' },
+    { id: 'pending', label: 'Bekleyen', isVerified: false },
+    { id: 'verified', label: 'Doğrulanmış', isVerified: true },
   ];
 
   // Domain listesini getir
   const fetchDomains = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/domains");
+      const response = await fetch('/api/domains');
       const result = await response.json();
 
       if (result.success) {
         setDomains(result.data);
       } else {
         toast({
-          title: "Hata",
-          description: result.error || "Domainler yüklenirken bir hata oluştu",
-          variant: "destructive",
+          title: 'Hata',
+          description: result.error || 'Domainler yüklenirken bir hata oluştu',
+          variant: 'destructive',
         });
       }
     } catch (error) {
-      console.error("Domain yüklenirken hata:", error);
+      console.error('Domain yüklenirken hata:', error);
       toast({
-        title: "Hata",
-        description: "Domainler yüklenirken bir hata oluştu",
-        variant: "destructive",
+        title: 'Hata',
+        description: 'Domainler yüklenirken bir hata oluştu',
+        variant: 'destructive',
       });
     } finally {
       setLoading(false);
@@ -73,29 +73,29 @@ export default function DomainsPage() {
   const handleDeleteDomain = async (domainId: string) => {
     try {
       const response = await fetch(`/api/domains/${domainId}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
       const result = await response.json();
 
       if (result.success) {
         toast({
-          title: "Başarılı",
-          description: "Domain başarıyla silindi",
+          title: 'Başarılı',
+          description: 'Domain başarıyla silindi',
         });
         fetchDomains(); // Listeyi yenile
       } else {
         toast({
-          title: "Hata",
-          description: result.error || "Domain silinirken bir hata oluştu",
-          variant: "destructive",
+          title: 'Hata',
+          description: result.error || 'Domain silinirken bir hata oluştu',
+          variant: 'destructive',
         });
       }
     } catch (error) {
-      console.error("Domain silme hatası:", error);
+      console.error('Domain silme hatası:', error);
       toast({
-        title: "Hata",
-        description: "Domain silinirken bir hata oluştu",
-        variant: "destructive",
+        title: 'Hata',
+        description: 'Domain silinirken bir hata oluştu',
+        variant: 'destructive',
       });
     }
   };
@@ -104,37 +104,37 @@ export default function DomainsPage() {
   const handleVerifyDomain = async (domainId: string) => {
     try {
       const response = await fetch(`/api/domains/verify/${domainId}`, {
-        method: "POST",
+        method: 'POST',
       });
       const result = await response.json();
 
       if (result.success) {
         if (result.data.verified) {
           toast({
-            title: "Başarılı",
-            description: "Domain başarıyla doğrulandı",
+            title: 'Başarılı',
+            description: 'Domain başarıyla doğrulandı',
           });
         } else {
           // setVerificationDetails(result.data); // This line was removed
           toast({
-            title: "Doğrulama Devam Ediyor",
-            description: result.data.message || "Doğrulama işlemi devam ediyor",
+            title: 'Doğrulama Devam Ediyor',
+            description: result.data.message || 'Doğrulama işlemi devam ediyor',
           });
         }
         fetchDomains(); // Listeyi yenile
       } else {
         toast({
-          title: "Hata",
-          description: result.error || "Domain doğrulanırken bir hata oluştu",
-          variant: "destructive",
+          title: 'Hata',
+          description: result.error || 'Domain doğrulanırken bir hata oluştu',
+          variant: 'destructive',
         });
       }
     } catch (error) {
-      console.error("Domain doğrulama hatası:", error);
+      console.error('Domain doğrulama hatası:', error);
       toast({
-        title: "Hata",
-        description: "Domain doğrulanırken bir hata oluştu",
-        variant: "destructive",
+        title: 'Hata',
+        description: 'Domain doğrulanırken bir hata oluştu',
+        variant: 'destructive',
       });
     }
   };
@@ -143,9 +143,9 @@ export default function DomainsPage() {
   const handleSetPrimary = async (domainId: string, tenantId: string) => {
     try {
       const response = await fetch(`/api/domains/${domainId}/primary`, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ tenantId }),
       });
@@ -153,23 +153,23 @@ export default function DomainsPage() {
 
       if (result.success) {
         toast({
-          title: "Başarılı",
-          description: "Primary domain başarıyla ayarlandı",
+          title: 'Başarılı',
+          description: 'Primary domain başarıyla ayarlandı',
         });
         fetchDomains(); // Listeyi yenile
       } else {
         toast({
-          title: "Hata",
-          description: result.error || "Primary domain ayarlanırken bir hata oluştu",
-          variant: "destructive",
+          title: 'Hata',
+          description: result.error || 'Primary domain ayarlanırken bir hata oluştu',
+          variant: 'destructive',
         });
       }
     } catch (error) {
-      console.error("Primary domain ayarlama hatası:", error);
+      console.error('Primary domain ayarlama hatası:', error);
       toast({
-        title: "Hata",
-        description: "Primary domain ayarlanırken bir hata oluştu",
-        variant: "destructive",
+        title: 'Hata',
+        description: 'Primary domain ayarlanırken bir hata oluştu',
+        variant: 'destructive',
       });
     }
   };
@@ -182,21 +182,24 @@ export default function DomainsPage() {
 
   // Seçili tab değiştiğinde filtreleme
   const getFilteredDomains = () => {
-    const activeTabData = tabs.find(tab => tab.id === activeTab);
-    
-    if (!activeTabData || activeTab === "all") {
+    const activeTabData = tabs.find((tab) => tab.id === activeTab);
+
+    if (!activeTabData || activeTab === 'all') {
       return domains;
     }
-    
-    return domains.filter(domain => {
+
+    return domains.filter((domain) => {
       if (activeTabData.type && domain.type !== activeTabData.type) {
         return false;
       }
-      
-      if (activeTabData.isVerified !== undefined && domain.is_verified !== activeTabData.isVerified) {
+
+      if (
+        activeTabData.isVerified !== undefined &&
+        domain.is_verified !== activeTabData.isVerified
+      ) {
         return false;
       }
-      
+
       return true;
     });
   };
@@ -208,7 +211,7 @@ export default function DomainsPage() {
 
   return (
     <div className="container mx-auto py-6">
-      <div className="flex justify-between items-center mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <h1 className="text-3xl font-bold">Domain Yönetimi</h1>
         <Button onClick={() => setAddDialogOpen(true)}>Domain Ekle</Button>
       </div>
@@ -226,7 +229,7 @@ export default function DomainsPage() {
                 </TabsTrigger>
               ))}
             </TabsList>
-            
+
             <TabsContent value={activeTab} forceMount>
               <DomainTable
                 domains={getFilteredDomains()}
@@ -240,11 +243,11 @@ export default function DomainsPage() {
         </CardContent>
       </Card>
 
-      <AddDomainDialog 
-        open={addDialogOpen} 
+      <AddDomainDialog
+        open={addDialogOpen}
         onOpenChange={setAddDialogOpen}
         onDomainAdded={handleDomainAdded}
       />
     </div>
   );
-} 
+}

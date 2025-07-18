@@ -102,4 +102,4 @@ Her komponent için aşağıdaki bilgiler dokümante edilmelidir:
 - Kullanım örnekleri
 - Bağımlılıklar
 - Edge cases
-- Erişilebilirlik notları 
+- Erişilebilirlik notları

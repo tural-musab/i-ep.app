@@ -8,7 +8,7 @@ jest.mock('@supabase/supabase-js', () => ({
 
 describe('Supabase Client', () => {
   const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>;
-  
+
   beforeEach(() => {
     jest.clearAllMocks();
     // Reset environment variables
@@ -22,10 +22,7 @@ describe('Supabase Client', () => {
       void import('@/lib/supabase/client');
     });
 
-    expect(mockCreateClient).toHaveBeenCalledWith(
-      'https://test.supabase.co',
-      'test-anon-key'
-    );
+    expect(mockCreateClient).toHaveBeenCalledWith('https://test.supabase.co', 'test-anon-key');
   });
 
   it('should handle missing environment variables', () => {

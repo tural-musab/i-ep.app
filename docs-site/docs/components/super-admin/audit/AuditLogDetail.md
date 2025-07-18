@@ -18,25 +18,25 @@ Denetim logu detaylarını görüntüleyen ve analiz eden komponent.
 interface AuditLogDetailProps {
   /** Log ID */
   logId: string;
-  
+
   /** Log verisi */
   log?: AuditLogEntry;
-  
+
   /** İlişkili logları göster */
   showRelatedLogs?: boolean;
-  
+
   /** Zaman çizelgesini göster */
   showTimeline?: boolean;
-  
+
   /** Detay seviyesi */
   detailLevel?: 'basic' | 'detailed' | 'debug';
-  
+
   /** Aksiyon seçildiğinde çağrılır */
   onActionSelect?: (action: LogAction) => void;
-  
+
   /** Kapatıldığında çağrılır */
   onClose?: () => void;
-  
+
   /** Modal görünümü */
   isModal?: boolean;
 }
@@ -131,6 +131,7 @@ export default function LogDetailPage() {
 ## Detay Bölümleri
 
 ### Temel Bilgiler
+
 ```tsx
 <LogBasicInfo
   timestamp={log.timestamp}
@@ -141,15 +142,13 @@ export default function LogDetailPage() {
 ```
 
 ### Aktör Bilgileri
+
 ```tsx
-<ActorDetails
-  actor={log.actor}
-  showLocation={true}
-  showDeviceInfo={true}
-/>
+<ActorDetails actor={log.actor} showLocation={true} showDeviceInfo={true} />
 ```
 
 ### Değişiklik Karşılaştırma
+
 ```tsx
 <ChangeDiff
   before={log.changes.before}
@@ -178,7 +177,7 @@ const fetchRelatedLogs = async (logId: string) => {
 const executeAction = async (action: LogAction) => {
   const response = await fetch('/api/audit-logs/actions', {
     method: 'POST',
-    body: JSON.stringify(action)
+    body: JSON.stringify(action),
   });
   return response.json();
 };
@@ -189,24 +188,24 @@ const executeAction = async (action: LogAction) => {
 ```typescript
 const analyzeChanges = (changes: Changes) => {
   const { before, after } = changes;
-  
+
   // Değişen alanları bul
-  const changedFields = Object.keys(after).filter(key => {
+  const changedFields = Object.keys(after).filter((key) => {
     return !isEqual(before[key], after[key]);
   });
-  
+
   // Değişiklik özetini oluştur
-  const summary = changedFields.map(field => ({
+  const summary = changedFields.map((field) => ({
     field,
     oldValue: before[field],
     newValue: after[field],
-    impact: assessImpact(field, before[field], after[field])
+    impact: assessImpact(field, before[field], after[field]),
   }));
-  
+
   return {
     changedFields,
     summary,
-    riskLevel: calculateRiskLevel(summary)
+    riskLevel: calculateRiskLevel(summary),
   };
 };
 ```
@@ -214,12 +213,7 @@ const analyzeChanges = (changes: Changes) => {
 ## Zaman Çizelgesi
 
 ```tsx
-<LogTimeline
-  log={log}
-  relatedLogs={relatedLogs}
-  showDetails={true}
-  interactive={true}
-/>
+<LogTimeline log={log} relatedLogs={relatedLogs} showDetails={true} interactive={true} />
 ```
 
 ## Erişilebilirlik
@@ -232,11 +226,11 @@ const analyzeChanges = (changes: Changes) => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Yan yana paneller |
-| 768px - 1024px | Sekmeli görünüm |
-| < 768px | Tekli görünüm |
+| Ekran Boyutu   | Davranış          |
+| -------------- | ----------------- |
+| > 1024px       | Yan yana paneller |
+| 768px - 1024px | Sekmeli görünüm   |
+| < 768px        | Tekli görünüm     |
 
 ## Test
 
@@ -249,7 +243,7 @@ describe('AuditLogDetail', () => {
         detailLevel="detailed"
       />
     );
-    
+
     await waitFor(() => {
       expect(screen.getByText('Log Detayları')).toBeInTheDocument();
     });
@@ -266,7 +260,7 @@ describe('AuditLogDetail', () => {
         }}
       />
     );
-    
+
     expect(screen.getByText('Değişiklikler')).toBeInTheDocument();
     expect(screen.getByText('active → suspended')).toBeInTheDocument();
   });
@@ -279,7 +273,7 @@ describe('AuditLogDetail', () => {
         onActionSelect={onActionSelect}
       />
     );
-    
+
     await userEvent.click(screen.getByText('İncele'));
     expect(onActionSelect).toHaveBeenCalledWith({
       type: 'investigate',
@@ -294,7 +288,7 @@ describe('AuditLogDetail', () => {
         showRelatedLogs={true}
       />
     );
-    
+
     await waitFor(() => {
       expect(screen.getByText('İlişkili Loglar')).toBeInTheDocument();
     });
@@ -366,8 +360,8 @@ Modal.args = {
     content: 'p-6',
     diff: {
       added: 'bg-green-50',
-      removed: 'bg-red-50'
-    }
+      removed: 'bg-red-50',
+    },
   }}
 />
 ```
@@ -378,4 +372,4 @@ Modal.args = {
 2. İlişkili logları grupla
 3. Kritik bilgileri vurgula
 4. Performansı optimize et
-5. Detay seviyesini kontrol et 
+5. Detay seviyesini kontrol et

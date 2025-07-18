@@ -10,9 +10,9 @@ export function generateRequestId(): string {
 export function parseRequestId(requestId: string): { timestamp: number; id: string } | null {
   const match = requestId.match(/^req_(\d+)_(.+)$/);
   if (!match) return null;
-  
+
   return {
     timestamp: parseInt(match[1]),
-    id: match[2]
+    id: match[2],
   };
 }

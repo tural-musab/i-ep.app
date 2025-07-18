@@ -36,24 +36,28 @@ docs/
 ## Doküman Türleri
 
 ### API Dokümantasyonu
+
 - API endpoint'leri
 - Request/Response örnekleri
 - Authentication
 - Rate limiting
 
 ### Komponent Dokümantasyonu
+
 - Kullanım örnekleri
 - Props
 - Stil varyasyonları
 - Best practices
 
 ### Özellik Dokümantasyonu
+
 - Özellik açıklaması
 - Teknik gereksinimler
 - Bağımlılıklar
 - Konfigürasyon
 
 ### UI/UX Dokümantasyonu
+
 - Tasarım prensipleri
 - Komponent kütüphanesi
 - Sayfa şablonları
@@ -92,4 +96,4 @@ docs/
 ## İletişim
 
 - Teknik sorular için: [tech@iqraedu.com](mailto:tech@iqraedu.com)
-- Tasarım sorular için: [design@iqraedu.com](mailto:design@iqraedu.com) 
+- Tasarım sorular için: [design@iqraedu.com](mailto:design@iqraedu.com)

@@ -1,6 +1,6 @@
 /**
  * Iqra Eğitim Portalı - Tenant Bazlı Yedekleme Mekanizması
- * 
+ *
  * Bu modül, çok kiracılı mimari için tenant bazlı yedekleme işlemlerini gerçekleştirir.
  * Hybrid tenant izolasyon yaklaşımına uygun şekilde tasarlanmıştır.
  */
@@ -68,28 +68,32 @@ export interface BackupResult {
 /**
  * Bir tenant için veritabanı yedeği oluşturur
  */
-export async function backupTenant(
-  { tenantId, schemaName, backupType, plan, includePublicTables = false }: TenantBackupInfo
-): Promise<BackupResult> {
+export async function backupTenant({
+  tenantId,
+  schemaName,
+  backupType,
+  plan,
+  includePublicTables = false,
+}: TenantBackupInfo): Promise<BackupResult> {
   const startTime = Date.now();
   const timestamp = dateFormat(new Date(), 'yyyy-MM-dd-HH-mm-ss', { locale: tr });
   const backupFileName = `tenant_${tenantId}_${backupType}_${timestamp}.sql`;
   const localBackupDir = path.join(CONFIG.BACKUP_ROOT_DIR, tenantId);
   const localBackupPath = path.join(localBackupDir, backupFileName);
-  
+
   try {
     // Yedekleme dizinini oluştur
     await fs.mkdir(localBackupDir, { recursive: true });
-    
+
     // pg_dump komutu oluştur
     let pgDumpCommand = `PGPASSWORD=${CONFIG.DB_PASSWORD} pg_dump -h ${CONFIG.DB_HOST} -U ${CONFIG.DB_USER} `;
     pgDumpCommand += `-p ${CONFIG.DB_PORT} -d ${CONFIG.DB_NAME} `;
-    
+
     // Yedekleme tipine göre argümanları ayarla
     if (backupType === 'full' || backupType === 'snapshot') {
       // Tam yedekleme: Tenant şemasını hedefle
       pgDumpCommand += `-n tenant_${tenantId} `;
-      
+
       // Eğer istenirse public tabloların tenant ile ilişkili kayıtlarını da dahil et
       if (includePublicTables) {
         pgDumpCommand += `-t public.tenant_usage_metrics `;
@@ -100,33 +104,33 @@ export async function backupTenant(
       pgDumpCommand += `-n tenant_${tenantId} `;
       pgDumpCommand += `--where="updated_at > NOW() - INTERVAL '24 HOURS'" `;
     }
-    
+
     // Çıktı dosyasını belirt
     pgDumpCommand += `-f ${localBackupPath}`;
-    
+
     // Yedekleme işlemini başlat
     logger.info(`Tenant ${tenantId} için ${backupType} yedekleme başlatılıyor`);
     await execPromise(pgDumpCommand);
-    
+
     // Yedek dosyasını oku
     let backupData = await fs.readFile(localBackupPath);
-    
+
     // Dosya boyutunu al
     const originalSize = backupData.length;
-    
+
     // Sıkıştır
     backupData = await promisify(zlib.gzip)(backupData);
-    
+
     // Şifrele (Eğer şifreleme anahtarı tanımlanmışsa)
     const checksumBefore = crypto.createHash('sha256').update(backupData).digest('hex');
     if (CONFIG.ENCRYPTION_KEY) {
       backupData = encryptData(backupData, CONFIG.ENCRYPTION_KEY);
     }
-    
+
     // Şifrelenmiş dosyayı yaz
     const encryptedBackupPath = `${localBackupPath}.gz.enc`;
     await fs.writeFile(encryptedBackupPath, backupData);
-    
+
     // S3'e yükle
     const s3Location = await uploadToS3(
       backupData,
@@ -134,7 +138,7 @@ export async function backupTenant(
       backupType,
       `${backupFileName}.gz.enc`
     );
-    
+
     // Yedekleme meta verilerini kaydet
     await saveBackupMetadata({
       tenantId,
@@ -146,11 +150,13 @@ export async function backupTenant(
       timestamp: new Date().toISOString(),
       checksum: checksumBefore,
     });
-    
+
     // Başarılı sonucu döndür
     const duration = (Date.now() - startTime) / 1000;
-    logger.info(`Tenant ${tenantId} için ${backupType} yedekleme tamamlandı. Boyut: ${originalSize} bytes, Süre: ${duration}s`);
-    
+    logger.info(
+      `Tenant ${tenantId} için ${backupType} yedekleme tamamlandı. Boyut: ${originalSize} bytes, Süre: ${duration}s`
+    );
+
     return {
       success: true,
       tenantId,
@@ -183,28 +189,28 @@ export async function backupMultipleTenants(
 ): Promise<BackupResult[]> {
   const results: BackupResult[] = [];
   const chunks = [];
-  
+
   // Tenant listesini parçalara ayır
   for (let i = 0; i < tenants.length; i += maxParallel) {
     chunks.push(tenants.slice(i, i + maxParallel));
   }
-  
+
   // Her grup için paralel yedekleme yap
   for (const chunk of chunks) {
-    const chunkResults = await Promise.all(
-      chunk.map(tenant => backupTenant(tenant))
-    );
+    const chunkResults = await Promise.all(chunk.map((tenant) => backupTenant(tenant)));
     results.push(...chunkResults);
   }
-  
+
   // Başarısız yedeklemeleri raporla
-  const failedBackups = results.filter(r => !r.success);
+  const failedBackups = results.filter((r) => !r.success);
   if (failedBackups.length > 0) {
-    logger.error(`${failedBackups.length} tenant'ın yedeği alınamadı:`, 
-      failedBackups.map(f => f.tenantId).join(', '));
+    logger.error(
+      `${failedBackups.length} tenant'ın yedeği alınamadı:`,
+      failedBackups.map((f) => f.tenantId).join(', ')
+    );
     await sendFailureNotification(failedBackups);
   }
-  
+
   return results;
 }
 
@@ -221,25 +227,25 @@ export async function getAllTenantsForBackup(
       .from('tenants')
       .select('id, schema_name, plan')
       .eq('status', 'active');
-    
+
     // Plan filtresi varsa uygula
     if (planFilter) {
       query = query.eq('plan', planFilter);
     }
-    
+
     const { data, error } = await query;
-    
+
     if (error) {
       logger.error('Tenant listesi alınırken hata:', error);
       return [];
     }
-    
-    return data.map(tenant => ({
+
+    return data.map((tenant) => ({
       tenantId: tenant.id,
       schemaName: tenant.schema_name || `tenant_${tenant.id}`,
       backupType,
       plan: tenant.plan as PlanType,
-      includePublicTables: backupType === 'full' || backupType === 'snapshot'
+      includePublicTables: backupType === 'full' || backupType === 'snapshot',
     }));
   } catch (error) {
     logger.error('Tenant listesi hazırlanırken hata:', error);
@@ -258,28 +264,32 @@ async function uploadToS3(
 ): Promise<string> {
   try {
     const s3Client = new S3Client({ region: CONFIG.S3_REGION });
-    
+
     // Backup tipi ve tenant ID'ye göre S3 key yolunu oluştur
     const datePath = dateFormat(new Date(), 'yyyy/MM/dd');
     const s3Key = `backups/${backupType}/${datePath}/${tenantId}/${filename}`;
-    
+
     // S3'e yükle
-    await s3Client.send(new PutObjectCommand({
-      Bucket: CONFIG.S3_BUCKET,
-      Key: s3Key,
-      Body: data,
-      ContentType: 'application/octet-stream',
-      Metadata: {
-        'tenant-id': tenantId,
-        'backup-type': backupType,
-        'created-at': new Date().toISOString(),
-      }
-    }));
-    
+    await s3Client.send(
+      new PutObjectCommand({
+        Bucket: CONFIG.S3_BUCKET,
+        Key: s3Key,
+        Body: data,
+        ContentType: 'application/octet-stream',
+        Metadata: {
+          'tenant-id': tenantId,
+          'backup-type': backupType,
+          'created-at': new Date().toISOString(),
+        },
+      })
+    );
+
     return `s3://${CONFIG.S3_BUCKET}/${s3Key}`;
   } catch (error) {
     logger.error(`S3'e yükleme hatası:`, error);
-    throw new Error(`S3'e yükleme başarısız: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `S3'e yükleme başarısız: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 }
 
@@ -290,22 +300,21 @@ function encryptData(data: Buffer, key: string): Buffer {
   try {
     // 256-bit key için 32 byte'lık bir anahtar oluştur (gerekirse hash ile)
     const hash = crypto.createHash('sha256').update(key).digest();
-    
+
     // Rastgele bir IV oluştur
     const iv = crypto.randomBytes(16);
-    
+
     // AES-256-CBC ile şifrele
     const cipher = crypto.createCipheriv('aes-256-cbc', hash, iv);
-    const encrypted = Buffer.concat([
-      cipher.update(data),
-      cipher.final()
-    ]);
-    
+    const encrypted = Buffer.concat([cipher.update(data), cipher.final()]);
+
     // IV + şifrelenmiş veri döndür (IV, şifre çözme için gerekli)
     return Buffer.concat([iv, encrypted]);
   } catch (error) {
     logger.error('Şifreleme hatası:', error);
-    throw new Error(`Şifreleme başarısız: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Şifreleme başarısız: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 }
 
@@ -323,20 +332,18 @@ async function saveBackupMetadata(metadata: {
   checksum: string;
 }) {
   try {
-    const { error } = await supabaseAdmin
-      .from('tenant_backups')
-      .insert({
-        tenant_id: metadata.tenantId,
-        backup_type: metadata.backupType,
-        local_path: metadata.path,
-        s3_path: metadata.s3Path,
-        original_size_bytes: metadata.size,
-        compressed_size_bytes: metadata.compressedSize,
-        created_at: metadata.timestamp,
-        checksum: metadata.checksum,
-        status: 'completed'
-      });
-    
+    const { error } = await supabaseAdmin.from('tenant_backups').insert({
+      tenant_id: metadata.tenantId,
+      backup_type: metadata.backupType,
+      local_path: metadata.path,
+      s3_path: metadata.s3Path,
+      original_size_bytes: metadata.size,
+      compressed_size_bytes: metadata.compressedSize,
+      created_at: metadata.timestamp,
+      checksum: metadata.checksum,
+      status: 'completed',
+    });
+
     if (error) {
       logger.error('Yedekleme meta verisi kaydedilirken hata:', error);
     }
@@ -353,50 +360,48 @@ async function sendFailureNotification(failedBackups: BackupResult[]) {
   if (CONFIG.SLACK_WEBHOOK) {
     try {
       const message = {
-        text: "⚠️ Yedekleme Hatası",
+        text: '⚠️ Yedekleme Hatası',
         blocks: [
           {
-            type: "header",
+            type: 'header',
             text: {
-              type: "plain_text",
-              text: "⚠️ Yedekleme Hatası",
-              emoji: true
-            }
+              type: 'plain_text',
+              text: '⚠️ Yedekleme Hatası',
+              emoji: true,
+            },
           },
           {
-            type: "section",
+            type: 'section',
             text: {
-              type: "mrkdwn",
-              text: `*${failedBackups.length}* tenant için yedekleme başarısız oldu.`
-            }
+              type: 'mrkdwn',
+              text: `*${failedBackups.length}* tenant için yedekleme başarısız oldu.`,
+            },
           },
           {
-            type: "section",
+            type: 'section',
             text: {
-              type: "mrkdwn",
-              text: failedBackups.map(fb => 
-                `• *${fb.tenantId}*: ${fb.error}`
-              ).join('\n')
-            }
-          }
-        ]
+              type: 'mrkdwn',
+              text: failedBackups.map((fb) => `• *${fb.tenantId}*: ${fb.error}`).join('\n'),
+            },
+          },
+        ],
       };
-      
+
       // Slack'e webhook üzerinden bildirim gönder
       await fetch(CONFIG.SLACK_WEBHOOK, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(message)
+        body: JSON.stringify(message),
       });
     } catch (error) {
       logger.error('Slack bildirimi gönderilirken hata:', error);
     }
   }
-  
+
   // Yedekleme hatalarını loglara da kaydet
   logger.error(
     `${failedBackups.length} tenant için yedekleme başarısız:`,
-    failedBackups.map(fb => ({ tenant: fb.tenantId, error: fb.error }))
+    failedBackups.map((fb) => ({ tenant: fb.tenantId, error: fb.error }))
   );
 }
 
@@ -406,30 +411,30 @@ async function sendFailureNotification(failedBackups: BackupResult[]) {
 export async function cleanupOldBackups() {
   try {
     const now = new Date();
-    
+
     // Farklı yedekleme tipleri için saklama sürelerini tanımla
     const retentionDays = {
       full: 30,
       incremental: 7,
-      snapshot: 90
+      snapshot: 90,
     };
-    
+
     for (const [backupType, days] of Object.entries(retentionDays)) {
       const cutoffDate = new Date(now);
       cutoffDate.setDate(cutoffDate.getDate() - days);
-      
+
       // Silinecek backupları bul
       const { data, error } = await supabaseAdmin
         .from('tenant_backups')
         .select('id, tenant_id, backup_type, s3_path, local_path')
         .eq('backup_type', backupType)
         .lt('created_at', cutoffDate.toISOString());
-      
+
       if (error) {
         logger.error(`Eski ${backupType} yedekleri bulunurken hata:`, error);
         continue;
       }
-      
+
       // Her bir eski yedeği sil
       for (const backup of data) {
         // Lokal dosyayı sil (varsa)
@@ -440,21 +445,21 @@ export async function cleanupOldBackups() {
             logger.warn(`Lokal yedek silinirken hata: ${backup.local_path}`, err);
           }
         }
-        
+
         // Yedek kaydını veritabanından sil
         const { error: deleteError } = await supabaseAdmin
           .from('tenant_backups')
           .delete()
           .eq('id', backup.id);
-        
+
         if (deleteError) {
           logger.error(`Yedek kaydı ${backup.id} silinirken hata:`, deleteError);
         }
       }
-      
+
       logger.info(`${backupType} için ${data.length} eski yedek temizlendi`);
     }
   } catch (error) {
     logger.error('Eski yedekler temizlenirken hata:', error);
   }
-} 
+}

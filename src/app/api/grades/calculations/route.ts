@@ -1,7 +1,7 @@
 /**
  * Grade Calculations API Route
  * İ-EP.APP - Grade Management System
- * 
+ *
  * Endpoints:
  * - GET /api/grades/calculations - Get grade calculations and statistics
  * - POST /api/grades/calculations - Trigger grade calculations
@@ -32,25 +32,38 @@ const CalculationTriggerSchema = z.object({
   classId: z.string().uuid().optional(),
   subjectId: z.string().uuid().optional(),
   semester: z.number().int().min(1).max(2).optional(),
-  academicYear: z.string().regex(/^\d{4}-\d{4}$/, 'Invalid academic year format').optional(),
+  academicYear: z
+    .string()
+    .regex(/^\d{4}-\d{4}$/, 'Invalid academic year format')
+    .optional(),
   force: z.boolean().optional().default(false),
 });
 
 const ConfigurationUpdateSchema = z.object({
-  configurations: z.array(z.object({
-    subjectId: z.string().uuid('Invalid subject ID'),
-    classId: z.string().uuid('Invalid class ID').optional(),
-    gradeType: z.enum(['exam', 'homework', 'project', 'participation', 'quiz', 'midterm', 'final']),
-    weight: z.number().min(0).max(1),
-    minGrade: z.number().min(0).optional().default(0),
-    maxGrade: z.number().min(1).optional().default(100),
-    passingGrade: z.number().min(0).optional().default(50),
-    honorRollGrade: z.number().min(0).optional().default(85),
-    isRequired: z.boolean().optional().default(true),
-    allowsMakeup: z.boolean().optional().default(false),
-    semester: z.number().int().min(1).max(2),
-    academicYear: z.string().regex(/^\d{4}-\d{4}$/, 'Invalid academic year format'),
-  })),
+  configurations: z.array(
+    z.object({
+      subjectId: z.string().uuid('Invalid subject ID'),
+      classId: z.string().uuid('Invalid class ID').optional(),
+      gradeType: z.enum([
+        'exam',
+        'homework',
+        'project',
+        'participation',
+        'quiz',
+        'midterm',
+        'final',
+      ]),
+      weight: z.number().min(0).max(1),
+      minGrade: z.number().min(0).optional().default(0),
+      maxGrade: z.number().min(1).optional().default(100),
+      passingGrade: z.number().min(0).optional().default(50),
+      honorRollGrade: z.number().min(0).optional().default(85),
+      isRequired: z.boolean().optional().default(true),
+      allowsMakeup: z.boolean().optional().default(false),
+      semester: z.number().int().min(1).max(2),
+      academicYear: z.string().regex(/^\d{4}-\d{4}$/, 'Invalid academic year format'),
+    })
+  ),
 });
 
 /**
@@ -61,25 +74,25 @@ export async function GET(request: NextRequest) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Parse and validate query parameters
     const { searchParams } = new URL(request.url);
     const queryParams = Object.fromEntries(searchParams.entries());
-    
+
     const validatedQuery = CalculationQuerySchema.parse(queryParams);
-    
+
     // Initialize repository
     const gradeRepo = new GradeRepository(supabase, tenantId);
-    
+
     let result;
 
     switch (validatedQuery.type) {
@@ -90,7 +103,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await getStudentCalculations(
           gradeRepo,
           validatedQuery.studentId,
@@ -109,7 +122,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await getClassCalculations(
           gradeRepo,
           validatedQuery.classId,
@@ -128,7 +141,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await getSubjectCalculations(
           gradeRepo,
           validatedQuery.subjectId,
@@ -153,10 +166,7 @@ export async function GET(request: NextRequest) {
         break;
 
       default:
-        return NextResponse.json(
-          { error: 'Invalid calculation type' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Invalid calculation type' }, { status: 400 });
     }
 
     return NextResponse.json({
@@ -165,21 +175,17 @@ export async function GET(request: NextRequest) {
       type: validatedQuery.type,
       calculatedAt: new Date().toISOString(),
     });
-
   } catch (error) {
     console.error('Error getting grade calculations:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid query parameters', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to get calculations' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Failed to get calculations' }, { status: 500 });
   }
 }
 
@@ -191,23 +197,23 @@ export async function POST(request: NextRequest) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Parse and validate request body
     const body = await request.json();
     const validatedData = CalculationTriggerSchema.parse(body);
-    
+
     // Initialize repository
     const gradeRepo = new GradeRepository(supabase, tenantId);
-    
+
     let result;
 
     switch (validatedData.type) {
@@ -218,7 +224,7 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await triggerStudentCalculations(
           gradeRepo,
           validatedData.studentId,
@@ -236,7 +242,7 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await triggerClassCalculations(
           gradeRepo,
           validatedData.classId,
@@ -254,7 +260,7 @@ export async function POST(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         result = await triggerSubjectCalculations(
           gradeRepo,
           validatedData.subjectId,
@@ -277,10 +283,7 @@ export async function POST(request: NextRequest) {
         break;
 
       default:
-        return NextResponse.json(
-          { error: 'Invalid calculation type' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Invalid calculation type' }, { status: 400 });
     }
 
     return NextResponse.json({
@@ -288,21 +291,17 @@ export async function POST(request: NextRequest) {
       data: result,
       message: 'Calculations triggered successfully',
     });
-
   } catch (error) {
     console.error('Error triggering calculations:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to trigger calculations' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Failed to trigger calculations' }, { status: 500 });
   }
 }
 
@@ -314,28 +313,26 @@ export async function PUT(request: NextRequest) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Parse and validate request body
     const body = await request.json();
     const validatedData = ConfigurationUpdateSchema.parse(body);
-    
+
     // Initialize repository
     const gradeRepo = new GradeRepository(supabase, tenantId);
-    
+
     // Verify user has permission to update configurations
-    const hasPermission = await gradeRepo.verifyConfigurationUpdatePermission(
-      session.user.id
-    );
-    
+    const hasPermission = await gradeRepo.verifyConfigurationUpdatePermission(session.user.id);
+
     if (!hasPermission) {
       return NextResponse.json(
         { error: 'Insufficient permissions to update grade configurations' },
@@ -350,7 +347,7 @@ export async function PUT(request: NextRequest) {
 
     // Trigger recalculations for affected entities
     const recalculationResults = await Promise.all(
-      validatedData.configurations.map(config => 
+      validatedData.configurations.map((config) =>
         gradeRepo.triggerRecalculationForConfiguration(
           config.subjectId,
           config.classId,
@@ -368,21 +365,17 @@ export async function PUT(request: NextRequest) {
       },
       message: 'Grade configurations updated successfully',
     });
-
   } catch (error) {
     console.error('Error updating grade configurations:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to update configurations' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Failed to update configurations' }, { status: 500 });
   }
 }
 
@@ -410,7 +403,7 @@ async function getStudentCalculations(
   );
 
   const gpa = await gradeRepo.calculateStudentGPA(studentId, semester, academicYear);
-  
+
   let details = null;
   if (includeDetails) {
     details = await gradeRepo.getStudentCalculationDetails(
@@ -427,8 +420,8 @@ async function getStudentCalculations(
     details,
     summary: {
       totalSubjects: calculations.length,
-      passingSubjects: calculations.filter(calc => calc.isPassing).length,
-      honorRollSubjects: calculations.filter(calc => calc.isHonorRoll).length,
+      passingSubjects: calculations.filter((calc) => calc.isPassing).length,
+      honorRollSubjects: calculations.filter((calc) => calc.isHonorRoll).length,
       averageGPA: gpa,
     },
   };
@@ -480,8 +473,8 @@ async function getClassCalculations(
     details,
     summary: {
       totalStudents: calculations.length,
-      passingStudents: calculations.filter(calc => calc.isPassing).length,
-      honorRollStudents: calculations.filter(calc => calc.isHonorRoll).length,
+      passingStudents: calculations.filter((calc) => calc.isPassing).length,
+      honorRollStudents: calculations.filter((calc) => calc.isHonorRoll).length,
       averageGPA: statistics.averageGPA,
     },
   };
@@ -533,8 +526,8 @@ async function getSubjectCalculations(
     details,
     summary: {
       totalStudents: calculations.length,
-      passingStudents: calculations.filter(calc => calc.isPassing).length,
-      honorRollStudents: calculations.filter(calc => calc.isHonorRoll).length,
+      passingStudents: calculations.filter((calc) => calc.isPassing).length,
+      honorRollStudents: calculations.filter((calc) => calc.isHonorRoll).length,
       averageGrade: statistics.averageGrade,
     },
   };
@@ -572,12 +565,7 @@ async function getBulkCalculations(
 
   let details = null;
   if (includeDetails) {
-    details = await gradeRepo.getBulkCalculationDetails(
-      classId,
-      subjectId,
-      semester,
-      academicYear
-    );
+    details = await gradeRepo.getBulkCalculationDetails(classId, subjectId, semester, academicYear);
   }
 
   return {
@@ -586,9 +574,9 @@ async function getBulkCalculations(
     details,
     summary: {
       totalCalculations: calculations.length,
-      affectedStudents: [...new Set(calculations.map(calc => calc.studentId))].length,
-      affectedSubjects: [...new Set(calculations.map(calc => calc.subjectId))].length,
-      affectedClasses: [...new Set(calculations.map(calc => calc.classId))].length,
+      affectedStudents: [...new Set(calculations.map((calc) => calc.studentId))].length,
+      affectedSubjects: [...new Set(calculations.map((calc) => calc.subjectId))].length,
+      affectedClasses: [...new Set(calculations.map((calc) => calc.classId))].length,
     },
   };
 }

@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/nextjs';
 
 /**
  * Hata bilgisini yapılandırılmış şekilde Sentry'ye raporlar
- * 
+ *
  * @param error - Raporlanacak hata
  * @param context - Hata ile ilgili ek bilgiler
  * @param tags - Filtreleme ve gruplandırma için etiketler
@@ -29,7 +29,7 @@ export function reportError(
     }
 
     // Etiketleri ayarla
-    Object.keys(tags).forEach(tagKey => {
+    Object.keys(tags).forEach((tagKey) => {
       Sentry.setTag(tagKey, tags[tagKey]);
     });
 
@@ -44,14 +44,11 @@ export function reportError(
     });
   } else {
     // Error olmayan değerler için
-    Sentry.captureMessage(
-      typeof error === 'string' ? error : 'Bilinmeyen hata',
-      {
-        level,
-        tags,
-        extra: { ...context, originalError: error },
-      }
-    );
+    Sentry.captureMessage(typeof error === 'string' ? error : 'Bilinmeyen hata', {
+      level,
+      tags,
+      extra: { ...context, originalError: error },
+    });
   }
 }
 
@@ -113,7 +110,7 @@ export function reportUIError(
 
 /**
  * Performans izleme için işlem başlatma
- * 
+ *
  * Not: Bu fonksiyon Sentry.startTransaction API'si güncellendiği için şu anda aktif olarak kullanılmıyor.
  * Gerekirse Sentry'nin güncel API'sine göre uyarlanabilir.
  */
@@ -126,13 +123,13 @@ export function startPerformanceTracking(
     // Sentry API değişikliği nedeniyle fonksiyon şu anda bir mock döndürüyor
     // Gerçek implementasyon için güncel Sentry dökümanlarına bakınız
     console.log(`Performance tracking başlatıldı: ${name} (${op})`);
-    
+
     // Basit bir mock transaction nesnesi
     return {
       name,
       op,
       data,
-      finish: () => console.log(`Performance tracking tamamlandı: ${name}`)
+      finish: () => console.log(`Performance tracking tamamlandı: ${name}`),
     };
   } catch (e) {
     console.error('Performans izleme başlatılamadı:', e);
@@ -185,4 +182,4 @@ export function reportTenantError(
       operation,
     }
   );
-} 
+}

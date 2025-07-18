@@ -18,28 +18,28 @@ Webhook detaylarını görüntülemek ve yönetmek için kullanılan detay kompo
 interface WebhookDetailProps {
   /** Webhook ID */
   webhookId: string;
-  
+
   /** Webhook verisi */
   webhook?: WebhookData;
-  
+
   /** Düzenleme modu */
   editMode?: boolean;
-  
+
   /** Webhook güncellendiğinde çağrılır */
   onUpdate?: (updates: Partial<WebhookConfig>) => Promise<void>;
-  
+
   /** Webhook silindiğinde çağrılır */
   onDelete?: () => Promise<void>;
-  
+
   /** Webhook test edildiğinde çağrılır */
   onTest?: () => Promise<TestResult>;
-  
+
   /** Yenileme aralığı (ms) */
   refreshInterval?: number;
-  
+
   /** Teslimat geçmişi sayfa boyutu */
   deliveryHistoryPageSize?: number;
-  
+
   /** Metrik zaman aralığı */
   metricsTimeRange?: TimeRange;
 }
@@ -95,7 +95,7 @@ import { WebhookDetail } from '@components/super-admin/webhook';
 
 export default function WebhookDetailPage() {
   const { webhookId } = useParams();
-  
+
   const handleUpdate = async (updates: Partial<WebhookConfig>) => {
     try {
       await updateWebhook(webhookId, updates);
@@ -141,7 +141,7 @@ export default function WebhookDetailPage() {
       metricsTimeRange={{
         start: subDays(new Date(), 7),
         end: new Date(),
-        interval: '1d'
+        interval: '1d',
       }}
     />
   );
@@ -151,15 +151,13 @@ export default function WebhookDetailPage() {
 ## Detay Bölümleri
 
 ### Genel Bilgiler
+
 ```tsx
-<GeneralInfo
-  webhook={webhook}
-  onEdit={handleEdit}
-  editMode={editMode}
-/>
+<GeneralInfo webhook={webhook} onEdit={handleEdit} editMode={editMode} />
 ```
 
 ### Güvenlik Ayarları
+
 ```tsx
 <SecuritySettings
   config={webhook.security}
@@ -169,21 +167,15 @@ export default function WebhookDetailPage() {
 ```
 
 ### Teslimat Geçmişi
+
 ```tsx
-<DeliveryHistory
-  webhookId={webhookId}
-  pageSize={deliveryHistoryPageSize}
-  onRetry={handleRetry}
-/>
+<DeliveryHistory webhookId={webhookId} pageSize={deliveryHistoryPageSize} onRetry={handleRetry} />
 ```
 
 ### Performans Metrikleri
+
 ```tsx
-<PerformanceMetrics
-  webhookId={webhookId}
-  timeRange={metricsTimeRange}
-  showTrends
-/>
+<PerformanceMetrics webhookId={webhookId} timeRange={metricsTimeRange} showTrends />
 ```
 
 ## API Entegrasyonu
@@ -203,26 +195,23 @@ const fetchDeliveryHistory = async (params: {
 }) => {
   const response = await fetch(
     `/api/webhooks/${params.webhookId}/deliveries?` +
-    new URLSearchParams({
-      page: String(params.page),
-      pageSize: String(params.pageSize)
-    })
+      new URLSearchParams({
+        page: String(params.page),
+        pageSize: String(params.pageSize),
+      })
   );
   return response.json();
 };
 
 // Metrik verisi alma
-const fetchMetrics = async (params: {
-  webhookId: string;
-  timeRange: TimeRange;
-}) => {
+const fetchMetrics = async (params: { webhookId: string; timeRange: TimeRange }) => {
   const response = await fetch(
     `/api/webhooks/${params.webhookId}/metrics?` +
-    new URLSearchParams({
-      start: params.timeRange.start,
-      end: params.timeRange.end,
-      interval: params.timeRange.interval
-    })
+      new URLSearchParams({
+        start: params.timeRange.start,
+        end: params.timeRange.end,
+        interval: params.timeRange.interval,
+      })
   );
   return response.json();
 };
@@ -239,13 +228,13 @@ const fetchMetrics = async (params: {
     {
       name: 'Başarı Oranı',
       dataKey: 'successRate',
-      color: '#10B981'
+      color: '#10B981',
     },
     {
       name: 'Ortalama Süre',
       dataKey: 'duration',
-      color: '#6366F1'
-    }
+      color: '#6366F1',
+    },
   ]}
 />
 ```
@@ -261,11 +250,11 @@ const fetchMetrics = async (params: {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Yan yana bölümler |
+| Ekran Boyutu   | Davranış                |
+| -------------- | ----------------------- |
+| > 1024px       | Yan yana bölümler       |
 | 768px - 1024px | Tek kolon, tam genişlik |
-| < 768px | Sekmeli görünüm |
+| < 768px        | Sekmeli görünüm         |
 
 ## Test
 
@@ -297,11 +286,11 @@ describe('WebhookDetail', () => {
         onUpdate={onUpdate}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Düzenle'));
     await userEvent.type(screen.getByLabelText('Webhook Adı'), 'Updated Name');
     await userEvent.click(screen.getByText('Kaydet'));
-    
+
     expect(onUpdate).toHaveBeenCalledWith({
       name: 'Updated Name'
     });
@@ -315,7 +304,7 @@ describe('WebhookDetail', () => {
         deliveryHistoryPageSize={10}
       />
     );
-    
+
     expect(await screen.findByText('Teslimat Geçmişi')).toBeInTheDocument();
   });
 
@@ -331,7 +320,7 @@ describe('WebhookDetail', () => {
         }}
       />
     );
-    
+
     expect(await screen.findByText('Performans Metrikleri')).toBeInTheDocument();
   });
 
@@ -340,7 +329,7 @@ describe('WebhookDetail', () => {
       success: true,
       statusCode: 200
     });
-    
+
     render(
       <WebhookDetail
         webhookId="1"
@@ -348,7 +337,7 @@ describe('WebhookDetail', () => {
         onTest={onTest}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Test Et'));
     expect(await screen.findByText('Test başarılı')).toBeInTheDocument();
   });
@@ -434,8 +423,8 @@ Error.args = {
     section: 'border rounded-lg p-4 mb-4',
     metrics: {
       success: 'text-green-600',
-      error: 'text-red-600'
-    }
+      error: 'text-red-600',
+    },
   }}
 />
 ```
@@ -446,4 +435,4 @@ Error.args = {
 2. Metrik verilerini önbelleğe al
 3. Teslimat geçmişini sayfalı yükle
 4. Hata durumlarını detaylı raporla
-5. Güvenlik bilgilerini maskeleme 
+5. Güvenlik bilgilerini maskeleme

@@ -75,7 +75,37 @@
     "tenantId",
     "userId",
     "roleId",
-    "RBAC"
+    "RBAC",
+    "dosya",
+    "proje",
+    "hakkında",
+    "hızlı",
+    "bilgi",
+    "şahıs",
+    "olması",
+    "için",
+    "hazırlanmıştır",
+    "yeni",
+    "konuşmada",
+    "analiz",
+    "alanlar",
+    "başlıyor",
+    "çalışıyor",
+    "dosyayı",
+    "durumu",
+    "edilmemiş",
+    "eksik",
+    "gerçek",
+    "görev",
+    "güçlü",
+    "hafta",
+    "hedef",
+    "içerik",
+    "pazar",
+    "sistem",
+    "sorunlar",
+    "testi",
+    "türk"
   ],
   "ignorePaths": [
     "node_modules/**",
@@ -87,5 +117,6 @@
     "package-lock.json",
     "yarn.lock"
   ],
-  "import": []
-} 
+  "allowCompoundWords": true,
+  "dictionaries": ["typescript", "node", "npm", "html", "css", "turkish"]
+}

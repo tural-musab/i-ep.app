@@ -8,12 +8,12 @@ Iqra Eğitim Portalı, çok kiracılı (multi-tenant) bir SaaS uygulaması olara
 
 ### 2.1 Yedekleme Kapsam ve Sıklıkları
 
-| Yedekleme Türü | Sıklık | Saklama Süresi | Kapsam |
-|----------------|--------|----------------|--------|
-| Tam Yedekleme | Günlük (gece) | 30 gün | Tüm tenant verileri ve şemalar |
-| Artımlı Yedekleme | Saatlik | 7 gün | Değişen veriler |
-| Anlık Yedekleme (Snapshot) | Haftalık | 90 gün | Tam sistem durumu |
-| Tenant Özel Yedekleme | Manuel/İstek üzerine | 30 gün | Tek bir tenant'ın verileri |
+| Yedekleme Türü             | Sıklık               | Saklama Süresi | Kapsam                         |
+| -------------------------- | -------------------- | -------------- | ------------------------------ |
+| Tam Yedekleme              | Günlük (gece)        | 30 gün         | Tüm tenant verileri ve şemalar |
+| Artımlı Yedekleme          | Saatlik              | 7 gün          | Değişen veriler                |
+| Anlık Yedekleme (Snapshot) | Haftalık             | 90 gün         | Tam sistem durumu              |
+| Tenant Özel Yedekleme      | Manuel/İstek üzerine | 30 gün         | Tek bir tenant'ın verileri     |
 
 ### 2.2 Yedekleme Metodolojisi
 
@@ -75,12 +75,12 @@ Sistem, aşağıdaki veri dışa aktarma API'lerini sağlar:
 
 ### 5.2 Felaket Senaryoları ve Yanıtlar
 
-| Senaryo | Yanıt Stratejisi | Sorumlular | RTO |
-|---------|------------------|------------|-----|
-| Veri Bozulması | Son geçerli yedekten geri yükleme | DBA, DevOps | 2-4 saat |
-| Tenant İzolasyon İhlali | Etkilenen tenant'ı izole etme, sorunun kaynağını bulma | Güvenlik Ekibi, DBA | 1-2 saat |
-| Altyapı Arızası | Yedek bölgeye geçiş | DevOps, SRE | 2-4 saat |
-| Siber Saldırı | Etkilenen sistemleri izole etme, temiz yedekten geri yükleme | Güvenlik Ekibi, DevOps | 4-8 saat |
+| Senaryo                 | Yanıt Stratejisi                                             | Sorumlular             | RTO      |
+| ----------------------- | ------------------------------------------------------------ | ---------------------- | -------- |
+| Veri Bozulması          | Son geçerli yedekten geri yükleme                            | DBA, DevOps            | 2-4 saat |
+| Tenant İzolasyon İhlali | Etkilenen tenant'ı izole etme, sorunun kaynağını bulma       | Güvenlik Ekibi, DBA    | 1-2 saat |
+| Altyapı Arızası         | Yedek bölgeye geçiş                                          | DevOps, SRE            | 2-4 saat |
+| Siber Saldırı           | Etkilenen sistemleri izole etme, temiz yedekten geri yükleme | Güvenlik Ekibi, DevOps | 4-8 saat |
 
 ## 6. Test ve Doğrulama Prosedürleri
 
@@ -107,4 +107,4 @@ Sistem, aşağıdaki veri dışa aktarma API'lerini sağlar:
 
 - [Felaket Kurtarma Planı](disaster-recovery.md)
 - [Güvenlik Politikası](security-policy.md)
-- [Veri Saklama Politikası](data-retention-policy.md) 
+- [Veri Saklama Politikası](data-retention-policy.md)

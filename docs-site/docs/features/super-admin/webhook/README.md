@@ -36,6 +36,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 ## Komponentler
 
 ### WebhookCreate
+
 - [Dokümantasyon](../../../components/super-admin/webhook/WebhookCreate.md)
 - Webhook yapılandırma
 - Event seçimi
@@ -44,6 +45,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 - Şablon desteği
 
 ### WebhookList
+
 - [Dokümantasyon](../../../components/super-admin/webhook/WebhookList.md)
 - Webhook listesi görüntüleme
 - Filtreleme ve arama
@@ -52,6 +54,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 - Sayfalama ve sıralama
 
 ### WebhookDetail
+
 - [Dokümantasyon](../../../components/super-admin/webhook/WebhookDetail.md)
 - Webhook detayları
 - Teslimat geçmişi
@@ -60,6 +63,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 - Güvenlik ayarları
 
 ### WebhookStats
+
 - [Dokümantasyon](../../../components/super-admin/webhook/WebhookStats.md)
 - Başarı oranı
 - Teslimat metrikleri
@@ -70,6 +74,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 ## API
 
 ### Endpoints
+
 - [Detaylı API Dokümantasyonu](../../../api/super-admin/webhooks.md)
 
 ```
@@ -88,6 +93,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 ## Sayfalar
 
 ### Ana Liste Sayfası
+
 - [Dokümantasyon](../../../pages/super-admin/webhooks/overview.md#ana-liste-sayfası)
 - Webhook listesi
 - Filtreleme ve arama
@@ -95,6 +101,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 - İstatistik görünümü
 
 ### Oluşturma Sayfası
+
 - [Dokümantasyon](../../../pages/super-admin/webhooks/overview.md#oluşturma-sayfası)
 - Webhook yapılandırma formu
 - Event seçimi
@@ -102,6 +109,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 - Test aracı
 
 ### Detay Sayfası
+
 - [Dokümantasyon](../../../pages/super-admin/webhooks/overview.md#detay-sayfası)
 - Webhook bilgileri
 - Teslimat geçmişi
@@ -109,6 +117,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 - Ayar yönetimi
 
 ### İstatistik Sayfası
+
 - [Dokümantasyon](../../../pages/super-admin/webhooks/overview.md#i̇statistik-sayfası)
 - Performans metrikleri
 - Trend analizi
@@ -118,16 +127,18 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 ## Stil Rehberi
 
 ### Renkler
+
 ```css
 :root {
-  --webhook-success: #10B981;
-  --webhook-error: #EF4444;
-  --webhook-warning: #F59E0B;
-  --webhook-info: #6366F1;
+  --webhook-success: #10b981;
+  --webhook-error: #ef4444;
+  --webhook-warning: #f59e0b;
+  --webhook-info: #6366f1;
 }
 ```
 
 ### Tipografi
+
 ```css
 .webhook-title {
   @apply text-2xl font-bold text-gray-900;
@@ -143,17 +154,18 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 ```
 
 ### Komponent Stilleri
+
 ```css
 .webhook-card {
-  @apply bg-white rounded-lg shadow-sm border p-4;
+  @apply rounded-lg border bg-white p-4 shadow-sm;
 }
 
 .webhook-stats-card {
-  @apply bg-white rounded-lg shadow-sm border p-6;
+  @apply rounded-lg border bg-white p-6 shadow-sm;
 }
 
 .webhook-form {
-  @apply space-y-6 max-w-3xl;
+  @apply max-w-3xl space-y-6;
 }
 
 .webhook-table {
@@ -164,6 +176,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 ## Best Practices
 
 ### Genel
+
 1. Sayfa yüklemelerini optimize et
 2. İstatistik verilerini önbelleğe al
 3. Webhook durumlarını düzenli kontrol et
@@ -171,6 +184,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 5. Kullanıcı geri bildirimlerini göster
 
 ### Güvenlik
+
 1. URL'leri doğrula
 2. Güvenlik bilgilerini koru
 3. Rate limiting uygula
@@ -178,6 +192,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 5. Güvenlik kontrollerini yap
 
 ### Performans
+
 1. Veriyi önbelleğe al
 2. Grafikleri optimize et
 3. Zaman aralığı seçimini sınırla
@@ -185,6 +200,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 5. Performans metriklerini takip et
 
 ### Erişilebilirlik
+
 1. ARIA etiketlerini kullan
 2. Klavye navigasyonunu destekle
 3. Renk kontrastını sağla
@@ -192,6 +208,7 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
 5. Dinamik içerik bildirimlerini yönet
 
 ### Responsive Tasarım
+
 1. Mobil öncelikli yaklaşım
 2. Breakpoint'leri doğru kullan
 3. İçeriği optimize et
@@ -228,4 +245,4 @@ Webhook yönetimi, sistemdeki webhook'ların oluşturulması, düzenlenmesi, izl
    - Versiyonlamayı yönet
    - Deployment stratejisini belirle
    - Monitoring araçlarını kur
-   - Alerting mekanizmasını yapılandır 
+   - Alerting mekanizmasını yapılandır

@@ -19,6 +19,7 @@ Bu dokümantasyon, sınıf yönetimi modülünün kullanımını ve özellikleri
 Tüm sınıfların listesini döndürür.
 
 **Yanıt:**
+
 ```json
 [
   {
@@ -45,6 +46,7 @@ Tüm sınıfların listesini döndürür.
 Yeni bir sınıf oluşturur.
 
 **İstek:**
+
 ```json
 {
   "name": "7-B",
@@ -60,6 +62,7 @@ Yeni bir sınıf oluşturur.
 Mevcut bir sınıfı günceller.
 
 **İstek:**
+
 ```json
 {
   "id": "123",
@@ -76,6 +79,7 @@ Mevcut bir sınıfı günceller.
 Belirli bir sınıfın detaylarını döndürür.
 
 **Yanıt:**
+
 ```json
 {
   "id": "123",
@@ -106,6 +110,7 @@ Belirli bir sınıfı siler.
 Bir sınıftaki öğrencilerin listesini döndürür.
 
 **Yanıt:**
+
 ```json
 [
   {
@@ -124,6 +129,7 @@ Bir sınıftaki öğrencilerin listesini döndürür.
 Bir sınıfa öğrenci atar.
 
 **İstek:**
+
 ```json
 {
   "student_id": "student-1"
@@ -141,6 +147,7 @@ Bir öğrenciyi sınıftan çıkarır.
 Bir sınıftaki öğretmenlerin listesini döndürür.
 
 **Yanıt:**
+
 ```json
 [
   {
@@ -159,6 +166,7 @@ Bir sınıftaki öğretmenlerin listesini döndürür.
 Bir sınıfa öğretmen atar.
 
 **İstek:**
+
 ```json
 {
   "teacher_id": "teacher-1",
@@ -177,6 +185,7 @@ Bir öğretmeni sınıftan çıkarır.
 Sınıf listesini görüntülemek ve yönetmek için kullanılan ana bileşen.
 
 **Özellikler:**
+
 - Sınıf listesi görüntüleme
 - İsme göre filtreleme
 - Sınıf seviyesine göre filtreleme
@@ -188,6 +197,7 @@ Sınıf listesini görüntülemek ve yönetmek için kullanılan ana bileşen.
 Sınıf detaylarını görüntülemek ve düzenlemek için kullanılan bileşen.
 
 **Özellikler:**
+
 - Sınıf bilgilerini görüntüleme
 - Sınıf bilgilerini düzenleme
 - Sınıfı silme
@@ -197,6 +207,7 @@ Sınıf detaylarını görüntülemek ve düzenlemek için kullanılan bileşen.
 Sınıfa öğrenci atamak için kullanılan form bileşeni.
 
 **Özellikler:**
+
 - Öğrenci listesi görüntüleme
 - İsme göre filtreleme
 - Öğrenci seçme ve atama
@@ -206,6 +217,7 @@ Sınıfa öğrenci atamak için kullanılan form bileşeni.
 Sınıfa öğretmen atamak için kullanılan form bileşeni.
 
 **Özellikler:**
+
 - Öğretmen listesi görüntüleme
 - İsme göre filtreleme
 - Öğretmen seçme ve atama
@@ -253,4 +265,4 @@ Sınıfa öğretmen atamak için kullanılan form bileşeni.
 ### Öğretmen Atama
 
 - Bir sınıfın yalnızca bir sınıf öğretmeni olabilir
-- Bir öğretmen aynı anda birden fazla sınıfın sınıf öğretmeni olamaz 
+- Bir öğretmen aynı anda birden fazla sınıfın sınıf öğretmeni olamaz

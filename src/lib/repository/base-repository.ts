@@ -45,19 +45,14 @@ export abstract class BaseRepository<T extends BaseEntity> {
    * Tenant-aware base query builder
    */
   protected getBaseQuery() {
-    return this.supabase
-      .from(this.tableName)
-      .select('*')
-      .eq('tenant_id', this.tenantId);
+    return this.supabase.from(this.tableName).select('*').eq('tenant_id', this.tenantId);
   }
 
   /**
    * Find entity by ID with tenant isolation
    */
   async findById(id: string): Promise<T | null> {
-    const { data, error } = await this.getBaseQuery()
-      .eq('id', id)
-      .single();
+    const { data, error } = await this.getBaseQuery().eq('id', id).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -78,7 +73,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
       limit = 10,
       sortBy = 'created_at',
       sortOrder = 'desc',
-      filters = {}
+      filters = {},
     } = options;
 
     let query = this.getBaseQuery();
@@ -97,9 +92,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
-    const { data, error, count } = await query
-      .range(from, to)
-      .select('*', { count: 'exact' });
+    const { data, error, count } = await query.range(from, to).select('*', { count: 'exact' });
 
     if (error) {
       throw new Error(`Repository error: ${error.message}`);
@@ -112,7 +105,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
@@ -124,7 +117,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
       .from(this.tableName)
       .insert({
         ...entity,
-        tenant_id: this.tenantId
+        tenant_id: this.tenantId,
       })
       .select()
       .single();
@@ -139,12 +132,15 @@ export abstract class BaseRepository<T extends BaseEntity> {
   /**
    * Update entity with tenant isolation
    */
-  async update(id: string, updates: Partial<Omit<T, 'id' | 'created_at' | 'tenant_id'>>): Promise<T | null> {
+  async update(
+    id: string,
+    updates: Partial<Omit<T, 'id' | 'created_at' | 'tenant_id'>>
+  ): Promise<T | null> {
     const { data, error } = await this.supabase
       .from(this.tableName)
       .update({
         ...updates,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', id)
       .eq('tenant_id', this.tenantId)
@@ -204,10 +200,7 @@ export abstract class BaseRepository<T extends BaseEntity> {
    * Check if entity exists
    */
   async exists(id: string): Promise<boolean> {
-    const { data, error } = await this.getBaseQuery()
-      .eq('id', id)
-      .select('id')
-      .limit(1);
+    const { data, error } = await this.getBaseQuery().eq('id', id).select('id').limit(1);
 
     if (error) {
       throw new Error(`Repository error: ${error.message}`);
@@ -230,14 +223,11 @@ export abstract class BaseRepository<T extends BaseEntity> {
   /**
    * Custom query method for complex queries
    */
-  protected async customQuery<TResult = any>(
-    query: string,
-    params: any[] = []
-  ): Promise<TResult> {
+  protected async customQuery<TResult = any>(query: string, params: any[] = []): Promise<TResult> {
     const { data, error } = await this.supabase.rpc('execute_custom_query', {
       query_text: query,
       query_params: params,
-      tenant_id: this.tenantId
+      tenant_id: this.tenantId,
     });
 
     if (error) {
@@ -259,11 +249,11 @@ export class RepositoryFactory {
     tenantId: string
   ): BaseRepository<T> {
     const key = `${repositoryClass.name}_${tenantId}`;
-    
+
     if (!this.repositories.has(key)) {
       this.repositories.set(key, new repositoryClass(tenantId));
     }
-    
+
     return this.repositories.get(key);
   }
 

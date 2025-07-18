@@ -4,7 +4,7 @@ import logger from '@/lib/logger';
 
 /**
  * GET /api/health
- * 
+ *
  * Genel uygulama sağlık kontrolü
  */
 export async function GET() {
@@ -19,12 +19,12 @@ export async function GET() {
       checks: {
         database: 'healthy',
         redis: 'healthy',
-        externalApis: 'healthy'
-      }
+        externalApis: 'healthy',
+      },
     });
   } catch (error) {
     logger.error({ err: error }, 'Health check hatası');
-    
+
     return NextResponse.json(
       {
         status: 'unhealthy',
@@ -34,4 +34,4 @@ export async function GET() {
       { status: 500 }
     );
   }
-} 
+}

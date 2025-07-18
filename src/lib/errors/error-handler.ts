@@ -1,6 +1,6 @@
 /**
  * Hata İşleme Yardımcıları
- * 
+ *
  * Bu modül, hata yakalama, loglama ve istemciye yanıt verme işlemleri için
  * yardımcı fonksiyonlar içerir.
  */
@@ -18,47 +18,47 @@ interface ErrorResponseOptions {
  * API hatasını işle ve uygun NextResponse döndür
  */
 export function handleApiError(
-  error: unknown, 
+  error: unknown,
   options: ErrorResponseOptions = { logError: true, includeDetails: false }
 ): NextResponse {
   const { logError, includeDetails } = options;
-  
+
   if (logError) {
     logger.error({ err: error }, 'API hatası');
   }
-  
+
   // TenantError türündeki hataları işle
   if (error instanceof TenantError) {
     const status = getStatusCodeForTenantError(error);
-    
+
     return NextResponse.json(
       {
         error: error.name,
         message: error.message,
         code: error.code,
-        ...(includeDetails && { details: (error as any).details })
+        ...(includeDetails && { details: (error as any).details }),
       },
       { status }
     );
   }
-  
+
   // Genel hatalar
   if (error instanceof Error) {
     return NextResponse.json(
       {
         error: 'ServerError',
         message: includeDetails ? error.message : 'Sunucu hatası oluştu',
-        ...(includeDetails && { stack: error.stack })
+        ...(includeDetails && { stack: error.stack }),
       },
       { status: 500 }
     );
   }
-  
+
   // Bilinmeyen hatalar
   return NextResponse.json(
-    { 
+    {
       error: 'UnknownError',
-      message: 'Bilinmeyen bir hata oluştu'
+      message: 'Bilinmeyen bir hata oluştu',
     },
     { status: 500 }
   );
@@ -98,7 +98,7 @@ export function withErrorHandling(
  * Veritabanı işlemlerinde izolasyon kontrol yardımcısı
  */
 export function assertTenantOwnership(
-  requestTenantId: string, 
+  requestTenantId: string,
   resourceTenantId: string | null | undefined,
   errorMessage = 'Tenant izolasyon kontrolü başarısız oldu'
 ): void {
@@ -115,15 +115,13 @@ export function validateTenantResults<T extends { tenant_id?: string }>(
   results: T[]
 ): T[] {
   // Sonuçların her birinin doğru tenant'a ait olduğunu doğrula
-  const invalidResults = results.filter(item => 
-    item.tenant_id && item.tenant_id !== tenantId
-  );
-  
+  const invalidResults = results.filter((item) => item.tenant_id && item.tenant_id !== tenantId);
+
   if (invalidResults.length > 0) {
     throw new TenantAccessDeniedError(
       `İzolasyon ihlali: ${invalidResults.length} sonuç farklı tenant'lara ait`
     );
   }
-  
+
   return results;
-} 
+}

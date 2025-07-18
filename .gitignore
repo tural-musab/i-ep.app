@@ -15,6 +15,14 @@
 .env.local-remote
 .env.local.backup
 
+# Environment variable backups (security)
+.env.backup
+.env.*.backup
+.env.development.backup
+.env.staging.backup
+.env.production.backup
+.env.local.backup
+
 # Vercel
 .vercel
 

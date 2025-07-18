@@ -1,6 +1,6 @@
 /**
  * API Route Template for İ-EP.APP
- * 
+ *
  * This template provides a standardized structure for Next.js API routes
  * following the project's coding standards and best practices.
  */
@@ -60,11 +60,11 @@ type PathParams = z.infer<typeof pathParamsSchema>;
  */
 async function validateAuthentication() {
   const session = await getServerSession(authOptions);
-  
+
   if (!session?.user) {
     throw new Error('Authentication required');
   }
-  
+
   return session;
 }
 
@@ -73,17 +73,17 @@ async function validateAuthentication() {
  */
 async function validateTenant(request: NextRequest, userId: string) {
   const tenantId = request.headers.get('x-tenant-id');
-  
+
   if (!tenantId) {
     throw new Error('Tenant ID is required');
   }
-  
+
   const hasAccess = await validateTenantAccess(userId, tenantId);
-  
+
   if (!hasAccess) {
     throw new Error('Access denied to this tenant');
   }
-  
+
   return tenantId;
 }
 
@@ -93,7 +93,7 @@ async function validateTenant(request: NextRequest, userId: string) {
 function validateQueryParams(request: NextRequest): ListQueryParams {
   const url = new URL(request.url);
   const params = Object.fromEntries(url.searchParams);
-  
+
   return listQuerySchema.parse(params);
 }
 
@@ -104,7 +104,7 @@ function validatePathParams(request: NextRequest): PathParams {
   const url = new URL(request.url);
   const pathSegments = url.pathname.split('/');
   const id = pathSegments[pathSegments.length - 1];
-  
+
   return pathParamsSchema.parse({ id });
 }
 
@@ -133,12 +133,12 @@ async function logAuditEvent(
  */
 function createErrorResponse(error: unknown, context?: string) {
   console.error(`API Error${context ? ` (${context})` : ''}:`, error);
-  
+
   if (error instanceof z.ZodError) {
     return NextResponse.json(
       {
         error: 'Validation error',
-        details: error.errors.map(e => ({
+        details: error.errors.map((e) => ({
           field: e.path.join('.'),
           message: e.message,
         })),
@@ -147,13 +147,16 @@ function createErrorResponse(error: unknown, context?: string) {
       { status: 400 }
     );
   }
-  
+
   if (error instanceof Error) {
-    const status = error.message.includes('Authentication required') ? 401 :
-                  error.message.includes('Access denied') ? 403 :
-                  error.message.includes('not found') ? 404 :
-                  400;
-    
+    const status = error.message.includes('Authentication required')
+      ? 401
+      : error.message.includes('Access denied')
+        ? 403
+        : error.message.includes('not found')
+          ? 404
+          : 400;
+
     return NextResponse.json(
       {
         error: error.message,
@@ -162,7 +165,7 @@ function createErrorResponse(error: unknown, context?: string) {
       { status }
     );
   }
-  
+
   return NextResponse.json(
     {
       error: 'Internal server error',
@@ -197,25 +200,22 @@ export async function GET(request: NextRequest) {
     // Rate limiting
     const rateLimitResult = await rateLimiter.check(request);
     if (!rateLimitResult.success) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded', success: false },
-        { status: 429 }
-      );
+      return NextResponse.json({ error: 'Rate limit exceeded', success: false }, { status: 429 });
     }
-    
+
     // Authentication
     const session = await validateAuthentication();
-    
+
     // Tenant validation
     const tenantId = await validateTenant(request, session.user.id);
-    
+
     // Query parameters validation
     const queryParams = validateQueryParams(request);
-    
+
     // Business logic - replace with actual implementation
     const { page, limit, search, filter, sort, order } = queryParams;
     const offset = (page - 1) * limit;
-    
+
     // Simulate database query
     const mockData = Array.from({ length: limit }, (_, i) => ({
       id: `${i + offset + 1}`,
@@ -226,16 +226,15 @@ export async function GET(request: NextRequest) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }));
-    
+
     // Audit logging
-    await logAuditEvent(
-      session.user.id,
-      tenantId,
-      'list_resources',
-      undefined,
-      { page, limit, search, filter }
-    );
-    
+    await logAuditEvent(session.user.id, tenantId, 'list_resources', undefined, {
+      page,
+      limit,
+      search,
+      filter,
+    });
+
     return createSuccessResponse({
       items: mockData,
       pagination: {
@@ -245,7 +244,6 @@ export async function GET(request: NextRequest) {
         totalPages: Math.ceil(100 / limit),
       },
     });
-    
   } catch (error) {
     return createErrorResponse(error, 'GET');
   }
@@ -259,22 +257,19 @@ export async function POST(request: NextRequest) {
     // Rate limiting
     const rateLimitResult = await rateLimiter.check(request);
     if (!rateLimitResult.success) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded', success: false },
-        { status: 429 }
-      );
+      return NextResponse.json({ error: 'Rate limit exceeded', success: false }, { status: 429 });
     }
-    
+
     // Authentication
     const session = await validateAuthentication();
-    
+
     // Tenant validation
     const tenantId = await validateTenant(request, session.user.id);
-    
+
     // Request body validation
     const body = await request.json();
     const validatedData = createRequestSchema.parse(body);
-    
+
     // Business logic - replace with actual implementation
     const newResource = {
       id: `resource-${Date.now()}`,
@@ -284,18 +279,13 @@ export async function POST(request: NextRequest) {
       updatedAt: new Date().toISOString(),
       createdBy: session.user.id,
     };
-    
+
     // Audit logging
-    await logAuditEvent(
-      session.user.id,
-      tenantId,
-      'create_resource',
-      newResource.id,
-      { data: validatedData }
-    );
-    
+    await logAuditEvent(session.user.id, tenantId, 'create_resource', newResource.id, {
+      data: validatedData,
+    });
+
     return createSuccessResponse(newResource, 201);
-    
   } catch (error) {
     return createErrorResponse(error, 'POST');
   }
@@ -309,25 +299,22 @@ export async function PUT(request: NextRequest) {
     // Rate limiting
     const rateLimitResult = await rateLimiter.check(request);
     if (!rateLimitResult.success) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded', success: false },
-        { status: 429 }
-      );
+      return NextResponse.json({ error: 'Rate limit exceeded', success: false }, { status: 429 });
     }
-    
+
     // Authentication
     const session = await validateAuthentication();
-    
+
     // Tenant validation
     const tenantId = await validateTenant(request, session.user.id);
-    
+
     // Path parameters validation
     const { id } = validatePathParams(request);
-    
+
     // Request body validation
     const body = await request.json();
     const validatedData = updateRequestSchema.parse(body);
-    
+
     // Business logic - replace with actual implementation
     // First, check if resource exists and user has access
     const existingResource = {
@@ -339,36 +326,29 @@ export async function PUT(request: NextRequest) {
       createdAt: new Date(Date.now() - 86400000).toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    
+
     if (!existingResource) {
       throw new Error('Resource not found');
     }
-    
+
     if (existingResource.tenantId !== tenantId) {
       throw new Error('Access denied to this resource');
     }
-    
+
     const updatedResource = {
       ...existingResource,
       ...validatedData,
       updatedAt: new Date().toISOString(),
       updatedBy: session.user.id,
     };
-    
+
     // Audit logging
-    await logAuditEvent(
-      session.user.id,
-      tenantId,
-      'update_resource',
-      id,
-      { 
-        oldData: existingResource,
-        newData: validatedData 
-      }
-    );
-    
+    await logAuditEvent(session.user.id, tenantId, 'update_resource', id, {
+      oldData: existingResource,
+      newData: validatedData,
+    });
+
     return createSuccessResponse(updatedResource);
-    
   } catch (error) {
     return createErrorResponse(error, 'PUT');
   }
@@ -382,21 +362,18 @@ export async function DELETE(request: NextRequest) {
     // Rate limiting
     const rateLimitResult = await rateLimiter.check(request);
     if (!rateLimitResult.success) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded', success: false },
-        { status: 429 }
-      );
+      return NextResponse.json({ error: 'Rate limit exceeded', success: false }, { status: 429 });
     }
-    
+
     // Authentication
     const session = await validateAuthentication();
-    
+
     // Tenant validation
     const tenantId = await validateTenant(request, session.user.id);
-    
+
     // Path parameters validation
     const { id } = validatePathParams(request);
-    
+
     // Business logic - replace with actual implementation
     // First, check if resource exists and user has access
     const existingResource = {
@@ -404,29 +381,24 @@ export async function DELETE(request: NextRequest) {
       name: 'Existing Resource',
       tenantId,
     };
-    
+
     if (!existingResource) {
       throw new Error('Resource not found');
     }
-    
+
     if (existingResource.tenantId !== tenantId) {
       throw new Error('Access denied to this resource');
     }
-    
+
     // Perform deletion
     // await resourceService.delete(id);
-    
+
     // Audit logging
-    await logAuditEvent(
-      session.user.id,
-      tenantId,
-      'delete_resource',
-      id,
-      { deletedData: existingResource }
-    );
-    
+    await logAuditEvent(session.user.id, tenantId, 'delete_resource', id, {
+      deletedData: existingResource,
+    });
+
     return createSuccessResponse({ message: 'Resource deleted successfully' });
-    
   } catch (error) {
     return createErrorResponse(error, 'DELETE');
   }
@@ -436,9 +408,4 @@ export async function DELETE(request: NextRequest) {
 // EXPORT TYPES (for testing and documentation)
 // ============================================================================
 
-export type {
-  CreateRequestData,
-  UpdateRequestData,
-  ListQueryParams,
-  PathParams,
-};
+export type { CreateRequestData, UpdateRequestData, ListQueryParams, PathParams };

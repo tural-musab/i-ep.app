@@ -14,71 +14,79 @@ import { GET as domainsGET, POST as domainsPOST } from '@/app/api/super-admin/do
 jest.mock('@/lib/supabase/admin', () => ({
   supabaseAdmin: {
     auth: {
-      getUser: jest.fn(() => Promise.resolve({
-        data: { user: { id: 'test-user', user_metadata: { role: 'super_admin' } } },
-        error: null
-      }))
+      getUser: jest.fn(() =>
+        Promise.resolve({
+          data: { user: { id: 'test-user', user_metadata: { role: 'super_admin' } } },
+          error: null,
+        })
+      ),
     },
     rpc: jest.fn(() => Promise.resolve({ data: [], error: null })),
     from: jest.fn(() => ({
       select: jest.fn(() => ({
         eq: jest.fn(() => ({
-          single: jest.fn(() => Promise.resolve({ data: null, error: null }))
+          single: jest.fn(() => Promise.resolve({ data: null, error: null })),
         })),
         order: jest.fn(() => ({
-          range: jest.fn(() => Promise.resolve({ data: [], error: null }))
+          range: jest.fn(() => Promise.resolve({ data: [], error: null })),
         })),
-        range: jest.fn(() => Promise.resolve({ data: [], error: null }))
+        range: jest.fn(() => Promise.resolve({ data: [], error: null })),
       })),
-      insert: jest.fn(() => Promise.resolve({ data: { id: 'new-id' }, error: null }))
-    }))
-  }
+      insert: jest.fn(() => Promise.resolve({ data: { id: 'new-id' }, error: null })),
+    })),
+  },
 }));
 
 jest.mock('@/lib/system/system-health', () => ({
   SystemHealthService: {
-    getFullHealthReport: jest.fn(() => Promise.resolve({
-      overall: {
+    getFullHealthReport: jest.fn(() =>
+      Promise.resolve({
+        overall: {
+          status: 'healthy',
+          timestamp: new Date().toISOString(),
+          uptime: 3600,
+          checks: [],
+          version: '1.0.0',
+          environment: 'test',
+        },
+        database: { connection: true, responseTime: 50 },
+        redis: { connection: true, responseTime: 20 },
+        ssl: [],
+      })
+    ),
+    getQuickHealthCheck: jest.fn(() =>
+      Promise.resolve({
         status: 'healthy',
         timestamp: new Date().toISOString(),
-        uptime: 3600,
-        checks: [],
-        version: '1.0.0',
-        environment: 'test'
-      },
-      database: { connection: true, responseTime: 50 },
-      redis: { connection: true, responseTime: 20 },
-      ssl: []
-    })),
-    getQuickHealthCheck: jest.fn(() => Promise.resolve({
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      database: true,
-      redis: true,
-      ssl_certificates: 'healthy'
-    }))
-  }
+        database: true,
+        redis: true,
+        ssl_certificates: 'healthy',
+      })
+    ),
+  },
 }));
 
 jest.mock('@/lib/audit/audit-log', () => ({
   AuditLogService: {
     logSystemAction: jest.fn(() => Promise.resolve()),
     logTenantAction: jest.fn(() => Promise.resolve()),
-    logDomainAction: jest.fn(() => Promise.resolve())
-  }
+    logDomainAction: jest.fn(() => Promise.resolve()),
+  },
 }));
 
 jest.mock('@/lib/domain/cloudflare-domain-manager', () => ({
   CloudflareDomainManager: {
-    getAllDomains: jest.fn(() => Promise.resolve([
-      {
-        domain: 'test.i-ep.app',
-        ssl_status: 'active',
-        created_at: new Date().toISOString()
-      }
-    ])),
-    createDomain: jest.fn(() => Promise.resolve({ success: true }))
-  }
+    getAllDomains: jest.fn(() =>
+      Promise.resolve([
+        {
+          domain: 'test.i-ep.app',
+          ssl_status: 'active',
+          created_at: new Date().toISOString(),
+        },
+      ])
+    ),
+    createDomain: jest.fn(() => Promise.resolve({ success: true })),
+  },
 }));
 
 describe('Super Admin API Integration Tests', () => {
@@ -90,7 +98,7 @@ describe('Super Admin API Integration Tests', () => {
     it('should get full system health report', async () => {
       const request = new NextRequest('http://localhost:3000/api/super-admin/system-health', {
         method: 'GET',
-        headers: { 'Authorization': 'Bearer valid-token' }
+        headers: { Authorization: 'Bearer valid-token' },
       });
 
       const response = await systemHealthGET(request);
@@ -104,7 +112,7 @@ describe('Super Admin API Integration Tests', () => {
     it('should get quick health check', async () => {
       const request = new NextRequest('http://localhost:3000/api/super-admin/system-health/quick', {
         method: 'GET',
-        headers: { 'Authorization': 'Bearer valid-token' }
+        headers: { Authorization: 'Bearer valid-token' },
       });
 
       const response = await quickHealthGET(request);
@@ -118,10 +126,13 @@ describe('Super Admin API Integration Tests', () => {
 
   describe('Tenants Management Endpoints', () => {
     it('should list tenants with pagination', async () => {
-      const request = new NextRequest('http://localhost:3000/api/super-admin/tenants?page=1&limit=10', {
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer valid-token' }
-      });
+      const request = new NextRequest(
+        'http://localhost:3000/api/super-admin/tenants?page=1&limit=10',
+        {
+          method: 'GET',
+          headers: { Authorization: 'Bearer valid-token' },
+        }
+      );
 
       const response = await tenantsGET(request);
       const data = await response.json();
@@ -135,15 +146,15 @@ describe('Super Admin API Integration Tests', () => {
     it('should create new tenant', async () => {
       const request = new NextRequest('http://localhost:3000/api/super-admin/tenants', {
         method: 'POST',
-        headers: { 
-          'Authorization': 'Bearer valid-token',
-          'Content-Type': 'application/json'
+        headers: {
+          Authorization: 'Bearer valid-token',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name: 'Test Tenant',
           slug: 'test-tenant',
-          domain: 'test.i-ep.app'
-        })
+          domain: 'test.i-ep.app',
+        }),
       });
 
       const response = await tenantsPOST(request);
@@ -156,18 +167,18 @@ describe('Super Admin API Integration Tests', () => {
     it('should handle invalid tenant creation data', async () => {
       const request = new NextRequest('http://localhost:3000/api/super-admin/tenants', {
         method: 'POST',
-        headers: { 
-          'Authorization': 'Bearer valid-token',
-          'Content-Type': 'application/json'
+        headers: {
+          Authorization: 'Bearer valid-token',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           name: '', // Invalid empty name
-          slug: 'test'
-        })
+          slug: 'test',
+        }),
       });
 
       const response = await tenantsPOST(request);
-      
+
       expect(response.status).toBe(400);
     });
   });
@@ -176,7 +187,7 @@ describe('Super Admin API Integration Tests', () => {
     it('should list all domains', async () => {
       const request = new NextRequest('http://localhost:3000/api/super-admin/domains', {
         method: 'GET',
-        headers: { 'Authorization': 'Bearer valid-token' }
+        headers: { Authorization: 'Bearer valid-token' },
       });
 
       const response = await domainsGET(request);
@@ -190,14 +201,14 @@ describe('Super Admin API Integration Tests', () => {
     it('should create new domain', async () => {
       const request = new NextRequest('http://localhost:3000/api/super-admin/domains', {
         method: 'POST',
-        headers: { 
-          'Authorization': 'Bearer valid-token',
-          'Content-Type': 'application/json'
+        headers: {
+          Authorization: 'Bearer valid-token',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           domain: 'newdomain.i-ep.app',
-          tenant_id: 'test-tenant-id'
-        })
+          tenant_id: 'test-tenant-id',
+        }),
       });
 
       const response = await domainsPOST(request);
@@ -210,17 +221,17 @@ describe('Super Admin API Integration Tests', () => {
     it('should handle invalid domain creation', async () => {
       const request = new NextRequest('http://localhost:3000/api/super-admin/domains', {
         method: 'POST',
-        headers: { 
-          'Authorization': 'Bearer valid-token',
-          'Content-Type': 'application/json'
+        headers: {
+          Authorization: 'Bearer valid-token',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           domain: '', // Invalid empty domain
-        })
+        }),
       });
 
       const response = await domainsPOST(request);
-      
+
       expect(response.status).toBe(400);
     });
   });
@@ -228,11 +239,11 @@ describe('Super Admin API Integration Tests', () => {
   describe('Authentication & Authorization', () => {
     it('should reject requests without authorization', async () => {
       const request = new NextRequest('http://localhost:3000/api/super-admin/system-health', {
-        method: 'GET'
+        method: 'GET',
       });
 
       const response = await systemHealthGET(request);
-      
+
       expect(response.status).toBe(401);
     });
 
@@ -242,16 +253,16 @@ describe('Super Admin API Integration Tests', () => {
       const supabaseAdmin = supabaseAdminModule.supabaseAdmin as unknown;
       supabaseAdmin.auth.getUser.mockResolvedValueOnce({
         data: { user: { id: 'regular-user', user_metadata: { role: 'user' } } },
-        error: null
+        error: null,
       });
 
       const request = new NextRequest('http://localhost:3000/api/super-admin/system-health', {
         method: 'GET',
-        headers: { 'Authorization': 'Bearer valid-token' }
+        headers: { Authorization: 'Bearer valid-token' },
       });
 
       const response = await systemHealthGET(request);
-      
+
       expect(response.status).toBe(403);
     });
   });
@@ -265,26 +276,26 @@ describe('Super Admin API Integration Tests', () => {
 
       const request = new NextRequest('http://localhost:3000/api/super-admin/system-health', {
         method: 'GET',
-        headers: { 'Authorization': 'Bearer valid-token' }
+        headers: { Authorization: 'Bearer valid-token' },
       });
 
       const response = await systemHealthGET(request);
-      
+
       expect(response.status).toBe(500);
     });
 
     it('should handle invalid JSON in POST requests', async () => {
       const request = new NextRequest('http://localhost:3000/api/super-admin/tenants', {
         method: 'POST',
-        headers: { 
-          'Authorization': 'Bearer valid-token',
-          'Content-Type': 'application/json'
+        headers: {
+          Authorization: 'Bearer valid-token',
+          'Content-Type': 'application/json',
         },
-        body: 'invalid json{'
+        body: 'invalid json{',
       });
 
       const response = await tenantsPOST(request);
-      
+
       expect(response.status).toBe(400);
     });
   });
@@ -295,13 +306,13 @@ describe('Super Admin API Integration Tests', () => {
         { handler: systemHealthGET, path: '/api/super-admin/system-health' },
         { handler: quickHealthGET, path: '/api/super-admin/system-health/quick' },
         { handler: tenantsGET, path: '/api/super-admin/tenants' },
-        { handler: domainsGET, path: '/api/super-admin/domains' }
+        { handler: domainsGET, path: '/api/super-admin/domains' },
       ];
 
       for (const endpoint of endpoints) {
         const request = new NextRequest(`http://localhost:3000${endpoint.path}`, {
           method: 'GET',
-          headers: { 'Authorization': 'Bearer valid-token' }
+          headers: { Authorization: 'Bearer valid-token' },
         });
 
         const response = await endpoint.handler(request);
@@ -313,4 +324,4 @@ describe('Super Admin API Integration Tests', () => {
       }
     });
   });
-}); 
+});

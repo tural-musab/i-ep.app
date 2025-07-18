@@ -13,21 +13,21 @@ class SentryExampleAPIError extends Error {
 export function GET() {
   return Sentry.startSpan(
     {
-      op: "http.server",
-      name: "GET /api/sentry-example-api",
+      op: 'http.server',
+      name: 'GET /api/sentry-example-api',
     },
     (span) => {
       // Add attributes to the span
-      span.setAttribute("endpoint", "/api/sentry-example-api");
-      span.setAttribute("method", "GET");
-      span.setAttribute("purpose", "error_testing");
+      span.setAttribute('endpoint', '/api/sentry-example-api');
+      span.setAttribute('method', 'GET');
+      span.setAttribute('purpose', 'error_testing');
 
       try {
         // Intentionally throw an error for testing
         const error = new SentryExampleAPIError(
           'This error is raised on the backend called by the example page.'
         );
-        
+
         // Capture the exception with context
         Sentry.captureException(error, {
           tags: {

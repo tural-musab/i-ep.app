@@ -11,7 +11,7 @@ import { Database } from '@/types/database.types';
 
 /**
  * Next-Auth yapılandırma ayarları
- * 
+ *
  * Bu dosya, Next-Auth kütüphanesi için yapılandırma seçeneklerini içerir
  * ve Supabase ile entegrasyonu sağlar. Tenant-aware kimlik doğrulama
  * mekanizmasını da içerir.
@@ -21,7 +21,7 @@ export const authOptions: NextAuthOptions = {
     url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
     secret: process.env.SUPABASE_SERVICE_ROLE_KEY!,
   }),
-  
+
   // Desteklenen oturum açma metodları
   providers: [
     // E-posta / Şifre ile giriş
@@ -29,37 +29,37 @@ export const authOptions: NextAuthOptions = {
       name: 'E-posta & Şifre',
       credentials: {
         email: { label: 'E-posta', type: 'email' },
-        password: { label: 'Şifre', type: 'password' }
+        password: { label: 'Şifre', type: 'password' },
       },
       async authorize(credentials, req) {
         if (!credentials?.email || !credentials.password) {
           return null;
         }
-        
+
         try {
           // Tenant bilgisi için host adresini kullan
           const tenantDomain = req.headers?.host || '';
           const tenant = await getTenantByDomain(tenantDomain);
-          
+
           if (!tenant) {
             console.error(`Tenant bulunamadı: ${tenantDomain}`);
             return null;
           }
-          
+
           // Tenant'a özel Supabase client oluştur
           const supabase = getTenantSupabaseClient(tenant.id);
-          
+
           // Kullanıcı girişi
           const { data, error } = await supabase.auth.signInWithPassword({
             email: credentials.email,
             password: credentials.password,
           });
-          
+
           if (error || !data.user) {
             console.error(`Giriş hatası: ${error?.message}`);
             return null;
           }
-          
+
           // Kullanıcı profil bilgilerini al
           // @ts-ignore - Dinamik tablo adları için bir geçici çözüm
           const { data: userProfile, error: profileError } = await supabase
@@ -67,18 +67,18 @@ export const authOptions: NextAuthOptions = {
             .select('*')
             .eq('auth_id', data.user.id)
             .single();
-          
+
           if (profileError || !userProfile) {
             console.error(`Kullanıcı profili bulunamadı: ${profileError?.message}`);
             return null;
           }
-          
+
           // Aktif olmayan kullanıcılar giremez
           if (userProfile.is_active !== true) {
             console.error(`Kullanıcı aktif değil: ${userProfile.email}`);
             return null;
           }
-          
+
           // Kullanıcı bilgilerini ve tenant referansını döndür
           return {
             id: data.user.id,
@@ -89,12 +89,12 @@ export const authOptions: NextAuthOptions = {
             tenantId: tenant.id, // Tenant ID'yi ekle
           };
         } catch (error) {
-          console.error("Yetkilendirme hatası:", error);
+          console.error('Yetkilendirme hatası:', error);
           return null;
         }
       },
     }),
-    
+
     // Google ile giriş
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -110,7 +110,7 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
-    
+
     // Şifresiz e-posta bağlantısı ile giriş
     EmailProvider({
       server: {
@@ -125,20 +125,20 @@ export const authOptions: NextAuthOptions = {
       maxAge: 24 * 60 * 60, // Bağlantının geçerlilik süresi (24 saat)
     }),
   ],
-  
+
   // Oturum ayarları
   session: {
     strategy: 'jwt',
     maxAge: 24 * 60 * 60, // 1 gün
   },
-  
+
   // Sayfa yönlendirmeleri
   pages: {
     signIn: '/auth/giris',
     signOut: '/auth/cikis',
     error: '/auth/hata',
   },
-  
+
   // JWT ve oturum işlemleri
   callbacks: {
     async jwt({ token, user, account, profile, trigger, session }) {
@@ -149,24 +149,24 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role || 'user';
         token.tenantId = user.tenantId;
       }
-      
+
       // Oturum güncellendiğinde
       if (session?.tenantId) {
         token.tenantId = session.tenantId;
       }
-      
+
       // Oturum süresi kontrolleri ve yenileme burada yapılabilir
-      
+
       return token;
     },
-    
+
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.id;
         session.user.role = token.role as string;
         session.user.tenantId = token.tenantId as string; // Tenant ID'yi oturum nesnesine ekle
       }
-      
+
       return session;
     },
   },
@@ -175,36 +175,38 @@ export const authOptions: NextAuthOptions = {
 // Tenant-aware kimlik doğrulama için oturum kontrolü
 export async function getSessionWithTenant() {
   const supabase = createServerComponentClient({ cookies });
-  
+
   // Mevcut oturumu al
-  const { data: { session } } = await supabase.auth.getSession();
-  
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
   if (!session) {
     return { session: null, tenant: null };
   }
-  
+
   // Oturumdaki tenant_id'yi al
   let tenantId = null;
-  
+
   if (session.user.user_metadata.tenant_id) {
     tenantId = session.user.user_metadata.tenant_id;
   }
-  
+
   // Tenant bilgisini al
   let tenant = null;
   if (tenantId) {
     tenant = await getTenantById(tenantId);
   }
-  
+
   return {
     session,
-    tenant
+    tenant,
   };
 }
 
 /**
  * Kullanıcının roller bazında erişim yetkisini kontrol eder
- * 
+ *
  * @param session Kullanıcı oturumu
  * @param allowedRoles İzin verilen roller
  * @returns Kullanıcının yetkili olup olmadığı
@@ -213,7 +215,7 @@ export function isAuthorized(session: Session | null, allowedRoles: string[]): b
   if (!session || !session.user?.role) {
     return false;
   }
-  
+
   return allowedRoles.includes(session.user.role);
 }
 
@@ -222,11 +224,11 @@ export function isTenantAuthorized(session: Session | null, tenantId: string): b
   if (!session || !session.user?.tenantId) {
     return false;
   }
-  
+
   // Super admin her tenant'a erişebilir
   if (session.user.role === 'super_admin') {
     return true;
   }
-  
+
   return session.user.tenantId === tenantId;
-} 
+}

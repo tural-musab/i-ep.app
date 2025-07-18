@@ -93,43 +93,48 @@ docs/
 ## 🎯 Dokümantasyon Standartları
 
 ### Dosya Adlandırma
+
 - **Türkçe dosyalar**: kebab-case kullan (`depolama-sistemi-uygulama-rehberi.md`)
 - **İngilizce dosyalar**: Sadece teknik referans için
 - **Tarih içeren dosyalar**: `YYYY-MM-DD` formatı kullan
 
 ### Kategori Rehberi
 
-| Kategori | Açıklama | Örnekler |
-|----------|----------|----------|
-| **📋 Ana** | Proje yönetimi ve ilerleme | PROGRESS.md, ROADMAP.md |
+| Kategori              | Açıklama                   | Örnekler                          |
+| --------------------- | -------------------------- | --------------------------------- |
+| **📋 Ana**            | Proje yönetimi ve ilerleme | PROGRESS.md, ROADMAP.md           |
 | **🏗️ Implementation** | Teknik uygulama rehberleri | Storage guide, API implementation |
-| **📊 Planning** | Sprint ve proje planlama | Sprint docs, project plans |
-| **🔄 Migration** | Geçiş ve migrasyon | Domain migration, data migration |
-| **📈 Analysis** | Analiz ve raporlar | Performance reports, analysis |
-| **🚀 Deployment** | Deployment ve DevOps | Setup guides, CI/CD configs |
-| **🏛️ Architecture** | Sistem mimarisi | Architecture diagrams, decisions |
-| **🔌 API** | API dokümantasyonu | Endpoints, schemas, examples |
-| **🧩 Components** | Komponent dokümantasyonu | Component specs, usage |
-| **🏫 Features** | Özellik spesifikasyonları | Feature requirements, designs |
+| **📊 Planning**       | Sprint ve proje planlama   | Sprint docs, project plans        |
+| **🔄 Migration**      | Geçiş ve migrasyon         | Domain migration, data migration  |
+| **📈 Analysis**       | Analiz ve raporlar         | Performance reports, analysis     |
+| **🚀 Deployment**     | Deployment ve DevOps       | Setup guides, CI/CD configs       |
+| **🏛️ Architecture**   | Sistem mimarisi            | Architecture diagrams, decisions  |
+| **🔌 API**            | API dokümantasyonu         | Endpoints, schemas, examples      |
+| **🧩 Components**     | Komponent dokümantasyonu   | Component specs, usage            |
+| **🏫 Features**       | Özellik spesifikasyonları  | Feature requirements, designs     |
 
 ## 🔍 Hızlı Referans
 
 ### Yeni Geliştiriciler İçin
+
 1. [Kurulum Rehberi](onboarding/setup-guide.md)
 2. [Mimari Genel Bakış](onboarding/architecture-overview.md)
 3. [Kod Standartları](onboarding/code-standards.md)
 
 ### Proje Yöneticileri İçin
+
 1. [Proje İlerleme](PROGRESS.md)
 2. [Geliştirme Yol Haritası](DEVELOPMENT-ROADMAP-2025.md)
 3. [Sprint Planlama](SPRINT-PLANNING-2025.md)
 
 ### DevOps İçin
+
 1. [Backend Kurulum](deployment/backend-setup.md)
 2. [CI/CD Pipeline](deployment/ci-cd-pipeline.md)
 3. [Felaket Kurtarma](deployment/disaster-recovery.md)
 
 ### Geliştiriciler İçin
+
 1. [API Endpoints](api/endpoints.md)
 2. [Uygulama Rehberleri](implementation/)
 3. [Komponent Dokümantasyonu](components/)

@@ -10,4 +10,4 @@ export const supabase = createSupabaseClient(supabaseUrl, supabaseAnonKey);
 // Create client function for hooks and other modules
 export const createClient = () => {
   return createSupabaseClient(supabaseUrl, supabaseAnonKey);
-}; 
+};

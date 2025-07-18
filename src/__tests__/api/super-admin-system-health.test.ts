@@ -17,32 +17,32 @@ const mockHealthData = {
     database: {
       status: 'healthy',
       latency: 15,
-      details: { connections: 5, maxConnections: 100 }
+      details: { connections: 5, maxConnections: 100 },
     },
     redis: {
-      status: 'healthy', 
+      status: 'healthy',
       latency: 8,
-      details: { memory: '50MB', uptime: '24h' }
+      details: { memory: '50MB', uptime: '24h' },
     },
     ssl: {
       status: 'healthy',
-      details: { 
-        'i-ep.app': { 
-          status: 'valid', 
+      details: {
+        'i-ep.app': {
+          status: 'valid',
           expiresAt: '2025-01-01T00:00:00.000Z',
-          issuer: 'Let\'s Encrypt'
-        }
-      }
-    }
+          issuer: "Let's Encrypt",
+        },
+      },
+    },
   },
   environment: 'test',
   version: '1.0.0',
-  uptime: 86400
+  uptime: 86400,
 };
 
 const mockQuickHealthData = {
   status: 'healthy',
-  timestamp: '2024-01-01T12:00:00.000Z'
+  timestamp: '2024-01-01T12:00:00.000Z',
 };
 
 // Mock fetch globally
@@ -61,7 +61,7 @@ describe('Super Admin System Health API (HTTP)', () => {
         ok: true,
         status: 200,
         json: async () => mockHealthData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       // Test the API
@@ -69,8 +69,8 @@ describe('Super Admin System Health API (HTTP)', () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -81,11 +81,11 @@ describe('Super Admin System Health API (HTTP)', () => {
       expect(data.checks).toBeDefined();
       expect(data.checks.database).toMatchObject({
         status: 'healthy',
-        latency: expect.any(Number)
+        latency: expect.any(Number),
       });
       expect(data.checks.redis).toMatchObject({
         status: 'healthy',
-        latency: expect.any(Number)
+        latency: expect.any(Number),
       });
       expect(data.checks.ssl).toBeDefined();
       expect(data.environment).toBe('test');
@@ -103,24 +103,24 @@ describe('Super Admin System Health API (HTTP)', () => {
             status: 'unhealthy',
             latency: 500,
             error: 'Connection timeout',
-            details: { memory: '90MB', uptime: '1h' }
-          }
-        }
+            details: { memory: '90MB', uptime: '1h' },
+          },
+        },
       };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => degradedData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -142,24 +142,24 @@ describe('Super Admin System Health API (HTTP)', () => {
             status: 'unhealthy',
             latency: null,
             error: 'Database connection failed',
-            details: null
-          }
-        }
+            details: null,
+          },
+        },
       };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => dbFailureData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -183,27 +183,27 @@ describe('Super Admin System Health API (HTTP)', () => {
               'i-ep.app': {
                 status: 'expiring_soon',
                 expiresAt: '2024-02-01T00:00:00.000Z',
-                issuer: 'Let\'s Encrypt',
-                daysUntilExpiry: 7
-              }
-            }
-          }
-        }
+                issuer: "Let's Encrypt",
+                daysUntilExpiry: 7,
+              },
+            },
+          },
+        },
       };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => sslWarningData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -221,15 +221,15 @@ describe('Super Admin System Health API (HTTP)', () => {
         ok: false,
         status: 401,
         json: async () => ({ error: 'Unauthorized' }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
           // No authorization header
-        }
+        },
       });
 
       const data = await response.json();
@@ -245,15 +245,15 @@ describe('Super Admin System Health API (HTTP)', () => {
         ok: false,
         status: 500,
         json: async () => ({ error: 'Internal server error' }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -271,15 +271,15 @@ describe('Super Admin System Health API (HTTP)', () => {
         ok: true,
         status: 200,
         json: async () => mockQuickHealthData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health/quick`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -298,22 +298,22 @@ describe('Super Admin System Health API (HTTP)', () => {
       // Mock degraded quick health response
       const quickDegradedData = {
         status: 'degraded',
-        timestamp: '2024-01-01T12:00:00.000Z'
+        timestamp: '2024-01-01T12:00:00.000Z',
       };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => quickDegradedData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health/quick`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -326,20 +326,20 @@ describe('Super Admin System Health API (HTTP)', () => {
     it('should be faster than full health check', async () => {
       // Mock fast response for quick endpoint
       const startTime = Date.now();
-      
+
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => mockQuickHealthData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health/quick`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const endTime = Date.now();
@@ -356,15 +356,15 @@ describe('Super Admin System Health API (HTTP)', () => {
         ok: false,
         status: 401,
         json: async () => ({ error: 'Unauthorized' }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health/quick`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
           // No authorization header
-        }
+        },
       });
 
       const data = await response.json();
@@ -381,14 +381,14 @@ describe('Super Admin System Health API (HTTP)', () => {
         ok: false,
         status: 401,
         json: async () => ({ error: 'Authentication required' }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       const data = await response.json();
@@ -402,15 +402,15 @@ describe('Super Admin System Health API (HTTP)', () => {
         ok: false,
         status: 403,
         json: async () => ({ error: 'Super admin access required' }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-regular-user-token'
-        }
+          Authorization: 'Bearer mock-regular-user-token',
+        },
       });
 
       const data = await response.json();
@@ -426,15 +426,15 @@ describe('Super Admin System Health API (HTTP)', () => {
         ok: true,
         status: 200,
         json: async () => mockHealthData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -458,15 +458,15 @@ describe('Super Admin System Health API (HTTP)', () => {
         ok: true,
         status: 200,
         json: async () => mockHealthData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/system-health`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -476,4 +476,4 @@ describe('Super Admin System Health API (HTTP)', () => {
       expect(new Date(data.timestamp).getTime()).toBeGreaterThan(0);
     });
   });
-}); 
+});

@@ -18,7 +18,7 @@ export async function calculateFileHash(file: File): Promise<string> {
   const buffer = await file.arrayBuffer();
   const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
   return hashHex;
 }
 
@@ -38,7 +38,7 @@ export function getMimeCategory(mimeType: string): string {
 // Get file icon based on mime type
 export function getFileIcon(mimeType: string): string {
   const category = getMimeCategory(mimeType);
-  
+
   const iconMap: Record<string, string> = {
     image: 'image',
     video: 'video',
@@ -50,7 +50,7 @@ export function getFileIcon(mimeType: string): string {
     text: 'file-text',
     other: 'file',
   };
-  
+
   return iconMap[category] || 'file';
 }
 
@@ -81,7 +81,7 @@ export function parseStoragePath(path: string): {
 } {
   const parts = path.split('/');
   // Expected format: tenants/{tenantId}/files/{year}/{month}/{filename}
-  
+
   return {
     tenantId: parts[1],
     year: parts[3],
@@ -92,8 +92,11 @@ export function parseStoragePath(path: string): {
 
 // Build folder path
 export function buildFolderPath(...segments: string[]): string {
-  return '/' + segments
-    .filter(Boolean)
-    .map(s => s.replace(/^\/+|\/+$/g, ''))
-    .join('/');
+  return (
+    '/' +
+    segments
+      .filter(Boolean)
+      .map((s) => s.replace(/^\/+|\/+$/g, ''))
+      .join('/')
+  );
 }

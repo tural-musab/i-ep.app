@@ -45,6 +45,7 @@ API'yi test etmek için Postman veya Insomnia gibi araçlar kullanabilirsiniz. S
 Bu API çok kiracılı (multi-tenant) bir SaaS platformu için tasarlanmıştır. API istekleri her zaman bir tenant bağlamında yapılmalıdır. Bu, URL'deki subdomain (veya özel domain) ile belirlenir.
 
 Örneğin:
+
 - `https://tenant1.i-ep.app/api/users`
 - `https://ozel-domain.com/api/users`
 
@@ -55,4 +56,4 @@ API versiyonlaması URL ve Accept başlığı üzerinden yapılır:
 ```
 GET /api/v1/users
 Accept: application/json; version=1
-``` 
+```

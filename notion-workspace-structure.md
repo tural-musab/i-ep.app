@@ -9,8 +9,10 @@
 ### 1. Main Databases
 
 #### 1.1 Sprint Planning Database
+
 **Purpose**: Track all sprints and their objectives
 **Properties**:
+
 - Sprint Name (Title)
 - Sprint Number (Number)
 - Status (Select: Planning, Active, Completed, Blocked)
@@ -22,8 +24,10 @@
 - Related Features (Relation to Development Tasks)
 
 #### 1.2 Foundation-First Strategy Database
+
 **Purpose**: Track Foundation-First Strategy phases and tasks
 **Properties**:
+
 - Task Name (Title)
 - Phase (Select: Phase 1 - Stabilization, Phase 2 - MVP Features)
 - Week (Number)
@@ -37,8 +41,10 @@
 - Related Sprint (Relation to Sprint Planning)
 
 #### 1.3 Development Tasks Database
+
 **Purpose**: Detailed task tracking for all development work
 **Properties**:
+
 - Task Name (Title)
 - Feature Category (Select: Assignment System, Attendance, Grades, Parent Communication, Reports, Scheduling)
 - Type (Select: Frontend, Backend, Database, API, Testing, Documentation)
@@ -56,8 +62,10 @@
 - Testing Notes (Text)
 
 #### 1.4 Project Status Database
+
 **Purpose**: High-level project metrics and status tracking
 **Properties**:
+
 - Status Name (Title)
 - Category (Select: Infrastructure, UI Components, API Endpoints, Database, Business Logic, Testing)
 - Current Progress (Number)
@@ -68,8 +76,10 @@
 - Related Tasks (Relation to Development Tasks)
 
 #### 1.5 Documentation Database
+
 **Purpose**: All project documentation and resources
 **Properties**:
+
 - Document Name (Title)
 - Type (Select: Technical Spec, User Guide, API Doc, Architecture, Meeting Notes, Analysis)
 - Status (Select: Draft, Review, Approved, Archived)
@@ -83,7 +93,9 @@
 ### 2. Key Pages Structure
 
 #### 2.1 📊 Project Overview Dashboard
+
 **Template Content**:
+
 ```
 # İ-EP.APP Project Dashboard
 
@@ -115,7 +127,9 @@
 ```
 
 #### 2.2 🏃‍♂️ Current Sprint Status (Sprint 7)
+
 **Template Content**:
+
 ```
 # Sprint 7: Foundation-First Strategy
 
@@ -178,7 +192,9 @@
 ```
 
 #### 2.3 🎯 Foundation-First Strategy Tracker
+
 **Template Content**:
+
 ```
 # Foundation-First Strategy Tracker
 
@@ -210,6 +226,7 @@
 
 #### Implementation Strategy
 ```
+
 Each feature requires:
 ✅ UI Components (existing)
 ❌ API Endpoints (missing)
@@ -217,6 +234,7 @@ Each feature requires:
 ❌ Business Logic (missing)
 ❌ Error Handling (missing)
 ❌ Testing (missing)
+
 ```
 
 ## Quality Gates
@@ -236,7 +254,9 @@ Each feature requires:
 ```
 
 #### 2.4 📈 Development Progress
+
 **Template Content**:
+
 ```
 # Development Progress Tracker
 
@@ -343,7 +363,9 @@ Each feature requires:
 ```
 
 #### 2.5 🏛️ Architecture Decisions
+
 **Template Content**:
+
 ```
 # Architecture Decisions Log
 
@@ -398,7 +420,9 @@ Each feature requires:
 ```
 
 #### 2.6 🐛 Bug Tracking
+
 **Template Content**:
+
 ```
 # Bug Tracking
 
@@ -409,7 +433,7 @@ Each feature requires:
 - **Priority**: Critical
 - **Assignee**: TBD
 - **Description**: Assignment page has createContext error breaking builds
-- **Steps to Reproduce**: 
+- **Steps to Reproduce**:
   1. Run npm run build
   2. Check assignment page compilation
 - **Expected**: Clean build
@@ -462,7 +486,9 @@ Each feature requires:
 ```
 
 #### 2.7 📊 Performance Metrics
+
 **Template Content**:
+
 ```
 # Performance Metrics Dashboard
 
@@ -513,8 +539,10 @@ Each feature requires:
 ```
 
 #### 2.8 📚 API Documentation
+
 **Template Content**:
-```
+
+````
 # API Documentation
 
 ## API Overview
@@ -543,9 +571,10 @@ Each feature requires:
     }
   }
 }
-```
+````
 
 ### POST /api/auth/logout
+
 ```json
 {
   "method": "POST",
@@ -562,6 +591,7 @@ Each feature requires:
 ## Assignment Endpoints
 
 ### GET /api/assignments
+
 ```json
 {
   "method": "GET",
@@ -585,6 +615,7 @@ Each feature requires:
 ```
 
 ### POST /api/assignments
+
 ```json
 {
   "method": "POST",
@@ -609,6 +640,7 @@ Each feature requires:
 ## Attendance Endpoints
 
 ### POST /api/attendance
+
 ```json
 {
   "method": "POST",
@@ -633,6 +665,7 @@ Each feature requires:
 ```
 
 ### GET /api/attendance/reports
+
 ```json
 {
   "method": "GET",
@@ -664,6 +697,7 @@ Each feature requires:
 ## Grade Endpoints
 
 ### POST /api/grades
+
 ```json
 {
   "method": "POST",
@@ -684,6 +718,7 @@ Each feature requires:
 ```
 
 ### GET /api/grades/reports
+
 ```json
 {
   "method": "GET",
@@ -712,6 +747,7 @@ Each feature requires:
 ```
 
 ## Error Responses
+
 ```json
 {
   "error": {
@@ -726,6 +762,7 @@ Each feature requires:
 ```
 
 ## Status Codes
+
 - **200**: Success
 - **201**: Created
 - **400**: Bad Request
@@ -734,40 +771,45 @@ Each feature requires:
 - **404**: Not Found
 - **429**: Too Many Requests
 - **500**: Internal Server Error
+
 ```
 
 #### 2.9 🚀 Deployment History
 **Template Content**:
 ```
+
 # Deployment History
 
 ## Production Deployments
 
 ### v0.1.0 - July 15, 2025
+
 - **Status**: Failed
 - **Reason**: Build errors (createContext issue)
 - **Duration**: N/A
 - **Rollback**: Not applicable
-- **Issues**: 
+- **Issues**:
   - Build compilation errors
   - TypeScript errors
   - Security vulnerabilities
 
 ### v0.0.9 - July 10, 2025
+
 - **Status**: Successful
 - **Duration**: 5 minutes
-- **Features**: 
+- **Features**:
   - Middleware optimization
   - Storage system updates
   - UI component updates
-- **Performance**: 
+- **Performance**:
   - Middleware size: 124kB → 45kB
   - API response time: 800ms → 200ms
 
 ### v0.0.8 - July 5, 2025
+
 - **Status**: Successful
 - **Duration**: 4 minutes
-- **Features**: 
+- **Features**:
   - Authentication improvements
   - Database migration updates
   - Security enhancements
@@ -775,24 +817,28 @@ Each feature requires:
 ## Staging Deployments
 
 ### Latest Staging - July 15, 2025
+
 - **Status**: Failed
 - **Branch**: develop
 - **Commit**: f920832b
 - **Issues**: Same as production build errors
 
 ### Previous Staging - July 10, 2025
+
 - **Status**: Successful
 - **Branch**: develop
 - **Commit**: d902c8aa
 - **Features**: Logo and onboarding updates
 
 ## Deployment Metrics
+
 - **Average Deployment Time**: 4.5 minutes
 - **Success Rate**: 75% (last 10 deployments)
 - **Rollback Rate**: 10%
 - **Downtime**: 0 minutes (zero-downtime deployments)
 
 ## Deployment Checklist
+
 - [ ] All tests passing
 - [ ] Build successful
 - [ ] Security scan clean
@@ -803,40 +849,50 @@ Each feature requires:
 - [ ] Rollback plan prepared
 
 ## Environments
+
 - **Production**: https://i-ep.app
 - **Staging**: https://staging.i-ep.app
 - **Development**: https://dev.i-ep.app
 - **Local**: http://localhost:3000
+
 ```
 
 ## 3. Templates Structure
 
 ### 3.1 Sprint Planning Template
 ```
+
 # Sprint [Number]: [Name]
 
 ## Sprint Goals
+
 - **Primary Goal**: [Main objective]
 - **Secondary Goals**: [Supporting objectives]
 
 ## Sprint Details
+
 - **Duration**: [Start Date] - [End Date]
 - **Team Members**: [List team members]
 - **Capacity**: [Total story points/hours]
 
 ## Sprint Backlog
+
 ### Critical Priority
+
 - [ ] [Task 1] - [Story Points]
 - [ ] [Task 2] - [Story Points]
 
 ### High Priority
+
 - [ ] [Task 3] - [Story Points]
 - [ ] [Task 4] - [Story Points]
 
 ### Medium Priority
+
 - [ ] [Task 5] - [Story Points]
 
 ## Definition of Done
+
 - [ ] Code complete and reviewed
 - [ ] Tests written and passing
 - [ ] Documentation updated
@@ -844,30 +900,38 @@ Each feature requires:
 - [ ] Acceptance criteria met
 
 ## Sprint Review
+
 - **Completed**: [List completed items]
 - **Incomplete**: [List incomplete items]
 - **Blockers**: [List blockers encountered]
 - **Lessons Learned**: [Key takeaways]
 
 ## Sprint Retrospective
+
 ### What went well?
+
 - [Point 1]
 - [Point 2]
 
 ### What could be improved?
+
 - [Point 1]
 - [Point 2]
 
 ### Action items for next sprint
+
 - [Action 1]
 - [Action 2]
+
 ```
 
 ### 3.2 Bug Report Template
 ```
+
 # Bug Report: [Bug Title]
 
 ## Bug Details
+
 - **Bug ID**: BUG-[Number]
 - **Reporter**: [Name]
 - **Date**: [Date]
@@ -876,145 +940,188 @@ Each feature requires:
 - **Assignee**: [Name]
 
 ## Environment
+
 - **Browser**: [Browser and version]
 - **OS**: [Operating system]
 - **Device**: [Desktop/Mobile/Tablet]
 - **Environment**: [Development/Staging/Production]
 
 ## Description
+
 [Detailed description of the bug]
 
 ## Steps to Reproduce
+
 1. [Step 1]
 2. [Step 2]
 3. [Step 3]
 
 ## Expected Behavior
+
 [What should happen]
 
 ## Actual Behavior
+
 [What actually happens]
 
 ## Screenshots/Videos
+
 [Attach relevant media]
 
 ## Impact
+
 [How this affects users/system]
 
 ## Workaround
+
 [Any temporary solutions]
 
 ## Additional Information
+
 [Any other relevant details]
 
 ## Resolution
+
 - **Root Cause**: [Cause of the bug]
 - **Solution**: [How it was fixed]
 - **Verification**: [How the fix was tested]
+
 ```
 
 ### 3.3 Architecture Decision Template
 ```
+
 # ADR-[Number]: [Decision Title]
 
 ## Status
+
 [Proposed/Accepted/Rejected/Deprecated]
 
 ## Context
+
 [Background and situation that led to this decision]
 
 ## Decision
+
 [The decision that was made]
 
 ## Rationale
+
 [Why this decision was made]
 
 ## Consequences
+
 ### Positive
+
 - [Positive outcome 1]
 - [Positive outcome 2]
 
 ### Negative
+
 - [Negative outcome 1]
 - [Negative outcome 2]
 
 ### Neutral
+
 - [Neutral outcome 1]
 
 ## Implementation
+
 [How this decision will be implemented]
 
 ## Alternatives Considered
+
 ### Option 1: [Alternative 1]
+
 - **Pros**: [Advantages]
 - **Cons**: [Disadvantages]
 
 ### Option 2: [Alternative 2]
+
 - **Pros**: [Advantages]
 - **Cons**: [Disadvantages]
 
 ## Related Decisions
+
 - [Link to related ADRs]
 
 ## References
+
 - [External references]
 - [Documentation links]
+
 ```
 
 ### 3.4 Progress Report Template
 ```
+
 # Progress Report: [Date]
 
 ## Executive Summary
+
 [High-level overview of progress]
 
 ## Key Achievements
+
 - [Achievement 1]
 - [Achievement 2]
 - [Achievement 3]
 
 ## Metrics
+
 - **Overall Progress**: [Percentage]%
 - **Sprint Progress**: [Percentage]%
 - **Quality Metrics**: [Details]
 - **Performance Metrics**: [Details]
 
 ## Completed This Period
+
 ### Features
+
 - [Feature 1] - [Status]
 - [Feature 2] - [Status]
 
 ### Bug Fixes
+
 - [Bug 1] - [Status]
 - [Bug 2] - [Status]
 
 ### Infrastructure
+
 - [Infrastructure item 1] - [Status]
 
 ## In Progress
+
 - [Item 1] - [Progress percentage]
 - [Item 2] - [Progress percentage]
 
 ## Upcoming (Next Period)
+
 - [Planned item 1]
 - [Planned item 2]
 
 ## Risks and Issues
+
 ### Risks
+
 - [Risk 1] - [Mitigation]
 - [Risk 2] - [Mitigation]
 
 ### Issues
+
 - [Issue 1] - [Status]
 - [Issue 2] - [Status]
 
 ## Recommendations
+
 - [Recommendation 1]
 - [Recommendation 2]
 
 ## Next Steps
+
 - [Next step 1]
 - [Next step 2]
+
 ```
 
 ## 4. Implementation Guide
@@ -1062,3 +1169,4 @@ Each feature requires:
 - Workspace optimization
 
 This comprehensive structure will provide a professional, well-organized Notion workspace for the İ-EP.APP project. Each section is designed to be immediately usable and provides clear guidance for project management and development tracking.
+```

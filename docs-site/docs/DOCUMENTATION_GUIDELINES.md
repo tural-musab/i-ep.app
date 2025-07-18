@@ -35,7 +35,7 @@ Proje dokümantasyonu aşağıdaki ana kategorilere ayrılmıştır:
 - Her dokümanda bir adet H1 (`#`) başlık bulunmalıdır
 - Alt başlıklar hiyerarşik olarak H2, H3, H4 şeklinde kullanılmalıdır
 - Kod blokları için triple backtick (\`\`\`) kullanılmalı ve dil belirtilmelidir
-- Liste öğeleri için tutarlı semboller kullanın (- veya * veya 1., 2., ...)
+- Liste öğeleri için tutarlı semboller kullanın (- veya \* veya 1., 2., ...)
 - Tablolar için standart Markdown tablo sözdizimi kullanılmalıdır
 - Diyagramlar için [Mermaid](https://mermaid-js.github.io/mermaid/) sözdizimi kullanılmalıdır
 
@@ -109,4 +109,4 @@ PR'lardaki dokümantasyon değişiklikleri şu kriterlere göre değerlendirilec
 3. Eksiksizlik
 4. Anlaşılırlık
 5. Formatlama ve düzen
-6. Diğer dokümantasyonla tutarlılık 
+6. Diğer dokümantasyonla tutarlılık

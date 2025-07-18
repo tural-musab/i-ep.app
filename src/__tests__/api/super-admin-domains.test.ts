@@ -21,7 +21,7 @@ const mockDomainsData = {
       ssl_status: 'valid',
       ssl_expires_at: '2025-01-01T00:00:00.000Z',
       created_at: '2024-01-01T00:00:00.000Z',
-      verified_at: '2024-01-01T01:00:00.000Z'
+      verified_at: '2024-01-01T01:00:00.000Z',
     },
     {
       id: '2',
@@ -32,7 +32,7 @@ const mockDomainsData = {
       ssl_status: 'pending',
       ssl_expires_at: null,
       created_at: '2024-01-02T00:00:00.000Z',
-      verified_at: null
+      verified_at: null,
     },
     {
       id: '3',
@@ -43,8 +43,8 @@ const mockDomainsData = {
       ssl_status: 'expiring_soon',
       ssl_expires_at: '2024-02-01T00:00:00.000Z',
       created_at: '2024-01-03T00:00:00.000Z',
-      verified_at: '2024-01-03T02:00:00.000Z'
-    }
+      verified_at: '2024-01-03T02:00:00.000Z',
+    },
   ],
   pagination: {
     page: 1,
@@ -52,8 +52,8 @@ const mockDomainsData = {
     total: 3,
     totalPages: 1,
     hasNext: false,
-    hasPrev: false
-  }
+    hasPrev: false,
+  },
 };
 
 // Mock fetch globally
@@ -72,7 +72,7 @@ describe('Super Admin Domains API (HTTP)', () => {
         ok: true,
         status: 200,
         json: async () => mockDomainsData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       // Test the API
@@ -80,8 +80,8 @@ describe('Super Admin Domains API (HTTP)', () => {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -95,13 +95,13 @@ describe('Super Admin Domains API (HTTP)', () => {
         tenant_id: 'tenant-1',
         is_primary: true,
         is_verified: true,
-        ssl_status: 'valid'
+        ssl_status: 'valid',
       });
       expect(data.pagination).toMatchObject({
         page: 1,
         limit: 20,
         total: 3,
-        totalPages: 1
+        totalPages: 1,
       });
     });
 
@@ -109,23 +109,23 @@ describe('Super Admin Domains API (HTTP)', () => {
       // Mock filtered response for SSL status
       const filteredData = {
         ...mockDomainsData,
-        data: mockDomainsData.data.filter(d => d.ssl_status === 'expiring_soon'),
-        pagination: { ...mockDomainsData.pagination, total: 1 }
+        data: mockDomainsData.data.filter((d) => d.ssl_status === 'expiring_soon'),
+        pagination: { ...mockDomainsData.pagination, total: 1 },
       };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => filteredData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains?ssl_status=expiring_soon`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -140,23 +140,23 @@ describe('Super Admin Domains API (HTTP)', () => {
       // Mock filtered response for unverified domains
       const unverifiedData = {
         ...mockDomainsData,
-        data: mockDomainsData.data.filter(d => !d.is_verified),
-        pagination: { ...mockDomainsData.pagination, total: 1 }
+        data: mockDomainsData.data.filter((d) => !d.is_verified),
+        pagination: { ...mockDomainsData.pagination, total: 1 },
       };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => unverifiedData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains?is_verified=false`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -171,23 +171,23 @@ describe('Super Admin Domains API (HTTP)', () => {
       // Mock tenant-specific response
       const tenantData = {
         ...mockDomainsData,
-        data: mockDomainsData.data.filter(d => d.tenant_id === 'tenant-1'),
-        pagination: { ...mockDomainsData.pagination, total: 1 }
+        data: mockDomainsData.data.filter((d) => d.tenant_id === 'tenant-1'),
+        pagination: { ...mockDomainsData.pagination, total: 1 },
       };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => tenantData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains?tenant_id=tenant-1`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -206,23 +206,23 @@ describe('Super Admin Domains API (HTTP)', () => {
           ...mockDomainsData.pagination,
           page: 2,
           hasNext: false,
-          hasPrev: true
-        }
+          hasPrev: true,
+        },
       };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => paginatedData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains?page=2&limit=10`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -238,15 +238,15 @@ describe('Super Admin Domains API (HTTP)', () => {
         ok: false,
         status: 401,
         json: async () => ({ error: 'Unauthorized' }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
           // No authorization header
-        }
+        },
       });
 
       const data = await response.json();
@@ -260,7 +260,7 @@ describe('Super Admin Domains API (HTTP)', () => {
   describe('POST /api/super-admin/domains', () => {
     const newDomainData = {
       domain: 'new.example.com',
-      tenant_id: 'tenant-1'
+      tenant_id: 'tenant-1',
     };
 
     it('should create new domain successfully', async () => {
@@ -273,23 +273,23 @@ describe('Super Admin Domains API (HTTP)', () => {
         ssl_status: 'pending',
         ssl_expires_at: null,
         created_at: '2024-01-04T00:00:00.000Z',
-        verified_at: null
+        verified_at: null,
       };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 201,
         json: async () => ({ data: createdDomain }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
+          Authorization: 'Bearer mock-super-admin-token',
         },
-        body: JSON.stringify(newDomainData)
+        body: JSON.stringify(newDomainData),
       });
 
       const data = await response.json();
@@ -302,7 +302,7 @@ describe('Super Admin Domains API (HTTP)', () => {
         tenant_id: 'tenant-1',
         is_primary: false,
         is_verified: false,
-        ssl_status: 'pending'
+        ssl_status: 'pending',
       });
     });
 
@@ -311,25 +311,25 @@ describe('Super Admin Domains API (HTTP)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 400,
-        json: async () => ({ 
+        json: async () => ({
           error: 'Domain validation failed',
-          details: ['Invalid domain format', 'Domain already exists']
+          details: ['Invalid domain format', 'Domain already exists'],
         }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const invalidData = {
         domain: 'invalid-domain-format',
-        tenant_id: 'invalid-tenant'
+        tenant_id: 'invalid-tenant',
       };
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
+          Authorization: 'Bearer mock-super-admin-token',
         },
-        body: JSON.stringify(invalidData)
+        body: JSON.stringify(invalidData),
       });
 
       const data = await response.json();
@@ -346,21 +346,21 @@ describe('Super Admin Domains API (HTTP)', () => {
         ok: false,
         status: 409,
         json: async () => ({ error: 'Domain already exists' }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const duplicateData = {
         domain: 'test1.i-ep.app', // Existing domain
-        tenant_id: 'tenant-2'
+        tenant_id: 'tenant-2',
       };
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
+          Authorization: 'Bearer mock-super-admin-token',
         },
-        body: JSON.stringify(duplicateData)
+        body: JSON.stringify(duplicateData),
       });
 
       const data = await response.json();
@@ -376,21 +376,21 @@ describe('Super Admin Domains API (HTTP)', () => {
         ok: false,
         status: 404,
         json: async () => ({ error: 'Tenant not found' }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const invalidTenantData = {
         domain: 'valid.example.com',
-        tenant_id: 'non-existent-tenant'
+        tenant_id: 'non-existent-tenant',
       };
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
+          Authorization: 'Bearer mock-super-admin-token',
         },
-        body: JSON.stringify(invalidTenantData)
+        body: JSON.stringify(invalidTenantData),
       });
 
       const data = await response.json();
@@ -405,20 +405,20 @@ describe('Super Admin Domains API (HTTP)', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 422,
-        json: async () => ({ 
+        json: async () => ({
           error: 'DNS configuration failed',
-          details: ['Unable to configure DNS records', 'Cloudflare API error']
+          details: ['Unable to configure DNS records', 'Cloudflare API error'],
         }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
+          Authorization: 'Bearer mock-super-admin-token',
         },
-        body: JSON.stringify(newDomainData)
+        body: JSON.stringify(newDomainData),
       });
 
       const data = await response.json();
@@ -435,16 +435,16 @@ describe('Super Admin Domains API (HTTP)', () => {
         ok: false,
         status: 500,
         json: async () => ({ error: 'Internal server error' }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
+          Authorization: 'Bearer mock-super-admin-token',
         },
-        body: JSON.stringify(newDomainData)
+        body: JSON.stringify(newDomainData),
       });
 
       const data = await response.json();
@@ -461,32 +461,34 @@ describe('Super Admin Domains API (HTTP)', () => {
         ok: true,
         status: 200,
         json: async () => mockDomainsData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
 
       expect(response.ok).toBe(true);
-      
-             // Check SSL statuses
-       const validSSL = data.data.find((d: { ssl_status: string }) => d.ssl_status === 'valid');
-       const expiringSoon = data.data.find((d: { ssl_status: string }) => d.ssl_status === 'expiring_soon');
-       const pending = data.data.find((d: { ssl_status: string }) => d.ssl_status === 'pending');
+
+      // Check SSL statuses
+      const validSSL = data.data.find((d: { ssl_status: string }) => d.ssl_status === 'valid');
+      const expiringSoon = data.data.find(
+        (d: { ssl_status: string }) => d.ssl_status === 'expiring_soon'
+      );
+      const pending = data.data.find((d: { ssl_status: string }) => d.ssl_status === 'pending');
 
       expect(validSSL).toBeDefined();
       expect(validSSL.ssl_expires_at).toBeDefined();
-      
+
       expect(expiringSoon).toBeDefined();
       expect(expiringSoon.ssl_expires_at).toBeDefined();
-      
+
       expect(pending).toBeDefined();
       expect(pending.ssl_expires_at).toBeNull();
     });
@@ -499,24 +501,24 @@ describe('Super Admin Domains API (HTTP)', () => {
           {
             domain: 'custom.example.com',
             message: 'SSL certificate expires in 7 days',
-            severity: 'warning'
-          }
-        ]
+            severity: 'warning',
+          },
+        ],
       };
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         json: async () => sslWarningData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains?include_warnings=true`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
@@ -534,14 +536,14 @@ describe('Super Admin Domains API (HTTP)', () => {
         ok: false,
         status: 401,
         json: async () => ({ error: 'Authentication required' }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'GET',
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       const data = await response.json();
@@ -555,15 +557,15 @@ describe('Super Admin Domains API (HTTP)', () => {
         ok: false,
         status: 403,
         json: async () => ({ error: 'Super admin access required' }),
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-regular-user-token'
-        }
+          Authorization: 'Bearer mock-regular-user-token',
+        },
       });
 
       const data = await response.json();
@@ -579,22 +581,22 @@ describe('Super Admin Domains API (HTTP)', () => {
         ok: true,
         status: 200,
         json: async () => mockDomainsData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
 
       expect(data).toHaveProperty('data');
       expect(data).toHaveProperty('pagination');
-      
+
       const domain = data.data[0];
       expect(domain).toHaveProperty('id');
       expect(domain).toHaveProperty('domain');
@@ -610,31 +612,33 @@ describe('Super Admin Domains API (HTTP)', () => {
         ok: true,
         status: 200,
         json: async () => mockDomainsData,
-        headers: new Headers({ 'content-type': 'application/json' })
+        headers: new Headers({ 'content-type': 'application/json' }),
       } as Response);
 
       const response = await fetch(`${API_BASE}/api/super-admin/domains`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer mock-super-admin-token'
-        }
+          Authorization: 'Bearer mock-super-admin-token',
+        },
       });
 
       const data = await response.json();
 
-             data.data.forEach((domain: { created_at: string; verified_at?: string; ssl_expires_at?: string }) => {
-        expect(domain.created_at).toBeDefined();
-        expect(new Date(domain.created_at).getTime()).toBeGreaterThan(0);
-        
-        if (domain.verified_at) {
-          expect(new Date(domain.verified_at).getTime()).toBeGreaterThan(0);
+      data.data.forEach(
+        (domain: { created_at: string; verified_at?: string; ssl_expires_at?: string }) => {
+          expect(domain.created_at).toBeDefined();
+          expect(new Date(domain.created_at).getTime()).toBeGreaterThan(0);
+
+          if (domain.verified_at) {
+            expect(new Date(domain.verified_at).getTime()).toBeGreaterThan(0);
+          }
+
+          if (domain.ssl_expires_at) {
+            expect(new Date(domain.ssl_expires_at).getTime()).toBeGreaterThan(0);
+          }
         }
-        
-        if (domain.ssl_expires_at) {
-          expect(new Date(domain.ssl_expires_at).getTime()).toBeGreaterThan(0);
-        }
-      });
+      );
     });
   });
-}); 
+});

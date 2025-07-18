@@ -5,12 +5,12 @@ import Link from 'next/link';
 import { Settings, Cookie, Shield, BarChart3, Megaphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog';
 
 import { Badge } from '@/components/ui/badge';
@@ -46,7 +46,8 @@ const COOKIE_CATEGORIES: CookieCategory[] = [
   {
     id: 'necessary',
     name: 'Gerekli Çerezler',
-    description: 'Bu çerezler web sitesinin temel işlevlerini sağlamak için gereklidir ve devre dışı bırakılamaz.',
+    description:
+      'Bu çerezler web sitesinin temel işlevlerini sağlamak için gereklidir ve devre dışı bırakılamaz.',
     icon: Shield,
     required: true,
     cookies: [
@@ -54,21 +55,21 @@ const COOKIE_CATEGORIES: CookieCategory[] = [
         name: 'sidebar_state',
         purpose: 'Kenar çubuğu durumunu hatırlar',
         duration: '7 gün',
-        provider: 'İ-EP.APP'
+        provider: 'İ-EP.APP',
       },
       {
         name: 'auth-token',
         purpose: 'Oturum kimlik doğrulaması',
         duration: 'Oturum',
-        provider: 'İ-EP.APP'
+        provider: 'İ-EP.APP',
       },
       {
         name: 'tenant-id',
         purpose: 'Kiracı kimliği',
         duration: '30 gün',
-        provider: 'İ-EP.APP'
-      }
-    ]
+        provider: 'İ-EP.APP',
+      },
+    ],
   },
   {
     id: 'analytics',
@@ -81,15 +82,15 @@ const COOKIE_CATEGORIES: CookieCategory[] = [
         name: 'va-*',
         purpose: 'Vercel Analytics - Anonim kullanım istatistikleri',
         duration: '2 yıl',
-        provider: 'Vercel'
+        provider: 'Vercel',
       },
       {
         name: 'si-*',
         purpose: 'Speed Insights - Performans ölçümü',
         duration: '2 yıl',
-        provider: 'Vercel'
-      }
-    ]
+        provider: 'Vercel',
+      },
+    ],
   },
   {
     id: 'marketing',
@@ -102,14 +103,15 @@ const COOKIE_CATEGORIES: CookieCategory[] = [
         name: 'marketing-consent',
         purpose: 'Pazarlama onayı durumu',
         duration: '1 yıl',
-        provider: 'İ-EP.APP'
-      }
-    ]
+        provider: 'İ-EP.APP',
+      },
+    ],
   },
   {
     id: 'preferences',
     name: 'Tercih Çerezleri',
-    description: 'Bu çerezler web sitesinin davranışını ve görünümünü tercihlerinize göre özelleştirmesini sağlar.',
+    description:
+      'Bu çerezler web sitesinin davranışını ve görünümünü tercihlerinize göre özelleştirmesini sağlar.',
     icon: Settings,
     required: false,
     cookies: [
@@ -117,16 +119,16 @@ const COOKIE_CATEGORIES: CookieCategory[] = [
         name: 'theme',
         purpose: 'Tema tercihi (açık/koyu)',
         duration: '1 yıl',
-        provider: 'İ-EP.APP'
+        provider: 'İ-EP.APP',
       },
       {
         name: 'language',
         purpose: 'Dil tercihi',
         duration: '1 yıl',
-        provider: 'İ-EP.APP'
-      }
-    ]
-  }
+        provider: 'İ-EP.APP',
+      },
+    ],
+  },
 ];
 
 const CONSENT_VERSION = '1.0';
@@ -145,17 +147,17 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
     marketing: false,
     preferences: false,
     timestamp: new Date().toISOString(),
-    version: CONSENT_VERSION
+    version: CONSENT_VERSION,
   });
 
   // Component mount edildiğinde mevcut consent durumunu kontrol et
   useEffect(() => {
     const savedConsent = localStorage.getItem(CONSENT_STORAGE_KEY);
-    
+
     if (savedConsent) {
       try {
         const parsed = JSON.parse(savedConsent) as CookiePreferences;
-        
+
         // Consent version'ı kontrol et - eski version ise yeniden sor
         if (parsed.version === CONSENT_VERSION) {
           setPreferences(parsed);
@@ -178,13 +180,13 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
       ...newPreferences,
       necessary: true, // Her zaman true
       timestamp: new Date().toISOString(),
-      version: CONSENT_VERSION
+      version: CONSENT_VERSION,
     };
 
     localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(preferencesToSave));
     setPreferences(preferencesToSave);
     onPreferencesChange?.(preferencesToSave);
-    
+
     // Analytics çerezlerini etkinleştir/devre dışı bırak
     if (typeof window !== 'undefined') {
       // Vercel Analytics için
@@ -206,7 +208,7 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
       marketing: true,
       preferences: true,
       timestamp: new Date().toISOString(),
-      version: CONSENT_VERSION
+      version: CONSENT_VERSION,
     };
 
     savePreferences(allAccepted);
@@ -222,7 +224,7 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
       marketing: false,
       preferences: false,
       timestamp: new Date().toISOString(),
-      version: CONSENT_VERSION
+      version: CONSENT_VERSION,
     };
 
     savePreferences(onlyNecessary);
@@ -240,10 +242,10 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
   // Kategori tercihini güncelle
   const updateCategoryPreference = (categoryId: keyof CookiePreferences, enabled: boolean) => {
     if (categoryId === 'necessary') return; // Gerekli çerezler değiştirilemez
-    
-    setPreferences(prev => ({
+
+    setPreferences((prev) => ({
       ...prev,
-      [categoryId]: enabled
+      [categoryId]: enabled,
     }));
   };
 
@@ -255,23 +257,22 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
     <>
       {/* Ana Consent Banner */}
       {isVisible && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg">
-          <div className="max-w-7xl mx-auto p-4 sm:p-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-start gap-3 flex-1">
-                <Cookie className="h-6 w-6 text-blue-600 flex-shrink-0 mt-0.5" />
+        <div className="fixed right-0 bottom-0 left-0 z-50 border-t border-gray-200 bg-white shadow-lg">
+          <div className="mx-auto max-w-7xl p-4 sm:p-6">
+            <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+              <div className="flex flex-1 items-start gap-3">
+                <Cookie className="mt-0.5 h-6 w-6 flex-shrink-0 text-blue-600" />
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Çerez Tercihleri
-                  </h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Web sitemizde deneyiminizi iyileştirmek için çerezler kullanıyoruz. 
-                    Gerekli çerezler site işlevselliği için zorunludur. Diğer çerezler için tercihlerinizi belirtebilirsiniz.
+                  <h3 className="mb-2 text-lg font-semibold text-gray-900">Çerez Tercihleri</h3>
+                  <p className="text-sm leading-relaxed text-gray-600">
+                    Web sitemizde deneyiminizi iyileştirmek için çerezler kullanıyoruz. Gerekli
+                    çerezler site işlevselliği için zorunludur. Diğer çerezler için tercihlerinizi
+                    belirtebilirsiniz.
                   </p>
                   <div className="mt-2">
                     <button
                       onClick={() => setShowSettings(true)}
-                      className="text-sm text-blue-600 hover:text-blue-800 underline"
+                      className="text-sm text-blue-600 underline hover:text-blue-800"
                     >
                       Çerez politikamızı görüntüle
                     </button>
@@ -279,7 +280,7 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
                 <Button
                   variant="outline"
                   size="sm"
@@ -294,13 +295,13 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
                   onClick={() => setShowSettings(true)}
                   className="w-full sm:w-auto"
                 >
-                  <Settings className="h-4 w-4 mr-2" />
+                  <Settings className="mr-2 h-4 w-4" />
                   Özelleştir
                 </Button>
                 <Button
                   size="sm"
                   onClick={acceptAll}
-                  className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
+                  className="w-full bg-blue-600 hover:bg-blue-700 sm:w-auto"
                 >
                   Tümünü Kabul Et
                 </Button>
@@ -312,15 +313,15 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
 
       {/* Ayarlar Dialog */}
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Cookie className="h-5 w-5" />
               Çerez Tercihleri
             </DialogTitle>
             <DialogDescription>
-              Hangi çerez kategorilerinin etkin olmasını istediğinizi seçin. 
-              Gerekli çerezler site işlevselliği için zorunludur ve devre dışı bırakılamaz.
+              Hangi çerez kategorilerinin etkin olmasını istediğinizi seçin. Gerekli çerezler site
+              işlevselliği için zorunludur ve devre dışı bırakılamaz.
             </DialogDescription>
           </DialogHeader>
 
@@ -330,31 +331,27 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
               {COOKIE_CATEGORIES.map((category) => {
                 const Icon = category.icon;
                 const isEnabled = preferences[category.id];
-                
+
                 return (
-                  <div key={category.id} className="border rounded-lg p-4">
+                  <div key={category.id} className="rounded-lg border p-4">
                     <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-3 flex-1">
-                        <Icon className="h-5 w-5 text-gray-600 mt-0.5" />
+                      <div className="flex flex-1 items-start gap-3">
+                        <Icon className="mt-0.5 h-5 w-5 text-gray-600" />
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium text-gray-900">
-                              {category.name}
-                            </h4>
+                          <div className="mb-1 flex items-center gap-2">
+                            <h4 className="font-medium text-gray-900">{category.name}</h4>
                             {category.required && (
                               <Badge variant="secondary" className="text-xs">
                                 Gerekli
                               </Badge>
                             )}
                           </div>
-                          <p className="text-sm text-gray-600 mb-3">
-                            {category.description}
-                          </p>
+                          <p className="mb-3 text-sm text-gray-600">{category.description}</p>
                         </div>
                       </div>
                       <Switch
                         checked={isEnabled}
-                        onCheckedChange={(enabled) => 
+                        onCheckedChange={(enabled) =>
                           updateCategoryPreference(category.id, enabled)
                         }
                         disabled={category.required}
@@ -364,26 +361,20 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
 
                     {/* Çerez Detayları */}
                     <details className="mt-3">
-                      <summary className="py-2 text-sm cursor-pointer hover:text-blue-600">
+                      <summary className="cursor-pointer py-2 text-sm hover:text-blue-600">
                         Çerez detaylarını göster ({category.cookies.length})
                       </summary>
                       <div className="space-y-3 pt-2">
                         {category.cookies.map((cookie, index) => (
                           <div key={index} className="border-l-2 border-gray-100 pl-3">
-                            <div className="flex justify-between items-start mb-1">
-                              <span className="font-mono text-sm font-medium">
-                                {cookie.name}
-                              </span>
+                            <div className="mb-1 flex items-start justify-between">
+                              <span className="font-mono text-sm font-medium">{cookie.name}</span>
                               <Badge variant="outline" className="text-xs">
                                 {cookie.provider}
                               </Badge>
                             </div>
-                            <p className="text-xs text-gray-600 mb-1">
-                              {cookie.purpose}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              Süre: {cookie.duration}
-                            </p>
+                            <p className="mb-1 text-xs text-gray-600">{cookie.purpose}</p>
+                            <p className="text-xs text-gray-500">Süre: {cookie.duration}</p>
                           </div>
                         ))}
                       </div>
@@ -396,41 +387,36 @@ export function CookieConsentBanner({ onPreferencesChange }: CookieConsentBanner
             <Separator />
 
             {/* GDPR Bilgileri */}
-            <div className="bg-blue-50 rounded-lg p-4">
-              <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+            <div className="rounded-lg bg-blue-50 p-4">
+              <h4 className="mb-2 flex items-center gap-2 font-medium text-blue-900">
                 <Shield className="h-4 w-4" />
                 Veri Koruma Haklarınız
               </h4>
-              <p className="text-sm text-blue-800 mb-3">
+              <p className="mb-3 text-sm text-blue-800">
                 GDPR ve KVKK kapsamında verileriniz üzerinde aşağıdaki haklara sahipsiniz:
               </p>
-              <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+              <ul className="list-inside list-disc space-y-1 text-sm text-blue-800">
                 <li>Kişisel verilerinize erişim hakkı</li>
                 <li>Verilerinizin düzeltilmesini talep etme hakkı</li>
                 <li>Verilerinizin silinmesini talep etme hakkı (unutulma hakkı)</li>
                 <li>Veri işlemeye itiraz etme hakkı</li>
               </ul>
-                             <div className="mt-3">
-                 <Link 
-                   href="/gdpr" 
-                   className="text-sm text-blue-600 hover:text-blue-800 underline"
-                 >
-                   Veri silme talebinde bulun →
-                 </Link>
-               </div>
+              <div className="mt-3">
+                <Link href="/gdpr" className="text-sm text-blue-600 underline hover:text-blue-800">
+                  Veri silme talebinde bulun →
+                </Link>
+              </div>
             </div>
 
             {/* Aksiyon Butonları */}
-            <div className="flex flex-col sm:flex-row justify-end gap-2">
+            <div className="flex flex-col justify-end gap-2 sm:flex-row">
               <Button variant="outline" onClick={rejectAll}>
                 Sadece Gerekli Çerezler
               </Button>
               <Button variant="outline" onClick={acceptAll}>
                 Tümünü Kabul Et
               </Button>
-              <Button onClick={saveCustomPreferences}>
-                Tercihleri Kaydet
-              </Button>
+              <Button onClick={saveCustomPreferences}>Tercihleri Kaydet</Button>
             </div>
           </div>
         </DialogContent>
@@ -446,7 +432,7 @@ export function useCookieConsent() {
 
   useEffect(() => {
     const savedConsent = localStorage.getItem(CONSENT_STORAGE_KEY);
-    
+
     if (savedConsent) {
       try {
         const parsed = JSON.parse(savedConsent) as CookiePreferences;
@@ -455,7 +441,7 @@ export function useCookieConsent() {
         console.error('Cookie consent parse error:', error);
       }
     }
-    
+
     setIsLoading(false);
   }, []);
 
@@ -468,8 +454,8 @@ export function useCookieConsent() {
     preferences,
     isLoading,
     updatePreferences,
-    hasConsent: (category: keyof CookiePreferences) => 
+    hasConsent: (category: keyof CookiePreferences) =>
       preferences ? preferences[category] : false,
-    hasGivenConsent: () => preferences !== null
+    hasGivenConsent: () => preferences !== null,
   };
-} 
+}

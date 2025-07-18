@@ -44,24 +44,24 @@ describe('SystemHealthDashboard', () => {
             status: 'pass',
             message: 'Database connection healthy',
             duration: 50,
-            timestamp: '2025-01-10T10:00:00.000Z'
+            timestamp: '2025-01-10T10:00:00.000Z',
           },
           {
             name: 'redis',
             status: 'pass',
             message: 'Redis connection healthy',
             duration: 20,
-            timestamp: '2025-01-10T10:00:00.000Z'
-          }
+            timestamp: '2025-01-10T10:00:00.000Z',
+          },
         ],
         version: '1.0.0',
-        environment: 'test'
+        environment: 'test',
       },
       database: { connection: true, responseTime: 50 },
       redis: { connection: true, responseTime: 20 },
-      ssl: []
+      ssl: [],
     },
-    timestamp: '2025-01-10T10:00:00.000Z'
+    timestamp: '2025-01-10T10:00:00.000Z',
   };
 
   const mockDegradedReport = {
@@ -77,24 +77,24 @@ describe('SystemHealthDashboard', () => {
             status: 'pass',
             message: 'Database connection healthy',
             duration: 50,
-            timestamp: '2025-01-10T10:00:00.000Z'
+            timestamp: '2025-01-10T10:00:00.000Z',
           },
           {
             name: 'redis',
             status: 'fail',
             message: 'Redis connection failed',
             duration: 0,
-            timestamp: '2025-01-10T10:00:00.000Z'
-          }
+            timestamp: '2025-01-10T10:00:00.000Z',
+          },
         ],
         version: '1.0.0',
-        environment: 'test'
+        environment: 'test',
       },
       database: { connection: true, responseTime: 50 },
       redis: { connection: false, responseTime: 0, error: 'Connection failed' },
-      ssl: []
+      ssl: [],
     },
-    timestamp: '2025-01-10T10:00:00.000Z'
+    timestamp: '2025-01-10T10:00:00.000Z',
   };
 
   it('should render loading state initially', () => {
@@ -313,12 +313,19 @@ describe('SystemHealthDashboard', () => {
     });
 
     // Second call (refresh) takes time
-    mockFetch.mockImplementation(() => new Promise(resolve => {
-      setTimeout(() => resolve({
-        ok: true,
-        json: async () => mockHealthyReport,
-      } as Response), 1000);
-    }));
+    mockFetch.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(
+            () =>
+              resolve({
+                ok: true,
+                json: async () => mockHealthyReport,
+              } as Response),
+            1000
+          );
+        })
+    );
 
     const refreshButton = screen.getByText('Refresh');
     fireEvent.click(refreshButton);
@@ -351,10 +358,10 @@ describe('SystemHealthDashboard', () => {
             domain: 'example.com',
             status: 'valid',
             expiresAt: '2025-12-31T23:59:59.000Z',
-            daysUntilExpiry: 355
-          }
-        ]
-      }
+            daysUntilExpiry: 355,
+          },
+        ],
+      },
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -380,10 +387,10 @@ describe('SystemHealthDashboard', () => {
             domain: 'example.com',
             status: 'valid',
             expiresAt: '2025-01-20T23:59:59.000Z',
-            daysUntilExpiry: 365
-          }
-        ]
-      }
+            daysUntilExpiry: 365,
+          },
+        ],
+      },
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -398,4 +405,4 @@ describe('SystemHealthDashboard', () => {
       expect(screen.getByText(/1.*domains? monitored/i)).toBeInTheDocument();
     });
   });
-}); 
+});

@@ -14,7 +14,7 @@ import type { TenantSettings } from '@/types/tenant';
 function createSupabaseClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  
+
   return createClient(supabaseUrl, supabaseKey);
 }
 
@@ -71,19 +71,17 @@ export async function createTenantWithDetails(
 
   // 4. İlk admin kullanıcısını oluştur
   const tenantClient = getTenantSupabaseClient(tenantId);
-  
+
   // users tablosunda full_name yerine first_name ve last_name kullanılıyor
-  const { error: userError } = await tenantClient
-    .from('users')
-    .insert({
-      id: uuidv4(),
-      email: adminEmail,
-      first_name: 'Sistem',
-      last_name: 'Yöneticisi',
-      role: 'admin',
-      tenant_id: tenantId,
-      is_active: true,
-    });
+  const { error: userError } = await tenantClient.from('users').insert({
+    id: uuidv4(),
+    email: adminEmail,
+    first_name: 'Sistem',
+    last_name: 'Yöneticisi',
+    role: 'admin',
+    tenant_id: tenantId,
+    is_active: true,
+  });
 
   if (userError) {
     throw new Error(`Admin kullanıcı oluşturma hatası: ${userError.message}`);
@@ -113,7 +111,9 @@ export async function createTenantWithDetails(
  * @param tenantData Tenant verileri
  * @returns Oluşturulan tenant veya null
  */
-export async function createTenant(tenantData: Omit<Tenant, 'id' | 'createdAt'>): Promise<Tenant | null> {
+export async function createTenant(
+  tenantData: Omit<Tenant, 'id' | 'createdAt'>
+): Promise<Tenant | null> {
   try {
     // Gerçek uygulamada Supabase'e kayıt
     const { data, error } = await supabaseAdmin
@@ -123,16 +123,16 @@ export async function createTenant(tenantData: Omit<Tenant, 'id' | 'createdAt'>)
         subdomain: tenantData.subdomain,
         plan_type: tenantData.planType,
         settings: tenantData.settings,
-        is_active: tenantData.isActive
+        is_active: tenantData.isActive,
       })
       .select()
       .single();
-    
+
     if (error || !data) {
       console.error('Tenant oluşturma hatası:', error);
       return null;
     }
-    
+
     return {
       id: data.id,
       name: data.name,
@@ -140,7 +140,7 @@ export async function createTenant(tenantData: Omit<Tenant, 'id' | 'createdAt'>)
       planType: data.plan_type,
       createdAt: new Date(data.created_at),
       settings: data.settings,
-      isActive: data.is_active
+      isActive: data.is_active,
     };
   } catch (error) {
     console.error('Tenant oluşturma hatası:', error);
@@ -167,12 +167,12 @@ export async function getTenantById(tenantId: string): Promise<Tenant | null> {
           languagePreference: 'tr',
           timeZone: 'Europe/Istanbul',
           primaryColor: '#4a86e8',
-          secondaryColor: '#ff9900'
+          secondaryColor: '#ff9900',
         },
-        isActive: true
+        isActive: true,
       };
     }
-    
+
     // Gerçek uygulamada Supabase'den sorgu
     // const supabase = createSupabaseClient();
     // const { data, error } = await supabase
@@ -180,12 +180,12 @@ export async function getTenantById(tenantId: string): Promise<Tenant | null> {
     //   .select('*')
     //   .eq('id', tenantId)
     //   .single();
-    
+
     // if (error || !data) {
     //   console.error('Tenant ID arama hatası:', error);
     //   return null;
     // }
-    
+
     // return {
     //   id: data.id,
     //   name: data.name,
@@ -195,7 +195,7 @@ export async function getTenantById(tenantId: string): Promise<Tenant | null> {
     //   settings: data.settings,
     //   isActive: data.is_active
     // };
-    
+
     return null; // Demo dışında henüz tenant desteklenmiyor
   } catch (error) {
     console.error('Tenant servisi hatası:', error);
@@ -222,12 +222,12 @@ export async function getTenantBySubdomain(subdomain: string): Promise<Tenant | 
           languagePreference: 'tr',
           timeZone: 'Europe/Istanbul',
           primaryColor: '#4a86e8',
-          secondaryColor: '#ff9900'
+          secondaryColor: '#ff9900',
         },
-        isActive: true
+        isActive: true,
       };
     }
-    
+
     // Gerçek uygulamada Supabase'den sorgu
     // const supabase = createSupabaseClient();
     // const { data, error } = await supabase
@@ -235,12 +235,12 @@ export async function getTenantBySubdomain(subdomain: string): Promise<Tenant | 
     //   .select('*')
     //   .eq('subdomain', subdomain)
     //   .single();
-    
+
     // if (error || !data) {
     //   console.error('Tenant arama hatası:', error);
     //   return null;
     // }
-    
+
     // return {
     //   id: data.id,
     //   name: data.name,
@@ -250,7 +250,7 @@ export async function getTenantBySubdomain(subdomain: string): Promise<Tenant | 
     //   settings: data.settings,
     //   isActive: data.is_active
     // };
-    
+
     return null; // Demo dışında henüz tenant desteklenmiyor
   } catch (error) {
     console.error('Tenant servisi hatası:', error);
@@ -267,14 +267,14 @@ export async function updateTenantSettings(
 ): Promise<TenantSettings> {
   // Önce mevcut ayarları al
   const tenant = await getTenantById(tenantId);
-  
+
   if (!tenant) {
     throw new Error('Tenant bulunamadı');
   }
-  
+
   // Yeni ayarları mevcut ayarlarla birleştir
   const updatedSettings = { ...tenant.settings, ...settings };
-  
+
   // Ayarları güncelle
   const { data, error } = await supabaseAdmin
     .from('tenants')
@@ -282,26 +282,23 @@ export async function updateTenantSettings(
     .eq('id', tenantId)
     .select('settings')
     .single();
-    
+
   if (error) {
     throw new Error(`Tenant ayarları güncelleme hatası: ${error.message}`);
   }
-  
+
   return data.settings as TenantSettings;
 }
 
 /**
  * Tenant'ı askıya alır veya aktifleştirir
  */
-export async function setTenantActiveStatus(
-  tenantId: string, 
-  isActive: boolean
-): Promise<void> {
+export async function setTenantActiveStatus(tenantId: string, isActive: boolean): Promise<void> {
   const { error } = await supabaseAdmin
     .from('tenants')
     .update({ is_active: isActive })
     .eq('id', tenantId);
-    
+
   if (error) {
     throw new Error(`Tenant durumu güncelleme hatası: ${error.message}`);
   }
@@ -315,14 +312,12 @@ export async function recordTenantUsageMetric(
   metricName: string,
   metricValue: number
 ): Promise<void> {
-  const { error } = await supabaseAdmin
-    .from('tenant_usage_metrics')
-    .insert({
-      tenant_id: tenantId,
-      metric_name: metricName,
-      metric_value: metricValue,
-    });
-    
+  const { error } = await supabaseAdmin.from('tenant_usage_metrics').insert({
+    tenant_id: tenantId,
+    metric_name: metricName,
+    metric_value: metricValue,
+  });
+
   if (error) {
     throw new Error(`Tenant kullanım metriği kaydetme hatası: ${error.message}`);
   }
@@ -341,8 +336,11 @@ export async function updateTenant(
   try {
     // Subdomain değişiyorsa formatını kontrol et
     if (tenantData.subdomain) {
-      tenantData.subdomain = tenantData.subdomain.toLowerCase().trim().replace(/[^a-z0-9]/g, '-');
-      
+      tenantData.subdomain = tenantData.subdomain
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]/g, '-');
+
       // Veritabanında aynı subdomain ile başka tenant var mı kontrol et
       const { data: existingTenant } = await supabaseAdmin
         .from('tenants')
@@ -350,12 +348,12 @@ export async function updateTenant(
         .eq('subdomain', tenantData.subdomain)
         .neq('id', tenantId)
         .single();
-      
+
       if (existingTenant) {
         throw new Error(`Bu subdomain zaten kullanılıyor: ${tenantData.subdomain}`);
       }
     }
-    
+
     // Veritabanında tenant'ı güncelle
     const updateData: any = {};
     if (tenantData.name !== undefined) updateData.name = tenantData.name;
@@ -370,11 +368,11 @@ export async function updateTenant(
       .eq('id', tenantId)
       .select()
       .single();
-    
+
     if (error || !data) {
       throw new Error(`Tenant güncelleme hatası: ${error?.message}`);
     }
-    
+
     // Subdomain değişiyorsa, domain servisini güncelle
     if (tenantData.subdomain && process.env.ENABLE_DOMAIN_MANAGEMENT === 'true') {
       // Eski subdomain'i al
@@ -383,13 +381,13 @@ export async function updateTenant(
         .select('subdomain')
         .eq('id', tenantId)
         .single();
-      
+
       const oldSubdomain = oldTenant?.subdomain;
-      
+
       // Eski subdomain ile yeni subdomain farklıysa
       if (oldSubdomain && oldSubdomain !== tenantData.subdomain) {
         const domainService = new DomainService();
-        
+
         // Eski domain kaydını sil
         const { data: oldDomainData } = await supabaseAdmin
           .from('tenant_domains')
@@ -397,16 +395,16 @@ export async function updateTenant(
           .eq('tenant_id', tenantId)
           .eq('domain', `${oldSubdomain}.i-ep.app`)
           .single();
-          
+
         if (oldDomainData?.id) {
           await domainService.deleteDomain(oldDomainData.id);
         }
-        
+
         // Yeni subdomain oluştur
         await domainService.createSubdomain(tenantId, tenantData.subdomain);
       }
     }
-    
+
     return {
       id: data.id,
       name: data.name,
@@ -414,7 +412,7 @@ export async function updateTenant(
       planType: data.plan_type,
       createdAt: new Date(data.created_at),
       settings: data.settings,
-      isActive: data.is_active
+      isActive: data.is_active,
     };
   } catch (error) {
     console.error('Tenant güncelleme hatası:', error);
@@ -441,24 +439,24 @@ export async function getAllTenants(): Promise<Tenant[]> {
           languagePreference: 'tr',
           timeZone: 'Europe/Istanbul',
           primaryColor: '#4a86e8',
-          secondaryColor: '#ff9900'
+          secondaryColor: '#ff9900',
         },
-        isActive: true
-      }
+        isActive: true,
+      },
     ];
-    
+
     // Gerçek uygulamada Supabase'den sorgu
     // const supabase = createSupabaseClient();
     // const { data, error } = await supabase
     //   .from('tenants')
     //   .select('*')
     //   .eq('is_active', true);
-    
+
     // if (error || !data) {
     //   console.error('Tenant listesi hatası:', error);
     //   return [];
     // }
-    
+
     // return data.map(item => ({
     //   id: item.id,
     //   name: item.name,
@@ -473,5 +471,3 @@ export async function getAllTenants(): Promise<Tenant[]> {
     return [];
   }
 }
-
- 

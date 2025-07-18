@@ -58,6 +58,7 @@ src/
 ### Strict Type Safety
 
 **🚫 FORBIDDEN:**
+
 ```typescript
 // Never use 'any' type
 function processData(data: any): any {
@@ -66,7 +67,7 @@ function processData(data: any): any {
 
 // Avoid implicit any
 function getData() {
-  return fetch('/api/data').then(res => res.json());
+  return fetch('/api/data').then((res) => res.json());
 }
 
 // Don't use unsafe type assertions
@@ -74,6 +75,7 @@ const user = data as User;
 ```
 
 **✅ REQUIRED:**
+
 ```typescript
 // Use explicit, specific types
 interface UserData {
@@ -108,6 +110,7 @@ function isUserData(data: unknown): data is UserData {
 ### Interface Design Standards
 
 **✅ Good Interface Design:**
+
 ```typescript
 // Use descriptive interface names
 interface ClassManagementProps {
@@ -162,6 +165,7 @@ type ApiEndpoint<T> = (data: T) => Promise<ApiResponse<T>>;
 ### Component Architecture
 
 **✅ Standard Component Structure:**
+
 ```tsx
 'use client'; // Only when needed
 
@@ -251,10 +255,10 @@ export function UserManagement({
           tenantId,
         });
 
-        setUsers(prev => [...prev, newUser]);
+        setUsers((prev) => [...prev, newUser]);
         onUserUpdate?.(newUser);
         reset();
-        
+
         toast({
           title: 'Success',
           description: 'User created successfully',
@@ -285,7 +289,7 @@ export function UserManagement({
   // Early returns
   if (!canManageUsers) {
     return (
-      <div className="text-center py-8">
+      <div className="py-8 text-center">
         <p className="text-red-500">You don't have permission to manage users</p>
       </div>
     );
@@ -293,7 +297,7 @@ export function UserManagement({
 
   if (error) {
     return (
-      <div className="text-center py-8">
+      <div className="py-8 text-center">
         <p className="text-red-500">Error: {error}</p>
         <Button onClick={() => setError(null)} variant="outline">
           Try Again
@@ -311,13 +315,9 @@ export function UserManagement({
         <CardContent>
           <form onSubmit={handleSubmit(handleUserSubmit)} className="space-y-4">
             <div>
-              <Input
-                {...register('name')}
-                placeholder="User Name"
-                aria-describedby="name-error"
-              />
+              <Input {...register('name')} placeholder="User Name" aria-describedby="name-error" />
               {errors.name && (
-                <p id="name-error" className="text-red-500 text-sm mt-1">
+                <p id="name-error" className="mt-1 text-sm text-red-500">
                   {errors.name.message}
                 </p>
               )}
@@ -331,7 +331,7 @@ export function UserManagement({
                 aria-describedby="email-error"
               />
               {errors.email && (
-                <p id="email-error" className="text-red-500 text-sm mt-1">
+                <p id="email-error" className="mt-1 text-sm text-red-500">
                   {errors.email.message}
                 </p>
               )}
@@ -344,15 +344,13 @@ export function UserManagement({
 
           {/* User list */}
           <div className="mt-6 space-y-2">
-            {users.map(user => (
-              <div key={user.id} className="flex items-center justify-between p-3 border rounded">
+            {users.map((user) => (
+              <div key={user.id} className="flex items-center justify-between rounded border p-3">
                 <div>
                   <h3 className="font-medium">{user.name}</h3>
                   <p className="text-sm text-gray-500">{user.email}</p>
                 </div>
-                <span className="text-sm bg-gray-100 px-2 py-1 rounded">
-                  {user.role}
-                </span>
+                <span className="rounded bg-gray-100 px-2 py-1 text-sm">{user.role}</span>
               </div>
             ))}
           </div>
@@ -366,6 +364,7 @@ export function UserManagement({
 ### Hook Guidelines
 
 **✅ Proper Hook Usage:**
+
 ```tsx
 // Custom hooks should be prefixed with 'use'
 function useUserManagement(tenantId: string) {
@@ -398,9 +397,12 @@ useEffect(() => {
 }, [handleUserUpdate]);
 
 // Use useCallback for event handlers
-const handleUserClick = useCallback((userId: string) => {
-  router.push(`/users/${userId}`);
-}, [router]);
+const handleUserClick = useCallback(
+  (userId: string) => {
+    router.push(`/users/${userId}`);
+  },
+  [router]
+);
 ```
 
 ## API Development Standards
@@ -408,6 +410,7 @@ const handleUserClick = useCallback((userId: string) => {
 ### API Route Structure
 
 **✅ Standard API Route:**
+
 ```typescript
 // app/api/users/route.ts
 import { NextRequest, NextResponse } from 'next/server';
@@ -444,17 +447,14 @@ export async function GET(request: NextRequest) {
     }
 
     const users = await userService.getUsers(tenantId);
-    
+
     return NextResponse.json({
       data: users,
       success: true,
     });
   } catch (error) {
     console.error('GET /api/users error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -486,10 +486,13 @@ export async function POST(request: NextRequest) {
       tenantId,
     });
 
-    return NextResponse.json({
-      data: newUser,
-      success: true,
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        data: newUser,
+        success: true,
+      },
+      { status: 201 }
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -499,10 +502,7 @@ export async function POST(request: NextRequest) {
     }
 
     console.error('POST /api/users error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 ```
@@ -510,6 +510,7 @@ export async function POST(request: NextRequest) {
 ### Service Layer Pattern
 
 **✅ Service Implementation:**
+
 ```typescript
 // lib/services/user-service.ts
 import { supabase } from '@/lib/supabase/client';
@@ -531,11 +532,7 @@ export class UserService {
   }
 
   async createUser(userData: CreateUserData): Promise<User> {
-    const { data, error } = await supabase
-      .from('users')
-      .insert([userData])
-      .select()
-      .single();
+    const { data, error } = await supabase.from('users').insert([userData]).select().single();
 
     if (error) {
       throw new Error(`Failed to create user: ${error.message}`);
@@ -560,10 +557,7 @@ export class UserService {
   }
 
   async deleteUser(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('users')
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from('users').delete().eq('id', id);
 
     if (error) {
       throw new Error(`Failed to delete user: ${error.message}`);
@@ -579,6 +573,7 @@ export const userService = new UserService();
 ### Repository Pattern
 
 **✅ Repository Implementation:**
+
 ```typescript
 // lib/repositories/user-repository.ts
 import { supabase } from '@/lib/supabase/client';
@@ -588,21 +583,14 @@ export class UserRepository {
   private readonly table = 'users';
 
   async findByTenant(tenantId: string): Promise<User[]> {
-    const { data, error } = await supabase
-      .from(this.table)
-      .select('*')
-      .eq('tenant_id', tenantId);
+    const { data, error } = await supabase.from(this.table).select('*').eq('tenant_id', tenantId);
 
     if (error) throw error;
     return data || [];
   }
 
   async findById(id: string): Promise<User | null> {
-    const { data, error } = await supabase
-      .from(this.table)
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabase.from(this.table).select('*').eq('id', id).single();
 
     if (error) {
       if (error.code === 'PGRST116') return null; // Not found
@@ -613,11 +601,7 @@ export class UserRepository {
   }
 
   async create(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>): Promise<User> {
-    const { data, error } = await supabase
-      .from(this.table)
-      .insert([user])
-      .select()
-      .single();
+    const { data, error } = await supabase.from(this.table).insert([user]).select().single();
 
     if (error) throw error;
     return data;
@@ -636,10 +620,7 @@ export class UserRepository {
   }
 
   async delete(id: string): Promise<void> {
-    const { error } = await supabase
-      .from(this.table)
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from(this.table).delete().eq('id', id);
 
     if (error) throw error;
   }
@@ -649,11 +630,13 @@ export class UserRepository {
 ### Database Query Standards
 
 **✅ Proper Query Patterns:**
+
 ```typescript
 // Always use typed queries
 const { data: users, error } = await supabase
   .from('users')
-  .select(`
+  .select(
+    `
     id,
     name,
     email,
@@ -661,7 +644,8 @@ const { data: users, error } = await supabase
     tenant_id,
     created_at,
     updated_at
-  `)
+  `
+  )
   .eq('tenant_id', tenantId)
   .order('created_at', { ascending: false });
 
@@ -684,6 +668,7 @@ if (error) {
 ### Unit Test Structure
 
 **✅ Component Test Example:**
+
 ```typescript
 // components/UserManagement.test.tsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -785,6 +770,7 @@ describe('UserManagement', () => {
 ### API Test Example
 
 **✅ API Route Test:**
+
 ```typescript
 // app/api/users/route.test.ts
 import { createMocks } from 'node-mocks-http';
@@ -806,7 +792,7 @@ describe('/api/users', () => {
   describe('GET', () => {
     it('returns users for authenticated user', async () => {
       mockGetServerSession.mockResolvedValue({
-        user: { id: 'user-1', email: 'test@example.com' }
+        user: { id: 'user-1', email: 'test@example.com' },
       });
 
       mockUserService.getUsers.mockResolvedValue([
@@ -818,12 +804,12 @@ describe('/api/users', () => {
           tenantId: 'tenant-1',
           createdAt: new Date(),
           updatedAt: new Date(),
-        }
+        },
       ]);
 
       const { req } = createMocks({
         method: 'GET',
-        headers: { 'x-tenant-id': 'tenant-1' }
+        headers: { 'x-tenant-id': 'tenant-1' },
       });
 
       const response = await GET(req);
@@ -839,7 +825,7 @@ describe('/api/users', () => {
 
       const { req } = createMocks({
         method: 'GET',
-        headers: { 'x-tenant-id': 'tenant-1' }
+        headers: { 'x-tenant-id': 'tenant-1' },
       });
 
       const response = await GET(req);
@@ -857,11 +843,12 @@ describe('/api/users', () => {
 ### Component Optimization
 
 **✅ Performance Best Practices:**
+
 ```tsx
 // Use React.memo for components that receive stable props
 export const UserCard = React.memo(({ user, onEdit }: UserCardProps) => {
   return (
-    <div className="border rounded p-4">
+    <div className="rounded border p-4">
       <h3>{user.name}</h3>
       <p>{user.email}</p>
       <Button onClick={() => onEdit(user)}>Edit</Button>
@@ -890,6 +877,7 @@ const fetchUsers = useCallback(async () => {
 ### Data Fetching Optimization
 
 **✅ Efficient Data Fetching:**
+
 ```typescript
 // Use React Query or SWR for caching
 import { useQuery } from '@tanstack/react-query';
@@ -921,6 +909,7 @@ async function getUsers(tenantId: string, page = 1, limit = 20) {
 ### Authentication & Authorization
 
 **✅ Security Best Practices:**
+
 ```typescript
 // Always validate user authentication
 export async function protectedAction(request: NextRequest) {
@@ -957,6 +946,7 @@ function sanitizeInput(input: string): string {
 ### Data Protection
 
 **✅ Data Security:**
+
 ```typescript
 // Use Row Level Security (RLS) policies
 const { data, error } = await supabase
@@ -987,17 +977,18 @@ async function logUserAction(
 ### Code Documentation
 
 **✅ Proper Documentation:**
-```typescript
+
+````typescript
 /**
  * Manages user operations for a specific tenant
- * 
+ *
  * @param tenantId - The ID of the tenant
  * @param initialUsers - Optional initial user data
  * @param onUserUpdate - Callback function called when a user is updated
  * @param className - Optional CSS class name for styling
- * 
+ *
  * @returns JSX element containing user management interface
- * 
+ *
  * @example
  * ```tsx
  * <UserManagement
@@ -1017,20 +1008,17 @@ export function UserManagement({
 
 /**
  * Validates if a user has access to a specific tenant
- * 
+ *
  * @param userId - The user's ID
  * @param tenantId - The tenant's ID
  * @returns Promise resolving to true if user has access, false otherwise
- * 
+ *
  * @throws {Error} When database query fails
  */
-async function validateTenantAccess(
-  userId: string,
-  tenantId: string
-): Promise<boolean> {
+async function validateTenantAccess(userId: string, tenantId: string): Promise<boolean> {
   // Implementation
 }
-```
+````
 
 ## Code Review Checklist
 
@@ -1048,36 +1036,42 @@ async function validateTenantAccess(
 ### Review Checklist
 
 **Functionality:**
+
 - [ ] Code works as expected
 - [ ] Edge cases are handled
 - [ ] Error handling is appropriate
 - [ ] User experience is smooth
 
 **Code Quality:**
+
 - [ ] Code is readable and maintainable
 - [ ] Functions are focused and small
 - [ ] Names are descriptive
 - [ ] No code duplication
 
 **Architecture:**
+
 - [ ] Follows established patterns
 - [ ] Proper separation of concerns
 - [ ] Multi-tenant isolation maintained
 - [ ] Scalable design
 
 **Performance:**
+
 - [ ] No unnecessary re-renders
 - [ ] Efficient algorithms used
 - [ ] Proper memoization
 - [ ] Database queries optimized
 
 **Security:**
+
 - [ ] Input validation implemented
 - [ ] Authentication checked
 - [ ] Authorization enforced
 - [ ] No sensitive data exposure
 
 **Testing:**
+
 - [ ] Unit tests cover key functionality
 - [ ] Integration tests for complex flows
 - [ ] Edge cases tested

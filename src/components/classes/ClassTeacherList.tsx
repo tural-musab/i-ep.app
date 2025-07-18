@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import * as Sentry from "@sentry/nextjs";
+import { useEffect, useState } from 'react';
+import * as Sentry from '@sentry/nextjs';
 import {
   Table,
   TableBody,
@@ -9,18 +9,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { PlusIcon } from "@radix-ui/react-icons";
-import { AssignTeacherForm } from "./AssignTeacherForm";
+} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { PlusIcon } from '@radix-ui/react-icons';
+import { AssignTeacherForm } from './AssignTeacherForm';
 
 interface Teacher {
   id: string;
@@ -44,22 +44,22 @@ export function ClassTeacherList({ classId }: ClassTeacherListProps) {
   const fetchTeachers = async () => {
     return Sentry.startSpan(
       {
-        op: "http.client",
+        op: 'http.client',
         name: `GET /api/class-teachers/${classId}`,
       },
       async () => {
         try {
           const response = await fetch(`/api/class-teachers/${classId}`);
           if (!response.ok) {
-            throw new Error("Öğretmen listesi alınamadı");
+            throw new Error('Öğretmen listesi alınamadı');
           }
           const data = await response.json();
           setTeachers(data);
           setError(null);
         } catch (error) {
-          console.error("Error fetching teachers:", error);
+          console.error('Error fetching teachers:', error);
           Sentry.captureException(error);
-          setError("Öğretmen listesi yüklenirken bir hata oluştu");
+          setError('Öğretmen listesi yüklenirken bir hata oluştu');
         } finally {
           setIsLoading(false);
         }
@@ -70,25 +70,22 @@ export function ClassTeacherList({ classId }: ClassTeacherListProps) {
   const handleRemoveTeacher = async (teacherId: string) => {
     return Sentry.startSpan(
       {
-        op: "http.client",
+        op: 'http.client',
         name: `DELETE /api/class-teachers/${classId}/${teacherId}`,
       },
       async () => {
         try {
-          const response = await fetch(
-            `/api/class-teachers/${classId}/${teacherId}`,
-            {
-              method: "DELETE",
-            }
-          );
+          const response = await fetch(`/api/class-teachers/${classId}/${teacherId}`, {
+            method: 'DELETE',
+          });
 
           if (!response.ok) {
-            throw new Error("Öğretmen sınıftan çıkarılamadı");
+            throw new Error('Öğretmen sınıftan çıkarılamadı');
           }
 
           await fetchTeachers();
         } catch (error) {
-          console.error("Error removing teacher:", error);
+          console.error('Error removing teacher:', error);
           Sentry.captureException(error);
           // TODO: Show error toast
         }
@@ -99,25 +96,22 @@ export function ClassTeacherList({ classId }: ClassTeacherListProps) {
   const handleSetHomeroom = async (teacherId: string) => {
     return Sentry.startSpan(
       {
-        op: "http.client",
+        op: 'http.client',
         name: `PUT /api/class-teachers/${classId}/${teacherId}/homeroom`,
       },
       async () => {
         try {
-          const response = await fetch(
-            `/api/class-teachers/${classId}/${teacherId}/homeroom`,
-            {
-              method: "PUT",
-            }
-          );
+          const response = await fetch(`/api/class-teachers/${classId}/${teacherId}/homeroom`, {
+            method: 'PUT',
+          });
 
           if (!response.ok) {
-            throw new Error("Sınıf öğretmeni atanamadı");
+            throw new Error('Sınıf öğretmeni atanamadı');
           }
 
           await fetchTeachers();
         } catch (error) {
-          console.error("Error setting homeroom teacher:", error);
+          console.error('Error setting homeroom teacher:', error);
           Sentry.captureException(error);
           // TODO: Show error toast
         }
@@ -131,16 +125,16 @@ export function ClassTeacherList({ classId }: ClassTeacherListProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-48">
-        <div className="text-lg text-muted-foreground">Yükleniyor...</div>
+      <div className="flex h-48 items-center justify-center">
+        <div className="text-muted-foreground text-lg">Yükleniyor...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-48">
-        <div className="text-lg text-destructive">{error}</div>
+      <div className="flex h-48 items-center justify-center">
+        <div className="text-destructive text-lg">{error}</div>
       </div>
     );
   }
@@ -151,7 +145,7 @@ export function ClassTeacherList({ classId }: ClassTeacherListProps) {
         <Dialog open={isAssignDialogOpen} onOpenChange={setIsAssignDialogOpen}>
           <DialogTrigger asChild>
             <Button>
-              <PlusIcon className="w-4 h-4 mr-2" />
+              <PlusIcon className="mr-2 h-4 w-4" />
               Öğretmen Ekle
             </Button>
           </DialogTrigger>
@@ -170,7 +164,7 @@ export function ClassTeacherList({ classId }: ClassTeacherListProps) {
         </Dialog>
       </div>
 
-      <div className="border rounded-lg">
+      <div className="rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -189,18 +183,16 @@ export function ClassTeacherList({ classId }: ClassTeacherListProps) {
                 </TableCell>
                 <TableCell>{teacher.email}</TableCell>
                 <TableCell className="text-center">
-                  <Badge variant={teacher.is_active ? "default" : "secondary"}>
-                    {teacher.is_active ? "Aktif" : "Pasif"}
+                  <Badge variant={teacher.is_active ? 'default' : 'secondary'}>
+                    {teacher.is_active ? 'Aktif' : 'Pasif'}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-center">
-                  <Badge
-                    variant={teacher.is_homeroom_teacher ? "default" : "outline"}
-                  >
-                    {teacher.is_homeroom_teacher ? "Evet" : "Hayır"}
+                  <Badge variant={teacher.is_homeroom_teacher ? 'default' : 'outline'}>
+                    {teacher.is_homeroom_teacher ? 'Evet' : 'Hayır'}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-right space-x-2">
+                <TableCell className="space-x-2 text-right">
                   {!teacher.is_homeroom_teacher && (
                     <Button
                       variant="outline"
@@ -210,11 +202,7 @@ export function ClassTeacherList({ classId }: ClassTeacherListProps) {
                       Sınıf Öğretmeni Yap
                     </Button>
                   )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemoveTeacher(teacher.id)}
-                  >
+                  <Button variant="ghost" size="sm" onClick={() => handleRemoveTeacher(teacher.id)}>
                     Çıkar
                   </Button>
                 </TableCell>
@@ -222,10 +210,8 @@ export function ClassTeacherList({ classId }: ClassTeacherListProps) {
             ))}
             {teachers.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="text-center h-24">
-                  <div className="text-muted-foreground">
-                    Bu sınıfta henüz öğretmen yok
-                  </div>
+                <TableCell colSpan={5} className="h-24 text-center">
+                  <div className="text-muted-foreground">Bu sınıfta henüz öğretmen yok</div>
                 </TableCell>
               </TableRow>
             )}
@@ -234,4 +220,4 @@ export function ClassTeacherList({ classId }: ClassTeacherListProps) {
       </div>
     </div>
   );
-} 
+}

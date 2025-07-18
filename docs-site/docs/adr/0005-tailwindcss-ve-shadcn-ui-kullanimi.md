@@ -66,22 +66,27 @@ Kabul Edildi
 ## Alternatifler
 
 ### Material UI (MUI)
+
 - **Avantajlar**: Kapsamlı komponent kütüphanesi, Material Design uyumluluğu, olgun ekosistem
 - **Dezavantajlar**: Kalın ve özelleştirilmesi zor tasarım, daha büyük bundle boyutu, Next.js Server Components ile uyumluluk sorunları
 
 ### Chakra UI
+
 - **Avantajlar**: İyi erişilebilirlik, iyi tema sistemi, modern tasarım
 - **Dezavantajlar**: Next.js App Router ve Server Components ile uyumluluk sorunları, özelleştirme sınırlamaları
 
 ### Bootstrap 5
+
 - **Avantajlar**: Bilinen ve yaygın, hızlı prototipleme
 - **Dezavantajlar**: Daha az özelleştirilebilir, "Bootstrap görünümü", utility sınıfları daha az kapsamlı
 
 ### Styled Components / Emotion
+
 - **Avantajlar**: Komponent bazlı CSS-in-JS, dinamik stiller
 - **Dezavantajlar**: Runtime overhead, Server Components ile uyumluluk sorunları, daha fazla boilerplate kod
 
 ### Mantine UI
+
 - **Avantajlar**: Modern, kapsamlı, headless komponentler
 - **Dezavantajlar**: Nispeten daha küçük topluluk, CSS-in-JS limitasyonları
 
@@ -116,4 +121,4 @@ Iqra Eğitim Portalı için aşağıdaki UI bileşen stratejisi benimsenmiştir:
 - [Shadcn UI](https://ui.shadcn.com/)
 - [Radix UI](https://www.radix-ui.com/)
 - [TailwindCSS ile Tema Oluşturma](https://tailwindcss.com/docs/theme)
-- [Next.js ile TailwindCSS Kurulumu](https://nextjs.org/docs/app/building-your-application/styling/tailwind-css) 
+- [Next.js ile TailwindCSS Kurulumu](https://nextjs.org/docs/app/building-your-application/styling/tailwind-css)

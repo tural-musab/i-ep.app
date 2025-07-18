@@ -4,7 +4,7 @@ import { reportRedisError } from '@/utils/error-reporting';
 
 /**
  * GET /api/health/redis
- * 
+ *
  * Redis bağlantısı sağlık kontrolü
  */
 export async function GET() {
@@ -18,7 +18,7 @@ export async function GET() {
     const testKey = 'health:check';
     const testValue = { timestamp: Date.now() };
     await redis.set(testKey, JSON.stringify(testValue), {
-      ex: 60 // 60 saniye geçerli
+      ex: 60, // 60 saniye geçerli
     });
     const retrievedValue = await redis.get(testKey);
     const parsedValue = retrievedValue ? JSON.parse(retrievedValue as string) : null;
@@ -33,14 +33,14 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Redis health check hatası:', error);
-    
+
     // Sentry'e hata rapor et
     reportRedisError(error, 'health_check');
-    
+
     // Error objesini daha iyi serialize et
     let errorMessage = 'Bilinmeyen hata';
     let errorDetails = null;
-    
+
     if (error instanceof Error) {
       errorMessage = error.message;
       errorDetails = {
@@ -55,7 +55,7 @@ export async function GET() {
         value: error,
       };
     }
-    
+
     return NextResponse.json(
       {
         status: 'error',
@@ -67,4 +67,4 @@ export async function GET() {
       { status: 500 }
     );
   }
-} 
+}

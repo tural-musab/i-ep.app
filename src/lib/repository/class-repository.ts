@@ -56,10 +56,13 @@ export class ClassRepository extends BaseRepository<Class> {
   /**
    * Find classes by teacher ID
    */
-  async findByTeacherId(teacherId: string, options: QueryOptions = {}): Promise<QueryResult<Class>> {
+  async findByTeacherId(
+    teacherId: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Class>> {
     return this.findAll({
       ...options,
-      filters: { teacher_id: teacherId }
+      filters: { teacher_id: teacherId },
     });
   }
 
@@ -69,17 +72,20 @@ export class ClassRepository extends BaseRepository<Class> {
   async findByGrade(grade: string, options: QueryOptions = {}): Promise<QueryResult<Class>> {
     return this.findAll({
       ...options,
-      filters: { grade }
+      filters: { grade },
     });
   }
 
   /**
    * Find classes by academic year
    */
-  async findByAcademicYear(academicYear: string, options: QueryOptions = {}): Promise<QueryResult<Class>> {
+  async findByAcademicYear(
+    academicYear: string,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Class>> {
     return this.findAll({
       ...options,
-      filters: { academic_year: academicYear }
+      filters: { academic_year: academicYear },
     });
   }
 
@@ -87,12 +93,7 @@ export class ClassRepository extends BaseRepository<Class> {
    * Search classes by name
    */
   async searchByName(searchTerm: string, options: QueryOptions = {}): Promise<QueryResult<Class>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'name',
-      sortOrder = 'asc'
-    } = options;
+    const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc' } = options;
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -114,7 +115,7 @@ export class ClassRepository extends BaseRepository<Class> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
@@ -124,7 +125,8 @@ export class ClassRepository extends BaseRepository<Class> {
   async findWithRelations(id: string): Promise<ClassWithRelations | null> {
     const { data, error } = await this.supabase
       .from('classes')
-      .select(`
+      .select(
+        `
         *,
         teacher:teachers!teacher_id (
           id,
@@ -140,7 +142,8 @@ export class ClassRepository extends BaseRepository<Class> {
           last_name,
           status
         )
-      `)
+      `
+      )
       .eq('id', id)
       .eq('tenant_id', this.tenantId)
       .single();
@@ -167,35 +170,39 @@ export class ClassRepository extends BaseRepository<Class> {
   }> {
     const { data, error } = await this.supabase.rpc('get_class_enrollment_stats', {
       class_id: classId,
-      tenant_id: this.tenantId
+      tenant_id: this.tenantId,
     });
 
     if (error) {
       throw new Error(`Repository error: ${error.message}`);
     }
 
-    return data || {
-      totalStudents: 0,
-      activeStudents: 0,
-      capacity: 0,
-      availableSpots: 0,
-      enrollmentRate: 0
-    };
+    return (
+      data || {
+        totalStudents: 0,
+        activeStudents: 0,
+        capacity: 0,
+        availableSpots: 0,
+        enrollmentRate: 0,
+      }
+    );
   }
 
   /**
    * Get class schedule
    */
-  async getSchedule(classId: string): Promise<{
-    day: string;
-    start_time: string;
-    end_time: string;
-    subject: string;
-    teacher_name?: string;
-  }[]> {
+  async getSchedule(classId: string): Promise<
+    {
+      day: string;
+      start_time: string;
+      end_time: string;
+      subject: string;
+      teacher_name?: string;
+    }[]
+  > {
     const { data, error } = await this.supabase.rpc('get_class_schedule', {
       class_id: classId,
-      tenant_id: this.tenantId
+      tenant_id: this.tenantId,
     });
 
     if (error) {
@@ -236,13 +243,12 @@ export class ClassRepository extends BaseRepository<Class> {
   /**
    * Get classes by capacity range
    */
-  async findByCapacityRange(minCapacity: number, maxCapacity: number, options: QueryOptions = {}): Promise<QueryResult<Class>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'name',
-      sortOrder = 'asc'
-    } = options;
+  async findByCapacityRange(
+    minCapacity: number,
+    maxCapacity: number,
+    options: QueryOptions = {}
+  ): Promise<QueryResult<Class>> {
+    const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc' } = options;
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -265,7 +271,7 @@ export class ClassRepository extends BaseRepository<Class> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
@@ -273,12 +279,7 @@ export class ClassRepository extends BaseRepository<Class> {
    * Get available classes (not at capacity)
    */
   async findAvailableClasses(options: QueryOptions = {}): Promise<QueryResult<Class>> {
-    const {
-      page = 1,
-      limit = 10,
-      sortBy = 'name',
-      sortOrder = 'asc'
-    } = options;
+    const { page = 1, limit = 10, sortBy = 'name', sortOrder = 'asc' } = options;
 
     const from = (page - 1) * limit;
     const to = from + limit - 1;
@@ -303,7 +304,7 @@ export class ClassRepository extends BaseRepository<Class> {
       count: count || 0,
       page,
       totalPages,
-      hasMore: page < totalPages
+      hasMore: page < totalPages,
     };
   }
 
@@ -313,9 +314,9 @@ export class ClassRepository extends BaseRepository<Class> {
   async bulkUpdateAcademicYear(classIds: string[], academicYear: string): Promise<boolean> {
     const { error } = await this.supabase
       .from('classes')
-      .update({ 
+      .update({
         academic_year: academicYear,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .in('id', classIds)
       .eq('tenant_id', this.tenantId);
@@ -339,19 +340,21 @@ export class ClassRepository extends BaseRepository<Class> {
   }> {
     const { data, error } = await this.supabase.rpc('get_class_performance_stats', {
       class_id: classId,
-      tenant_id: this.tenantId
+      tenant_id: this.tenantId,
     });
 
     if (error) {
       throw new Error(`Repository error: ${error.message}`);
     }
 
-    return data || {
-      averageGrade: 0,
-      attendanceRate: 0,
-      completionRate: 0,
-      totalAssignments: 0,
-      completedAssignments: 0
-    };
+    return (
+      data || {
+        averageGrade: 0,
+        attendanceRate: 0,
+        completionRate: 0,
+        totalAssignments: 0,
+        completedAssignments: 0,
+      }
+    );
   }
 }

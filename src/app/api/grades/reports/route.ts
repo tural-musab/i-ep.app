@@ -1,7 +1,7 @@
 /**
  * Grade Reports API Route
  * İ-EP.APP - Grade Management System
- * 
+ *
  * Endpoints:
  * - GET /api/grades/reports - Generate comprehensive grade reports
  */
@@ -14,7 +14,15 @@ import { z } from 'zod';
 
 // Validation schemas
 const ReportQuerySchema = z.object({
-  type: z.enum(['transcript', 'progress', 'summary', 'detailed', 'class', 'subject', 'comparative']),
+  type: z.enum([
+    'transcript',
+    'progress',
+    'summary',
+    'detailed',
+    'class',
+    'subject',
+    'comparative',
+  ]),
   format: z.enum(['json', 'csv', 'pdf']).optional().default('json'),
   studentId: z.string().uuid().optional(),
   classId: z.string().uuid().optional(),
@@ -39,37 +47,35 @@ export async function GET(request: NextRequest) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Parse and validate query parameters
     const { searchParams } = new URL(request.url);
     const queryParams = Object.fromEntries(searchParams.entries());
-    
+
     const validatedQuery = ReportQuerySchema.parse(queryParams);
-    
+
     // Initialize repository
     const gradeRepo = new GradeRepository(supabase, tenantId);
-    
+
     // Set date range defaults
-    const startDate = validatedQuery.startDate 
+    const startDate = validatedQuery.startDate
       ? new Date(validatedQuery.startDate)
       : new Date(new Date().getFullYear(), 0, 1); // January 1st of current year
-    
-    const endDate = validatedQuery.endDate 
-      ? new Date(validatedQuery.endDate)
-      : new Date(); // Today
+
+    const endDate = validatedQuery.endDate ? new Date(validatedQuery.endDate) : new Date(); // Today
 
     // Parse grade types if provided
-    const gradeTypes = validatedQuery.gradeTypes 
-      ? validatedQuery.gradeTypes.split(',').map(type => type.trim())
+    const gradeTypes = validatedQuery.gradeTypes
+      ? validatedQuery.gradeTypes.split(',').map((type) => type.trim())
       : undefined;
 
     let reportData;
@@ -82,7 +88,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         reportData = await generateTranscriptReport(
           gradeRepo,
           validatedQuery.studentId,
@@ -100,7 +106,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         reportData = await generateProgressReport(
           gradeRepo,
           validatedQuery.studentId,
@@ -142,7 +148,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         reportData = await generateClassReport(
           gradeRepo,
           validatedQuery.classId,
@@ -161,7 +167,7 @@ export async function GET(request: NextRequest) {
             { status: 400 }
           );
         }
-        
+
         reportData = await generateSubjectReport(
           gradeRepo,
           validatedQuery.subjectId,
@@ -185,10 +191,7 @@ export async function GET(request: NextRequest) {
         break;
 
       default:
-        return NextResponse.json(
-          { error: 'Invalid report type' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Invalid report type' }, { status: 400 });
     }
 
     // Handle different output formats
@@ -218,7 +221,7 @@ export async function GET(request: NextRequest) {
       });
     } else if (validatedQuery.format === 'csv') {
       const csvData = convertToCSV(reportData, validatedQuery.type);
-      
+
       return new NextResponse(csvData, {
         headers: {
           'Content-Type': 'text/csv',
@@ -227,26 +230,19 @@ export async function GET(request: NextRequest) {
       });
     } else if (validatedQuery.format === 'pdf') {
       // PDF generation will be implemented later
-      return NextResponse.json(
-        { error: 'PDF format not yet implemented' },
-        { status: 501 }
-      );
+      return NextResponse.json({ error: 'PDF format not yet implemented' }, { status: 501 });
     }
-
   } catch (error) {
     console.error('Error generating grade report:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid query parameters', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Failed to generate report' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Failed to generate report' }, { status: 500 });
   }
 }
 
@@ -262,7 +258,7 @@ async function generateTranscriptReport(
   includeStatistics: boolean = true
 ) {
   const studentInfo = await gradeRepo.getStudentInfo(studentId);
-  
+
   const grades = await gradeRepo.getStudentGrades(studentId, {
     semester,
     academicYear,
@@ -286,15 +282,11 @@ async function generateTranscriptReport(
     );
   }
 
-  const gpa = await gradeRepo.calculateStudentGPA(
-    studentId,
-    semester,
-    academicYear
-  );
+  const gpa = await gradeRepo.calculateStudentGPA(studentId, semester, academicYear);
 
   return {
     studentInfo,
-    grades: grades.map(grade => ({
+    grades: grades.map((grade) => ({
       ...grade,
       comments: includeComments ? grade.comments : undefined,
     })),
@@ -304,8 +296,8 @@ async function generateTranscriptReport(
     summary: {
       totalGrades: grades.length,
       completedSubjects: calculations.length,
-      passingGrades: calculations.filter(calc => calc.isPassing).length,
-      honorRollSubjects: calculations.filter(calc => calc.isHonorRoll).length,
+      passingGrades: calculations.filter((calc) => calc.isPassing).length,
+      honorRollSubjects: calculations.filter((calc) => calc.isHonorRoll).length,
     },
   };
 }
@@ -322,29 +314,14 @@ async function generateProgressReport(
   includeAnalytics: boolean = false
 ) {
   const studentInfo = await gradeRepo.getStudentInfo(studentId);
-  
-  const progressData = await gradeRepo.getStudentProgress(
-    studentId,
-    subjectId,
-    startDate,
-    endDate
-  );
 
-  const trends = await gradeRepo.getStudentGradeTrends(
-    studentId,
-    subjectId,
-    startDate,
-    endDate
-  );
+  const progressData = await gradeRepo.getStudentProgress(studentId, subjectId, startDate, endDate);
+
+  const trends = await gradeRepo.getStudentGradeTrends(studentId, subjectId, startDate, endDate);
 
   let analytics = null;
   if (includeAnalytics) {
-    analytics = await gradeRepo.getStudentAnalytics(
-      studentId,
-      subjectId,
-      startDate,
-      endDate
-    );
+    analytics = await gradeRepo.getStudentAnalytics(studentId, subjectId, startDate, endDate);
   }
 
   return {
@@ -373,12 +350,7 @@ async function generateSummaryReport(
   academicYear?: string,
   includeStatistics: boolean = true
 ) {
-  const summaryData = await gradeRepo.getGradeSummary(
-    classId,
-    subjectId,
-    semester,
-    academicYear
-  );
+  const summaryData = await gradeRepo.getGradeSummary(classId, subjectId, semester, academicYear);
 
   let statistics = null;
   if (includeStatistics) {
@@ -390,11 +362,7 @@ async function generateSummaryReport(
         academicYear
       );
     } else if (classId) {
-      statistics = await gradeRepo.getClassOverallStatistics(
-        classId,
-        semester,
-        academicYear
-      );
+      statistics = await gradeRepo.getClassOverallStatistics(classId, semester, academicYear);
     } else if (subjectId) {
       statistics = await gradeRepo.getSubjectGradeStatistics(
         subjectId,
@@ -452,10 +420,16 @@ async function generateDetailedReport(
     breakdown,
     summary: {
       totalGrades: detailedData.length,
-      gradeTypes: [...new Set(detailedData.map(grade => grade.gradeType))],
+      gradeTypes: [...new Set(detailedData.map((grade) => grade.gradeType))],
       dateRange: {
-        earliest: detailedData.length > 0 ? Math.min(...detailedData.map(g => new Date(g.gradeDate).getTime())) : null,
-        latest: detailedData.length > 0 ? Math.max(...detailedData.map(g => new Date(g.gradeDate).getTime())) : null,
+        earliest:
+          detailedData.length > 0
+            ? Math.min(...detailedData.map((g) => new Date(g.gradeDate).getTime()))
+            : null,
+        latest:
+          detailedData.length > 0
+            ? Math.max(...detailedData.map((g) => new Date(g.gradeDate).getTime()))
+            : null,
       },
     },
   };
@@ -474,13 +448,8 @@ async function generateClassReport(
   includeAnalytics: boolean = false
 ) {
   const classInfo = await gradeRepo.getClassInfo(classId);
-  
-  const classGrades = await gradeRepo.getClassGrades(
-    classId,
-    subjectId,
-    semester,
-    academicYear
-  );
+
+  const classGrades = await gradeRepo.getClassGrades(classId, subjectId, semester, academicYear);
 
   let statistics = null;
   if (includeStatistics) {
@@ -494,12 +463,7 @@ async function generateClassReport(
 
   let analytics = null;
   if (includeAnalytics) {
-    analytics = await gradeRepo.getClassAnalytics(
-      classId,
-      subjectId,
-      semester,
-      academicYear
-    );
+    analytics = await gradeRepo.getClassAnalytics(classId, subjectId, semester, academicYear);
   }
 
   const studentSummaries = await gradeRepo.getClassStudentSummaries(
@@ -517,8 +481,8 @@ async function generateClassReport(
     summary: {
       totalStudents: studentSummaries.length,
       totalGrades: classGrades.length,
-      passingStudents: studentSummaries.filter(s => s.isPassing).length,
-      honorRollStudents: studentSummaries.filter(s => s.isHonorRoll).length,
+      passingStudents: studentSummaries.filter((s) => s.isPassing).length,
+      honorRollStudents: studentSummaries.filter((s) => s.isHonorRoll).length,
     },
   };
 }
@@ -536,7 +500,7 @@ async function generateSubjectReport(
   includeAnalytics: boolean = false
 ) {
   const subjectInfo = await gradeRepo.getSubjectInfo(subjectId);
-  
+
   const subjectGrades = await gradeRepo.getSubjectGrades(
     subjectId,
     classId,
@@ -556,12 +520,7 @@ async function generateSubjectReport(
 
   let analytics = null;
   if (includeAnalytics) {
-    analytics = await gradeRepo.getSubjectAnalytics(
-      subjectId,
-      classId,
-      semester,
-      academicYear
-    );
+    analytics = await gradeRepo.getSubjectAnalytics(subjectId, classId, semester, academicYear);
   }
 
   const gradeTypeBreakdown = await gradeRepo.getSubjectGradeTypeBreakdown(
@@ -578,9 +537,9 @@ async function generateSubjectReport(
     gradeTypeBreakdown,
     summary: {
       totalGrades: subjectGrades.length,
-      classes: classId ? 1 : [...new Set(subjectGrades.map(g => g.classId))].length,
-      students: [...new Set(subjectGrades.map(g => g.studentId))].length,
-      gradeTypes: [...new Set(subjectGrades.map(g => g.gradeType))],
+      classes: classId ? 1 : [...new Set(subjectGrades.map((g) => g.classId))].length,
+      students: [...new Set(subjectGrades.map((g) => g.studentId))].length,
+      gradeTypes: [...new Set(subjectGrades.map((g) => g.gradeType))],
     },
   };
 }
@@ -603,21 +562,11 @@ async function generateComparativeReport(
     academicYear
   );
 
-  const benchmarks = await gradeRepo.getGradeBenchmarks(
-    classId,
-    subjectId,
-    semester,
-    academicYear
-  );
+  const benchmarks = await gradeRepo.getGradeBenchmarks(classId, subjectId, semester, academicYear);
 
   let analytics = null;
   if (includeAnalytics) {
-    analytics = await gradeRepo.getComparativeAnalytics(
-      classId,
-      subjectId,
-      semester,
-      academicYear
-    );
+    analytics = await gradeRepo.getComparativeAnalytics(classId, subjectId, semester, academicYear);
   }
 
   return {
@@ -626,8 +575,9 @@ async function generateComparativeReport(
     analytics,
     summary: {
       totalComparisons: comparativeData.length,
-      bestPerforming: comparativeData.find(data => data.rank === 1),
-      averagePerformance: comparativeData.reduce((sum, data) => sum + data.average, 0) / comparativeData.length,
+      bestPerforming: comparativeData.find((data) => data.rank === 1),
+      averagePerformance:
+        comparativeData.reduce((sum, data) => sum + data.average, 0) / comparativeData.length,
     },
   };
 }
@@ -637,7 +587,7 @@ async function generateComparativeReport(
  */
 function convertToCSV(data: any, reportType: string): string {
   let csvData = '';
-  
+
   switch (reportType) {
     case 'transcript':
       csvData = convertTranscriptToCSV(data);
@@ -663,7 +613,7 @@ function convertToCSV(data: any, reportType: string): string {
     default:
       csvData = 'Report type not supported for CSV export\n';
   }
-  
+
   return csvData;
 }
 
@@ -686,7 +636,7 @@ function convertTranscriptToCSV(data: any): string {
     'Exam Name',
     'Grade Date',
     'Semester',
-    'Academic Year'
+    'Academic Year',
   ];
 
   let csv = headers.join(',') + '\n';
@@ -703,16 +653,19 @@ function convertTranscriptToCSV(data: any): string {
       grade.examName || '',
       grade.gradeDate || '',
       grade.semester || '',
-      grade.academicYear || ''
+      grade.academicYear || '',
     ];
 
-    csv += values.map(value => {
-      const strValue = String(value);
-      if (strValue.includes(',') || strValue.includes('"')) {
-        return `"${strValue.replace(/"/g, '""')}"`;
-      }
-      return strValue;
-    }).join(',') + '\n';
+    csv +=
+      values
+        .map((value) => {
+          const strValue = String(value);
+          if (strValue.includes(',') || strValue.includes('"')) {
+            return `"${strValue.replace(/"/g, '""')}"`;
+          }
+          return strValue;
+        })
+        .join(',') + '\n';
   });
 
   return csv;
@@ -733,7 +686,7 @@ function convertProgressToCSV(data: any): string {
     'Grade Value',
     'Percentage',
     'Letter Grade',
-    'Trend'
+    'Trend',
   ];
 
   let csv = headers.join(',') + '\n';
@@ -746,16 +699,19 @@ function convertProgressToCSV(data: any): string {
       grade.gradeValue || '',
       grade.percentage || '',
       grade.letterGrade || '',
-      grade.trend || ''
+      grade.trend || '',
     ];
 
-    csv += values.map(value => {
-      const strValue = String(value);
-      if (strValue.includes(',') || strValue.includes('"')) {
-        return `"${strValue.replace(/"/g, '""')}"`;
-      }
-      return strValue;
-    }).join(',') + '\n';
+    csv +=
+      values
+        .map((value) => {
+          const strValue = String(value);
+          if (strValue.includes(',') || strValue.includes('"')) {
+            return `"${strValue.replace(/"/g, '""')}"`;
+          }
+          return strValue;
+        })
+        .join(',') + '\n';
   });
 
   return csv;
@@ -804,7 +760,7 @@ function convertDetailedToCSV(data: any): string {
     'Letter Grade',
     'Exam Name',
     'Grade Date',
-    'Comments'
+    'Comments',
   ];
 
   let csv = headers.join(',') + '\n';
@@ -820,16 +776,19 @@ function convertDetailedToCSV(data: any): string {
       grade.letterGrade || '',
       grade.examName || '',
       grade.gradeDate || '',
-      grade.comments?.map((c: any) => c.commentText).join('; ') || ''
+      grade.comments?.map((c: any) => c.commentText).join('; ') || '',
     ];
 
-    csv += values.map(value => {
-      const strValue = String(value);
-      if (strValue.includes(',') || strValue.includes('"')) {
-        return `"${strValue.replace(/"/g, '""')}"`;
-      }
-      return strValue;
-    }).join(',') + '\n';
+    csv +=
+      values
+        .map((value) => {
+          const strValue = String(value);
+          if (strValue.includes(',') || strValue.includes('"')) {
+            return `"${strValue.replace(/"/g, '""')}"`;
+          }
+          return strValue;
+        })
+        .join(',') + '\n';
   });
 
   return csv;
@@ -850,7 +809,7 @@ function convertClassToCSV(data: any): string {
     'GPA',
     'Passing Status',
     'Honor Roll',
-    'Total Grades'
+    'Total Grades',
   ];
 
   let csv = headers.join(',') + '\n';
@@ -863,16 +822,19 @@ function convertClassToCSV(data: any): string {
       student.gpa || '',
       student.isPassing ? 'Passing' : 'Not Passing',
       student.isHonorRoll ? 'Yes' : 'No',
-      student.totalGrades || ''
+      student.totalGrades || '',
     ];
 
-    csv += values.map(value => {
-      const strValue = String(value);
-      if (strValue.includes(',') || strValue.includes('"')) {
-        return `"${strValue.replace(/"/g, '""')}"`;
-      }
-      return strValue;
-    }).join(',') + '\n';
+    csv +=
+      values
+        .map((value) => {
+          const strValue = String(value);
+          if (strValue.includes(',') || strValue.includes('"')) {
+            return `"${strValue.replace(/"/g, '""')}"`;
+          }
+          return strValue;
+        })
+        .join(',') + '\n';
   });
 
   return csv;
@@ -894,7 +856,7 @@ function convertSubjectToCSV(data: any): string {
       breakdown.gradeType || '',
       breakdown.average || '',
       breakdown.count || '',
-      breakdown.weight || ''
+      breakdown.weight || '',
     ];
 
     csv += values.join(',') + '\n';
@@ -920,7 +882,7 @@ function convertComparativeToCSV(data: any): string {
       comparison.average || '',
       comparison.rank || '',
       comparison.studentCount || '',
-      comparison.gradeCount || ''
+      comparison.gradeCount || '',
     ];
 
     csv += values.join(',') + '\n';

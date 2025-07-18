@@ -29,11 +29,13 @@ Sistem şu domain yapılandırmalarını destekler:
 Her tenant oluşturulduğunda, otomatik olarak bir subdomain atanır ve yapılandırılır. Bu, Cloudflare DNS üzerinde bir CNAME kaydı oluşturularak ve SSL sertifikası sağlanarak gerçekleştirilir.
 
 **Özellikler:**
+
 - Otomatik oluşturma ve yapılandırma
 - Hazır SSL sertifikası
 - Ücretsiz plana dahil
 
 **Kısıtlamalar:**
+
 - Sadece alfanumerik karakterler ve kısa çizgi kullanılabilir
 - Maksimum 63 karakter uzunluğunda olabilir
 
@@ -42,11 +44,13 @@ Her tenant oluşturulduğunda, otomatik olarak bir subdomain atanır ve yapılan
 Premium plan aboneleri, kendi özel domainlerini sisteme ekleyebilirler. Bu, kurumsal kimlik ve marka uyumu için avantaj sağlar.
 
 **Özellikler:**
+
 - Özel marka ve kurumsal kimlik
 - Tam DNS kontrolü
 - Üst düzey profesyonel görünüm
 
 **Kısıtlamalar:**
+
 - Yalnızca premium plan aboneleri kullanabilir
 - DNS doğrulama ve yapılandırma gerektirir
 - Manuel doğrulama süreci
@@ -84,4 +88,6 @@ Subdomain oluşturma otomatiktir ve doğrulama gerekmez. Sistem, DNS kaydını o
 Özel domain eklemek için doğrulama adımları:
 
 1. **DNS Doğrulama**: Kullanıcı, kendi DNS sağlayıcısında bir CNAME kaydı oluşturmalıdır:
+   ```
+
    ```

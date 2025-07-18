@@ -76,6 +76,7 @@ Tenant'lar kendi özel domainlerini kullanmak isterlerse, aşağıdaki adımlar 
 Cloudflare'de temel DNS kayıtlarını ayarlayın:
 
 1. Ana domain için A kaydı:
+
    ```
    Tip: A
    Ad: @
@@ -85,6 +86,7 @@ Cloudflare'de temel DNS kayıtlarını ayarlayın:
    ```
 
 2. www subdomaini için CNAME kaydı:
+
    ```
    Tip: CNAME
    Ad: www
@@ -152,7 +154,7 @@ SSL sertifikaları ile ilgili yaygın sorunlar ve çözümleri:
 
 3. **Sertifika Uyumsuzluğu**:
    - Domain adı ile sertifikanın aynı olduğunu kontrol edin
-   - Alt domain kullanıyorsanız, wildcard sertifikasının (*) doğru yapılandırıldığından emin olun
+   - Alt domain kullanıyorsanız, wildcard sertifikasının (\*) doğru yapılandırıldığından emin olun
 
 ## Domain Doğrulama
 
@@ -183,4 +185,4 @@ Her bir domain veya subdomain, Super Admin panelinden aynı tenant'a bağlanabil
 
 ---
 
-Bu dokümanı güncel tutmak önemlidir. Domain yönetimi veya SSL sertifikası ile ilgili sorunlar yaşıyorsanız, lütfen teknik destek ekibiyle iletişime geçin. 
+Bu dokümanı güncel tutmak önemlidir. Domain yönetimi veya SSL sertifikası ile ilgili sorunlar yaşıyorsanız, lütfen teknik destek ekibiyle iletişime geçin.

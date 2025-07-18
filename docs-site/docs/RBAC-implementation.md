@@ -21,7 +21,7 @@ export enum UserRole {
   TEACHER = 'teacher',
   STUDENT = 'student',
   PARENT = 'parent',
-  GUEST = 'guest'
+  GUEST = 'guest',
 }
 ```
 
@@ -40,7 +40,7 @@ export enum ResourceType {
   ATTENDANCE = 'attendance',
   GRADE = 'grade',
   PAYMENT = 'payment',
-  REPORT = 'report'
+  REPORT = 'report',
 }
 
 export enum ActionType {
@@ -51,7 +51,7 @@ export enum ActionType {
   MANAGE = 'manage',
   EXPORT = 'export',
   IMPORT = 'import',
-  ASSIGN = 'assign'
+  ASSIGN = 'assign',
 }
 ```
 
@@ -63,7 +63,7 @@ export const PERMISSIONS: Permission[] = [
   { role: UserRole.ADMIN, resource: ResourceType.TENANT, action: ActionType.MANAGE },
   { role: UserRole.ADMIN, resource: ResourceType.USER, action: ActionType.MANAGE },
   // ... diğer izinler
-]
+];
 ```
 
 ### 3. Kimlik Doğrulama Bağlamı (AuthContext)
@@ -77,13 +77,13 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   currentTenantId: string | null;
-  
+
   // Auth işlemleri
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   updateUser: (userData: Partial<User>) => Promise<void>;
-  
+
   // Yetki kontrolleri
   hasPermission: (resource: ResourceType, action: ActionType) => boolean;
   isTenantUser: (tenantId: string) => boolean;
@@ -100,24 +100,47 @@ interface AuthContextType {
 
 ```typescript
 // Genel RoleGuard bileşeni
-export function RoleGuard({ children, allowedRoles, requiredPermission, fallback, redirectTo, tenantRequired = false }: RoleGuardProps) {
+export function RoleGuard({
+  children,
+  allowedRoles,
+  requiredPermission,
+  fallback,
+  redirectTo,
+  tenantRequired = false,
+}: RoleGuardProps) {
   // ...
 }
 
 // Özel rol koruyucuları
-export function AdminGuard({ children, fallback, redirectTo }: Omit<RoleGuardProps, 'allowedRoles'>) {
+export function AdminGuard({
+  children,
+  fallback,
+  redirectTo,
+}: Omit<RoleGuardProps, 'allowedRoles'>) {
   // ...
 }
 
-export function TeacherGuard({ children, fallback, redirectTo }: Omit<RoleGuardProps, 'allowedRoles'>) {
+export function TeacherGuard({
+  children,
+  fallback,
+  redirectTo,
+}: Omit<RoleGuardProps, 'allowedRoles'>) {
   // ...
 }
 
-export function StudentGuard({ children, fallback, redirectTo }: Omit<RoleGuardProps, 'allowedRoles'>) {
+export function StudentGuard({
+  children,
+  fallback,
+  redirectTo,
+}: Omit<RoleGuardProps, 'allowedRoles'>) {
   // ...
 }
 
-export function ParentGuard({ children, fallback, redirectTo }: Omit<RoleGuardProps, 'allowedRoles'>) {
+export function ParentGuard({
+  children,
+  fallback,
+  redirectTo,
+}: Omit<RoleGuardProps, 'allowedRoles'>) {
   // ...
 }
 ```
@@ -130,10 +153,7 @@ export function ParentGuard({ children, fallback, redirectTo }: Omit<RoleGuardPr
 // Admin erişimine kısıtlanmış sayfa
 export default function AdminPage() {
   return (
-    <AdminGuard 
-      fallback={<AccessDenied />} 
-      redirectTo="/auth/giris"
-    >
+    <AdminGuard fallback={<AccessDenied />} redirectTo="/auth/giris">
       <AdminPageContent />
     </AdminGuard>
   );
@@ -142,8 +162,8 @@ export default function AdminPage() {
 // Öğrenci erişimine kısıtlanmış sayfa
 export default function StudentPage() {
   return (
-    <StudentGuard 
-      fallback={<AccessDenied title="Öğrenci Girişi Gerekli" message="..." />} 
+    <StudentGuard
+      fallback={<AccessDenied title="Öğrenci Girişi Gerekli" message="..." />}
       redirectTo="/auth/giris"
     >
       <StudentPageContent />
@@ -158,16 +178,14 @@ export default function StudentPage() {
 // İzin tabanlı UI görünürlüğü
 function DashboardActions() {
   const { hasPermission } = useAuth();
-  
+
   return (
     <div>
       {hasPermission(ResourceType.TENANT, ActionType.CREATE) && (
         <button>Yeni Tenant Oluştur</button>
       )}
-      
-      {hasPermission(ResourceType.REPORT, ActionType.EXPORT) && (
-        <button>Rapor İndir</button>
-      )}
+
+      {hasPermission(ResourceType.REPORT, ActionType.EXPORT) && <button>Rapor İndir</button>}
     </div>
   );
 }
@@ -178,7 +196,7 @@ function DashboardActions() {
 ```tsx
 function UserMenu() {
   const { isAdmin, isTeacher, isStudent, isParent } = useAuth();
-  
+
   return (
     <nav>
       {isAdmin() && <Link href="/admin">Yönetici Paneli</Link>}
@@ -217,4 +235,4 @@ Rol tabanlı erişim kontrol sistemi için planlanan iyileştirmeler:
 2. Rol atamaları için admin arayüzü
 3. Özel izin grupları ve dinamik izin yönetimi
 4. İzin temelli API rate limiting
-5. Geçici süreyle yetki yükseltme mekanizması 
+5. Geçici süreyle yetki yükseltme mekanizması

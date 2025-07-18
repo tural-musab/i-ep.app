@@ -18,28 +18,28 @@ Webhook istatistiklerini görüntülemek ve analiz etmek için kullanılan istat
 interface WebhookStatsProps {
   /** Webhook ID */
   webhookId: string;
-  
+
   /** İstatistik verisi */
   stats?: WebhookStatsData;
-  
+
   /** Zaman aralığı */
   timeRange?: TimeRange;
-  
+
   /** Yenileme aralığı (ms) */
   refreshInterval?: number;
-  
+
   /** Trend gösterimi */
   showTrends?: boolean;
-  
+
   /** Grafik gösterimi */
   showCharts?: boolean;
-  
+
   /** Detay seviyesi */
   detailLevel?: 'basic' | 'detailed' | 'advanced';
-  
+
   /** Özel metrikler */
   customMetrics?: CustomMetric[];
-  
+
   /** Görünüm tipi */
   viewType?: 'cards' | 'table' | 'mixed';
 }
@@ -101,14 +101,14 @@ import { WebhookStats } from '@components/super-admin/webhook';
 
 export default function WebhookStatsPage() {
   const { webhookId } = useParams();
-  
+
   return (
     <WebhookStats
       webhookId={webhookId}
       timeRange={{
         start: subDays(new Date(), 7),
         end: new Date(),
-        interval: '1d'
+        interval: '1d',
       }}
       showTrends
       showCharts
@@ -120,8 +120,8 @@ export default function WebhookStatsPage() {
           key: 'avgResponseSize',
           name: 'Ortalama Yanıt Boyutu',
           type: 'number',
-          aggregation: 'avg'
-        }
+          aggregation: 'avg',
+        },
       ]}
     />
   );
@@ -131,49 +131,33 @@ export default function WebhookStatsPage() {
 ## İstatistik Kartları
 
 ```tsx
-<StatsCards
-  stats={stats.summary}
-  showTrends={showTrends}
-  className="grid grid-cols-4 gap-4"
-/>
+<StatsCards stats={stats.summary} showTrends={showTrends} className="grid grid-cols-4 gap-4" />
 ```
 
 ## Trend Grafikleri
 
 ```tsx
-<TrendCharts
-  data={stats.trends}
-  timeRange={timeRange}
-  height={300}
-  showLegend
-/>
+<TrendCharts data={stats.trends} timeRange={timeRange} height={300} showLegend />
 ```
 
 ## Hata Analizi
 
 ```tsx
-<ErrorAnalysis
-  errors={stats.errors}
-  statusCodes={stats.statusCodes}
-  showDistribution
-/>
+<ErrorAnalysis errors={stats.errors} statusCodes={stats.statusCodes} showDistribution />
 ```
 
 ## API Entegrasyonu
 
 ```typescript
 // İstatistik verisi alma
-const fetchWebhookStats = async (params: {
-  webhookId: string;
-  timeRange: TimeRange;
-}) => {
+const fetchWebhookStats = async (params: { webhookId: string; timeRange: TimeRange }) => {
   const response = await fetch(
     `/api/webhooks/${params.webhookId}/stats?` +
-    new URLSearchParams({
-      start: params.timeRange.start,
-      end: params.timeRange.end,
-      interval: params.timeRange.interval
-    })
+      new URLSearchParams({
+        start: params.timeRange.start,
+        end: params.timeRange.end,
+        interval: params.timeRange.interval,
+      })
   );
   return response.json();
 };
@@ -184,16 +168,13 @@ const fetchCustomMetrics = async (params: {
   metrics: CustomMetric[];
   timeRange: TimeRange;
 }) => {
-  const response = await fetch(
-    `/api/webhooks/${params.webhookId}/custom-metrics`,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        metrics: params.metrics,
-        timeRange: params.timeRange
-      })
-    }
-  );
+  const response = await fetch(`/api/webhooks/${params.webhookId}/custom-metrics`, {
+    method: 'POST',
+    body: JSON.stringify({
+      metrics: params.metrics,
+      timeRange: params.timeRange,
+    }),
+  });
   return response.json();
 };
 ```
@@ -207,16 +188,16 @@ const fetchCustomMetrics = async (params: {
   height={200}
   colors={{
     success: '#10B981',
-    failed: '#EF4444'
+    failed: '#EF4444',
   }}
   xAxis={{
     type: 'time',
-    format: 'HH:mm'
+    format: 'HH:mm',
   }}
   yAxis={{
     type: 'percentage',
     min: 0,
-    max: 100
+    max: 100,
   }}
 />
 ```
@@ -232,11 +213,11 @@ const fetchCustomMetrics = async (params: {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Tam görünüm |
+| Ekran Boyutu   | Davranış        |
+| -------------- | --------------- |
+| > 1024px       | Tam görünüm     |
 | 768px - 1024px | Kompakt görünüm |
-| < 768px | Mobil görünüm |
+| < 768px        | Mobil görünüm   |
 
 ## Test
 
@@ -267,7 +248,7 @@ describe('WebhookStats', () => {
         stats={mockStats}
       />
     );
-    
+
     expect(screen.getByText('95% başarı oranı')).toBeInTheDocument();
   });
 
@@ -279,7 +260,7 @@ describe('WebhookStats', () => {
         showTrends
       />
     );
-    
+
     expect(screen.getByText('Trend Analizi')).toBeInTheDocument();
   });
 
@@ -295,7 +276,7 @@ describe('WebhookStats', () => {
         }}
       />
     );
-    
+
     await userEvent.click(screen.getByText('Son 7 Gün'));
     expect(screen.getByText('13 Mar - 20 Mar')).toBeInTheDocument();
   });
@@ -315,7 +296,7 @@ describe('WebhookStats', () => {
         ]}
       />
     );
-    
+
     expect(screen.getByText('Ortalama Yanıt Boyutu')).toBeInTheDocument();
   });
 });
@@ -395,12 +376,12 @@ Error.args = {
   customStyles={{
     card: {
       success: 'bg-green-50',
-      error: 'bg-red-50'
+      error: 'bg-red-50',
     },
     chart: {
       grid: 'stroke-gray-200',
-      tooltip: 'bg-white shadow-lg'
-    }
+      tooltip: 'bg-white shadow-lg',
+    },
   }}
 />
 ```
@@ -411,4 +392,4 @@ Error.args = {
 2. Grafikleri optimize et
 3. Zaman aralığı seçimini sınırla
 4. Hata oranlarını izle
-5. Performans metriklerini takip et 
+5. Performans metriklerini takip et

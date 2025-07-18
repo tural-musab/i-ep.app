@@ -32,7 +32,7 @@ const mockTenantData = {
       domainCount: 1,
       lastActivity: '2024-01-15T12:00:00Z',
       createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: '2024-01-15T12:00:00Z'
+      updatedAt: '2024-01-15T12:00:00Z',
     },
     {
       id: '2',
@@ -44,8 +44,8 @@ const mockTenantData = {
       domainCount: 2,
       lastActivity: '2024-01-10T10:00:00Z',
       createdAt: '2024-01-02T00:00:00Z',
-      updatedAt: '2024-01-10T10:00:00Z'
-    }
+      updatedAt: '2024-01-10T10:00:00Z',
+    },
   ],
   meta: {
     total: 2,
@@ -53,8 +53,8 @@ const mockTenantData = {
     limit: 20,
     totalPages: 1,
     hasNext: false,
-    hasPrev: false
-  }
+    hasPrev: false,
+  },
 };
 
 describe('TenantList', () => {
@@ -102,9 +102,12 @@ describe('TenantList', () => {
 
     render(<TenantList />);
 
-    await waitFor(() => {
-      expect(screen.getByText(/failed to fetch|error/i)).toBeInTheDocument();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(screen.getByText(/failed to fetch|error/i)).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 
   it('should handle search functionality', async () => {
@@ -122,7 +125,7 @@ describe('TenantList', () => {
     const searchInput = screen.getByPlaceholderText(/search/i);
     fireEvent.change(searchInput, { target: { value: 'Test Tenant 1' } });
 
-    // Should trigger a new API call with search parameter  
+    // Should trigger a new API call with search parameter
     // Note: Encoding can be + or %20 for spaces
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(
@@ -147,7 +150,7 @@ describe('TenantList', () => {
     // Test filters button exists and is clickable
     const filtersButton = screen.getByText('Filters');
     expect(filtersButton).toBeInTheDocument();
-    
+
     fireEvent.click(filtersButton);
     // Button should remain visible after click
     expect(filtersButton).toBeInTheDocument();
@@ -179,8 +182,8 @@ describe('TenantList', () => {
         total: 25,
         pages: 3,
         current: 1,
-        limit: 10
-      }
+        limit: 10,
+      },
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -215,7 +218,7 @@ describe('TenantList', () => {
 
     const createButton = screen.getByText('New Tenant');
     expect(createButton).toBeInTheDocument();
-    
+
     // Test that button is clickable (no modal functionality implemented yet)
     fireEvent.click(createButton);
     expect(createButton).toBeInTheDocument();
@@ -252,4 +255,4 @@ describe('TenantList', () => {
     // Component should fetch data on mount
     expect(mockFetch).toHaveBeenCalledTimes(1);
   });
-}); 
+});

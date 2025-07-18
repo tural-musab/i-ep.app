@@ -14,16 +14,16 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle, 
-  User, 
-  Users, 
-  School, 
-  BookOpen, 
-  Clock, 
+import {
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  User,
+  Users,
+  School,
+  BookOpen,
+  Clock,
   Calendar,
   Target,
   Zap,
@@ -570,7 +570,7 @@ import {
   Algeria2,
   Tunisia2,
   Libya2,
-  Egypt2
+  Egypt2,
 } from 'lucide-react';
 import { ScheduleRepository, ScheduleConflict } from '@/lib/repository/schedule-repository';
 import { format } from 'date-fns';
@@ -581,16 +581,20 @@ interface ScheduleConflictResolverProps {
   showResolved?: boolean;
 }
 
-export function ScheduleConflictResolver({ 
-  scheduleId, 
-  showResolved = false 
+export function ScheduleConflictResolver({
+  scheduleId,
+  showResolved = false,
 }: ScheduleConflictResolverProps) {
   const [conflicts, setConflicts] = useState<ScheduleConflict[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedConflict, setSelectedConflict] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'resolved' | 'ignored'>('all');
-  const [filterSeverity, setFilterSeverity] = useState<'all' | 'critical' | 'high' | 'medium' | 'low'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'resolved' | 'ignored'>(
+    'all'
+  );
+  const [filterSeverity, setFilterSeverity] = useState<
+    'all' | 'critical' | 'high' | 'medium' | 'low'
+  >('all');
   const [expandedConflicts, setExpandedConflicts] = useState<Set<string>>(new Set());
 
   const scheduleRepository = new ScheduleRepository();
@@ -602,27 +606,27 @@ export function ScheduleConflictResolver({
     thursday: 'Perşembe',
     friday: 'Cuma',
     saturday: 'Cumartesi',
-    sunday: 'Pazar'
+    sunday: 'Pazar',
   };
 
   const conflictTypeNames = {
     teacher_overlap: 'Öğretmen Çakışması',
     classroom_overlap: 'Sınıf Çakışması',
     student_overlap: 'Öğrenci Çakışması',
-    resource_conflict: 'Kaynak Çakışması'
+    resource_conflict: 'Kaynak Çakışması',
   };
 
   const severityNames = {
     critical: 'Kritik',
     high: 'Yüksek',
     medium: 'Orta',
-    low: 'Düşük'
+    low: 'Düşük',
   };
 
   const statusNames = {
     pending: 'Beklemede',
     resolved: 'Çözüldü',
-    ignored: 'Göz Ardı Edildi'
+    ignored: 'Göz Ardı Edildi',
   };
 
   useEffect(() => {
@@ -643,10 +647,18 @@ export function ScheduleConflictResolver({
     }
   };
 
-  const resolveConflict = async (conflictId: string, resolutionOptionId: string, notes?: string) => {
+  const resolveConflict = async (
+    conflictId: string,
+    resolutionOptionId: string,
+    notes?: string
+  ) => {
     setLoading(true);
     try {
-      const success = await scheduleRepository.resolveScheduleConflict(conflictId, resolutionOptionId, notes);
+      const success = await scheduleRepository.resolveScheduleConflict(
+        conflictId,
+        resolutionOptionId,
+        notes
+      );
       if (success) {
         await loadConflicts();
         setSelectedConflict(null);
@@ -662,11 +674,9 @@ export function ScheduleConflictResolver({
     setLoading(true);
     try {
       // Mock ignore functionality
-      setConflicts(prev => 
-        prev.map(conflict => 
-          conflict.id === conflictId 
-            ? { ...conflict, status: 'ignored' as const }
-            : conflict
+      setConflicts((prev) =>
+        prev.map((conflict) =>
+          conflict.id === conflictId ? { ...conflict, status: 'ignored' as const } : conflict
         )
       );
       setSelectedConflict(null);
@@ -689,42 +699,59 @@ export function ScheduleConflictResolver({
 
   const getConflictColor = (severity: string) => {
     switch (severity) {
-      case 'critical': return 'bg-red-100 text-red-800 border-red-200';
-      case 'high': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low': return 'bg-blue-100 text-blue-800 border-blue-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'critical':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'high':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'low':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
   const getConflictIcon = (type: string) => {
     switch (type) {
-      case 'teacher_overlap': return <User className="h-4 w-4" />;
-      case 'classroom_overlap': return <School className="h-4 w-4" />;
-      case 'student_overlap': return <Users className="h-4 w-4" />;
-      case 'resource_conflict': return <BookOpen className="h-4 w-4" />;
-      default: return <AlertTriangle className="h-4 w-4" />;
+      case 'teacher_overlap':
+        return <User className="h-4 w-4" />;
+      case 'classroom_overlap':
+        return <School className="h-4 w-4" />;
+      case 'student_overlap':
+        return <Users className="h-4 w-4" />;
+      case 'resource_conflict':
+        return <BookOpen className="h-4 w-4" />;
+      default:
+        return <AlertTriangle className="h-4 w-4" />;
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'resolved': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'ignored': return <XCircle className="h-4 w-4 text-gray-500" />;
-      default: return <AlertCircle className="h-4 w-4 text-orange-500" />;
+      case 'resolved':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'ignored':
+        return <XCircle className="h-4 w-4 text-gray-500" />;
+      default:
+        return <AlertCircle className="h-4 w-4 text-orange-500" />;
     }
   };
 
   const getImpactColor = (impact: string) => {
     switch (impact) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const filteredConflicts = conflicts.filter(conflict => {
+  const filteredConflicts = conflicts.filter((conflict) => {
     const statusMatch = filterStatus === 'all' || conflict.status === filterStatus;
     const severityMatch = filterSeverity === 'all' || conflict.severity === filterSeverity;
     return statusMatch && severityMatch;
@@ -732,13 +759,13 @@ export function ScheduleConflictResolver({
 
   const conflictStats = {
     total: conflicts.length,
-    pending: conflicts.filter(c => c.status === 'pending').length,
-    resolved: conflicts.filter(c => c.status === 'resolved').length,
-    ignored: conflicts.filter(c => c.status === 'ignored').length,
-    critical: conflicts.filter(c => c.severity === 'critical').length,
-    high: conflicts.filter(c => c.severity === 'high').length,
-    medium: conflicts.filter(c => c.severity === 'medium').length,
-    low: conflicts.filter(c => c.severity === 'low').length
+    pending: conflicts.filter((c) => c.status === 'pending').length,
+    resolved: conflicts.filter((c) => c.status === 'resolved').length,
+    ignored: conflicts.filter((c) => c.status === 'ignored').length,
+    critical: conflicts.filter((c) => c.severity === 'critical').length,
+    high: conflicts.filter((c) => c.severity === 'high').length,
+    medium: conflicts.filter((c) => c.severity === 'medium').length,
+    low: conflicts.filter((c) => c.severity === 'low').length,
   };
 
   return (
@@ -747,22 +774,24 @@ export function ScheduleConflictResolver({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Çakışma Çözümleme Sistemi</h2>
-          <p className="text-gray-600 mt-1">Ders programı çakışmalarını tespit edin ve çözümleyin</p>
+          <p className="mt-1 text-gray-600">
+            Ders programı çakışmalarını tespit edin ve çözümleyin
+          </p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={loadConflicts}>
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="mr-2 h-4 w-4" />
             Yenile
           </Button>
           <Button variant="outline">
-            <Settings className="h-4 w-4 mr-2" />
+            <Settings className="mr-2 h-4 w-4" />
             Ayarlar
           </Button>
         </div>
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card>
           <CardContent className="pt-6">
             <div className="text-center">
@@ -809,8 +838,8 @@ export function ScheduleConflictResolver({
           <div className="flex gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Durum</label>
-              <select 
-                className="w-40 px-3 py-2 border rounded-md"
+              <select
+                className="w-40 rounded-md border px-3 py-2"
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value as any)}
               >
@@ -822,8 +851,8 @@ export function ScheduleConflictResolver({
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Önem Derecesi</label>
-              <select 
-                className="w-40 px-3 py-2 border rounded-md"
+              <select
+                className="w-40 rounded-md border px-3 py-2"
                 value={filterSeverity}
                 onChange={(e) => setFilterSeverity(e.target.value as any)}
               >
@@ -851,8 +880,8 @@ export function ScheduleConflictResolver({
         {loading && (
           <Card>
             <CardContent className="pt-6">
-              <div className="text-center py-8">
-                <RefreshCw className="h-8 w-8 text-gray-400 mx-auto mb-4 animate-spin" />
+              <div className="py-8 text-center">
+                <RefreshCw className="mx-auto mb-4 h-8 w-8 animate-spin text-gray-400" />
                 <p className="text-gray-600">Çakışmalar yükleniyor...</p>
               </div>
             </CardContent>
@@ -862,231 +891,281 @@ export function ScheduleConflictResolver({
         {!loading && filteredConflicts.length === 0 && (
           <Card>
             <CardContent className="pt-6">
-              <div className="text-center py-8">
-                <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Çakışma Bulunamadı</h3>
+              <div className="py-8 text-center">
+                <CheckCircle className="mx-auto mb-4 h-12 w-12 text-green-500" />
+                <h3 className="mb-2 text-lg font-semibold">Çakışma Bulunamadı</h3>
                 <p className="text-gray-600">
-                  {filterStatus === 'all' && filterSeverity === 'all' 
+                  {filterStatus === 'all' && filterSeverity === 'all'
                     ? 'Sistemde herhangi bir çakışma tespit edilmedi.'
-                    : 'Seçili filtrelere uygun çakışma bulunamadı.'
-                  }
+                    : 'Seçili filtrelere uygun çakışma bulunamadı.'}
                 </p>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {!loading && filteredConflicts.map((conflict) => (
-          <Card key={conflict.id} className={`border-l-4 ${getConflictColor(conflict.severity).split(' ')[2]}`}>
-            <CardHeader className="cursor-pointer" onClick={() => toggleConflictExpansion(conflict.id)}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  {getConflictIcon(conflict.conflict_type)}
-                  <div>
-                    <CardTitle className="text-lg">{conflict.conflict_details.description}</CardTitle>
-                    <CardDescription className="flex items-center gap-4 mt-1">
-                      <Badge variant="outline" className={getConflictColor(conflict.severity)}>
-                        {severityNames[conflict.severity]}
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        {dayNames[conflict.conflict_details.time_slot.day as keyof typeof dayNames]} • 
-                        {conflict.conflict_details.time_slot.period}. Saat • 
-                        {conflict.conflict_details.time_slot.start_time} - {conflict.conflict_details.time_slot.end_time}
-                      </span>
-                    </CardDescription>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {getStatusIcon(conflict.status)}
-                  <Badge variant="outline">
-                    {statusNames[conflict.status]}
-                  </Badge>
-                  {expandedConflicts.has(conflict.id) ? 
-                    <ChevronDown className="h-4 w-4" /> : 
-                    <ChevronRight className="h-4 w-4" />
-                  }
-                </div>
-              </div>
-            </CardHeader>
-
-            {expandedConflicts.has(conflict.id) && (
-              <CardContent>
-                <div className="space-y-6">
-                  {/* Conflict Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {!loading &&
+          filteredConflicts.map((conflict) => (
+            <Card
+              key={conflict.id}
+              className={`border-l-4 ${getConflictColor(conflict.severity).split(' ')[2]}`}
+            >
+              <CardHeader
+                className="cursor-pointer"
+                onClick={() => toggleConflictExpansion(conflict.id)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {getConflictIcon(conflict.conflict_type)}
                     <div>
-                      <h4 className="font-medium mb-3">Çakışma Detayları</h4>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Çakışma Türü</span>
-                          <span className="text-sm font-medium">{conflictTypeNames[conflict.conflict_type]}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Önem Derecesi</span>
-                          <Badge variant="outline" className={getConflictColor(conflict.severity)}>
-                            {severityNames[conflict.severity]}
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-600">Oluşturulma</span>
-                          <span className="text-sm font-medium">
-                            {format(new Date(conflict.created_at), 'dd MMM yyyy HH:mm', { locale: tr })}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="font-medium mb-3">Etkilenen Unsurlar</h4>
-                      <div className="space-y-2">
-                        {conflict.affected_entities.teachers && (
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-blue-500" />
-                            <span className="text-sm">Öğretmenler: {conflict.affected_entities.teachers.length}</span>
-                          </div>
-                        )}
-                        {conflict.affected_entities.classes && (
-                          <div className="flex items-center gap-2">
-                            <Users className="h-4 w-4 text-green-500" />
-                            <span className="text-sm">Sınıflar: {conflict.affected_entities.classes.length}</span>
-                          </div>
-                        )}
-                        {conflict.affected_entities.classrooms && (
-                          <div className="flex items-center gap-2">
-                            <School className="h-4 w-4 text-purple-500" />
-                            <span className="text-sm">Derslikler: {conflict.affected_entities.classrooms.length}</span>
-                          </div>
-                        )}
-                        {conflict.affected_entities.subjects && (
-                          <div className="flex items-center gap-2">
-                            <BookOpen className="h-4 w-4 text-orange-500" />
-                            <span className="text-sm">Dersler: {conflict.affected_entities.subjects.length}</span>
-                          </div>
-                        )}
-                      </div>
+                      <CardTitle className="text-lg">
+                        {conflict.conflict_details.description}
+                      </CardTitle>
+                      <CardDescription className="mt-1 flex items-center gap-4">
+                        <Badge variant="outline" className={getConflictColor(conflict.severity)}>
+                          {severityNames[conflict.severity]}
+                        </Badge>
+                        <span className="text-xs text-gray-500">
+                          {
+                            dayNames[
+                              conflict.conflict_details.time_slot.day as keyof typeof dayNames
+                            ]
+                          }{' '}
+                          •{conflict.conflict_details.time_slot.period}. Saat •
+                          {conflict.conflict_details.time_slot.start_time} -{' '}
+                          {conflict.conflict_details.time_slot.end_time}
+                        </span>
+                      </CardDescription>
                     </div>
                   </div>
+                  <div className="flex items-center gap-2">
+                    {getStatusIcon(conflict.status)}
+                    <Badge variant="outline">{statusNames[conflict.status]}</Badge>
+                    {expandedConflicts.has(conflict.id) ? (
+                      <ChevronDown className="h-4 w-4" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
+                  </div>
+                </div>
+              </CardHeader>
 
-                  {/* Conflicting Schedules */}
-                  <div>
-                    <h4 className="font-medium mb-3">Çakışan Programlar</h4>
-                    <div className="space-y-2">
-                      {conflict.conflict_details.conflicting_schedules.map((schedule, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                          <div className="flex items-center gap-3">
-                            {schedule.schedule_type === 'class' ? <Users className="h-4 w-4" /> : <User className="h-4 w-4" />}
-                            <span className="font-medium">{schedule.entity_name}</span>
-                            <Badge variant="outline" className="text-xs">
-                              {schedule.schedule_type === 'class' ? 'Sınıf' : 'Öğretmen'}
+              {expandedConflicts.has(conflict.id) && (
+                <CardContent>
+                  <div className="space-y-6">
+                    {/* Conflict Details */}
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <div>
+                        <h4 className="mb-3 font-medium">Çakışma Detayları</h4>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">Çakışma Türü</span>
+                            <span className="text-sm font-medium">
+                              {conflictTypeNames[conflict.conflict_type]}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">Önem Derecesi</span>
+                            <Badge
+                              variant="outline"
+                              className={getConflictColor(conflict.severity)}
+                            >
+                              {severityNames[conflict.severity]}
                             </Badge>
                           </div>
-                          <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-600">Oluşturulma</span>
+                            <span className="text-sm font-medium">
+                              {format(new Date(conflict.created_at), 'dd MMM yyyy HH:mm', {
+                                locale: tr,
+                              })}
+                            </span>
+                          </div>
                         </div>
-                      ))}
+                      </div>
+
+                      <div>
+                        <h4 className="mb-3 font-medium">Etkilenen Unsurlar</h4>
+                        <div className="space-y-2">
+                          {conflict.affected_entities.teachers && (
+                            <div className="flex items-center gap-2">
+                              <User className="h-4 w-4 text-blue-500" />
+                              <span className="text-sm">
+                                Öğretmenler: {conflict.affected_entities.teachers.length}
+                              </span>
+                            </div>
+                          )}
+                          {conflict.affected_entities.classes && (
+                            <div className="flex items-center gap-2">
+                              <Users className="h-4 w-4 text-green-500" />
+                              <span className="text-sm">
+                                Sınıflar: {conflict.affected_entities.classes.length}
+                              </span>
+                            </div>
+                          )}
+                          {conflict.affected_entities.classrooms && (
+                            <div className="flex items-center gap-2">
+                              <School className="h-4 w-4 text-purple-500" />
+                              <span className="text-sm">
+                                Derslikler: {conflict.affected_entities.classrooms.length}
+                              </span>
+                            </div>
+                          )}
+                          {conflict.affected_entities.subjects && (
+                            <div className="flex items-center gap-2">
+                              <BookOpen className="h-4 w-4 text-orange-500" />
+                              <span className="text-sm">
+                                Dersler: {conflict.affected_entities.subjects.length}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Resolution Options */}
-                  {conflict.status === 'pending' && (
+                    {/* Conflicting Schedules */}
                     <div>
-                      <h4 className="font-medium mb-3">Çözüm Seçenekleri</h4>
-                      <div className="space-y-4">
-                        {conflict.resolution_options.map((option) => (
-                          <div key={option.option_id} className="border rounded-lg p-4">
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center gap-2">
-                                <Lightbulb className="h-4 w-4 text-yellow-500" />
-                                <span className="font-medium">{option.description}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Badge variant="outline" className={getImpactColor(option.impact_level)}>
-                                  {option.impact_level === 'high' ? 'Yüksek' : 
-                                   option.impact_level === 'medium' ? 'Orta' : 'Düşük'} etki
-                                </Badge>
-                                <span className="text-sm text-gray-600">{option.estimated_time} dk</span>
-                              </div>
+                      <h4 className="mb-3 font-medium">Çakışan Programlar</h4>
+                      <div className="space-y-2">
+                        {conflict.conflict_details.conflicting_schedules.map((schedule, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                          >
+                            <div className="flex items-center gap-3">
+                              {schedule.schedule_type === 'class' ? (
+                                <Users className="h-4 w-4" />
+                              ) : (
+                                <User className="h-4 w-4" />
+                              )}
+                              <span className="font-medium">{schedule.entity_name}</span>
+                              <Badge variant="outline" className="text-xs">
+                                {schedule.schedule_type === 'class' ? 'Sınıf' : 'Öğretmen'}
+                              </Badge>
                             </div>
-
-                            <div className="space-y-2 mb-4">
-                              <h5 className="text-sm font-medium">Uygulama Adımları:</h5>
-                              <ol className="list-decimal list-inside space-y-1">
-                                {option.steps.map((step, stepIndex) => (
-                                  <li key={stepIndex} className="text-sm text-gray-600">{step}</li>
-                                ))}
-                              </ol>
-                            </div>
-
-                            {option.affects_other_schedules && (
-                              <Alert className="mb-4">
-                                <AlertTriangle className="h-4 w-4" />
-                                <AlertDescription>
-                                  Bu çözüm diğer programları etkileyebilir. Dikkatli olun.
-                                </AlertDescription>
-                              </Alert>
-                            )}
-
-                            <div className="flex gap-2">
-                              <Button 
-                                size="sm" 
-                                onClick={() => resolveConflict(conflict.id, option.option_id)}
-                                disabled={loading}
-                              >
-                                <Check className="h-4 w-4 mr-2" />
-                                Bu Çözümü Uygula
-                              </Button>
-                              <Button variant="outline" size="sm">
-                                <Eye className="h-4 w-4 mr-2" />
-                                Önizle
-                              </Button>
-                            </div>
+                            <Button variant="ghost" size="sm">
+                              <Eye className="h-4 w-4" />
+                            </Button>
                           </div>
                         ))}
                       </div>
                     </div>
-                  )}
 
-                  {/* Actions */}
-                  {conflict.status === 'pending' && (
-                    <div className="flex justify-end gap-2 pt-4 border-t">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => ignoreConflict(conflict.id)}
-                        disabled={loading}
-                      >
-                        <X className="h-4 w-4 mr-2" />
-                        Göz Ardı Et
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Edit className="h-4 w-4 mr-2" />
-                        Manuel Düzenle
-                      </Button>
-                    </div>
-                  )}
+                    {/* Resolution Options */}
+                    {conflict.status === 'pending' && (
+                      <div>
+                        <h4 className="mb-3 font-medium">Çözüm Seçenekleri</h4>
+                        <div className="space-y-4">
+                          {conflict.resolution_options.map((option) => (
+                            <div key={option.option_id} className="rounded-lg border p-4">
+                              <div className="mb-3 flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <Lightbulb className="h-4 w-4 text-yellow-500" />
+                                  <span className="font-medium">{option.description}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Badge
+                                    variant="outline"
+                                    className={getImpactColor(option.impact_level)}
+                                  >
+                                    {option.impact_level === 'high'
+                                      ? 'Yüksek'
+                                      : option.impact_level === 'medium'
+                                        ? 'Orta'
+                                        : 'Düşük'}{' '}
+                                    etki
+                                  </Badge>
+                                  <span className="text-sm text-gray-600">
+                                    {option.estimated_time} dk
+                                  </span>
+                                </div>
+                              </div>
 
-                  {/* Resolution Info */}
-                  {conflict.status === 'resolved' && conflict.resolved_by && (
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <div className="flex items-center gap-2 mb-2">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <span className="font-medium text-green-800">Çakışma Çözüldü</span>
+                              <div className="mb-4 space-y-2">
+                                <h5 className="text-sm font-medium">Uygulama Adımları:</h5>
+                                <ol className="list-inside list-decimal space-y-1">
+                                  {option.steps.map((step, stepIndex) => (
+                                    <li key={stepIndex} className="text-sm text-gray-600">
+                                      {step}
+                                    </li>
+                                  ))}
+                                </ol>
+                              </div>
+
+                              {option.affects_other_schedules && (
+                                <Alert className="mb-4">
+                                  <AlertTriangle className="h-4 w-4" />
+                                  <AlertDescription>
+                                    Bu çözüm diğer programları etkileyebilir. Dikkatli olun.
+                                  </AlertDescription>
+                                </Alert>
+                              )}
+
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() => resolveConflict(conflict.id, option.option_id)}
+                                  disabled={loading}
+                                >
+                                  <Check className="mr-2 h-4 w-4" />
+                                  Bu Çözümü Uygula
+                                </Button>
+                                <Button variant="outline" size="sm">
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  Önizle
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="text-sm text-green-700">
-                        <div>Çözen: {conflict.resolved_by}</div>
-                        <div>Tarih: {format(new Date(conflict.resolved_at!), 'dd MMM yyyy HH:mm', { locale: tr })}</div>
-                        {conflict.resolution_notes && (
-                          <div className="mt-2">Not: {conflict.resolution_notes}</div>
-                        )}
+                    )}
+
+                    {/* Actions */}
+                    {conflict.status === 'pending' && (
+                      <div className="flex justify-end gap-2 border-t pt-4">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => ignoreConflict(conflict.id)}
+                          disabled={loading}
+                        >
+                          <X className="mr-2 h-4 w-4" />
+                          Göz Ardı Et
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Edit className="mr-2 h-4 w-4" />
+                          Manuel Düzenle
+                        </Button>
                       </div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            )}
-          </Card>
-        ))}
+                    )}
+
+                    {/* Resolution Info */}
+                    {conflict.status === 'resolved' && conflict.resolved_by && (
+                      <div className="rounded-lg bg-green-50 p-4">
+                        <div className="mb-2 flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <span className="font-medium text-green-800">Çakışma Çözüldü</span>
+                        </div>
+                        <div className="text-sm text-green-700">
+                          <div>Çözen: {conflict.resolved_by}</div>
+                          <div>
+                            Tarih:{' '}
+                            {format(new Date(conflict.resolved_at!), 'dd MMM yyyy HH:mm', {
+                              locale: tr,
+                            })}
+                          </div>
+                          {conflict.resolution_notes && (
+                            <div className="mt-2">Not: {conflict.resolution_notes}</div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              )}
+            </Card>
+          ))}
       </div>
     </div>
   );

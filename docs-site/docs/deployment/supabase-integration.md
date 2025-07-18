@@ -51,7 +51,7 @@ CREATE TABLE public.tenants (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
   expires_at TIMESTAMP WITH TIME ZONE,
   settings JSONB DEFAULT '{}'::jsonb,
-  
+
   CONSTRAINT subdomain_format CHECK (subdomain ~* '^[a-z0-9][a-z0-9\-]{1,61}[a-z0-9]$')
 );
 
@@ -67,7 +67,7 @@ CREATE TABLE public.subscriptions (
   payment_provider TEXT NOT NULL,
   payment_method_id TEXT,
   payment_provider_id TEXT,
-  
+
   CONSTRAINT valid_status CHECK (status IN ('active', 'canceled', 'incomplete', 'past_due', 'trialing'))
 );
 
@@ -78,7 +78,7 @@ CREATE TABLE public.tenants_users (
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   role TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-  
+
   UNIQUE(tenant_id, user_id),
   CONSTRAINT valid_role CHECK (role IN ('admin', 'manager', 'teacher', 'student', 'parent'))
 );
@@ -108,7 +108,7 @@ CREATE OR REPLACE FUNCTION public.create_tenant_schema(tenant_id UUID)
 RETURNS VOID AS $$
 BEGIN
   EXECUTE format('CREATE SCHEMA IF NOT EXISTS tenant_%s', tenant_id);
-  
+
   -- Temel tabloları oluştur
   EXECUTE format('
     CREATE TABLE tenant_%s.users (
@@ -123,7 +123,7 @@ BEGIN
       metadata JSONB DEFAULT ''{}'',
       avatar_url TEXT
     );
-    
+
     CREATE TABLE tenant_%s.classes (
       id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
       name TEXT NOT NULL,
@@ -134,7 +134,7 @@ BEGIN
       updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
       metadata JSONB DEFAULT '{}'
     );
-    
+
     CREATE TABLE tenant_%s.students (
       id UUID PRIMARY KEY REFERENCES tenant_%s.users(id) ON DELETE CASCADE,
       student_number TEXT UNIQUE,
@@ -175,7 +175,7 @@ Veritabanı performansını optimize etmek için önemli indeksleri ekleyin:
 CREATE UNIQUE INDEX tenant_subdomain_idx ON public.tenants(subdomain);
 
 -- Tenant custom domain indeksi
-CREATE UNIQUE INDEX tenant_custom_domain_idx ON public.tenants(custom_domain) 
+CREATE UNIQUE INDEX tenant_custom_domain_idx ON public.tenants(custom_domain)
 WHERE custom_domain IS NOT NULL;
 
 -- Tenant_users indeksleri
@@ -210,8 +210,8 @@ Yeni bir tenant (okul) oluşturma süreci şu adımları içerir:
 import { supabaseAdmin } from '@/lib/supabase/admin';
 
 export async function createTenant(
-  name: string, 
-  subdomain: string, 
+  name: string,
+  subdomain: string,
   planType: string = 'free'
 ): Promise<{ tenantId: string; error?: any }> {
   try {
@@ -226,26 +226,25 @@ export async function createTenant(
       })
       .select('id')
       .single();
-    
+
     if (tenantError) throw tenantError;
-    
+
     const tenantId = tenantData.id;
-    
+
     // 2. Tenant şeması oluştur
-    const { error: schemaError } = await supabaseAdmin.rpc(
-      'create_tenant_schema', 
-      { tenant_id: tenantId }
-    );
-    
+    const { error: schemaError } = await supabaseAdmin.rpc('create_tenant_schema', {
+      tenant_id: tenantId,
+    });
+
     if (schemaError) {
       // Hata durumunda temizlik yap
       await supabaseAdmin.from('tenants').delete().eq('id', tenantId);
       throw schemaError;
     }
-    
+
     // 3. RLS politikalarını tenant için yapılandır
     await configureTenantRLS(tenantId);
-    
+
     return { tenantId };
   } catch (error) {
     console.error('Tenant oluşturma hatası:', error);
@@ -289,14 +288,14 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 export async function signIn(email: string, password: string, tenantId?: string) {
   const supabase = createClientComponentClient();
-  
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
-  
+
   if (error) throw error;
-  
+
   // Kullanıcının tenant erişimini kontrol et
   if (tenantId) {
     const { data: tenantAccess, error: accessError } = await supabase
@@ -305,17 +304,17 @@ export async function signIn(email: string, password: string, tenantId?: string)
       .eq('tenant_id', tenantId)
       .eq('user_id', data.user.id)
       .single();
-    
+
     if (accessError || !tenantAccess) {
       // Kullanıcının bu tenant'a erişimi yok
       await supabase.auth.signOut();
       throw new Error('Bu okula erişim yetkiniz bulunmamaktadır.');
     }
-    
+
     // Tenant bağlamını ayarla
     await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
   }
-  
+
   return { user: data.user, session: data.session };
 }
 ```
@@ -341,30 +340,30 @@ export function canUserPerformAction(
 ): boolean {
   // Yetki matrisi
   const permissionMatrix: Record<string, Record<string, string[]>> = {
-    'admin': {
-      'create': ['*'],
-      'read': ['*'],
-      'update': ['*'],
-      'delete': ['*']
+    admin: {
+      create: ['*'],
+      read: ['*'],
+      update: ['*'],
+      delete: ['*'],
     },
-    'teacher': {
-      'create': ['class', 'homework', 'grade', 'attendance'],
-      'read': ['student', 'class', 'homework', 'grade', 'attendance'],
-      'update': ['class', 'homework', 'grade', 'attendance'],
-      'delete': ['homework', 'grade']
+    teacher: {
+      create: ['class', 'homework', 'grade', 'attendance'],
+      read: ['student', 'class', 'homework', 'grade', 'attendance'],
+      update: ['class', 'homework', 'grade', 'attendance'],
+      delete: ['homework', 'grade'],
     },
-    'student': {
-      'create': ['homework_submission'],
-      'read': ['class', 'homework', 'grade', 'attendance', 'homework_submission'],
-      'update': ['homework_submission'],
-      'delete': []
+    student: {
+      create: ['homework_submission'],
+      read: ['class', 'homework', 'grade', 'attendance', 'homework_submission'],
+      update: ['homework_submission'],
+      delete: [],
     },
-    'parent': {
-      'create': [],
-      'read': ['student', 'class', 'homework', 'grade', 'attendance'],
-      'update': [],
-      'delete': []
-    }
+    parent: {
+      create: [],
+      read: ['student', 'class', 'homework', 'grade', 'attendance'],
+      update: [],
+      delete: [],
+    },
   };
 
   // Wild card kontrolü
@@ -397,8 +396,8 @@ CREATE POLICY tenant_super_admin_policy ON public.tenants
 CREATE POLICY tenant_read_policy ON public.tenants
   FOR SELECT USING (
     id IN (
-      SELECT tenant_id 
-      FROM public.tenants_users 
+      SELECT tenant_id
+      FROM public.tenants_users
       WHERE user_id = auth.uid()
     )
 );
@@ -410,7 +409,7 @@ CREATE POLICY tenant_read_policy ON public.tenants
 -- Tenant_X.users tablosu için RLS politikaları
 CREATE POLICY users_tenant_isolation_policy ON tenant_X.users
   USING (get_tenant_id() = 'X');
-  
+
 -- Öğretmenler tüm öğrencileri görebilir
 CREATE POLICY teacher_view_students_policy ON tenant_X.students
   FOR SELECT
@@ -421,7 +420,7 @@ CREATE POLICY teacher_view_students_policy ON tenant_X.students
       WHERE id = auth.uid() AND role = 'teacher'
     )
   );
-  
+
 -- Öğrenciler yalnızca kendi bilgilerini görebilir
 CREATE POLICY student_view_self_policy ON tenant_X.students
   FOR SELECT
@@ -444,36 +443,36 @@ BEGIN
   -- Users tablosu için RLS politikaları
   EXECUTE format('
     ALTER TABLE %I.users ENABLE ROW LEVEL SECURITY;
-    
+
     CREATE POLICY users_tenant_isolation_policy ON %I.users
       USING (public.get_tenant_id() = %L);
-      
+
     CREATE POLICY users_admin_policy ON %I.users
       USING (
         public.get_tenant_id() = %L AND
         EXISTS (
-          SELECT 1 FROM %I.users 
+          SELECT 1 FROM %I.users
           WHERE id = auth.uid() AND role IN (''admin'', ''manager'')
         )
       );
-      
+
     CREATE POLICY users_self_view_policy ON %I.users
       FOR SELECT
       USING (public.get_tenant_id() = %L AND id = auth.uid());
-  ', 
-  schema_name, schema_name, tenant_id, 
-  schema_name, tenant_id, schema_name, 
+  ',
+  schema_name, schema_name, tenant_id,
+  schema_name, tenant_id, schema_name,
   schema_name, tenant_id);
-  
+
   -- Classes tablosu için RLS politikaları
   EXECUTE format('
     ALTER TABLE %I.classes ENABLE ROW LEVEL SECURITY;
-    
+
     CREATE POLICY classes_tenant_isolation_policy ON %I.classes
       USING (public.get_tenant_id() = %L);
-  ', 
+  ',
   schema_name, schema_name, tenant_id);
-  
+
   -- İlave tablolar için RLS politikaları...
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -537,24 +536,20 @@ export async function uploadTenantFile(
   fileName: string
 ) {
   const supabase = createClientComponentClient();
-  
+
   // Tenant-spesifik dosya yolu
   const filePath = `${tenantId}/${folder}/${fileName}`;
-  
-  const { data, error } = await supabase.storage
-    .from('tenant-assets')
-    .upload(filePath, file, {
-      upsert: true,
-      cacheControl: '3600',
-    });
-    
+
+  const { data, error } = await supabase.storage.from('tenant-assets').upload(filePath, file, {
+    upsert: true,
+    cacheControl: '3600',
+  });
+
   if (error) throw error;
-  
+
   // Dosya URL'ini oluştur
-  const fileUrl = supabase.storage
-    .from('tenant-assets')
-    .getPublicUrl(filePath).data.publicUrl;
-    
+  const fileUrl = supabase.storage.from('tenant-assets').getPublicUrl(filePath).data.publicUrl;
+
   return { filePath, fileUrl };
 }
 ```
@@ -574,7 +569,7 @@ BEGIN;
   -- Realtime yayınını etkinleştir
   INSERT INTO supabase_realtime.subscription (subscription_id, tenant_id, schema, table_name, created_at)
   VALUES ('tenant_X_classes', 'X', 'tenant_X', 'classes', now());
-  
+
   -- RLS politikalarını uygula
   INSERT INTO supabase_realtime.subscription_rule (subscription_id, type)
   VALUES ('tenant_X_classes', 'rls');
@@ -595,11 +590,11 @@ export function useClassesRealtime(tenantId: string) {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClientComponentClient();
-  
+
   useEffect(() => {
     // İlk veri yüklemesi
     fetchClasses();
-    
+
     // Realtime kanal oluştur
     const channel = supabase
       .channel('tenant-classes')
@@ -613,37 +608,34 @@ export function useClassesRealtime(tenantId: string) {
         (payload) => {
           // Değişikliğe göre durumu güncelle
           if (payload.eventType === 'INSERT') {
-            setClasses(prev => [...prev, payload.new]);
+            setClasses((prev) => [...prev, payload.new]);
           } else if (payload.eventType === 'UPDATE') {
-            setClasses(prev => prev.map(item => 
-              item.id === payload.new.id ? payload.new : item
-            ));
+            setClasses((prev) =>
+              prev.map((item) => (item.id === payload.new.id ? payload.new : item))
+            );
           } else if (payload.eventType === 'DELETE') {
-            setClasses(prev => prev.filter(item => item.id !== payload.old.id));
+            setClasses((prev) => prev.filter((item) => item.id !== payload.old.id));
           }
         }
       )
       .subscribe();
-      
+
     // Cleanup fonksiyonu
     return () => {
       supabase.removeChannel(channel);
     };
   }, [tenantId, supabase]);
-  
+
   // Sınıfları getir
   const fetchClasses = async () => {
     setLoading(true);
     try {
       // Tenant bağlamını ayarla
       await supabase.rpc('set_tenant_context', { tenant_id: tenantId });
-      
+
       // Sınıfları sorgula
-      const { data, error } = await supabase
-        .from('classes')
-        .select('*')
-        .order('name');
-        
+      const { data, error } = await supabase.from('classes').select('*').order('name');
+
       if (error) throw error;
       setClasses(data || []);
     } catch (error) {
@@ -652,7 +644,7 @@ export function useClassesRealtime(tenantId: string) {
       setLoading(false);
     }
   };
-  
+
   return { classes, loading, refetch: fetchClasses };
 }
 ```
@@ -664,66 +656,68 @@ export function useClassesRealtime(tenantId: string) {
 Supabase Edge Functions, sunucu tarafı işlemler için kullanılır. Edge Function oluşturmak için:
 
 1. Supabase CLI'yi kurun: `npm install -g supabase`
-2. Edge function oluşturun: 
+2. Edge function oluşturun:
+
    ```bash
    supabase functions new tenant-subdomain-checker
    ```
 
 3. Fonksiyonu düzenleyin:
+
    ```typescript
    // supabase/functions/tenant-subdomain-checker/index.ts
    import { serve } from 'https://deno.land/std@0.131.0/http/server.ts';
    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.0.0';
-   
+
    serve(async (req) => {
      try {
        // Supabase bağlantısı
        const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
        const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
        const supabase = createClient(supabaseUrl, supabaseKey);
-       
+
        // İstek gövdesini al
        const { subdomain } = await req.json();
-       
+
        if (!subdomain) {
-         return new Response(
-           JSON.stringify({ error: 'Subdomain belirtilmelidir' }),
-           { status: 400, headers: { 'Content-Type': 'application/json' } }
-         );
+         return new Response(JSON.stringify({ error: 'Subdomain belirtilmelidir' }), {
+           status: 400,
+           headers: { 'Content-Type': 'application/json' },
+         });
        }
-       
+
        // Subdomain için regex kontrolü
        const subdomainRegex = /^[a-z0-9][a-z0-9\-]{1,61}[a-z0-9]$/;
        if (!subdomainRegex.test(subdomain)) {
          return new Response(
-           JSON.stringify({ 
-             error: 'Subdomain yalnızca küçük harf, sayı ve tire içerebilir' 
+           JSON.stringify({
+             error: 'Subdomain yalnızca küçük harf, sayı ve tire içerebilir',
            }),
            { status: 400, headers: { 'Content-Type': 'application/json' } }
          );
        }
-       
+
        // Subdomain'in kullanılabilirliğini kontrol et
        const { data, error } = await supabase
          .from('tenants')
          .select('id')
          .eq('subdomain', subdomain)
          .maybeSingle();
-         
+
        if (error) throw error;
-       
+
        return new Response(
-         JSON.stringify({ 
+         JSON.stringify({
            available: !data,
-           subdomain 
+           subdomain,
          }),
          { headers: { 'Content-Type': 'application/json' } }
        );
      } catch (error) {
-       return new Response(
-         JSON.stringify({ error: error.message }),
-         { status: 500, headers: { 'Content-Type': 'application/json' } }
-       );
+       return new Response(JSON.stringify({ error: error.message }), {
+         status: 500,
+         headers: { 'Content-Type': 'application/json' },
+       });
      }
    });
    ```
@@ -745,17 +739,17 @@ export async function checkSubdomainAvailability(subdomain: string): Promise<boo
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
         },
         body: JSON.stringify({ subdomain }),
       }
     );
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.error || 'İstek başarısız oldu');
     }
-    
+
     const result = await response.json();
     return result.available;
   } catch (error) {
@@ -820,11 +814,11 @@ export async function middleware(req: NextRequest) {
   // Tenant subdomain'ini URL'den ayıkla
   const hostname = req.headers.get('host') || '';
   const domainParts = hostname.split('.');
-  
+
   // Ana domain (i-ep.app) değilse tenant subdomain'i olarak kabul et
   if (domainParts.length > 2 && !hostname.startsWith('www.')) {
     const subdomain = domainParts[0];
-    
+
     try {
       // Tenant ID'sini subdomain'den sorgula
       const { data, error } = await supabase
@@ -832,7 +826,7 @@ export async function middleware(req: NextRequest) {
         .select('id')
         .eq('subdomain', subdomain)
         .single();
-        
+
       if (data?.id) {
         // Tenant bağlamını ayarla
         await supabase.rpc('set_tenant_context', { tenant_id: data.id });
@@ -863,23 +857,21 @@ export const config = {
 ### Sorgular İçin İyi Uygulamalar
 
 1. **Seçerek Sorgulama**: Her zaman yalnızca ihtiyacınız olan alanları seçin:
+
    ```typescript
-   const { data } = await supabase
-     .from('users')
-     .select('id, first_name, last_name, email') // Tüm alanları değil
+   const { data } = await supabase.from('users').select('id, first_name, last_name, email'); // Tüm alanları değil
    ```
 
 2. **İndeks Kullanımı**: Sıklıkla aradığınız alanlar için indeksler oluşturun:
+
    ```sql
    CREATE INDEX tenant_users_email_idx ON tenant_X.users(email);
    ```
 
 3. **Sayfalama**: Büyük veri kümeleri için sayfalama kullanın:
+
    ```typescript
-   const { data } = await supabase
-     .from('students')
-     .select('*')
-     .range(0, 9) // İlk 10 öğrenci
+   const { data } = await supabase.from('students').select('*').range(0, 9); // İlk 10 öğrenci
    ```
 
 4. **Önbellek Kullanımı**: Tekrarlanan sorguları önbelleğe alın:
@@ -915,4 +907,4 @@ export const config = {
 - [Tenant Veri İzolasyon Stratejisi](../architecture/data-isolation.md)
 - [CI/CD ile Supabase Dağıtımı](../deployment/ci-cd-pipeline.md)
 - [Supabase Resmi Dokümantasyonu](https://supabase.io/docs)
-- [PostgreSQL Performans Optimizasyonu](../database/postgres-performance.md) 
+- [PostgreSQL Performans Optimizasyonu](../database/postgres-performance.md)

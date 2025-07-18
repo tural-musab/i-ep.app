@@ -1,9 +1,9 @@
 /**
  * Super Admin Domains Management API
  * Sprint 7: Super Admin Paneli - Domain Yönetimi Endpoint'i
- * 
+ *
  * Bu endpoint domain yönetimi işlemlerini sağlar ve sadece super admin'ler tarafından erişilebilir.
- * 
+ *
  * GET /api/super-admin/domains - Domain listesi
  * POST /api/super-admin/domains - Yeni domain ekleme
  */
@@ -31,7 +31,9 @@ const logger = getLogger('super-admin-domains-api');
 /**
  * Super Admin yetki kontrolü
  */
-async function validateSuperAdminAccess(request: NextRequest): Promise<{ authorized: boolean; userId?: string; error?: string }> {
+async function validateSuperAdminAccess(
+  request: NextRequest
+): Promise<{ authorized: boolean; userId?: string; error?: string }> {
   try {
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -39,15 +41,18 @@ async function validateSuperAdminAccess(request: NextRequest): Promise<{ authori
     }
 
     const token = authHeader.split(' ')[1];
-    const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
-    
+    const {
+      data: { user },
+      error: authError,
+    } = await supabaseAdmin.auth.getUser(token);
+
     if (authError || !user) {
       return { authorized: false, error: 'Invalid or expired token' };
     }
 
     // Super admin rolü kontrolü
     const { data: isSuperAdmin, error: roleError } = await supabaseAdmin.rpc('is_super_admin');
-    
+
     if (roleError || !isSuperAdmin) {
       logger.warn(`Non-admin user attempted to access domains management: ${user.email}`);
       return { authorized: false, error: 'Super admin access required' };
@@ -74,12 +79,12 @@ async function checkDomainSSL(domain: string): Promise<{
     // Basit SSL kontrolü - production'da daha detaylı olacak
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
-    
+
     const response = await fetch(`https://${domain}`, {
       method: 'HEAD',
-      signal: controller.signal
+      signal: controller.signal,
     });
-    
+
     clearTimeout(timeoutId);
 
     if (response.ok) {
@@ -87,27 +92,29 @@ async function checkDomainSSL(domain: string): Promise<{
       // Şimdilik mockup veri dönüyoruz
       const mockExpiryDate = new Date();
       mockExpiryDate.setMonth(mockExpiryDate.getMonth() + 3);
-      
-      const daysUntilExpiry = Math.floor((mockExpiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-      
+
+      const daysUntilExpiry = Math.floor(
+        (mockExpiryDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+      );
+
       return {
         isValid: true,
         expiresAt: mockExpiryDate.toISOString(),
         daysUntilExpiry,
         issuer: "Let's Encrypt",
-        status: daysUntilExpiry > 30 ? 'valid' : 'expiring'
+        status: daysUntilExpiry > 30 ? 'valid' : 'expiring',
       };
     } else {
       return {
         isValid: false,
-        status: 'invalid'
+        status: 'invalid',
       };
     }
   } catch (error) {
     logger.warn(`SSL check failed for domain ${domain}:`, error);
     return {
       isValid: false,
-      status: 'invalid'
+      status: 'invalid',
     };
   }
 }
@@ -115,7 +122,7 @@ async function checkDomainSSL(domain: string): Promise<{
 /**
  * GET /api/super-admin/domains
  * Domain listesini döndürür
- * 
+ *
  * @swagger
  * /api/super-admin/domains:
  *   get:
@@ -191,7 +198,7 @@ async function checkDomainSSL(domain: string): Promise<{
  */
 export async function GET(request: NextRequest) {
   const timestamp = new Date().toISOString();
-  
+
   try {
     // Super admin yetki kontrolü
     const { authorized, userId, error: authError } = await validateSuperAdminAccess(request);
@@ -216,9 +223,8 @@ export async function GET(request: NextRequest) {
     const to = from + limit - 1;
 
     // Base query with tenant information
-    let query = supabaseAdmin
-      .from('tenant_domains')
-      .select(`
+    let query = supabaseAdmin.from('tenant_domains').select(
+      `
         id,
         tenant_id,
         domain,
@@ -235,7 +241,9 @@ export async function GET(request: NextRequest) {
           name,
           subdomain
         )
-      `, { count: 'exact' });
+      `,
+      { count: 'exact' }
+    );
 
     // Filters
     if (type) {
@@ -261,9 +269,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Pagination ve ordering
-    query = query
-      .order('created_at', { ascending: false })
-      .range(from, to);
+    query = query.order('created_at', { ascending: false }).range(from, to);
 
     const { data: domains, error: domainsError, count } = await query;
 
@@ -278,44 +284,44 @@ export async function GET(request: NextRequest) {
     // Her domain için SSL durumunu kontrol et (paralel)
     const enrichedDomains = await Promise.all(
       (domains || []).map(async (domain) => {
-                 try {
-           let sslInfo: {
-             isValid: boolean;
-             status: 'valid' | 'expiring' | 'expired' | 'invalid' | 'unknown';
-             daysUntilExpiry: number | null;
-             issuer: string | null;
-             expiresAt: string | null;
-           } = {
-             isValid: false,
-             status: 'unknown',
-             daysUntilExpiry: null,
-             issuer: null,
-             expiresAt: null
-           };
+        try {
+          let sslInfo: {
+            isValid: boolean;
+            status: 'valid' | 'expiring' | 'expired' | 'invalid' | 'unknown';
+            daysUntilExpiry: number | null;
+            issuer: string | null;
+            expiresAt: string | null;
+          } = {
+            isValid: false,
+            status: 'unknown',
+            daysUntilExpiry: null,
+            issuer: null,
+            expiresAt: null,
+          };
 
-           // Custom domain'ler için SSL kontrolü yap
-           if (domain.type === 'custom' && domain.is_verified) {
-             try {
-               sslInfo = await checkDomainSSL(domain.domain);
-             } catch (error) {
-               logger.warn(`SSL check failed for ${domain.domain}:`, error);
-             }
-           } else if (domain.type === 'subdomain') {
-             // Subdomain'ler için varsayılan olarak valid kabul et
-             sslInfo = {
-               isValid: true,
-               status: 'valid',
-               daysUntilExpiry: 90,
-               issuer: "Cloudflare",
-               expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
-             };
-           }
+          // Custom domain'ler için SSL kontrolü yap
+          if (domain.type === 'custom' && domain.is_verified) {
+            try {
+              sslInfo = await checkDomainSSL(domain.domain);
+            } catch (error) {
+              logger.warn(`SSL check failed for ${domain.domain}:`, error);
+            }
+          } else if (domain.type === 'subdomain') {
+            // Subdomain'ler için varsayılan olarak valid kabul et
+            sslInfo = {
+              isValid: true,
+              status: 'valid',
+              daysUntilExpiry: 90,
+              issuer: 'Cloudflare',
+              expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+            };
+          }
 
-           return {
-             id: domain.id,
-             tenantId: domain.tenant_id,
-             tenantName: (domain as DomainWithTenant).tenants.name,
-             tenantSubdomain: (domain as DomainWithTenant).tenants.subdomain,
+          return {
+            id: domain.id,
+            tenantId: domain.tenant_id,
+            tenantName: (domain as DomainWithTenant).tenants.name,
+            tenantSubdomain: (domain as DomainWithTenant).tenants.subdomain,
             domain: domain.domain,
             type: domain.type,
             isPrimary: domain.is_primary,
@@ -324,7 +330,7 @@ export async function GET(request: NextRequest) {
             verifiedAt: domain.verified_at,
             ssl: sslInfo,
             createdAt: domain.created_at,
-            updatedAt: domain.updated_at
+            updatedAt: domain.updated_at,
           };
         } catch (error) {
           logger.warn(`Failed to enrich domain ${domain.id}:`, error);
@@ -344,10 +350,10 @@ export async function GET(request: NextRequest) {
               status: 'unknown' as const,
               daysUntilExpiry: null,
               issuer: null,
-              expiresAt: null
+              expiresAt: null,
             },
             createdAt: domain.created_at,
-            updatedAt: domain.updated_at
+            updatedAt: domain.updated_at,
           };
         }
       })
@@ -361,7 +367,7 @@ export async function GET(request: NextRequest) {
       limit,
       totalPages,
       hasNext: page < totalPages,
-      hasPrev: page > 1
+      hasPrev: page > 1,
     };
 
     // Audit log
@@ -373,7 +379,15 @@ export async function GET(request: NextRequest) {
       resource_type: 'domains',
       resource_id: 'list',
       description: `Super admin domains list access`,
-      metadata: { page, limit, type, status, tenantId, search, resultCount: enrichedDomains.length }
+      metadata: {
+        page,
+        limit,
+        type,
+        status,
+        tenantId,
+        search,
+        resultCount: enrichedDomains.length,
+      },
     });
 
     logger.info(`Super admin domains list accessed by ${userId}`, {
@@ -383,24 +397,23 @@ export async function GET(request: NextRequest) {
       status,
       tenantId,
       search,
-      resultCount: enrichedDomains.length
+      resultCount: enrichedDomains.length,
     });
 
     return NextResponse.json({
       success: true,
       data: enrichedDomains,
       meta,
-      timestamp
+      timestamp,
     });
-
   } catch (error) {
     logger.error('Domains list endpoint error:', error);
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to fetch domains', 
-        timestamp 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to fetch domains',
+        timestamp,
       },
       { status: 500 }
     );
@@ -410,7 +423,7 @@ export async function GET(request: NextRequest) {
 /**
  * POST /api/super-admin/domains
  * Yeni domain ekler
- * 
+ *
  * @swagger
  * /api/super-admin/domains:
  *   post:
@@ -477,7 +490,7 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   const timestamp = new Date().toISOString();
-  
+
   try {
     // Super admin yetki kontrolü
     const { authorized, userId, error: authError } = await validateSuperAdminAccess(request);
@@ -515,7 +528,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Domain format kontrolü (basit)
-    const domainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    const domainRegex =
+      /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
     if (!domainRegex.test(domain)) {
       return NextResponse.json(
         { success: false, error: 'Invalid domain format', timestamp },
@@ -557,9 +571,10 @@ export async function POST(request: NextRequest) {
         is_verified: type === 'subdomain', // Subdomain'ler otomatik verified
         verification_status: type === 'subdomain' ? 'verified' : 'pending',
         verified_at: type === 'subdomain' ? new Date().toISOString() : null,
-        ssl_status: type === 'subdomain' ? 'valid' : 'pending'
+        ssl_status: type === 'subdomain' ? 'valid' : 'pending',
       })
-      .select(`
+      .select(
+        `
         id,
         tenant_id,
         domain,
@@ -571,7 +586,8 @@ export async function POST(request: NextRequest) {
         ssl_status,
         created_at,
         updated_at
-      `)
+      `
+      )
       .single();
 
     if (domainError || !newDomain) {
@@ -592,7 +608,7 @@ export async function POST(request: NextRequest) {
       resource_id: newDomain.id,
       description: `Domain added to tenant ${tenant.name}: ${domain}`,
       new_state: newDomain,
-      metadata: { domain, type, is_primary, tenant_name: tenant.name }
+      metadata: { domain, type, is_primary, tenant_name: tenant.name },
     });
 
     logger.info(`New domain added by super admin ${userId}`, {
@@ -600,31 +616,33 @@ export async function POST(request: NextRequest) {
       domain,
       tenantId: tenant_id,
       type,
-      is_primary
+      is_primary,
     });
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        ...newDomain,
-        tenant: {
-          id: tenant.id,
-          name: tenant.name
-        }
+    return NextResponse.json(
+      {
+        success: true,
+        data: {
+          ...newDomain,
+          tenant: {
+            id: tenant.id,
+            name: tenant.name,
+          },
+        },
+        timestamp,
       },
-      timestamp
-    }, { status: 201 });
-
+      { status: 201 }
+    );
   } catch (error) {
     logger.error('Domain creation endpoint error:', error);
-    
+
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Failed to create domain', 
-        timestamp 
+      {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to create domain',
+        timestamp,
       },
       { status: 500 }
     );
   }
-} 
+}

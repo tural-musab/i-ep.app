@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs';
+import { z } from 'zod';
 
 // Env profil desteği - default: undefined, options: local-remote
 const ENV_PROFILE = process.env.NEXT_ENV_PROFILE;
@@ -42,6 +42,14 @@ export const env = createEnv({
     CLOUDFLARE_EMAIL: z.string().email().optional(),
     CLOUDFLARE_ACCOUNT_ID: z.string().optional(),
 
+    // Cloudflare R2 Storage - optional
+    CLOUDFLARE_R2_ACCESS_KEY_ID: z.string().optional(),
+    CLOUDFLARE_R2_SECRET_ACCESS_KEY: z.string().optional(),
+    CLOUDFLARE_R2_ENDPOINT: z.string().url().optional(),
+    CLOUDFLARE_R2_BUCKET_NAME: z.string().optional(),
+    CLOUDFLARE_R2_TOKEN: z.string().optional(),
+    CLOUDFLARE_R2_PUBLIC_URL: z.string().url().optional(),
+
     // Payment Gateway - İyzico
     IYZICO_API_KEY: z.string().optional(),
     IYZICO_SECRET_KEY: z.string().optional(),
@@ -52,23 +60,23 @@ export const env = createEnv({
     UPSTASH_REDIS_TOKEN: z.string().optional(),
 
     // Environment
-    NODE_ENV: z.enum(["development", "production", "test", "staging"]),
-    
+    NODE_ENV: z.enum(['development', 'production', 'test', 'staging']),
+
     // Env Profile (optional)
-    NEXT_ENV_PROFILE: z.enum(["local-remote"]).optional(),
-    
+    NEXT_ENV_PROFILE: z.enum(['local-remote']).optional(),
+
     // CORS Settings
     CORS_ALLOW_ORIGINS: z.string().optional(),
-    
+
     // Domain
-    ROOT_DOMAIN: z.string().default("i-ep.app"),
+    ROOT_DOMAIN: z.string().default('i-ep.app'),
     VERCEL_URL: z.string().optional(),
   },
   client: {
     // Public URLs
     NEXT_PUBLIC_APP_NAME: z.string(),
     NEXT_PUBLIC_APP_URL: z.string().url(),
-    
+
     // Supabase Public
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
@@ -101,6 +109,12 @@ export const env = createEnv({
     CLOUDFLARE_ZONE_ID: process.env.CLOUDFLARE_ZONE_ID,
     CLOUDFLARE_EMAIL: process.env.CLOUDFLARE_EMAIL,
     CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
+    CLOUDFLARE_R2_ACCESS_KEY_ID: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID,
+    CLOUDFLARE_R2_SECRET_ACCESS_KEY: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY,
+    CLOUDFLARE_R2_ENDPOINT: process.env.CLOUDFLARE_R2_ENDPOINT,
+    CLOUDFLARE_R2_BUCKET_NAME: process.env.CLOUDFLARE_R2_BUCKET_NAME,
+    CLOUDFLARE_R2_TOKEN: process.env.CLOUDFLARE_R2_TOKEN,
+    CLOUDFLARE_R2_PUBLIC_URL: process.env.CLOUDFLARE_R2_PUBLIC_URL,
     IYZICO_API_KEY: process.env.IYZICO_API_KEY,
     IYZICO_SECRET_KEY: process.env.IYZICO_SECRET_KEY,
     IYZICO_BASE_URL: process.env.IYZICO_BASE_URL,
@@ -123,4 +137,4 @@ export const env = createEnv({
   // Environment validation enabled for security
   skipValidation: process.env.NODE_ENV === 'test' || !process.env.NODE_ENV, // Skip in test or when NODE_ENV is not set
   emptyStringAsUndefined: true,
-}); 
+});

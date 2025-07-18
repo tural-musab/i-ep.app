@@ -42,7 +42,7 @@ describe('API Endpoint Security', () => {
     it('should reject requests without proper auth headers', async () => {
       const req = createMockRequest({
         method: 'GET',
-        url: 'http://localhost:3000/api/super-admin/users'
+        url: 'http://localhost:3000/api/super-admin/users',
       });
 
       const response = await GET(req as NextRequest);
@@ -54,8 +54,8 @@ describe('API Endpoint Security', () => {
         method: 'GET',
         url: 'http://localhost:3000/api/super-admin/users',
         headers: {
-          'Authorization': 'InvalidToken'
-        }
+          Authorization: 'InvalidToken',
+        },
       });
 
       const response = await GET(req as NextRequest);
@@ -65,15 +65,17 @@ describe('API Endpoint Security', () => {
 
   describe('Rate Limiting', () => {
     it('should enforce rate limits even with service role', async () => {
-      const requests = Array(10).fill(null).map(() => {
-        return createMockRequest({
-          method: 'GET',
-          url: 'http://localhost:3000/api/super-admin/users',
-          headers: {
-            'Authorization': 'Bearer validToken'
-          }
+      const requests = Array(10)
+        .fill(null)
+        .map(() => {
+          return createMockRequest({
+            method: 'GET',
+            url: 'http://localhost:3000/api/super-admin/users',
+            headers: {
+              Authorization: 'Bearer validToken',
+            },
+          });
         });
-      });
 
       // Sıralı olarak istekleri gönder
       for (const req of requests) {
@@ -95,8 +97,8 @@ describe('API Endpoint Security', () => {
         method: 'GET',
         url: 'http://localhost:3000/api/super-admin/users?query=DROP TABLE users',
         headers: {
-          'Authorization': 'Bearer validToken'
-        }
+          Authorization: 'Bearer validToken',
+        },
       });
 
       const response = await GET(req as NextRequest);
@@ -108,11 +110,11 @@ describe('API Endpoint Security', () => {
         method: 'POST',
         url: 'http://localhost:3000/api/super-admin/users',
         headers: {
-          'Authorization': 'Bearer validToken'
+          Authorization: 'Bearer validToken',
         },
         body: {
-          name: '<script>alert("xss")</script>'
-        }
+          name: '<script>alert("xss")</script>',
+        },
       });
 
       const response = await POST(req as NextRequest);
@@ -126,8 +128,8 @@ describe('API Endpoint Security', () => {
         method: 'GET',
         url: 'http://localhost:3000/api/super-admin/users/invalid',
         headers: {
-          'Authorization': 'Bearer validToken'
-        }
+          Authorization: 'Bearer validToken',
+        },
       });
 
       const response = await GET(req as NextRequest);
@@ -144,8 +146,8 @@ describe('API Endpoint Security', () => {
         method: 'GET',
         url: 'http://localhost:3000/api/super-admin/users/tenant/123',
         headers: {
-          'Authorization': 'Bearer validToken'
-        }
+          Authorization: 'Bearer validToken',
+        },
       });
 
       const response = await GET(req as NextRequest);
@@ -154,4 +156,4 @@ describe('API Endpoint Security', () => {
       expect(data.message).toContain('tenant');
     });
   });
-}); 
+});

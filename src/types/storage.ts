@@ -10,38 +10,38 @@ export interface StorageFile {
   id: string;
   tenant_id: string;
   uploaded_by: string;
-  
+
   // File metadata
   filename: string;
   original_filename: string;
   mime_type: string | null;
   size_bytes: number;
   file_hash: string | null;
-  
+
   // Storage info
   storage_provider: StorageProvider;
   storage_path: string;
   storage_bucket: string;
   cdn_url: string | null;
-  
+
   // Access control
   access_level: FileAccessLevel;
   folder_path: string;
-  
+
   // Relationships
   related_to_type: string | null;
   related_to_id: string | null;
-  
+
   // Usage tracking
   access_count: number;
   last_accessed_at: Date | null;
-  
+
   // Metadata
   metadata: Record<string, any>;
-  
+
   // Status
   status: FileStatus;
-  
+
   // Timestamps
   created_at: Date;
   updated_at: Date;
@@ -54,21 +54,21 @@ export interface FileShare {
   shared_by: string;
   shared_with_type: ShareType;
   shared_with_id: string | null;
-  
+
   // Permissions
   can_download: boolean;
   can_view: boolean;
   can_delete: boolean;
-  
+
   // Share metadata
   expires_at: Date | null;
   access_token: string | null;
   password_hash: string | null;
-  
+
   // Usage
   access_count: number;
   last_accessed_at: Date | null;
-  
+
   created_at: Date;
 }
 

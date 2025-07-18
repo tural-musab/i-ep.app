@@ -13,6 +13,7 @@ Iqra Eğitim Portalı için frontend çerçevesi seçimi yapılırken aşağıda
 - Çok kiracılı mimariye uyumluluk
 
 Frontend çerçevesi seçimi için birden fazla alternatif değerlendirildi:
+
 - React + Custom Setup
 - Next.js
 - Remix
@@ -57,18 +58,22 @@ Kabul Edildi
 ## Alternatifler
 
 ### React + Custom Setup
+
 - **Avantajlar**: Tam kontrol, özel ihtiyaçlara göre yapılandırma
 - **Dezavantajlar**: SSR, routing gibi özellikleri sıfırdan yapılandırmak gerekir, bakım maliyeti yüksek
 
 ### Remix
+
 - **Avantajlar**: İyi veri yükleme paradigması, hızlı geliştirme
 - **Dezavantajlar**: Nispeten daha küçük topluluk, Türkiye'de daha az yaygın
 
 ### Nuxt.js (Vue.js)
+
 - **Avantajlar**: Vue.js'in daha basit sözdizimi, iyi dokümantasyon
 - **Dezavantajlar**: Türkiye'de React kadar yaygın bir ekosistem değil, geliştirici bulma zorluğu
 
 ### SvelteKit
+
 - **Avantajlar**: Daha az boilerplate kod, daha iyi performans
 - **Dezavantajlar**: Daha küçük ekosistem ve topluluk, olgunlaşmamış üçüncü parti kütüphane desteği
 
@@ -81,4 +86,4 @@ Kabul Edildi
 - [Next.js Resmi Dokümantasyonu](https://nextjs.org/docs)
 - [Next.js App Router Mimarisi](https://nextjs.org/docs/app)
 - [React Server Components](https://reactjs.org/blog/2020/12/21/data-fetching-with-react-server-components.html)
-- [Next.js SEO ve Performans İncelemesi](https://web.dev/articles/nextjs-performance) 
+- [Next.js SEO ve Performans İncelemesi](https://web.dev/articles/nextjs-performance)

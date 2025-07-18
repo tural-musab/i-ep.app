@@ -10,13 +10,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  BookOpen, 
-  Calculator, 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  Award, 
+import {
+  BookOpen,
+  Calculator,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  Award,
   FileText,
   AlertTriangle,
   CheckCircle,
@@ -26,7 +26,7 @@ import {
   BarChart3,
   Target,
   Clock,
-  Edit
+  Edit,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -40,7 +40,7 @@ export function GradeDashboard() {
     pendingGrades: 18,
     monthlyTrend: 'up',
     trendValue: 0.15,
-    passingRate: 88.5
+    passingRate: 88.5,
   };
 
   const recentGrades = [
@@ -55,7 +55,7 @@ export function GradeDashboard() {
       maxGrade: 100,
       date: '2025-01-15',
       teacher: 'Ahmet Öğretmen',
-      letterGrade: 'B'
+      letterGrade: 'B',
     },
     {
       id: '2',
@@ -68,7 +68,7 @@ export function GradeDashboard() {
       maxGrade: 100,
       date: '2025-01-15',
       teacher: 'Fatma Öğretmen',
-      letterGrade: 'A'
+      letterGrade: 'A',
     },
     {
       id: '3',
@@ -81,7 +81,7 @@ export function GradeDashboard() {
       maxGrade: 100,
       date: '2025-01-14',
       teacher: 'Mustafa Öğretmen',
-      letterGrade: 'C'
+      letterGrade: 'C',
     },
     {
       id: '4',
@@ -94,8 +94,8 @@ export function GradeDashboard() {
       maxGrade: 100,
       date: '2025-01-14',
       teacher: 'Zeynep Öğretmen',
-      letterGrade: 'B'
-    }
+      letterGrade: 'B',
+    },
   ];
 
   const classPerformance = [
@@ -106,7 +106,7 @@ export function GradeDashboard() {
       passingRate: 92,
       topSubject: 'Matematik',
       challengingSubject: 'Fen Bilgisi',
-      trend: 'up'
+      trend: 'up',
     },
     {
       class: '5-B',
@@ -115,7 +115,7 @@ export function GradeDashboard() {
       passingRate: 87,
       topSubject: 'Türkçe',
       challengingSubject: 'Matematik',
-      trend: 'down'
+      trend: 'down',
     },
     {
       class: '6-A',
@@ -124,7 +124,7 @@ export function GradeDashboard() {
       passingRate: 89,
       topSubject: 'Sosyal Bilgiler',
       challengingSubject: 'İngilizce',
-      trend: 'up'
+      trend: 'up',
     },
     {
       class: '6-B',
@@ -133,8 +133,8 @@ export function GradeDashboard() {
       passingRate: 85,
       topSubject: 'Türkçe',
       challengingSubject: 'Fen Bilgisi',
-      trend: 'stable'
-    }
+      trend: 'stable',
+    },
   ];
 
   const pendingGrades = [
@@ -147,7 +147,7 @@ export function GradeDashboard() {
       gradedCount: 25,
       pendingCount: 5,
       deadline: '2025-01-17',
-      priority: 'high'
+      priority: 'high',
     },
     {
       id: '2',
@@ -158,7 +158,7 @@ export function GradeDashboard() {
       gradedCount: 20,
       pendingCount: 8,
       deadline: '2025-01-18',
-      priority: 'medium'
+      priority: 'medium',
     },
     {
       id: '3',
@@ -169,8 +169,8 @@ export function GradeDashboard() {
       gradedCount: 30,
       pendingCount: 2,
       deadline: '2025-01-19',
-      priority: 'low'
-    }
+      priority: 'low',
+    },
   ];
 
   const subjectInsights = [
@@ -181,7 +181,7 @@ export function GradeDashboard() {
       trendValue: 2.3,
       students: 150,
       difficulty: 'medium',
-      passingRate: 88
+      passingRate: 88,
     },
     {
       subject: 'Türkçe',
@@ -190,7 +190,7 @@ export function GradeDashboard() {
       trendValue: 1.8,
       students: 150,
       difficulty: 'easy',
-      passingRate: 92
+      passingRate: 92,
     },
     {
       subject: 'Fen Bilgisi',
@@ -199,7 +199,7 @@ export function GradeDashboard() {
       trendValue: -0.5,
       students: 150,
       difficulty: 'hard',
-      passingRate: 85
+      passingRate: 85,
     },
     {
       subject: 'Sosyal Bilgiler',
@@ -208,8 +208,8 @@ export function GradeDashboard() {
       trendValue: 3.1,
       students: 150,
       difficulty: 'easy',
-      passingRate: 94
-    }
+      passingRate: 94,
+    },
   ];
 
   const alerts = [
@@ -220,7 +220,7 @@ export function GradeDashboard() {
       priority: 'high',
       class: '5-B',
       subject: 'Fen Bilgisi',
-      value: 68.5
+      value: 68.5,
     },
     {
       id: '2',
@@ -229,7 +229,7 @@ export function GradeDashboard() {
       priority: 'medium',
       class: '5-A',
       subject: 'Matematik',
-      deadline: '2025-01-17'
+      deadline: '2025-01-17',
     },
     {
       id: '3',
@@ -238,8 +238,8 @@ export function GradeDashboard() {
       priority: 'low',
       class: '6-A',
       subject: 'Sosyal Bilgiler',
-      value: 94.2
-    }
+      value: 94.2,
+    },
   ];
 
   const getTrendIcon = (trend: string) => {
@@ -279,28 +279,40 @@ export function GradeDashboard() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'text-green-600';
-      case 'medium': return 'text-yellow-600';
-      case 'hard': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'easy':
+        return 'text-green-600';
+      case 'medium':
+        return 'text-yellow-600';
+      case 'hard':
+        return 'text-red-600';
+      default:
+        return 'text-gray-600';
     }
   };
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'high':
+        return 'bg-red-100 text-red-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
     }
   };
 
   const getAlertIcon = (type: string) => {
     switch (type) {
-      case 'low_performance': return <AlertTriangle className="h-4 w-4 text-red-500" />;
-      case 'pending_deadline': return <Clock className="h-4 w-4 text-yellow-500" />;
-      case 'excellent_performance': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      default: return <AlertTriangle className="h-4 w-4 text-gray-500" />;
+      case 'low_performance':
+        return <AlertTriangle className="h-4 w-4 text-red-500" />;
+      case 'pending_deadline':
+        return <Clock className="h-4 w-4 text-yellow-500" />;
+      case 'excellent_performance':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      default:
+        return <AlertTriangle className="h-4 w-4 text-gray-500" />;
     }
   };
 
@@ -312,13 +324,13 @@ export function GradeDashboard() {
         <div className="flex gap-2">
           <Link href="/dashboard/grades">
             <Button variant="outline">
-              <Eye className="h-4 w-4 mr-2" />
+              <Eye className="mr-2 h-4 w-4" />
               Detaylı Görünüm
             </Button>
           </Link>
           <Link href="/dashboard/grades?tab=entry">
             <Button>
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Not Ekle
             </Button>
           </Link>
@@ -326,19 +338,18 @@ export function GradeDashboard() {
       </div>
 
       {/* Key Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ortalama GPA</CardTitle>
-            <Calculator className="h-4 w-4 text-muted-foreground" />
+            <Calculator className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${getGPAColor(todayStats.averageGPA)}`}>
               {todayStats.averageGPA}
             </div>
             <div className="flex items-center text-xs text-green-600">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              +{todayStats.trendValue} bu ay
+              <TrendingUp className="mr-1 h-3 w-3" />+{todayStats.trendValue} bu ay
             </div>
           </CardContent>
         </Card>
@@ -346,46 +357,38 @@ export function GradeDashboard() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Başarı Oranı</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
+            <Target className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              %{todayStats.passingRate}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {todayStats.totalStudents} öğrenci
-            </p>
+            <div className="text-2xl font-bold text-green-600">%{todayStats.passingRate}</div>
+            <p className="text-muted-foreground text-xs">{todayStats.totalStudents} öğrenci</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Notlanan Ödev</CardTitle>
-            <Award className="h-4 w-4 text-muted-foreground" />
+            <Award className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{todayStats.gradedAssignments}</div>
-            <p className="text-xs text-muted-foreground">
-              Bu dönem
-            </p>
+            <p className="text-muted-foreground text-xs">Bu dönem</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bekleyen Notlar</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-orange-600">{todayStats.pendingGrades}</div>
-            <p className="text-xs text-muted-foreground">
-              Not girilmesi gereken
-            </p>
+            <p className="text-muted-foreground text-xs">Not girilmesi gereken</p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Recent Grades */}
         <Card>
           <CardHeader>
@@ -393,14 +396,15 @@ export function GradeDashboard() {
               <FileText className="h-5 w-5" />
               Son Girilen Notlar
             </CardTitle>
-            <CardDescription>
-              En son girilen notların listesi
-            </CardDescription>
+            <CardDescription>En son girilen notların listesi</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {recentGrades.map((grade) => (
-                <div key={grade.id} className="flex items-center justify-between p-3 border rounded-lg">
+                <div
+                  key={grade.id}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
                   <div className="flex items-center gap-3">
                     <div>
                       <h3 className="font-medium">{grade.student}</h3>
@@ -418,12 +422,8 @@ export function GradeDashboard() {
                       {grade.letterGrade}
                     </Badge>
                     <div className="text-right">
-                      <div className={`font-bold ${getGradeColor(grade.grade)}`}>
-                        {grade.grade}
-                      </div>
-                      <div className="text-sm text-gray-600">
-                        /{grade.maxGrade}
-                      </div>
+                      <div className={`font-bold ${getGradeColor(grade.grade)}`}>{grade.grade}</div>
+                      <div className="text-sm text-gray-600">/{grade.maxGrade}</div>
                     </div>
                   </div>
                 </div>
@@ -439,15 +439,13 @@ export function GradeDashboard() {
               <Users className="h-5 w-5" />
               Sınıf Performansları
             </CardTitle>
-            <CardDescription>
-              Sınıf bazlı akademik performans özeti
-            </CardDescription>
+            <CardDescription>Sınıf bazlı akademik performans özeti</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {classPerformance.map((classData, index) => (
-                <div key={index} className="p-3 border rounded-lg">
-                  <div className="flex justify-between items-start mb-2">
+                <div key={index} className="rounded-lg border p-3">
+                  <div className="mb-2 flex items-start justify-between">
                     <div>
                       <h3 className="font-medium">{classData.class}</h3>
                       <p className="text-sm text-gray-600">{classData.students} öğrenci</p>
@@ -462,23 +460,27 @@ export function GradeDashboard() {
                       {getTrendIcon(classData.trend)}
                     </div>
                   </div>
-                  
+
                   <div className="mb-2">
-                    <div className="flex justify-between items-center mb-1">
+                    <div className="mb-1 flex items-center justify-between">
                       <span className="text-sm text-gray-600">Başarı Oranı</span>
                       <span className="text-sm font-medium">{classData.passingRate}%</span>
                     </div>
                     <Progress value={classData.passingRate} className="h-2" />
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
                       <span className="text-gray-600">En Başarılı:</span>
-                      <span className="ml-1 font-medium text-green-600">{classData.topSubject}</span>
+                      <span className="ml-1 font-medium text-green-600">
+                        {classData.topSubject}
+                      </span>
                     </div>
                     <div>
                       <span className="text-gray-600">Zor Olan:</span>
-                      <span className="ml-1 font-medium text-red-600">{classData.challengingSubject}</span>
+                      <span className="ml-1 font-medium text-red-600">
+                        {classData.challengingSubject}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -488,7 +490,7 @@ export function GradeDashboard() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Pending Grades */}
         <Card>
           <CardHeader>
@@ -496,15 +498,13 @@ export function GradeDashboard() {
               <Clock className="h-5 w-5" />
               Bekleyen Notlar
             </CardTitle>
-            <CardDescription>
-              Not girişi bekleyen sınavlar ve ödevler
-            </CardDescription>
+            <CardDescription>Not girişi bekleyen sınavlar ve ödevler</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {pendingGrades.map((pending) => (
-                <div key={pending.id} className="p-3 border rounded-lg bg-orange-50">
-                  <div className="flex justify-between items-start mb-2">
+                <div key={pending.id} className="rounded-lg border bg-orange-50 p-3">
+                  <div className="mb-2 flex items-start justify-between">
                     <div>
                       <h3 className="font-medium">{pending.examName}</h3>
                       <p className="text-sm text-gray-600">
@@ -515,8 +515,8 @@ export function GradeDashboard() {
                       {pending.pendingCount} bekleyen
                     </Badge>
                   </div>
-                  
-                  <div className="flex justify-between items-center mb-2">
+
+                  <div className="mb-2 flex items-center justify-between">
                     <div className="text-sm text-gray-600">
                       İlerleme: {pending.gradedCount}/{pending.studentsCount}
                     </div>
@@ -524,9 +524,9 @@ export function GradeDashboard() {
                       Son: {new Date(pending.deadline).toLocaleDateString('tr-TR')}
                     </div>
                   </div>
-                  
-                  <Progress 
-                    value={(pending.gradedCount / pending.studentsCount) * 100} 
+
+                  <Progress
+                    value={(pending.gradedCount / pending.studentsCount) * 100}
                     className="h-2"
                   />
                 </div>
@@ -542,15 +542,13 @@ export function GradeDashboard() {
               <BookOpen className="h-5 w-5" />
               Ders İçgörüleri
             </CardTitle>
-            <CardDescription>
-              Ders bazlı performans analizi
-            </CardDescription>
+            <CardDescription>Ders bazlı performans analizi</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {subjectInsights.map((subject, index) => (
-                <div key={index} className="p-3 border rounded-lg">
-                  <div className="flex justify-between items-start mb-2">
+                <div key={index} className="rounded-lg border p-3">
+                  <div className="mb-2 flex items-start justify-between">
                     <div>
                       <h3 className="font-medium">{subject.subject}</h3>
                       <p className="text-sm text-gray-600">{subject.students} öğrenci</p>
@@ -565,13 +563,18 @@ export function GradeDashboard() {
                       {getTrendIcon(subject.trend)}
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
                       <span className="text-gray-600">Zorluk:</span>
-                      <span className={`ml-1 font-medium ${getDifficultyColor(subject.difficulty)}`}>
-                        {subject.difficulty === 'easy' ? 'Kolay' : 
-                         subject.difficulty === 'medium' ? 'Orta' : 'Zor'}
+                      <span
+                        className={`ml-1 font-medium ${getDifficultyColor(subject.difficulty)}`}
+                      >
+                        {subject.difficulty === 'easy'
+                          ? 'Kolay'
+                          : subject.difficulty === 'medium'
+                            ? 'Orta'
+                            : 'Zor'}
                       </span>
                     </div>
                     <div>
@@ -593,21 +596,22 @@ export function GradeDashboard() {
             <AlertTriangle className="h-5 w-5" />
             Uyarılar ve Bildirimler
           </CardTitle>
-          <CardDescription>
-            Dikkat edilmesi gereken durumlar
-          </CardDescription>
+          <CardDescription>Dikkat edilmesi gereken durumlar</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
             {alerts.map((alert) => (
-              <div key={alert.id} className="flex items-center gap-3 p-3 border rounded-lg">
+              <div key={alert.id} className="flex items-center gap-3 rounded-lg border p-3">
                 {getAlertIcon(alert.type)}
                 <div className="flex-1">
-                  <div className="flex justify-between items-start">
+                  <div className="flex items-start justify-between">
                     <p className="text-sm font-medium">{alert.message}</p>
                     <Badge variant="outline" className={getPriorityColor(alert.priority)}>
-                      {alert.priority === 'high' ? 'Yüksek' : 
-                       alert.priority === 'medium' ? 'Orta' : 'Düşük'}
+                      {alert.priority === 'high'
+                        ? 'Yüksek'
+                        : alert.priority === 'medium'
+                          ? 'Orta'
+                          : 'Düşük'}
                     </Badge>
                   </div>
                   <p className="text-xs text-gray-600">
@@ -617,7 +621,7 @@ export function GradeDashboard() {
                   </p>
                 </div>
                 <Button variant="outline" size="sm">
-                  <Eye className="h-4 w-4 mr-2" />
+                  <Eye className="mr-2 h-4 w-4" />
                   İncele
                 </Button>
               </div>
@@ -630,36 +634,34 @@ export function GradeDashboard() {
       <Card>
         <CardHeader>
           <CardTitle>Hızlı İşlemler</CardTitle>
-          <CardDescription>
-            Sık kullanılan not yönetimi işlemleri
-          </CardDescription>
+          <CardDescription>Sık kullanılan not yönetimi işlemleri</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Link href="/dashboard/grades?tab=entry">
               <Button variant="outline" className="w-full justify-start">
-                <Plus className="h-4 w-4 mr-2" />
+                <Plus className="mr-2 h-4 w-4" />
                 Not Ekle
               </Button>
             </Link>
-            
+
             <Link href="/dashboard/grades?tab=gradebook">
               <Button variant="outline" className="w-full justify-start">
-                <BookOpen className="h-4 w-4 mr-2" />
+                <BookOpen className="mr-2 h-4 w-4" />
                 Not Defteri
               </Button>
             </Link>
-            
+
             <Link href="/dashboard/grades?tab=analytics">
               <Button variant="outline" className="w-full justify-start">
-                <BarChart3 className="h-4 w-4 mr-2" />
+                <BarChart3 className="mr-2 h-4 w-4" />
                 Analitik
               </Button>
             </Link>
-            
+
             <Link href="/dashboard/grades?tab=reports">
               <Button variant="outline" className="w-full justify-start">
-                <FileText className="h-4 w-4 mr-2" />
+                <FileText className="mr-2 h-4 w-4" />
                 Raporlar
               </Button>
             </Link>

@@ -18,22 +18,22 @@ Tenant bilgilerini düzenlemeyi sağlayan form komponenti.
 interface TenantEditProps {
   /** Tenant ID */
   tenantId: string;
-  
+
   /** Başlangıç değerleri */
   initialValues?: Partial<TenantEditData>;
-  
+
   /** Düzenlenebilir alanlar */
   editableFields?: EditableField[];
-  
+
   /** Form gönderildiğinde çağrılır */
   onSubmit?: (data: TenantEditData) => Promise<void>;
-  
+
   /** İptal edildiğinde çağrılır */
   onCancel?: () => void;
-  
+
   /** Değişiklik olduğunda çağrılır */
   onChange?: (data: Partial<TenantEditData>) => void;
-  
+
   /** Form durumu */
   status?: FormStatus;
 }
@@ -86,7 +86,7 @@ import { TenantEdit } from '@components/super-admin/tenant';
 export default function EditTenantPage() {
   const { tenantId } = useParams();
   const { tenant } = useTenant(tenantId);
-  
+
   const handleSubmit = async (data: TenantEditData) => {
     try {
       await updateTenant(tenantId, data);
@@ -101,12 +101,7 @@ export default function EditTenantPage() {
     <TenantEdit
       tenantId={tenantId}
       initialValues={tenant}
-      editableFields={[
-        'name',
-        'status',
-        'subscription.plan',
-        'subscription.features'
-      ]}
+      editableFields={['name', 'status', 'subscription.plan', 'subscription.features']}
       onSubmit={handleSubmit}
       onCancel={() => router.back()}
     />
@@ -117,15 +112,13 @@ export default function EditTenantPage() {
 ## Form Sekmeleri
 
 ### Genel Bilgiler
+
 ```tsx
-<GeneralInfoTab
-  values={values}
-  errors={errors}
-  onChange={handleChange}
-/>
+<GeneralInfoTab values={values} errors={errors} onChange={handleChange} />
 ```
 
 ### Abonelik
+
 ```tsx
 <SubscriptionTab
   values={values.subscription}
@@ -136,6 +129,7 @@ export default function EditTenantPage() {
 ```
 
 ### Özelleştirme
+
 ```tsx
 <CustomizationTab
   values={values.customization}
@@ -145,6 +139,7 @@ export default function EditTenantPage() {
 ```
 
 ### Güvenlik
+
 ```tsx
 <SecurityTab
   values={values.security}
@@ -160,7 +155,7 @@ export default function EditTenantPage() {
 const updateTenant = async (data: TenantEditData) => {
   const response = await fetch(`/api/tenants/${tenantId}`, {
     method: 'PATCH',
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
   return response.json();
 };
@@ -169,10 +164,10 @@ const updateTenant = async (data: TenantEditData) => {
 const uploadLogo = async (file: File) => {
   const formData = new FormData();
   formData.append('logo', file);
-  
+
   const response = await fetch(`/api/tenants/${tenantId}/logo`, {
     method: 'POST',
-    body: formData
+    body: formData,
   });
   return response.json();
 };
@@ -188,23 +183,20 @@ const fetchHistory = async () => {
 
 ```typescript
 const validationSchema = yup.object().shape({
-  name: yup
-    .string()
-    .required('Tenant adı zorunludur')
-    .min(3, 'En az 3 karakter olmalıdır'),
+  name: yup.string().required('Tenant adı zorunludur').min(3, 'En az 3 karakter olmalıdır'),
   domain: yup
     .string()
     .required('Domain zorunludur')
     .matches(/^[a-z0-9-]+$/, 'Geçersiz domain formatı'),
   subscription: yup.object().shape({
     plan: yup.string().required('Plan seçimi zorunludur'),
-    validUntil: yup.date().required('Geçerlilik tarihi zorunludur')
+    validUntil: yup.date().required('Geçerlilik tarihi zorunludur'),
   }),
   security: yup.object().shape({
-    ipRestrictions: yup.array().of(
-      yup.string().matches(/^(?:\d{1,3}\.){3}\d{1,3}$/, 'Geçersiz IP formatı')
-    )
-  })
+    ipRestrictions: yup
+      .array()
+      .of(yup.string().matches(/^(?:\d{1,3}\.){3}\d{1,3}$/, 'Geçersiz IP formatı')),
+  }),
 });
 ```
 
@@ -235,9 +227,9 @@ const [lockId, setLockId] = useState<string>();
 useEffect(() => {
   const acquireLock = async () => {
     const lock = await fetch(`/api/tenants/${tenantId}/lock`, {
-      method: 'POST'
-    }).then(res => res.json());
-    
+      method: 'POST',
+    }).then((res) => res.json());
+
     setLockId(lock.id);
     return lock;
   };
@@ -245,7 +237,7 @@ useEffect(() => {
   const releaseLock = async () => {
     if (lockId) {
       await fetch(`/api/tenants/${tenantId}/lock/${lockId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       });
     }
   };
@@ -265,11 +257,11 @@ useEffect(() => {
 
 ## Responsive Davranış
 
-| Ekran Boyutu | Davranış |
-|--------------|----------|
-| > 1024px | Yan yana form grupları |
-| 768px - 1024px | Tek kolon form |
-| < 768px | Basitleştirilmiş görünüm |
+| Ekran Boyutu   | Davranış                 |
+| -------------- | ------------------------ |
+| > 1024px       | Yan yana form grupları   |
+| 768px - 1024px | Tek kolon form           |
+| < 768px        | Basitleştirilmiş görünüm |
 
 ## Test
 
@@ -277,7 +269,7 @@ useEffect(() => {
 describe('TenantEdit', () => {
   it('validates required fields', async () => {
     render(<TenantEdit tenantId="test-tenant" />);
-    
+
     await userEvent.click(screen.getByText('Kaydet'));
     expect(screen.getByText('Tenant adı zorunludur')).toBeInTheDocument();
   });
@@ -290,10 +282,10 @@ describe('TenantEdit', () => {
         onSubmit={onSubmit}
       />
     );
-    
+
     await userEvent.type(screen.getByLabelText('Tenant Adı'), 'Test Tenant');
     await userEvent.click(screen.getByText('Kaydet'));
-    
+
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'Test Tenant' })
     );
@@ -301,7 +293,7 @@ describe('TenantEdit', () => {
 
   it('tracks unsaved changes', async () => {
     render(<TenantEdit tenantId="test-tenant" />);
-    
+
     await userEvent.type(screen.getByLabelText('Tenant Adı'), 'New Name');
     expect(screen.getByText('Kaydedilmemiş değişiklikler')).toBeInTheDocument();
   });
@@ -364,7 +356,7 @@ ReadOnly.args = {
   customStyles={{
     header: 'bg-gray-50',
     tabs: 'border-b border-gray-200',
-    content: 'p-6'
+    content: 'p-6',
   }}
 />
 ```
@@ -375,4 +367,4 @@ ReadOnly.args = {
 2. Değişiklikleri otomatik kaydet
 3. Validasyon mesajlarını anında göster
 4. İşlem geçmişini tut
-5. Eşzamanlı düzenlemeyi kontrol et 
+5. Eşzamanlı düzenlemeyi kontrol et

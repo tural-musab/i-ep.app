@@ -2,7 +2,7 @@
 // The config you add here will be used whenever a users browser loads a page in your app.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import * as Sentry from "@sentry/nextjs";
+import * as Sentry from '@sentry/nextjs';
 
 Sentry.init({
   // DSN'i doğrudan yazmak yerine, ortam değişkeninden güvenli bir şekilde alıyoruz.
@@ -10,7 +10,7 @@ Sentry.init({
 
   // Ortam etiketini Vercel'in sağladığı değişkenden otomatik olarak alıyoruz.
   // Canlıda "production", staging'de "preview", lokalde "development" olacak.
-  environment: process.env.VERCEL_ENV || "development",
+  environment: process.env.VERCEL_ENV || 'development',
 
   // Performans takibi için örnekleme oranı. %100'de bırakabilirsin.
   tracesSampleRate: 1.0,

@@ -63,18 +63,22 @@ Kabul Edildi
 ## Alternatifler
 
 ### Formik + Yup
+
 - **Avantajlar**: Popüler, olgun ekosistem, iyi dokümantasyon
 - **Dezavantajlar**: Daha fazla re-render, React 18 ile bazı uyumluluk sorunları, daha geniş bundle size
 
 ### React Final Form + Joi
+
 - **Avantajlar**: Subscription-based render optimizasyonu, esnek API
 - **Dezavantajlar**: TypeScript entegrasyonu daha az güçlü, Joi şema syntax'ı daha verbose olabilir
 
 ### HTML Native Form + Custom Validation
+
 - **Avantajlar**: Minimal bağımlılık, tam kontrol
 - **Dezavantajlar**: Çok fazla boilerplate kod, validation mantığını her yerde tekrarlama
 
 ### Uncontrolled Forms + Validation Libraries
+
 - **Avantajlar**: Basit uygulamalar için yeterli, düşük overhead
 - **Dezavantajlar**: Karmaşık form senaryolarını yönetmek zor, durumu takip etmek zor
 
@@ -113,4 +117,4 @@ Iqra Eğitim Portalı için aşağıdaki form yönetim stratejisi benimsenmişti
 - [Zod Dokümantasyonu](https://zod.dev/)
 - [React Hook Form ile Server Actions Kullanımı](https://react-hook-form.com/advanced-usage#ServerSideRendering)
 - [Zod ile TypeScript Entegrasyonu](https://github.com/colinhacks/zod#type-inference)
-- [Form Validation Patterns](https://www.smashingmagazine.com/2022/09/frontend-form-validation-guide/) 
+- [Form Validation Patterns](https://www.smashingmagazine.com/2022/09/frontend-form-validation-guide/)

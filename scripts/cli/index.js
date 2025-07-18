@@ -4,7 +4,13 @@ const { program } = require('commander');
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const ora = require('ora');
-const { createTenant, listTenants, getTenant, updateTenant, deleteTenant } = require('./tenant-commands');
+const {
+  createTenant,
+  listTenants,
+  getTenant,
+  updateTenant,
+  deleteTenant,
+} = require('./tenant-commands');
 const { generateSchema, testConnection } = require('./db-commands');
 const { version } = require('../../package.json');
 
@@ -25,7 +31,7 @@ program
           type: 'input',
           name: 'name',
           message: 'Tenant adı:',
-          validate: (input) => input.trim() !== '' ? true : 'Tenant adı boş olamaz'
+          validate: (input) => (input.trim() !== '' ? true : 'Tenant adı boş olamaz'),
         },
         {
           type: 'input',
@@ -33,9 +39,10 @@ program
           message: 'Subdomain:',
           validate: (input) => {
             if (input.trim() === '') return 'Subdomain boş olamaz';
-            if (!/^[a-z0-9-]+$/.test(input)) return 'Subdomain sadece küçük harf, rakam ve kısa çizgi içerebilir';
+            if (!/^[a-z0-9-]+$/.test(input))
+              return 'Subdomain sadece küçük harf, rakam ve kısa çizgi içerebilir';
             return true;
-          }
+          },
         },
         {
           type: 'input',
@@ -45,14 +52,14 @@ program
             if (input.trim() === '') return 'Admin e-posta boş olamaz';
             if (!/^\S+@\S+\.\S+$/.test(input)) return 'Geçerli bir e-posta adresi girin';
             return true;
-          }
+          },
         },
         {
           type: 'list',
           name: 'plan',
           message: 'Abonelik planı:',
-          choices: ['free', 'standard', 'premium']
-        }
+          choices: ['free', 'standard', 'premium'],
+        },
       ]);
 
       const spinner = ora('Tenant oluşturuluyor...').start();
@@ -69,28 +76,30 @@ program
 
 program
   .command('tenant:list')
-  .description('Tüm tenant\'ları listele')
+  .description("Tüm tenant'ları listele")
   .option('-s, --status <status>', 'Duruma göre filtrele (active, inactive, trial)')
   .option('-l, --limit <limit>', 'Listelenecek tenant sayısı', '10')
   .action(async (options) => {
-    const spinner = ora('Tenant\'lar getiriliyor...').start();
+    const spinner = ora("Tenant'lar getiriliyor...").start();
     try {
       const tenants = await listTenants(options);
       spinner.succeed(chalk.green(`${tenants.length} tenant bulundu`));
-      
+
       if (tenants.length === 0) {
         console.log(chalk.yellow('Hiç tenant bulunamadı.'));
         return;
       }
 
-      console.table(tenants.map(t => ({
-        ID: t.id,
-        Adı: t.name,
-        Subdomain: t.subdomain,
-        Plan: t.plan,
-        Durum: t.status,
-        OluşturulmaTarihi: new Date(t.createdAt).toLocaleDateString('tr-TR')
-      })));
+      console.table(
+        tenants.map((t) => ({
+          ID: t.id,
+          Adı: t.name,
+          Subdomain: t.subdomain,
+          Plan: t.plan,
+          Durum: t.status,
+          OluşturulmaTarihi: new Date(t.createdAt).toLocaleDateString('tr-TR'),
+        }))
+      );
     } catch (error) {
       spinner.fail(chalk.red(`Tenant listeleme hatası: ${error.message}`));
     }
@@ -104,29 +113,35 @@ program
     try {
       const tenant = await getTenant(tenantId);
       spinner.succeed(chalk.green(`Tenant bilgileri başarıyla alındı`));
-      
+
       console.log(chalk.bold.blue(`\n${tenant.name} (${tenant.subdomain}.i-ep.app)`));
       console.log(chalk.gray('─'.repeat(50)));
       console.log(`ID: ${chalk.cyan(tenant.id)}`);
       console.log(`Durum: ${getStatusBadge(tenant.status)}`);
       console.log(`Plan: ${chalk.cyan(tenant.plan)}`);
-      console.log(`Oluşturulma Tarihi: ${chalk.cyan(new Date(tenant.createdAt).toLocaleString('tr-TR'))}`);
-      
+      console.log(
+        `Oluşturulma Tarihi: ${chalk.cyan(new Date(tenant.createdAt).toLocaleString('tr-TR'))}`
+      );
+
       if (tenant.customDomain) {
         console.log(`Özel Domain: ${chalk.cyan(tenant.customDomain)}`);
       }
-      
+
       console.log(chalk.gray('─'.repeat(50)));
       console.log(chalk.bold('Özellikler:'));
-      tenant.features.forEach(feature => {
+      tenant.features.forEach((feature) => {
         console.log(`  ${chalk.green('✓')} ${feature}`);
       });
-      
+
       console.log(chalk.gray('─'.repeat(50)));
       console.log(chalk.bold('Tema Ayarları:'));
-      console.log(`  Ana Renk: ${chalk.hex(tenant.config.theme.primaryColor)(tenant.config.theme.primaryColor)}`);
-      console.log(`  İkincil Renk: ${chalk.hex(tenant.config.theme.secondaryColor)(tenant.config.theme.secondaryColor)}`);
-      
+      console.log(
+        `  Ana Renk: ${chalk.hex(tenant.config.theme.primaryColor)(tenant.config.theme.primaryColor)}`
+      );
+      console.log(
+        `  İkincil Renk: ${chalk.hex(tenant.config.theme.secondaryColor)(tenant.config.theme.secondaryColor)}`
+      );
+
       if (tenant.stats) {
         console.log(chalk.gray('─'.repeat(50)));
         console.log(chalk.bold('İstatistikler:'));
@@ -141,7 +156,7 @@ program
 
 program
   .command('tenant:update <tenantId>')
-  .description('Tenant\'ı güncelle')
+  .description("Tenant'ı güncelle")
   .action(async (tenantId) => {
     try {
       // Önce mevcut tenant bilgilerini al
@@ -160,21 +175,21 @@ program
           type: 'input',
           name: 'name',
           message: 'Tenant adı:',
-          default: tenant.name
+          default: tenant.name,
         },
         {
           type: 'list',
           name: 'status',
           message: 'Durum:',
           choices: ['active', 'inactive', 'trial'],
-          default: tenant.status
+          default: tenant.status,
         },
         {
           type: 'list',
           name: 'plan',
           message: 'Abonelik planı:',
           choices: ['free', 'standard', 'premium'],
-          default: tenant.plan
+          default: tenant.plan,
         },
         {
           type: 'input',
@@ -182,9 +197,10 @@ program
           message: 'Ana renk (hex):',
           default: tenant.config.theme.primaryColor,
           validate: (input) => {
-            if (!/^#[0-9A-Fa-f]{6}$/.test(input)) return 'Geçerli bir hex renk kodu girin (örn. #1a237e)';
+            if (!/^#[0-9A-Fa-f]{6}$/.test(input))
+              return 'Geçerli bir hex renk kodu girin (örn. #1a237e)';
             return true;
-          }
+          },
         },
         {
           type: 'input',
@@ -192,9 +208,10 @@ program
           message: 'İkincil renk (hex):',
           default: tenant.config.theme.secondaryColor,
           validate: (input) => {
-            if (!/^#[0-9A-Fa-f]{6}$/.test(input)) return 'Geçerli bir hex renk kodu girin (örn. #0288d1)';
+            if (!/^#[0-9A-Fa-f]{6}$/.test(input))
+              return 'Geçerli bir hex renk kodu girin (örn. #0288d1)';
             return true;
-          }
+          },
         },
         {
           type: 'checkbox',
@@ -207,10 +224,10 @@ program
             'attendance_tracking',
             'grade_management',
             'communication_module',
-            'reporting'
+            'reporting',
           ],
-          default: tenant.features
-        }
+          default: tenant.features,
+        },
       ]);
 
       // Güncelleme verilerini hazırla
@@ -221,10 +238,10 @@ program
         config: {
           theme: {
             primaryColor: answers.primaryColor,
-            secondaryColor: answers.secondaryColor
-          }
+            secondaryColor: answers.secondaryColor,
+          },
         },
-        features: answers.features
+        features: answers.features,
       };
 
       const updateSpinner = ora('Tenant güncelleniyor...').start();
@@ -241,7 +258,7 @@ program
 
 program
   .command('tenant:delete <tenantId>')
-  .description('Tenant\'ı sil')
+  .description("Tenant'ı sil")
   .action(async (tenantId) => {
     try {
       // Önce tenant bilgilerini al
@@ -262,9 +279,9 @@ program
         {
           type: 'confirm',
           name: 'confirm',
-          message: 'Bu tenant\'ı silmek istediğinizden emin misiniz?',
-          default: false
-        }
+          message: "Bu tenant'ı silmek istediğinizden emin misiniz?",
+          default: false,
+        },
       ]);
 
       if (!confirm) {
@@ -326,4 +343,4 @@ function getStatusBadge(status) {
 }
 
 // Programı çalıştır
-program.parse(process.argv); 
+program.parse(process.argv);

@@ -35,4 +35,4 @@ process.env = {
   NEXTAUTH_URL: 'http://localhost:3000',
   NEXTAUTH_SECRET: 'test-secret-key-for-testing-purposes-only-32chars',
   SUPABASE_SERVICE_ROLE_KEY: 'test-service-role-key',
-}; 
+};

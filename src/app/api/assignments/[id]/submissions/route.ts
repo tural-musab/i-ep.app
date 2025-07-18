@@ -15,7 +15,7 @@ const CreateSubmissionSchema = z.object({
   student_id: z.string().uuid('Invalid student ID'),
   content: z.string().optional(),
   attachments: z.array(z.string()).optional(),
-  metadata: z.record(z.any()).optional()
+  metadata: z.record(z.any()).optional(),
 });
 
 // Validation schema for submission updates
@@ -25,17 +25,26 @@ const UpdateSubmissionSchema = z.object({
   score: z.number().min(0).optional(),
   feedback: z.string().optional(),
   status: z.enum(['submitted', 'graded', 'returned', 'late']).optional(),
-  metadata: z.record(z.any()).optional()
+  metadata: z.record(z.any()).optional(),
 });
 
 // Query parameters schema
 const QueryParamsSchema = z.object({
-  page: z.string().optional().transform(val => val ? parseInt(val) : 1),
-  limit: z.string().optional().transform(val => val ? parseInt(val) : 10),
+  page: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val) : 1)),
+  limit: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val) : 10)),
   student_id: z.string().uuid().optional(),
   status: z.enum(['submitted', 'graded', 'returned', 'late']).optional(),
-  include_feedback: z.string().optional().transform(val => val === 'true'),
-  sort_by: z.enum(['submission_date', 'score', 'student_name']).optional()
+  include_feedback: z
+    .string()
+    .optional()
+    .transform((val) => val === 'true'),
+  sort_by: z.enum(['submission_date', 'score', 'student_name']).optional(),
 });
 
 /**
@@ -44,11 +53,11 @@ const QueryParamsSchema = z.object({
 function getTenantId(): string {
   const headersList = headers();
   const tenantId = headersList.get('x-tenant-id');
-  
+
   if (!tenantId) {
     throw new Error('Tenant ID not found in headers');
   }
-  
+
   return tenantId;
 }
 
@@ -56,21 +65,18 @@ function getTenantId(): string {
  * GET /api/assignments/[id]/submissions
  * Get all submissions for a specific assignment
  */
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Validate assignment ID
@@ -79,15 +85,9 @@ export async function GET(
     // Parse query parameters
     const url = new URL(request.url);
     const queryParams = Object.fromEntries(url.searchParams);
-    
-    const {
-      page,
-      limit,
-      student_id,
-      status,
-      include_feedback,
-      sort_by
-    } = QueryParamsSchema.parse(queryParams);
+
+    const { page, limit, student_id, status, include_feedback, sort_by } =
+      QueryParamsSchema.parse(queryParams);
 
     // Initialize repository
     const assignmentRepo = new AssignmentRepository(tenantId);
@@ -95,10 +95,7 @@ export async function GET(
     // Verify assignment exists
     const assignment = await assignmentRepo.findById(assignmentId);
     if (!assignment) {
-      return NextResponse.json(
-        { error: 'Assignment not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
     }
 
     // Build filters
@@ -113,26 +110,23 @@ export async function GET(
       filters,
       sort: {
         field: sort_by || 'submission_date',
-        order: 'desc' as const
+        order: 'desc' as const,
       },
       includeRelations: true,
-      includeFeedback: include_feedback
+      includeFeedback: include_feedback,
     };
 
     // Check permissions: Students can only see their own submissions
     const userId = session.user.id;
     const userRole = session.user.app_metadata?.role || 'user';
-    
+
     if (userRole === 'student') {
       // Students can only see their own submissions
       filters.student_id = userId;
     } else if (userRole === 'teacher') {
       // Teachers can see submissions for assignments they created
       if (assignment.teacher_id !== userId) {
-        return NextResponse.json(
-          { error: 'Insufficient permissions' },
-          { status: 403 }
-        );
+        return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
       }
     }
     // Admins and super admins can see all submissions
@@ -141,21 +135,17 @@ export async function GET(
     const result = await assignmentRepo.getSubmissions(assignmentId, options);
 
     return NextResponse.json(result);
-
   } catch (error) {
     console.error('Error fetching submissions:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid parameters', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -163,21 +153,18 @@ export async function GET(
  * POST /api/assignments/[id]/submissions
  * Create a new submission for an assignment
  */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Validate assignment ID
@@ -193,17 +180,11 @@ export async function POST(
     // Verify assignment exists and is published
     const assignment = await assignmentRepo.findById(assignmentId);
     if (!assignment) {
-      return NextResponse.json(
-        { error: 'Assignment not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
     }
 
     if (assignment.status !== 'published') {
-      return NextResponse.json(
-        { error: 'Assignment is not published' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Assignment is not published' }, { status: 400 });
     }
 
     // Check if assignment is past due date
@@ -214,7 +195,7 @@ export async function POST(
     // Verify user permissions
     const userId = session.user.id;
     const userRole = session.user.app_metadata?.role || 'user';
-    
+
     // Students can only submit their own work
     if (userRole === 'student' && validatedData.student_id !== userId) {
       return NextResponse.json(
@@ -224,7 +205,10 @@ export async function POST(
     }
 
     // Check if submission already exists
-    const existingSubmission = await assignmentRepo.getSubmission(assignmentId, validatedData.student_id);
+    const existingSubmission = await assignmentRepo.getSubmission(
+      assignmentId,
+      validatedData.student_id
+    );
     if (existingSubmission) {
       return NextResponse.json(
         { error: 'Submission already exists for this student' },
@@ -238,34 +222,30 @@ export async function POST(
       student_id: validatedData.student_id,
       content: validatedData.content,
       attachments: validatedData.attachments || [],
-      status: isLate ? 'late' as const : 'submitted' as const,
+      status: isLate ? ('late' as const) : ('submitted' as const),
       submission_date: new Date().toISOString(),
       metadata: {
         ...validatedData.metadata,
         submitted_by: userId,
         is_late: isLate,
-        submitted_at: new Date().toISOString()
-      }
+        submitted_at: new Date().toISOString(),
+      },
     };
 
     const newSubmission = await assignmentRepo.createSubmission(submissionData);
 
     return NextResponse.json(newSubmission, { status: 201 });
-
   } catch (error) {
     console.error('Error creating submission:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
@@ -273,21 +253,18 @@ export async function POST(
  * PUT /api/assignments/[id]/submissions
  * Bulk update submissions (for grading)
  */
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-    
+
     // Verify authentication
-    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error: authError,
+    } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     // Validate assignment ID
@@ -295,39 +272,38 @@ export async function PUT(
 
     // Parse request body
     const body = await request.json();
-    const { submission_updates } = z.object({
-      submission_updates: z.array(z.object({
-        submission_id: z.string().uuid(),
-        updates: UpdateSubmissionSchema
-      }))
-    }).parse(body);
+    const { submission_updates } = z
+      .object({
+        submission_updates: z.array(
+          z.object({
+            submission_id: z.string().uuid(),
+            updates: UpdateSubmissionSchema,
+          })
+        ),
+      })
+      .parse(body);
 
     // Verify user permissions
     const userId = session.user.id;
     const userRole = session.user.app_metadata?.role || 'user';
-    
+
     // Initialize repository
     const assignmentRepo = new AssignmentRepository(tenantId);
 
     // Verify assignment exists and user has permission to grade
     const assignment = await assignmentRepo.findById(assignmentId);
     if (!assignment) {
-      return NextResponse.json(
-        { error: 'Assignment not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Assignment not found' }, { status: 404 });
     }
 
     // Only teachers who created the assignment, admins, or super admins can grade
-    const canGrade = userRole === 'super_admin' || 
-                    userRole === 'admin' || 
-                    (userRole === 'teacher' && assignment.teacher_id === userId);
+    const canGrade =
+      userRole === 'super_admin' ||
+      userRole === 'admin' ||
+      (userRole === 'teacher' && assignment.teacher_id === userId);
 
     if (!canGrade) {
-      return NextResponse.json(
-        { error: 'Insufficient permissions' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
     }
 
     // Process bulk updates
@@ -336,9 +312,9 @@ export async function PUT(
       const updatedSubmission = await assignmentRepo.updateSubmission(submission_id, {
         ...updates,
         graded_by: userId,
-        graded_at: new Date().toISOString()
+        graded_at: new Date().toISOString(),
       });
-      
+
       if (updatedSubmission) {
         updatedSubmissions.push(updatedSubmission);
       }
@@ -347,22 +323,18 @@ export async function PUT(
     return NextResponse.json({
       success: true,
       updated_count: updatedSubmissions.length,
-      submissions: updatedSubmissions
+      submissions: updatedSubmissions,
     });
-
   } catch (error) {
     console.error('Error bulk updating submissions:', error);
-    
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       );
     }
-    
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

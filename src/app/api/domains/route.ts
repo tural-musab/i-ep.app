@@ -4,17 +4,13 @@
  * Referans: docs/api-endpoints.md, Domain Endpoints bölümü
  */
 
-import { NextRequest, NextResponse } from "next/server";
-import {
-  createDnsRecord,
-  deleteDnsRecord,
-  verifyCustomDomain,
-} from "@/lib/cloudflare/domains";
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import { validateTenantAccess } from "@/lib/auth/permissions";
-import { Database } from "@/types/database.types";
-import { DomainService } from "@/lib/domain/domain-service";
+import { NextRequest, NextResponse } from 'next/server';
+import { createDnsRecord, deleteDnsRecord, verifyCustomDomain } from '@/lib/cloudflare/domains';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { validateTenantAccess } from '@/lib/auth/permissions';
+import { Database } from '@/types/database.types';
+import { DomainService } from '@/lib/domain/domain-service';
 
 // Domain servisi örneği oluştur
 const domainService = new DomainService();
@@ -27,13 +23,13 @@ export async function GET(req: NextRequest) {
   try {
     // URL parametrelerini al
     const { searchParams } = new URL(req.url);
-    const tenantId = searchParams.get("tenantId");
-    const type = searchParams.get("type") as "subdomain" | "custom" | null;
-    const isVerified = searchParams.get("isVerified");
-    
+    const tenantId = searchParams.get('tenantId');
+    const type = searchParams.get('type') as 'subdomain' | 'custom' | null;
+    const isVerified = searchParams.get('isVerified');
+
     // Supabase istemcisi oluştur
     const supabase = createRouteHandlerClient<Database>({ cookies });
-    
+
     // Kullanıcı oturum bilgisini al
     const {
       data: { session },
@@ -41,21 +37,18 @@ export async function GET(req: NextRequest) {
 
     if (!session) {
       return NextResponse.json(
-        { success: false, error: "Oturum açmanız gerekiyor" },
+        { success: false, error: 'Oturum açmanız gerekiyor' },
         { status: 401 }
       );
     }
 
     // Eğer belirli bir tenant'ın domainleri isteniyorsa, erişim kontrolü yap
     if (tenantId) {
-      const hasAccess = await validateTenantAccess(
-        session.user,
-        tenantId
-      );
+      const hasAccess = await validateTenantAccess(session.user, tenantId);
 
       if (!hasAccess) {
         return NextResponse.json(
-          { success: false, error: "Bu tenant için erişim yetkiniz yok" },
+          { success: false, error: 'Bu tenant için erişim yetkiniz yok' },
           { status: 403 }
         );
       }
@@ -68,19 +61,19 @@ export async function GET(req: NextRequest) {
     const domains = await domainService.getDomains({
       tenantId: tenantId || undefined,
       type: type || undefined,
-      isVerified: isVerified ? isVerified === 'true' : undefined
+      isVerified: isVerified ? isVerified === 'true' : undefined,
     });
 
     // Sonuçları döndür
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       data: domains,
-      count: domains.length
+      count: domains.length,
     });
   } catch (error) {
-    console.error("Domain API hatası:", error);
+    console.error('Domain API hatası:', error);
     return NextResponse.json(
-      { success: false, error: "İşlem sırasında bir hata oluştu" },
+      { success: false, error: 'İşlem sırasında bir hata oluştu' },
       { status: 500 }
     );
   }
@@ -93,25 +86,19 @@ export async function POST(req: NextRequest) {
     const { tenantId, subdomain, action } = body;
 
     if (!tenantId || !subdomain) {
-      return NextResponse.json(
-        { error: "Tenant ID ve subdomain gereklidir" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Tenant ID ve subdomain gereklidir' }, { status: 400 });
     }
 
     // Supabase istemcisi oluştur
     const supabase = createRouteHandlerClient<Database>({ cookies });
-    
+
     // Kullanıcı oturum bilgisini al
     const {
       data: { session },
     } = await supabase.auth.getSession();
 
     if (!session) {
-      return NextResponse.json(
-        { error: "Oturum açmanız gerekiyor" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Oturum açmanız gerekiyor' }, { status: 401 });
     }
 
     // Kullanıcının tenant erişimini doğrula
@@ -121,48 +108,36 @@ export async function POST(req: NextRequest) {
     });
 
     if (!hasAccess) {
-      return NextResponse.json(
-        { error: "Bu tenant için erişim yetkiniz yok" },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Bu tenant için erişim yetkiniz yok' }, { status: 403 });
     }
 
     // İşleme göre domain işlemini gerçekleştir
     let result;
     switch (action) {
-      case "create":
+      case 'create':
         result = await createDnsRecord({
           subdomain,
-          rootDomain: "i-ep.app",
+          rootDomain: 'i-ep.app',
         });
         break;
-      case "delete":
-        result = await deleteDnsRecord(subdomain, "i-ep.app");
+      case 'delete':
+        result = await deleteDnsRecord(subdomain, 'i-ep.app');
         break;
-      case "verify":
+      case 'verify':
         const domain = body.domain;
         if (!domain) {
-          return NextResponse.json(
-            { error: "Domain gereklidir" },
-            { status: 400 }
-          );
+          return NextResponse.json({ error: 'Domain gereklidir' }, { status: 400 });
         }
         result = await verifyCustomDomain(domain);
         break;
       default:
-        return NextResponse.json(
-          { error: "Geçersiz işlem" },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Geçersiz işlem' }, { status: 400 });
     }
 
     // API cevabını gönder
     return NextResponse.json(result);
   } catch (error) {
-    console.error("Domain API hatası:", error);
-    return NextResponse.json(
-      { error: "İşlem sırasında bir hata oluştu" },
-      { status: 500 }
-    );
+    console.error('Domain API hatası:', error);
+    return NextResponse.json({ error: 'İşlem sırasında bir hata oluştu' }, { status: 500 });
   }
-} 
+}
