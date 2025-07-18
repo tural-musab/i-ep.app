@@ -106,7 +106,7 @@
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^3.0.1",
     "sonner": "^2.0.1",
-    "swagger-ui-react": "^5.26.2",
+    "swagger-ui-react": "^5.27.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "ua-parser-js": "^1.0.35",

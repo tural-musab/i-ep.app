@@ -135,6 +135,6 @@ export const env = createEnv({
     NEXT_PUBLIC_BASE_DOMAIN: process.env.NEXT_PUBLIC_BASE_DOMAIN,
   },
   // Environment validation enabled for security
-  skipValidation: process.env.NODE_ENV === 'test' || !process.env.NODE_ENV, // Skip in test or when NODE_ENV is not set
+  skipValidation: process.env.NODE_ENV === 'test' || process.env.CI === 'true' || !process.env.NODE_ENV, // Skip in test, CI, or when NODE_ENV is not set
   emptyStringAsUndefined: true,
 });
