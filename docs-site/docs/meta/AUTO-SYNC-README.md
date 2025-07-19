@@ -212,6 +212,7 @@ Comprehensive error handling:
    ```
 
 3. **Chokidar watch errors**
+
    ```bash
    # Chokidar'ı yeniden yükle
    npm install chokidar --force

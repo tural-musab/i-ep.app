@@ -4,14 +4,16 @@ Bu belge, Iqra Eğitim Portalı'nda domain yönetimi, tenant-domain ilişkileri 
 
 ## İçerik
 
-- [Genel Bakış](#genel-bakış)
-- [Domain Türleri](#domain-türleri)
-- [Altyapı Mimarisi](#altyapı-mimarisi)
-- [Domain Doğrulama Süreci](#domain-doğrulama-süreci)
-- [SSL Sertifikaları](#ssl-sertifikaları)
-- [DNS Yapılandırması](#dns-yapılandırması)
-- [Sorun Giderme](#sorun-giderme)
-- [API Referansı](#api-referansı)
+- [Domain Yönetimi](#domain-yönetimi)
+  - [İçerik](#i̇çerik)
+  - [Genel Bakış](#genel-bakış)
+  - [Domain Türleri](#domain-türleri)
+    - [Subdomain](#subdomain)
+    - [Özel Domain](#özel-domain)
+  - [Altyapı Mimarisi](#altyapı-mimarisi)
+  - [Domain Doğrulama Süreci](#domain-doğrulama-süreci)
+    - [Subdomain Doğrulama](#subdomain-doğrulama)
+    - [Özel Domain Doğrulama](#özel-domain-doğrulama)
 
 ## Genel Bakış
 
@@ -88,6 +90,7 @@ Subdomain oluşturma otomatiktir ve doğrulama gerekmez. Sistem, DNS kaydını o
 Özel domain eklemek için doğrulama adımları:
 
 1. **DNS Doğrulama**: Kullanıcı, kendi DNS sağlayıcısında bir CNAME kaydı oluşturmalıdır:
+
    ```
 
    ```

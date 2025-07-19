@@ -31,7 +31,10 @@ export const env = createEnv({
 
     // Email - optional for now
     EMAIL_SERVER_HOST: z.string().optional(),
-    EMAIL_SERVER_PORT: z.string().transform(Number).optional(),
+    EMAIL_SERVER_PORT: z.preprocess(
+      (val) => val ? Number(val) : undefined,
+      z.number().int().min(1).max(65535).optional()
+    ),
     EMAIL_SERVER_USER: z.string().optional(),
     EMAIL_SERVER_PASSWORD: z.string().optional(),
     EMAIL_FROM: z.string().email().optional(),
@@ -59,17 +62,51 @@ export const env = createEnv({
     UPSTASH_REDIS_URL: z.string().url().optional(),
     UPSTASH_REDIS_TOKEN: z.string().optional(),
 
+    // Rate Limiting - optional
+    RATE_LIMIT_WINDOW_MS: z.preprocess(
+      (val) => val ? Number(val) : undefined,
+      z.number().int().min(1000).optional()
+    ),
+    RATE_LIMIT_MAX: z.preprocess(
+      (val) => val ? Number(val) : undefined,
+      z.number().int().min(1).optional()
+    ),
+
+    // Logging - optional
+    LOG_LEVEL: z.enum(['error', 'warn', 'info', 'debug']).optional(),
+
     // Environment
     NODE_ENV: z.enum(['development', 'production', 'test', 'staging']),
 
-    // Env Profile (optional)
-    NEXT_ENV_PROFILE: z.enum(['local-remote']).optional(),
+    // Feature Flags
+    ENABLE_DOMAIN_MANAGEMENT: z.preprocess(
+      (val) => val === 'true',
+      z.boolean().optional()
+    ),
+
+    // Env Profile (optional) - Only allowed in development
+    NEXT_ENV_PROFILE: z.enum(['local-remote']).optional()
+      .refine((val) => {
+        if (val && process.env.NODE_ENV !== 'development') {
+          return false;
+        }
+        return true;
+      }, {
+        message: 'NEXT_ENV_PROFILE can only be set in development mode',
+      }),
 
     // CORS Settings
     CORS_ALLOW_ORIGINS: z.string().optional(),
 
-    // Domain
-    ROOT_DOMAIN: z.string().default('i-ep.app'),
+    // Domain - Critical for production security
+    ROOT_DOMAIN: z.string().optional().refine(val => {
+      if (process.env.NODE_ENV === 'production') {
+        return !!val;
+      }
+      return true;
+    }, {
+      message: 'ROOT_DOMAIN must be set in production environment for security',
+    }).default('i-ep.app'),
     VERCEL_URL: z.string().optional(),
   },
   client: {
@@ -85,6 +122,10 @@ export const env = createEnv({
     NEXT_PUBLIC_TENANT_DOMAIN: z.string().optional(),
     NEXT_PUBLIC_ADMIN_DOMAIN: z.string().optional(),
     NEXT_PUBLIC_BASE_DOMAIN: z.string().optional(),
+
+    // Storage Configuration - optional
+    NEXT_PUBLIC_STORAGE_PROVIDER: z.enum(['supabase', 'r2']).optional(),
+    NEXT_PUBLIC_ROUTE_LARGE_FILES: z.enum(['true', 'false']).optional(),
   },
   runtimeEnv: {
     // Server
@@ -120,7 +161,11 @@ export const env = createEnv({
     IYZICO_BASE_URL: process.env.IYZICO_BASE_URL,
     UPSTASH_REDIS_URL: process.env.UPSTASH_REDIS_URL,
     UPSTASH_REDIS_TOKEN: process.env.UPSTASH_REDIS_TOKEN,
+    RATE_LIMIT_WINDOW_MS: process.env.RATE_LIMIT_WINDOW_MS,
+    RATE_LIMIT_MAX: process.env.RATE_LIMIT_MAX,
+    LOG_LEVEL: process.env.LOG_LEVEL,
     NODE_ENV: process.env.NODE_ENV,
+    ENABLE_DOMAIN_MANAGEMENT: process.env.ENABLE_DOMAIN_MANAGEMENT,
     NEXT_ENV_PROFILE: process.env.NEXT_ENV_PROFILE,
     CORS_ALLOW_ORIGINS: process.env.CORS_ALLOW_ORIGINS,
     ROOT_DOMAIN: process.env.ROOT_DOMAIN,
@@ -133,6 +178,8 @@ export const env = createEnv({
     NEXT_PUBLIC_TENANT_DOMAIN: process.env.NEXT_PUBLIC_TENANT_DOMAIN,
     NEXT_PUBLIC_ADMIN_DOMAIN: process.env.NEXT_PUBLIC_ADMIN_DOMAIN,
     NEXT_PUBLIC_BASE_DOMAIN: process.env.NEXT_PUBLIC_BASE_DOMAIN,
+    NEXT_PUBLIC_STORAGE_PROVIDER: process.env.NEXT_PUBLIC_STORAGE_PROVIDER,
+    NEXT_PUBLIC_ROUTE_LARGE_FILES: process.env.NEXT_PUBLIC_ROUTE_LARGE_FILES,
   },
   // Environment validation enabled for security
   skipValidation: process.env.NODE_ENV === 'test' || process.env.CI === 'true' || !process.env.NODE_ENV, // Skip in test, CI, or when NODE_ENV is not set

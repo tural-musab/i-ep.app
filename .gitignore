@@ -92,3 +92,4 @@ docs.zip
 
 # Analysis reports
 supabase_analysis_report.md
+.env.vercel-staging-import

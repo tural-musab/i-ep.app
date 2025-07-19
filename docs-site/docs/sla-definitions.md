@@ -426,14 +426,14 @@ SLA taahhütlerinin karşılanabilmesi için müşterilerin aşağıdaki sorumlu
 
 ### Destek İletişim Kanalları
 
-| Plan         | Kanal          | İletişim Detayları       | Yanıt Beklentisi |
-| ------------ | -------------- | ------------------------ | ---------------- |
-| **Free**     | E-posta        | support@i-ep.app         | 24 iş saati      |
-| **Standard** | E-posta        | support@i-ep.app         | 8-16 iş saati    |
-|              | İletişim Formu | Portal üzerinden         | 8-16 iş saati    |
-| **Premium**  | E-posta        | premium-support@i-ep.app | 2-8 saat         |
-|              | İletişim Formu | Portal üzerinden         | 2-8 saat         |
-|              | Telefon        | +90 212 XXX XX XX        | Anında (7/24)    |
+| Plan         | Kanal          | İletişim Detayları         | Yanıt Beklentisi |
+| ------------ | -------------- | -------------------------- | ---------------- |
+| **Free**     | E-posta        | <support@i-ep.app>         | 24 iş saati      |
+| **Standard** | E-posta        | <support@i-ep.app>         | 8-16 iş saati    |
+|              | İletişim Formu | Portal üzerinden           | 8-16 iş saati    |
+| **Premium**  | E-posta        | <premium-support@i-ep.app> | 2-8 saat         |
+|              | İletişim Formu | Portal üzerinden           | 2-8 saat         |
+|              | Telefon        | +90 212 XXX XX XX          | Anında (7/24)    |
 
 ### Eskalasyon Prosedürü
 
@@ -442,25 +442,25 @@ Sorunlar çözülmediğinde veya SLA ihlali durumunda izlenecek eskalasyon adım
 #### Premium Plan
 
 1. **Seviye 1**: Destek Yöneticisi
-   - İletişim: support-manager@i-ep.app
+   - İletişim: <support-manager@i-ep.app>
    - Yanıt Beklentisi: 2 saat
 
 2. **Seviye 2**: Teknik Operasyonlar Direktörü
-   - İletişim: technical-ops@i-ep.app
+   - İletişim: <technical-ops@i-ep.app>
    - Yanıt Beklentisi: 4 saat
 
 3. **Seviye 3**: CTO
-   - İletişim: cto@i-ep.app
+   - İletişim: <cto@i-ep.app>
    - Yanıt Beklentisi: 24 saat
 
 #### Standard Plan
 
 1. **Seviye 1**: Destek Ekibi Lideri
-   - İletişim: support-lead@i-ep.app
+   - İletişim: <support-lead@i-ep.app>
    - Yanıt Beklentisi: 8 iş saati
 
 2. **Seviye 2**: Müşteri Başarı Yöneticisi
-   - İletişim: customer-success@i-ep.app
+   - İletişim: <customer-success@i-ep.app>
    - Yanıt Beklentisi: 24 iş saati
 
 ## Sonuç
