@@ -134,15 +134,27 @@ export function AssignmentCreateForm() {
         rubric: rubricCriteria.filter((item) => item.criteria.trim() !== ''),
       };
 
-      // API call will be implemented here
-      console.log('Assignment data:', submissionData);
+      // Real API call to create assignment
+      const response = await fetch('/api/assignments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData),
+      });
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to create assignment');
+      }
+
+      const createdAssignment = await response.json();
+      console.log('Assignment created successfully:', createdAssignment);
 
       router.push('/dashboard/assignments');
     } catch (error) {
       console.error('Error creating assignment:', error);
+      // TODO: Show proper error toast/notification to user
     } finally {
       setIsSubmitting(false);
     }

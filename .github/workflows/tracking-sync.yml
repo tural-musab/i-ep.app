@@ -1,0 +1,40 @@
+name: Unified Tracking Sync
+
+on:
+  push:
+    paths:
+      - 'sprints/*.md'
+      - 'docs-site/docs/PROGRESS.md'
+      - 'TODO-MANAGEMENT-SYSTEM.md'
+      - 'REALISTIC-TIMELINE-2025.md'
+  
+  schedule:
+    - cron: '0 9,17 * * *'  # 9am and 5pm daily
+
+jobs:
+  sync-tracking:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install js-yaml
+        
+      - name: Sync tracking sources
+        run: node scripts/tracking/sync-sources.js
+        
+      - name: Generate dashboard
+        run: node scripts/tracking/generate-dashboard.js
+        
+      - name: Commit updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add tracking/
+          git commit -m "🔄 Auto-sync tracking sources" || true
+          git push

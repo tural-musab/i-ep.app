@@ -1,0 +1,216 @@
+{
+  "version": "1.0",
+  "validation_threshold": 85,
+  "tasks": {
+    "assignment_system_complete": {
+      "description": "Assignment System - Complete Implementation",
+      "claimed_status": "complete",
+      "critical": true,
+      "validators": [
+        {
+          "type": "file_exists",
+          "description": "Database migration exists",
+          "path": "supabase/migrations/*assignment*",
+          "weight": 20,
+          "required": true
+        },
+        {
+          "type": "api_endpoint",
+          "description": "Assignment API responds",
+          "endpoint": "/api/assignments",
+          "method": "GET", 
+          "expected_status": [200, 401],
+          "weight": 25,
+          "required": true
+        },
+        {
+          "type": "test_suite",
+          "description": "Unit tests pass",
+          "pattern": "*assignment*test*",
+          "min_tests": 20,
+          "weight": 25,
+          "required": true
+        },
+        {
+          "type": "component_exists",
+          "description": "Frontend component exists",
+          "path": "src/components/assignments/*",
+          "weight": 15,
+          "required": true
+        },
+        {
+          "type": "file_upload_integration",
+          "description": "File upload system working",
+          "path": "src/lib/storage/*",
+          "weight": 15,
+          "required": false
+        }
+      ]
+    },
+    
+    "attendance_system_complete": {
+      "description": "Attendance System - Complete Implementation", 
+      "claimed_status": "complete",
+      "critical": true,
+      "validators": [
+        {
+          "type": "file_exists",
+          "description": "Database migration exists",
+          "path": "supabase/migrations/*attendance*",
+          "weight": 20,
+          "required": true
+        },
+        {
+          "type": "api_endpoint",
+          "description": "Attendance API responds", 
+          "endpoint": "/api/attendance",
+          "method": "GET",
+          "expected_status": [200, 401],
+          "weight": 25,
+          "required": true
+        },
+        {
+          "type": "test_suite",
+          "description": "Unit tests pass",
+          "pattern": "*attendance*test*", 
+          "min_tests": 35,
+          "weight": 25,
+          "required": true
+        },
+        {
+          "type": "component_exists",
+          "description": "Frontend analytics exists",
+          "path": "src/components/attendance/*",
+          "weight": 15,
+          "required": true
+        },
+        {
+          "type": "notification_system",
+          "description": "Notification system integration",
+          "path": "src/lib/notifications/*",
+          "weight": 15,
+          "required": false
+        }
+      ]
+    },
+    
+    "grade_system_complete": {
+      "description": "Grade Management System - Complete Implementation",
+      "claimed_status": "complete", 
+      "critical": true,
+      "validators": [
+        {
+          "type": "file_exists",
+          "description": "Database migration exists",
+          "path": "supabase/migrations/*grade*",
+          "weight": 20,
+          "required": true
+        },
+        {
+          "type": "api_endpoint", 
+          "description": "Grade API responds",
+          "endpoint": "/api/grades",
+          "method": "GET",
+          "expected_status": [200, 401],
+          "weight": 25,
+          "required": true
+        },
+        {
+          "type": "test_suite",
+          "description": "Unit tests pass including calculations",
+          "pattern": "*grade*test*",
+          "min_tests": 40,
+          "weight": 25,
+          "required": true
+        },
+        {
+          "type": "calculation_engine",
+          "description": "Grade calculation logic exists",
+          "path": "src/lib/calculations/*",
+          "weight": 20,
+          "required": true
+        },
+        {
+          "type": "turkish_grading", 
+          "description": "Turkish education system support",
+          "path": "src/types/grades.ts",
+          "expected_content": ["AA", "BB", "CC", "DD", "FF"],
+          "weight": 10,
+          "required": true
+        }
+      ]
+    },
+    
+    "authentication_system_complete": {
+      "description": "Authentication & Authorization - Production Ready",
+      "claimed_status": "complete",
+      "critical": true,
+      "validators": [
+        {
+          "type": "auth_config",
+          "description": "NextAuth configuration exists",
+          "path": "src/lib/auth/*",
+          "weight": 25,
+          "required": true
+        },
+        {
+          "type": "demo_users",
+          "description": "Demo users work for all roles",
+          "roles": ["admin", "teacher", "student", "parent"],
+          "weight": 30,
+          "required": true
+        },
+        {
+          "type": "role_routing",
+          "description": "Role-based dashboard routing",
+          "paths": ["/dashboard", "/ogretmen", "/veli"],
+          "weight": 25,
+          "required": true
+        },
+        {
+          "type": "session_management",
+          "description": "Login/logout workflows functional",
+          "scenarios": ["login", "logout", "session_refresh"],
+          "weight": 20,
+          "required": true
+        }
+      ]
+    },
+    
+    "api_infrastructure_complete": {
+      "description": "API Infrastructure - Enterprise Grade",
+      "claimed_status": "complete",
+      "critical": true,
+      "validators": [
+        {
+          "type": "api_count",
+          "description": "14 core API endpoints exist",
+          "min_endpoints": 14,
+          "weight": 30,
+          "required": true
+        },
+        {
+          "type": "auth_pattern",
+          "description": "Consistent authentication pattern",
+          "pattern": "verifyTenantAccess",
+          "weight": 25,
+          "required": true
+        },
+        {
+          "type": "error_handling",
+          "description": "Proper error handling implemented",
+          "expected_codes": [200, 400, 401, 403, 500],
+          "weight": 20,
+          "required": true
+        },
+        {
+          "type": "validation",
+          "description": "Zod validation schemas exist",
+          "path": "src/lib/validation/*",
+          "weight": 25,
+          "required": true
+        }
+      ]
+    }
+  }
+}

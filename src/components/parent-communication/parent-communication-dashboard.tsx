@@ -55,215 +55,64 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import Link from 'next/link';
+import { useParentCommunicationData } from '@/hooks/use-parent-communication-data';
+import { Loader2 } from 'lucide-react';
 
 export function ParentCommunicationDashboard() {
-  // Mock data - gerçek uygulamada API'den gelecek
-  const communicationStats = {
-    totalParents: 120,
-    activeConversations: 45,
-    unreadMessages: 28,
-    pendingMeetings: 12,
-    newNotifications: 8,
-    feedbackCount: 34,
-    responseRate: 94.5,
-    averageResponseTime: 2.4,
-    satisfactionRating: 4.6,
-    monthlyTrend: 'up',
-    trendValue: 8.2,
+  const {
+    communicationStats,
+    recentActivity,
+    upcomingMeetings,
+    topParents,
+    communicationChannels,
+    pendingActions,
+    isLoading,
+    error,
+    isUsingMockData,
+  } = useParentCommunicationData();
+
+  // Define communication channel icons (since they can't be stored in data)
+  const getChannelIcon = (channel: string) => {
+    switch (channel.toLowerCase()) {
+      case 'uygulama mesajları':
+        return MessageSquare;
+      case 'e-posta':
+        return Mail;
+      case 'sms':
+        return Phone;
+      case 'telefon':
+        return Phone;
+      default:
+        return MessageSquare;
+    }
   };
 
-  const recentActivity = [
-    {
-      id: '1',
-      type: 'message',
-      title: 'Ayşe Veli mesaj gönderdi',
-      description: "Ali'nin matematik performansı hakkında",
-      timestamp: '2025-01-15T10:30:00',
-      status: 'unread',
-      priority: 'medium',
-      parentName: 'Ayşe Veli',
-      studentName: 'Ali Veli',
-    },
-    {
-      id: '2',
-      type: 'meeting',
-      title: 'Veli toplantısı onaylandı',
-      description: 'Mehmet Kaya ile yarın 15:00',
-      timestamp: '2025-01-15T09:15:00',
-      status: 'confirmed',
-      priority: 'high',
-      parentName: 'Mehmet Kaya',
-      studentName: 'Fatma Kaya',
-    },
-    {
-      id: '3',
-      type: 'notification',
-      title: 'Bildirim gönderildi',
-      description: 'Sınav sonuçları 30 veliye bildirildi',
-      timestamp: '2025-01-15T08:45:00',
-      status: 'sent',
-      priority: 'info',
-      count: 30,
-    },
-    {
-      id: '4',
-      type: 'feedback',
-      title: 'Geri bildirim alındı',
-      description: 'Hasan Yılmaz 5 yıldız verdi',
-      timestamp: '2025-01-15T08:00:00',
-      status: 'received',
-      priority: 'positive',
-      parentName: 'Hasan Yılmaz',
-      rating: 5,
-    },
-  ];
+  // Define pending action icons (since they can't be stored in data)
+  const getActionIcon = (type: string) => {
+    switch (type) {
+      case 'message':
+        return MessageSquare;
+      case 'meeting':
+        return Calendar;
+      case 'notification':
+        return Bell;
+      case 'feedback':
+        return Star;
+      default:
+        return Activity;
+    }
+  };
 
-  const upcomingMeetings = [
-    {
-      id: '1',
-      parent: 'Ayşe Veli',
-      student: 'Ali Veli',
-      teacher: 'Ahmet Öğretmen',
-      subject: 'Matematik',
-      date: '2025-01-18T14:00:00',
-      duration: 30,
-      type: 'individual',
-      mode: 'in_person',
-      status: 'confirmed',
-    },
-    {
-      id: '2',
-      parent: 'Mehmet Kaya',
-      student: 'Fatma Kaya',
-      teacher: 'Zeynep Öğretmen',
-      subject: 'Türkçe',
-      date: '2025-01-19T15:30:00',
-      duration: 45,
-      type: 'individual',
-      mode: 'online',
-      status: 'pending',
-    },
-    {
-      id: '3',
-      parent: 'Fatma Demir',
-      student: 'Ahmet Demir',
-      teacher: 'Mustafa Öğretmen',
-      subject: 'Fen Bilgisi',
-      date: '2025-01-20T16:00:00',
-      duration: 30,
-      type: 'urgent',
-      mode: 'in_person',
-      status: 'confirmed',
-    },
-  ];
-
-  const topParents = [
-    {
-      name: 'Ayşe Veli',
-      student: 'Ali Veli',
-      totalMessages: 24,
-      totalMeetings: 5,
-      responseRate: 100,
-      engagementScore: 95,
-      trend: 'up',
-    },
-    {
-      name: 'Mehmet Kaya',
-      student: 'Fatma Kaya',
-      totalMessages: 18,
-      totalMeetings: 3,
-      responseRate: 89,
-      engagementScore: 87,
-      trend: 'stable',
-    },
-    {
-      name: 'Fatma Demir',
-      student: 'Ahmet Demir',
-      totalMessages: 12,
-      totalMeetings: 2,
-      responseRate: 92,
-      engagementScore: 82,
-      trend: 'up',
-    },
-  ];
-
-  const communicationChannels = [
-    {
-      channel: 'Uygulama Mesajları',
-      icon: MessageSquare,
-      usage: 78,
-      preference: 85,
-      responseTime: 1.2,
-      color: 'bg-blue-100 text-blue-800',
-    },
-    {
-      channel: 'E-posta',
-      icon: Mail,
-      usage: 65,
-      preference: 72,
-      responseTime: 4.5,
-      color: 'bg-green-100 text-green-800',
-    },
-    {
-      channel: 'SMS',
-      icon: Phone,
-      usage: 42,
-      preference: 58,
-      responseTime: 0.8,
-      color: 'bg-yellow-100 text-yellow-800',
-    },
-    {
-      channel: 'Telefon',
-      icon: Phone,
-      usage: 25,
-      preference: 45,
-      responseTime: 0.1,
-      color: 'bg-purple-100 text-purple-800',
-    },
-  ];
-
-  const pendingActions = [
-    {
-      id: '1',
-      type: 'message',
-      title: 'Okunmamış mesajlar',
-      count: 28,
-      priority: 'high',
-      action: 'Yanıtla',
-      icon: MessageSquare,
-      color: 'bg-blue-100 text-blue-800',
-    },
-    {
-      id: '2',
-      type: 'meeting',
-      title: 'Onay bekleyen toplantılar',
-      count: 12,
-      priority: 'medium',
-      action: 'Onayla',
-      icon: Calendar,
-      color: 'bg-yellow-100 text-yellow-800',
-    },
-    {
-      id: '3',
-      type: 'notification',
-      title: 'Bekleyen bildirimler',
-      count: 8,
-      priority: 'low',
-      action: 'Gönder',
-      icon: Bell,
-      color: 'bg-purple-100 text-purple-800',
-    },
-    {
-      id: '4',
-      type: 'feedback',
-      title: 'Yanıt bekleyen geri bildirimler',
-      count: 5,
-      priority: 'medium',
-      action: 'Yanıtla',
-      icon: Star,
-      color: 'bg-green-100 text-green-800',
-    },
-  ];
+  if (isLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin" />
+          <span>Veli iletişim verileri yükleniyor...</span>
+        </div>
+      </div>
+    );
+  }
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -363,7 +212,17 @@ export function ParentCommunicationDashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Veli İletişim Sistemi</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold">Veli İletişim Sistemi</h2>
+          <Badge variant={isUsingMockData ? "secondary" : "default"}>
+            {isUsingMockData ? "📊 Mock Veri" : "🔗 Canlı Veri"}
+          </Badge>
+          {error && (
+            <Badge variant="destructive" className="text-xs">
+              ⚠️ {error}
+            </Badge>
+          )}
+        </div>
         <div className="flex gap-2">
           <Link href="/dashboard/parent-communication">
             <Button variant="outline">
@@ -562,18 +421,20 @@ export function ParentCommunicationDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {pendingActions.map((action) => (
-                <div
-                  key={action.id}
-                  className="flex items-center justify-between rounded-lg border p-3"
-                >
-                  <div className="flex items-center gap-3">
-                    <action.icon className="h-4 w-4" />
-                    <div>
-                      <p className="text-sm font-medium">{action.title}</p>
-                      <p className="text-xs text-gray-600">{action.count} öğe</p>
+              {pendingActions.map((action) => {
+                const IconComponent = getActionIcon(action.type);
+                return (
+                  <div
+                    key={action.id}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <IconComponent className="h-4 w-4" />
+                      <div>
+                        <p className="text-sm font-medium">{action.title}</p>
+                        <p className="text-xs text-gray-600">{action.count} öğe</p>
+                      </div>
                     </div>
-                  </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className={getPriorityColor(action.priority)}>
                       {action.priority}
@@ -582,8 +443,9 @@ export function ParentCommunicationDashboard() {
                       {action.action}
                     </Button>
                   </div>
-                </div>
-              ))}
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
@@ -650,12 +512,14 @@ export function ParentCommunicationDashboard() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {communicationChannels.map((channel, index) => (
-              <div key={index} className="rounded-lg border p-4">
-                <div className="mb-3 flex items-center gap-2">
-                  <channel.icon className="h-5 w-5" />
-                  <h3 className="font-medium">{channel.channel}</h3>
-                </div>
+            {communicationChannels.map((channel, index) => {
+              const IconComponent = getChannelIcon(channel.channel);
+              return (
+                <div key={index} className="rounded-lg border p-4">
+                  <div className="mb-3 flex items-center gap-2">
+                    <IconComponent className="h-5 w-5" />
+                    <h3 className="font-medium">{channel.channel}</h3>
+                  </div>
                 <div className="space-y-2">
                   <div>
                     <div className="mb-1 flex items-center justify-between">
@@ -674,7 +538,8 @@ export function ParentCommunicationDashboard() {
                   <div className="text-xs text-gray-600">Avg. yanıt: {channel.responseTime}h</div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </CardContent>
       </Card>

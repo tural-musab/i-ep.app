@@ -78,6 +78,50 @@ export const env = createEnv({
     // Environment
     NODE_ENV: z.enum(['development', 'production', 'test', 'staging']),
 
+    // Sentry - optional monitoring
+    NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
+    SENTRY_ENVIRONMENT: z.enum(['development', 'staging', 'production']).optional(),
+
+    // Development-specific flags - only allowed in dev
+    DEBUG: z.preprocess(
+      (val) => val === 'true',
+      z.boolean().optional()
+    ),
+    ENABLE_MOCK_SERVICES: z.preprocess(
+      (val) => val === 'true',
+      z.boolean().optional()
+    ).refine((val) => {
+      if (val && process.env.NODE_ENV !== 'development') {
+        return false;
+      }
+      return true;
+    }, {
+      message: 'ENABLE_MOCK_SERVICES can only be enabled in development mode',
+    }),
+    DISABLE_RATE_LIMITING: z.preprocess(
+      (val) => val === 'true',
+      z.boolean().optional()
+    ).refine((val) => {
+      if (val && process.env.NODE_ENV !== 'development') {
+        return false;
+      }
+      return true;
+    }, {
+      message: 'DISABLE_RATE_LIMITING can only be disabled in development mode',
+    }),
+
+    // Redis Database - development only
+    REDIS_DB: z.preprocess(
+      (val) => val ? Number(val) : undefined,
+      z.number().int().min(0).max(15).optional()
+    ),
+
+    // Telemetry Control
+    NEXT_TELEMETRY_DISABLED: z.preprocess(
+      (val) => val === '1' || val === 'true',
+      z.boolean().optional()
+    ),
+
     // Feature Flags
     ENABLE_DOMAIN_MANAGEMENT: z.preprocess(
       (val) => val === 'true',
@@ -126,6 +170,9 @@ export const env = createEnv({
     // Storage Configuration - optional
     NEXT_PUBLIC_STORAGE_PROVIDER: z.enum(['supabase', 'r2']).optional(),
     NEXT_PUBLIC_ROUTE_LARGE_FILES: z.enum(['true', 'false']).optional(),
+
+    // Sentry - optional monitoring (client-side)
+    NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
   },
   runtimeEnv: {
     // Server
@@ -165,6 +212,13 @@ export const env = createEnv({
     RATE_LIMIT_MAX: process.env.RATE_LIMIT_MAX,
     LOG_LEVEL: process.env.LOG_LEVEL,
     NODE_ENV: process.env.NODE_ENV,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
+    SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT,
+    DEBUG: process.env.DEBUG,
+    ENABLE_MOCK_SERVICES: process.env.ENABLE_MOCK_SERVICES,
+    DISABLE_RATE_LIMITING: process.env.DISABLE_RATE_LIMITING,
+    REDIS_DB: process.env.REDIS_DB,
+    NEXT_TELEMETRY_DISABLED: process.env.NEXT_TELEMETRY_DISABLED,
     ENABLE_DOMAIN_MANAGEMENT: process.env.ENABLE_DOMAIN_MANAGEMENT,
     NEXT_ENV_PROFILE: process.env.NEXT_ENV_PROFILE,
     CORS_ALLOW_ORIGINS: process.env.CORS_ALLOW_ORIGINS,
@@ -180,6 +234,7 @@ export const env = createEnv({
     NEXT_PUBLIC_BASE_DOMAIN: process.env.NEXT_PUBLIC_BASE_DOMAIN,
     NEXT_PUBLIC_STORAGE_PROVIDER: process.env.NEXT_PUBLIC_STORAGE_PROVIDER,
     NEXT_PUBLIC_ROUTE_LARGE_FILES: process.env.NEXT_PUBLIC_ROUTE_LARGE_FILES,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
   // Environment validation enabled for security
   skipValidation: process.env.NODE_ENV === 'test' || process.env.CI === 'true' || !process.env.NODE_ENV, // Skip in test, CI, or when NODE_ENV is not set
