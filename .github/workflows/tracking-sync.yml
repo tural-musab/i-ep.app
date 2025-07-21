@@ -7,34 +7,62 @@ on:
       - 'docs-site/docs/PROGRESS.md'
       - 'TODO-MANAGEMENT-SYSTEM.md'
       - 'REALISTIC-TIMELINE-2025.md'
+      - 'tracking/**'
   
   schedule:
     - cron: '0 9,17 * * *'  # 9am and 5pm daily
 
+  # Manual trigger for testing
+  workflow_dispatch:
+
 jobs:
   sync-tracking:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required for git push
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
       
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
           
       - name: Install dependencies
-        run: npm install js-yaml
+        run: |
+          npm ci
+          npm install js-yaml --save-dev
         
+      - name: Verify tracking files exist
+        run: |
+          ls -la tracking/
+          ls -la scripts/tracking/
+          
       - name: Sync tracking sources
-        run: node scripts/tracking/sync-sources.js
+        run: |
+          echo "Running sync-sources.js..."
+          node scripts/tracking/sync-sources.js
         
       - name: Generate dashboard
-        run: node scripts/tracking/generate-dashboard.js
+        run: |
+          echo "Generating dashboard..."
+          node scripts/tracking/generate-dashboard.js
         
-      - name: Commit updates
+      - name: Check for changes
+        id: changes
+        run: |
+          git diff --exit-code tracking/ || echo "changes=true" >> $GITHUB_OUTPUT
+          
+      - name: Commit and push updates
+        if: steps.changes.outputs.changes == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add tracking/
-          git commit -m "🔄 Auto-sync tracking sources" || true
+          git commit -m "🔄 Auto-sync tracking sources - $(date '+%Y-%m-%d %H:%M')"
           git push

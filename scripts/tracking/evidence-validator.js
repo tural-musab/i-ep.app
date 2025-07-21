@@ -13,6 +13,15 @@ class EvidenceValidator {
   loadEvidenceConfig() {
     try {
       const configPath = path.join(this.projectRoot, 'tracking/evidence-config.json');
+      console.log(`📁 Loading evidence config from: ${configPath}`);
+      
+      if (!fs.existsSync(configPath)) {
+        console.error(`❌ Evidence config not found at: ${configPath}`);
+        console.log(`📁 Project root: ${this.projectRoot}`);
+        console.log(`📁 Current working directory: ${process.cwd()}`);
+        process.exit(1);
+      }
+      
       return JSON.parse(fs.readFileSync(configPath, 'utf8'));
     } catch (error) {
       console.error('❌ Failed to load evidence config:', error.message);
@@ -107,6 +116,12 @@ class EvidenceValidator {
         
         case 'turkish_grading':
           return this.validateTurkishGrading(validator);
+        
+        case 'role_routing':
+          return this.validateRoleRouting(validator);
+        
+        case 'session_management':
+          return this.validateSessionManagement(validator);
         
         default:
           return {
@@ -379,6 +394,92 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `Turkish grading validation failed: ${error.message}`,
+        weight: validator.weight
+      };
+    }
+  }
+
+  validateRoleRouting(validator) {
+    try {
+      let foundPaths = [];
+      let totalPaths = validator.paths ? validator.paths.length : 0;
+      
+      for (const routePath of validator.paths || []) {
+        // Check if route page exists
+        let pageFound = false;
+        
+        if (routePath === '/dashboard') {
+          const dashboardPath = path.join(this.projectRoot, 'src/app/dashboard/page.tsx');
+          pageFound = fs.existsSync(dashboardPath);
+        } else if (routePath === '/ogretmen') {
+          const teacherPath = path.join(this.projectRoot, 'src/app/ogretmen/page.tsx');
+          pageFound = fs.existsSync(teacherPath);
+        } else if (routePath === '/veli') {
+          const parentPath = path.join(this.projectRoot, 'src/app/veli/page.tsx');
+          pageFound = fs.existsSync(parentPath);
+        }
+        
+        if (pageFound) {
+          foundPaths.push(routePath);
+        }
+      }
+      
+      const allPathsFound = foundPaths.length === totalPaths;
+      
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: allPathsFound,
+        evidence: allPathsFound ? 
+          `All ${totalPaths} role-based routes found: ${foundPaths.join(', ')}` :
+          `Found ${foundPaths.length}/${totalPaths} routes: ${foundPaths.join(', ')}`,
+        weight: validator.weight
+      };
+    } catch (error) {
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: false,
+        evidence: `Role routing validation failed: ${error.message}`,
+        weight: validator.weight
+      };
+    }
+  }
+
+  validateSessionManagement(validator) {
+    try {
+      const authFiles = [
+        'src/lib/auth/server-session.ts',
+        'src/lib/auth/auth-context.tsx',
+        'src/lib/auth/auth-options.ts'
+      ];
+      
+      let foundFiles = [];
+      
+      for (const authFile of authFiles) {
+        const filePath = path.join(this.projectRoot, authFile);
+        if (fs.existsSync(filePath)) {
+          foundFiles.push(authFile);
+        }
+      }
+      
+      const hasSessionSupport = foundFiles.length >= 2; // At least 2 session-related files
+      
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: hasSessionSupport,
+        evidence: hasSessionSupport ? 
+          `Session management files found: ${foundFiles.join(', ')}` :
+          `Insufficient session files: ${foundFiles.join(', ')}`,
+        weight: validator.weight
+      };
+    } catch (error) {
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: false,
+        evidence: `Session management validation failed: ${error.message}`,
         weight: validator.weight
       };
     }
