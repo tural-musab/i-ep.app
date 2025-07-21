@@ -98,14 +98,16 @@ const unitConfig = {
   // Note: Unit tests focus on business logic validation with mocks
   // Coverage thresholds are disabled for unit tests as they test repository patterns
   // Integration tests will provide actual coverage metrics
-  coverageThreshold: process.env.CI ? {} : {
-    global: {
-      branches: 55,
-      functions: 55,
-      lines: 65,
-      statements: 65,
-    },
-  },
+  coverageThreshold: process.env.CI
+    ? {}
+    : {
+        global: {
+          branches: 55,
+          functions: 55,
+          lines: 65,
+          statements: 65,
+        },
+      },
 
   // Coverage report formats with JUnit support
   coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
