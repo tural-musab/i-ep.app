@@ -170,13 +170,21 @@ jobs:
               jobs -l
               ps aux | grep -v grep | grep node || echo "No Node.js processes found"
               echo "🔍 Port 3000 status:"
-              netstat -tlnp | grep :3000 || echo "Port 3000 not listening"
+              ss -tlnp | grep :3000 || echo "Port 3000 not listening"
               kill $APP_PID 2>/dev/null || true
               exit 1
             fi
           done
+          echo "APP_PID=$APP_PID" >> "$GITHUB_ENV"
         env:
           PORT: 3000
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: ${{ secrets.NEXTAUTH_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_APP_NAME: ${{ secrets.NEXT_PUBLIC_APP_NAME }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
 
       - name: Create ZAP reports directory
         run: mkdir -p zap-reports
@@ -262,10 +270,14 @@ jobs:
           else
             echo "ℹ️ ZAP XML report not found - scan may not have completed"
             echo "🔍 Available files in zap-reports:"
-            ls -la zap-reports/ || echo "ZAP reports directory not found"
-            echo "ℹ️ This is acceptable in some CI environments"
-          fi
-        continue-on-error: true
+          ls -la zap-reports/ || echo "ZAP reports directory not found"
+          echo "ℹ️ This is acceptable in some CI environments"
+        fi
+      continue-on-error: true
+
+      - name: Stop application
+        if: always() && env.APP_PID
+        run: kill $APP_PID || true
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
@@ -309,4 +321,4 @@ jobs:
           vercel --token ${{ secrets.VERCEL_TOKEN }} --prod --yes
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }} 
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
