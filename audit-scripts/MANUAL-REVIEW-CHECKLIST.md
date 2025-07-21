@@ -207,9 +207,9 @@ Bu checklist, otomatik audit scriptlerinin yakalayamadığı manuel kontroller i
 
 ---
 
-**Reviewer**: ********\_********
-**Date**: ********\_********
-**Version**: ********\_********
+**Reviewer**: **\*\*\*\***\_**\*\*\*\***
+**Date**: **\*\*\*\***\_**\*\*\*\***
+**Version**: **\*\*\*\***\_**\*\*\*\***
 **Status**: [ ] Approved [ ] Needs Work [ ] Rejected
 
 **Notes**:
