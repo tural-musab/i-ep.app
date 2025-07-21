@@ -33,6 +33,41 @@ EXCEPTION
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Function to get current user role from JWT
+CREATE OR REPLACE FUNCTION get_current_user_role()
+RETURNS TEXT AS $$
+BEGIN
+    -- Extract role from JWT claims
+    RETURN COALESCE(
+        auth.jwt() ->> 'app_metadata' ->> 'role',
+        'user' -- default role
+    );
+EXCEPTION 
+    WHEN OTHERS THEN
+        RETURN 'user'; -- safe default
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Function to get current user's student ID
+CREATE OR REPLACE FUNCTION get_current_user_student_id()
+RETURNS UUID AS $$
+DECLARE
+    student_id UUID;
+BEGIN
+    -- Get student ID from students table for current user
+    SELECT id INTO student_id 
+    FROM public.students 
+    WHERE user_id = auth.uid() 
+    AND tenant_id = get_current_tenant_id()
+    LIMIT 1;
+    
+    RETURN student_id;
+EXCEPTION 
+    WHEN OTHERS THEN
+        RETURN NULL;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Generic function to update updated_at timestamps
 CREATE OR REPLACE FUNCTION update_tenant_updated_at()
 RETURNS TRIGGER AS $$

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { GradeScale, GradeType } from '@/types/grade-types';
+import { GradeScale, GradeType } from '@/types/grades';
 
 export const gradeValidation = z.object({
   id: z.string().optional(),

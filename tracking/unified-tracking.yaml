@@ -34,35 +34,35 @@ evidence_validation:
   enabled: true
   config_file: ./evidence-config.json
   validation_threshold: 85
-  last_validation: '2025-07-21T13:44:05.941Z'
+  last_validation: '2025-07-21T15:30:10.175Z'
   results:
     assignment_system_complete:
       claimed: true
       evidence_score: 60
       verified: false
       status: evidence_insufficient
-      last_checked: '2025-07-21T13:44:00.948Z'
+      last_checked: '2025-07-21T15:30:07.629Z'
     attendance_system_complete:
       claimed: true
       evidence_score: 60
       verified: false
       status: evidence_insufficient
-      last_checked: '2025-07-21T13:44:03.443Z'
+      last_checked: '2025-07-21T15:30:08.813Z'
     grade_system_complete:
       claimed: true
-      evidence_score: 45
+      evidence_score: 75
       verified: false
       status: evidence_insufficient
-      last_checked: '2025-07-21T13:44:05.933Z'
+      last_checked: '2025-07-21T15:30:10.021Z'
     authentication_system_complete:
       claimed: true
       evidence_score: 75
       verified: false
       status: evidence_insufficient
-      last_checked: '2025-07-21T13:44:05.937Z'
+      last_checked: '2025-07-21T15:30:10.027Z'
     api_infrastructure_complete:
       claimed: true
-      evidence_score: 30
+      evidence_score: 50
       verified: false
       status: evidence_insufficient
-      last_checked: '2025-07-21T13:44:05.941Z'
+      last_checked: '2025-07-21T15:30:10.173Z'

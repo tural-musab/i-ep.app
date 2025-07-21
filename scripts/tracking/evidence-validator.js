@@ -102,6 +102,12 @@ class EvidenceValidator {
         case 'component_exists':
           return this.validateComponentExists(validator);
 
+        case 'file_upload_integration':
+          return this.validateFileUploadIntegration(validator);
+
+        case 'notification_system':
+          return this.validateNotificationSystem(validator);
+
         case 'auth_config':
           return this.validateAuthConfig(validator);
 
@@ -110,6 +116,15 @@ class EvidenceValidator {
 
         case 'api_count':
           return this.validateApiCount(validator);
+
+        case 'auth_pattern':
+          return this.validateAuthPattern(validator);
+
+        case 'error_handling':
+          return this.validateErrorHandling(validator);
+
+        case 'validation':
+          return this.validateValidationSchemas(validator);
 
         case 'calculation_engine':
           return this.validateCalculationEngine(validator);
@@ -356,12 +371,28 @@ class EvidenceValidator {
   }
 
   validateCalculationEngine(validator) {
-    const calcPath = path.join(this.projectRoot, validator.path);
-
+    // Look for calculation logic in grade repository and related files
+    const gradeRepoPath = path.join(this.projectRoot, 'src/lib/repository/grade-repository.ts');
+    const analyticsPath = path.join(this.projectRoot, 'src/lib/analytics');
+    
     try {
-      const command = `find "${path.dirname(calcPath)}" -name "*.ts" -o -name "*.tsx" 2>/dev/null || true`;
-      const result = execSync(command, { encoding: 'utf8' }).trim();
-      const calcFiles = result.split('\n').filter((f) => f.length > 0);
+      let calcFiles = [];
+      
+      // Check grade repository
+      if (fs.existsSync(gradeRepoPath)) {
+        const content = fs.readFileSync(gradeRepoPath, 'utf8');
+        if (content.includes('calculateGPA') || content.includes('calculation')) {
+          calcFiles.push(gradeRepoPath);
+        }
+      }
+      
+      // Check analytics directory
+      if (fs.existsSync(analyticsPath)) {
+        const command = `find "${analyticsPath}" -name "*.ts" -o -name "*.tsx" 2>/dev/null || true`;
+        const result = execSync(command, { encoding: 'utf8' }).trim();
+        const analyticsFiles = result.split('\n').filter((f) => f.length > 0);
+        calcFiles = calcFiles.concat(analyticsFiles);
+      }
 
       return {
         validator_type: validator.type,
@@ -369,7 +400,7 @@ class EvidenceValidator {
         passed: calcFiles.length > 0,
         evidence:
           calcFiles.length > 0
-            ? `Found ${calcFiles.length} calculation files`
+            ? `Found ${calcFiles.length} calculation files in repository and analytics`
             : 'No calculation files found',
         weight: validator.weight,
       };
@@ -379,6 +410,199 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `Calculation engine validation failed: ${error.message}`,
+        weight: validator.weight,
+      };
+    }
+  }
+
+  validateFileUploadIntegration(validator) {
+    const storagePath = path.join(this.projectRoot, validator.path);
+
+    try {
+      const command = `find "${storagePath}" -name "*.ts" -o -name "*.tsx" 2>/dev/null || true`;
+      const result = execSync(command, { encoding: 'utf8' }).trim();
+      const storageFiles = result.split('\n').filter((f) => f.length > 0);
+
+      // Check for key storage components
+      const hasStorageIndex = storageFiles.some(f => f.includes('index.ts'));
+      const hasProviders = storageFiles.some(f => f.includes('provider'));
+      const hasRepository = storageFiles.some(f => f.includes('repository'));
+
+      const integrationComplete = hasStorageIndex && hasProviders && hasRepository;
+
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: integrationComplete,
+        evidence: integrationComplete 
+          ? `Complete storage integration found: ${storageFiles.length} files`
+          : `Partial storage integration: ${storageFiles.length} files`,
+        weight: validator.weight,
+      };
+    } catch (error) {
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: false,
+        evidence: `File upload validation failed: ${error.message}`,
+        weight: validator.weight,
+      };
+    }
+  }
+
+  validateNotificationSystem(validator) {
+    // Check for notification-related files
+    const notificationPaths = [
+      'src/lib/notifications',
+      'src/components/notifications',
+      'src/app/api/notifications'
+    ];
+
+    try {
+      let notificationFiles = [];
+
+      for (const notifPath of notificationPaths) {
+        const fullPath = path.join(this.projectRoot, notifPath);
+        if (fs.existsSync(fullPath)) {
+          const command = `find "${fullPath}" -name "*.ts" -o -name "*.tsx" 2>/dev/null || true`;
+          const result = execSync(command, { encoding: 'utf8' }).trim();
+          const files = result.split('\n').filter((f) => f.length > 0);
+          notificationFiles = notificationFiles.concat(files);
+        }
+      }
+
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: notificationFiles.length > 0,
+        evidence: notificationFiles.length > 0
+          ? `Found ${notificationFiles.length} notification files`
+          : 'No notification system files found',
+        weight: validator.weight,
+      };
+    } catch (error) {
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: false,
+        evidence: `Notification system validation failed: ${error.message}`,
+        weight: validator.weight,
+      };
+    }
+  }
+
+  validateAuthPattern(validator) {
+    try {
+      const apiDir = path.join(this.projectRoot, 'src/app/api');
+      const command = `find "${apiDir}" -name "route.ts" -exec grep -l "${validator.pattern}" {} \\; 2>/dev/null || true`;
+      const result = execSync(command, { encoding: 'utf8' }).trim();
+      const authPatternFiles = result.split('\n').filter((f) => f.length > 0);
+
+      // Get total API files for percentage
+      const totalApiCommand = `find "${apiDir}" -name "route.ts" 2>/dev/null || true`;
+      const totalResult = execSync(totalApiCommand, { encoding: 'utf8' }).trim();
+      const totalApiFiles = totalResult.split('\n').filter((f) => f.length > 0).length;
+
+      const percentage = totalApiFiles > 0 ? Math.round((authPatternFiles.length / totalApiFiles) * 100) : 0;
+      const hasConsistentPattern = percentage >= 50; // At least 50% coverage
+
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: hasConsistentPattern,
+        evidence: `Auth pattern found in ${authPatternFiles.length}/${totalApiFiles} API endpoints (${percentage}%)`,
+        weight: validator.weight,
+      };
+    } catch (error) {
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: false,
+        evidence: `Auth pattern validation failed: ${error.message}`,
+        weight: validator.weight,
+      };
+    }
+  }
+
+  validateErrorHandling(validator) {
+    try {
+      const apiDir = path.join(this.projectRoot, 'src/app/api');
+      let errorHandlingFiles = 0;
+      let totalApiFiles = 0;
+
+      // Check each API route for proper error handling
+      const command = `find "${apiDir}" -name "route.ts" 2>/dev/null || true`;
+      const result = execSync(command, { encoding: 'utf8' }).trim();
+      const apiFiles = result.split('\n').filter((f) => f.length > 0);
+
+      for (const apiFile of apiFiles) {
+        totalApiFiles++;
+        const content = fs.readFileSync(apiFile, 'utf8');
+        
+        // Check for proper error handling patterns
+        const hasErrorHandling = content.includes('try') && content.includes('catch') &&
+                                (content.includes('NextResponse.json') || content.includes('Response'));
+        const hasStatusCodes = validator.expected_codes.some(code => content.includes(code.toString()));
+        
+        if (hasErrorHandling && hasStatusCodes) {
+          errorHandlingFiles++;
+        }
+      }
+
+      const percentage = totalApiFiles > 0 ? Math.round((errorHandlingFiles / totalApiFiles) * 100) : 0;
+      const hasProperErrorHandling = percentage >= 60; // At least 60% coverage
+
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: hasProperErrorHandling,
+        evidence: `Proper error handling in ${errorHandlingFiles}/${totalApiFiles} API endpoints (${percentage}%)`,
+        weight: validator.weight,
+      };
+    } catch (error) {
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: false,
+        evidence: `Error handling validation failed: ${error.message}`,
+        weight: validator.weight,
+      };
+    }
+  }
+
+  validateValidationSchemas(validator) {
+    const validationPath = path.join(this.projectRoot, validator.path);
+
+    try {
+      const command = `find "${validationPath}" -name "*.ts" -o -name "*.tsx" 2>/dev/null || true`;
+      const result = execSync(command, { encoding: 'utf8' }).trim();
+      const validationFiles = result.split('\n').filter((f) => f.length > 0);
+
+      let zodSchemas = 0;
+      for (const file of validationFiles) {
+        const content = fs.readFileSync(file, 'utf8');
+        if (content.includes('z.') && (content.includes('schema') || content.includes('Schema'))) {
+          zodSchemas++;
+        }
+      }
+
+      const hasValidationSchemas = zodSchemas >= 3; // At least 3 validation schemas
+
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: hasValidationSchemas,
+        evidence: hasValidationSchemas 
+          ? `Found ${zodSchemas} Zod validation schemas in ${validationFiles.length} files`
+          : `Only ${zodSchemas} validation schemas found`,
+        weight: validator.weight,
+      };
+    } catch (error) {
+      return {
+        validator_type: validator.type,
+        description: validator.description,
+        passed: false,
+        evidence: `Validation schemas check failed: ${error.message}`,
         weight: validator.weight,
       };
     }

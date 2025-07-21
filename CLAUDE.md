@@ -409,13 +409,19 @@ npm run test:e2e
 # Build
 npm run build
 
-# Database
-npx supabase db reset
-npx supabase db push
+# Database (KALıCı ÇÖZÜM - 21 Temmuz 2025)
+./scripts/supabase-workflow.sh health    # Full Supabase health check
+./scripts/supabase-workflow.sh fix       # Quick fix for common issues  
+./scripts/supabase-workflow.sh status    # Check Supabase status
+npx supabase db reset --local            # Reset local database (use with caution)
+npx supabase db push                      # Deploy to production (use with caution)
 
-# Documentation & Tracking
+# Documentation & Tracking  
 npm run doc:status          # Check documentation status
 npm run doc:sync           # Sync documentation
+
+# Evidence Validation (21 Temmuz 2025)
+node scripts/tracking/evidence-validator.js  # Run evidence validation
 
 # Performance (Sprint 2 Related)
 npm run build:analyze      # Bundle size analysis
