@@ -547,3 +547,4 @@ NEXTAUTH_SECRET=your-nextauth-secret
 NEXTAUTH_URL=http://localhost:3000
 ```// re-trigger CI with new secrets
 ````
+Minor change to trigger workflow
