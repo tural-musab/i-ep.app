@@ -15,7 +15,25 @@ async function syncTrackingSources() {
   console.log('\n📊 Syncing traditional metrics...');
   config.sources.forEach(source => {
     try {
-      const sourceFilePath = path.resolve(__dirname, '../../', source.file.replace('../', ''));
+      // Resolve path relative to project root, not script directory
+      let sourceFilePath;
+      if (source.file.startsWith('../')) {
+        // Remove ../ and resolve from project root
+        sourceFilePath = path.resolve(__dirname, '../../', source.file.substring(3));
+      } else {
+        // Resolve relative to project root
+        sourceFilePath = path.resolve(__dirname, '../../', source.file);
+      }
+      
+      console.log(`📁 Reading source file: ${sourceFilePath}`);
+      
+      if (!fs.existsSync(sourceFilePath)) {
+        console.log(`❌ Source file not found: ${sourceFilePath}`);
+        console.log(`   Original path: ${source.file}`);
+        console.log(`   Project root: ${path.resolve(__dirname, '../..')}`);
+        return;
+      }
+      
       const content = fs.readFileSync(sourceFilePath, 'utf8');
       
       // Pattern matching ile metrikleri çıkar
