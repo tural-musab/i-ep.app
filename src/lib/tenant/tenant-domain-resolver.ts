@@ -46,12 +46,12 @@ export async function resolveTenantFromDomain(domain: string): Promise<TenantInf
       return await getTenantBySubdomain(subdomain);
     }
 
-    // Özel domain kontrolü - tenant_domains tablosundan sorgula
+    // Custom domain check - query from tenant_domains table
     return await getTenantByCustomDomain(domain);
   } catch (error) {
-    console.error('Tenant tespit hatası:', error);
+    console.error('Tenant resolution error:', error);
 
-    // Development için fallback
+    // Development fallback
     if (process.env.NODE_ENV === 'development') {
       return {
         id: 'demo-tenant-id',
@@ -80,7 +80,7 @@ async function getTenantBySubdomain(subdomain: string): Promise<TenantInfo | nul
     // Supabase istemcisi
     const supabase = createServerSupabaseClient();
 
-    // Tenants tablosundan tenant bilgilerini al
+    // Get tenant info from tenants table
     const { data, error } = await supabase
       .from('tenants')
       .select('id, name')
@@ -89,7 +89,7 @@ async function getTenantBySubdomain(subdomain: string): Promise<TenantInfo | nul
       .single();
 
     if (error || !data) {
-      console.warn(`Subdomain için tenant bulunamadı: ${subdomain}`, error);
+      console.warn(`No tenant found for subdomain: ${subdomain}`, error);
       return null;
     }
 
@@ -97,11 +97,11 @@ async function getTenantBySubdomain(subdomain: string): Promise<TenantInfo | nul
       id: data.id,
       name: data.name,
       domain: `${subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app'}`,
-      isPrimary: true, // Subdomain her zaman primer kabul edilir
+      isPrimary: true, // Subdomain is always considered primary
       isCustomDomain: false,
     };
   } catch (error) {
-    console.error('Subdomain tenant tespit hatası:', error);
+    console.error('Subdomain tenant resolution error:', error);
     return null;
   }
 }
@@ -120,17 +120,17 @@ async function getTenantByCustomDomain(domain: string): Promise<TenantInfo | nul
     // Supabase istemcisi
     const supabase = createServerSupabaseClient();
 
-    // tenant_domains tablosundan domain bilgilerini al
+    // Get domain info from tenant_domains table
     const { data, error } = await supabase
       .from('tenant_domains')
       .select('id, tenant_id, domain, is_primary, is_verified, tenants(id, name)')
       .eq('domain', domain)
-      .eq('is_verified', true) // Sadece doğrulanmış domainler
+      .eq('is_verified', true) // Only verified domains
       .eq('type', 'custom')
       .single();
 
     if (error || !data || !data.tenants) {
-      console.warn(`Özel domain için tenant bulunamadı: ${domain}`, error);
+      console.warn(`No tenant found for custom domain: ${domain}`, error);
       return null;
     }
 
@@ -142,7 +142,7 @@ async function getTenantByCustomDomain(domain: string): Promise<TenantInfo | nul
       isCustomDomain: true,
     };
   } catch (error) {
-    console.error('Özel domain tenant tespit hatası:', error);
+    console.error('Custom domain tenant resolution error:', error);
     return null;
   }
 }
