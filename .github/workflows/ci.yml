@@ -279,6 +279,10 @@ jobs:
         if: always() && env.APP_PID
         run: kill $APP_PID || true
 
+      - name: Stop application
+        if: always() && env.APP_PID
+        run: kill $APP_PID || true
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:
