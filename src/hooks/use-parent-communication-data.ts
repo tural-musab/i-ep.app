@@ -7,6 +7,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { apiGet } from '@/lib/api/api-client';
 
 interface CommunicationStats {
   totalParents: number;

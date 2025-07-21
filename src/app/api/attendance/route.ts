@@ -10,7 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { AttendanceRepository } from '@/lib/repository/attendance-repository';
-import { getTenantId } from '@/lib/tenant/tenant-utils';
+import { verifyTenantAccess, requireRole } from '@/lib/auth/server-session';
 import { z } from 'zod';
 
 // Validation schemas
@@ -60,17 +60,14 @@ const AttendanceBulkCreateSchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    const tenantId = getTenantId();
-    const supabase = await createServerSupabaseClient();
-
-    // Verify authentication
-    const {
-      data: { session },
-      error: authError,
-    } = await supabase.auth.getSession();
-    if (authError || !session) {
+    // Verify authentication and tenant access
+    const authResult = await verifyTenantAccess(request);
+    if (!authResult) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
+
+    const { user, tenantId } = authResult;
+    const supabase = createServerSupabaseClient();
 
     // Parse and validate query parameters
     const { searchParams } = new URL(request.url);
@@ -128,17 +125,14 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const tenantId = getTenantId();
-    const supabase = await createServerSupabaseClient();
-
-    // Verify authentication
-    const {
-      data: { session },
-      error: authError,
-    } = await supabase.auth.getSession();
-    if (authError || !session) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    // Verify authentication and require teacher/admin role
+    const user = await requireRole(request, ['teacher', 'admin']);
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
     }
+
+    const tenantId = user.tenantId;
+    const supabase = createServerSupabaseClient();
 
     const body = await request.json();
     const attendanceRepo = new AttendanceRepository(supabase, tenantId);
@@ -165,7 +159,7 @@ export async function POST(request: NextRequest) {
           timeOut: record.timeOut,
           notes: record.notes,
           excuseReason: record.excuseReason,
-          markedBy: session.user.id,
+          markedBy: user.id,
         }))
       );
 
@@ -216,7 +210,7 @@ export async function POST(request: NextRequest) {
         notes: validatedData.notes,
         excuseReason: validatedData.excuseReason,
         excuseDocument: validatedData.excuseDocument,
-        markedBy: session.user.id,
+        markedBy: user.id,
       });
 
       // Trigger parent notification if absent

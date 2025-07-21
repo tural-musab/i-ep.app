@@ -49,6 +49,8 @@ function isProtectedPath(pathname: string): boolean {
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const hostname = request.headers.get('host') || '';
+  
+  console.log('🔧 Middleware: Processing request', pathname, 'hostname:', hostname);
 
   // Early return for static assets
   if (
@@ -58,11 +60,13 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/logo.') ||
     pathname.startsWith('/auth/')
   ) {
+    console.log('🔧 Middleware: Early return for static/auth path:', pathname);
     return NextResponse.next();
   }
 
   // Localhost kontrolü - geliştirme ortamı için basit response
   if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
+    console.log('🔧 Middleware: localhost detected, hostname:', hostname);
     return addTenantHeadersInDevelopment(request);
   }
 
@@ -175,7 +179,10 @@ function addTenantHeadersInDevelopment(request: NextRequest): NextResponse {
   const response = NextResponse.next();
 
   // Development için demo tenant
-  response.headers.set('x-tenant-id', 'localhost-tenant'); // seed data ile uyumlu
+  const tenantId = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+  console.log('🔧 Middleware: Setting tenant headers, tenant-id:', tenantId);
+  
+  response.headers.set('x-tenant-id', tenantId); // actual database tenant ID
   response.headers.set('x-tenant-hostname', 'localhost:3000');
   response.headers.set('x-tenant-name', 'Demo İlköğretim Okulu');
   response.headers.set('x-tenant-primary', 'true');
@@ -243,7 +250,9 @@ function handleBaseDomainRequest(request: NextRequest, pathname: string): NextRe
 // Middleware hangi pathler için çalışacak
 export const config = {
   matcher: [
-    // Sistem dosyalarını hariç tut
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    // Tüm routes'ları dahil et, sadece gerçekten gerekli olanları hariç tut
+    '/((?!_next/static|_next/image|favicon.ico|.*\\..*$).*)',
+    // API routes'ları özellikle dahil et
+    '/api/(.*)',
   ],
 };

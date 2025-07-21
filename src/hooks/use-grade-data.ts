@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { apiGet } from '@/lib/api/api-client';
 
 export interface GradeStats {
   totalStudents: number;
@@ -73,29 +74,17 @@ export function useGradeData() {
       setLoading(true);
       setError(null);
       
-      // Fetch grade data from real API endpoints
+      // Fetch grade data with authentication
       const [
         gradesResponse,
         analyticsResponse,
         calculationsResponse,
         reportsResponse
       ] = await Promise.all([
-        fetch('/api/grades?limit=10&sort=created_at', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        }),
-        fetch('/api/grades/analytics', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        }),
-        fetch('/api/grades/calculations', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        }),
-        fetch('/api/grades/reports?type=performance', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        })
+        apiGet('/api/grades?limit=10&sort=created_at'),
+        apiGet('/api/grades/analytics'),
+        apiGet('/api/grades/calculations'),
+        apiGet('/api/grades/reports?type=performance')
       ]);
 
       // Default values
@@ -117,8 +106,8 @@ export function useGradeData() {
       let alerts: GradeAlert[] = [];
 
       // Process analytics response
-      if (analyticsResponse.ok) {
-        const analyticsData = await analyticsResponse.json();
+      if (analyticsResponse.status === 200 && analyticsResponse.data) {
+        const analyticsData = analyticsResponse.data;
         
         stats = {
           totalStudents: analyticsData.totalStudents || 0,
@@ -135,8 +124,8 @@ export function useGradeData() {
       }
 
       // Process grades response
-      if (gradesResponse.ok) {
-        const gradesData = await gradesResponse.json();
+      if (gradesResponse.status === 200 && gradesResponse.data) {
+        const gradesData = gradesResponse.data;
         const grades = gradesData.data || [];
         
         recentGrades = grades.map((grade: any) => ({
@@ -153,8 +142,8 @@ export function useGradeData() {
       }
 
       // Process calculations/reports response for class performance
-      if (calculationsResponse.ok) {
-        const calculationsData = await calculationsResponse.json();
+      if (calculationsResponse.status === 200 && calculationsResponse.data) {
+        const calculationsData = calculationsResponse.data;
         const classStats = calculationsData.classSummary || [];
         
         classPerformance = classStats.map((classData: any) => ({
@@ -170,8 +159,8 @@ export function useGradeData() {
       }
 
       // Process reports response for alerts
-      if (reportsResponse.ok) {
-        const reportsData = await reportsResponse.json();
+      if (reportsResponse.status === 200 && reportsResponse.data) {
+        const reportsData = reportsResponse.data;
         const alertData = reportsData.alerts || [];
         
         alerts = alertData.map((alert: any) => ({

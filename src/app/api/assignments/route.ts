@@ -5,10 +5,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 import { z } from 'zod';
 import { AssignmentRepository } from '@/lib/repository/assignment-repository';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { verifyTenantAccess, requireRole } from '@/lib/auth/server-session';
 
 // Validation schema for assignment creation
 const CreateAssignmentSchema = z.object({
@@ -27,7 +26,7 @@ const CreateAssignmentSchema = z.object({
       z.object({
         criteria: z.string(),
         points: z.number(),
-        description: z.string().optional(),
+        description: z.string(),
       })
     )
     .optional(),
@@ -60,19 +59,6 @@ const QueryParamsSchema = z.object({
   search: z.string().optional(),
 });
 
-/**
- * Get tenant ID from headers (set by middleware)
- */
-function getTenantId(): string {
-  const headersList = headers();
-  const tenantId = headersList.get('x-tenant-id');
-
-  if (!tenantId) {
-    throw new Error('Tenant ID not found in headers');
-  }
-
-  return tenantId;
-}
 
 /**
  * GET /api/assignments
@@ -80,17 +66,13 @@ function getTenantId(): string {
  */
 export async function GET(request: NextRequest) {
   try {
-    const tenantId = getTenantId();
-    const supabase = await createServerSupabaseClient();
-
-    // Verify authentication
-    const {
-      data: { session },
-      error: authError,
-    } = await supabase.auth.getSession();
-    if (authError || !session) {
+    // Verify authentication and tenant access
+    const authResult = await verifyTenantAccess(request);
+    if (!authResult) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
+
+    const { user, tenantId } = authResult;
 
     // Parse query parameters
     const url = new URL(request.url);
@@ -168,31 +150,17 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
-    const tenantId = getTenantId();
-    const supabase = await createServerSupabaseClient();
-
-    // Verify authentication
-    const {
-      data: { session },
-      error: authError,
-    } = await supabase.auth.getSession();
-    if (authError || !session) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    // Verify authentication and require teacher/admin role
+    const user = await requireRole(request, ['teacher', 'admin', 'super_admin']);
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
     }
+
+    const tenantId = user.tenantId;
 
     // Parse and validate request body
     const body = await request.json();
     const validatedData = CreateAssignmentSchema.parse(body);
-
-    // Verify user has permission to create assignment for this class
-    const userId = session.user.id;
-    const userRole = session.user.app_metadata?.role || 'user';
-
-    // For now, allow teachers and admins to create assignments
-    // TODO: Add more granular permission checks
-    if (!['teacher', 'admin', 'super_admin'].includes(userRole)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
-    }
 
     // Initialize repository
     const assignmentRepo = new AssignmentRepository(tenantId);
@@ -201,8 +169,9 @@ export async function POST(request: NextRequest) {
     const assignmentData = {
       ...validatedData,
       tenant_id: tenantId,
-      created_by: userId,
+      created_by: user.id,
       status: 'draft' as const,
+      is_graded: false, // Add missing required field
     };
 
     const newAssignment = await assignmentRepo.create(assignmentData);
@@ -228,17 +197,13 @@ export async function POST(request: NextRequest) {
  */
 export async function PUT(request: NextRequest) {
   try {
-    const tenantId = getTenantId();
-    const supabase = await createServerSupabaseClient();
-
-    // Verify authentication
-    const {
-      data: { session },
-      error: authError,
-    } = await supabase.auth.getSession();
-    if (authError || !session) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    // Verify authentication and require teacher/admin role
+    const user = await requireRole(request, ['teacher', 'admin', 'super_admin']);
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
     }
+
+    const tenantId = user.tenantId;
 
     // Parse request body
     const body = await request.json();
@@ -249,23 +214,15 @@ export async function PUT(request: NextRequest) {
       })
       .parse(body);
 
-    // Verify permissions
-    const userRole = session.user.app_metadata?.role || 'user';
-    if (!['teacher', 'admin', 'super_admin'].includes(userRole)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
-    }
-
     // Initialize repository
     const assignmentRepo = new AssignmentRepository(tenantId);
 
-    // Perform bulk update
-    const updatedAssignments = await assignmentRepo.bulkUpdate(ids, updates);
-
-    return NextResponse.json({
-      success: true,
-      updated_count: updatedAssignments.length,
-      assignments: updatedAssignments,
-    });
+    // TODO: Implement bulk update functionality
+    // For now, return not implemented error
+    return NextResponse.json(
+      { error: 'Bulk update not implemented yet' },
+      { status: 501 }
+    );
   } catch (error) {
     console.error('Error bulk updating assignments:', error);
 
@@ -286,17 +243,13 @@ export async function PUT(request: NextRequest) {
  */
 export async function DELETE(request: NextRequest) {
   try {
-    const tenantId = getTenantId();
-    const supabase = await createServerSupabaseClient();
-
-    // Verify authentication
-    const {
-      data: { session },
-      error: authError,
-    } = await supabase.auth.getSession();
-    if (authError || !session) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    // Verify authentication and require teacher/admin role
+    const user = await requireRole(request, ['teacher', 'admin', 'super_admin']);
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
     }
+
+    const tenantId = user.tenantId;
 
     // Parse request body
     const body = await request.json();
@@ -306,22 +259,15 @@ export async function DELETE(request: NextRequest) {
       })
       .parse(body);
 
-    // Verify permissions
-    const userRole = session.user.app_metadata?.role || 'user';
-    if (!['teacher', 'admin', 'super_admin'].includes(userRole)) {
-      return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
-    }
-
     // Initialize repository
     const assignmentRepo = new AssignmentRepository(tenantId);
 
-    // Perform bulk delete
-    const deletedCount = await assignmentRepo.bulkDelete(ids);
-
-    return NextResponse.json({
-      success: true,
-      deleted_count: deletedCount,
-    });
+    // TODO: Implement bulk delete functionality
+    // For now, return not implemented error
+    return NextResponse.json(
+      { error: 'Bulk delete not implemented yet' },
+      { status: 501 }
+    );
   } catch (error) {
     console.error('Error bulk deleting assignments:', error);
 

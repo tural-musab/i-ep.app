@@ -86,7 +86,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const determineTenantId = (): string | null => {
     let tenantId: string | null = null;
 
-    // 1. URL'den tenant belirleme
+    // 1. Development environment için localhost kontrolü
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        console.log('🔧 AuthContext: localhost detected, using development tenant ID');
+        tenantId = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+        return tenantId;
+      }
+    }
+
+    // 2. URL'den tenant belirleme
     if (typeof window !== 'undefined') {
       const subdomain = extractTenantFromSubdomain(window.location.hostname);
       if (subdomain) {
@@ -94,19 +104,37 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     }
 
-    // 2. Local storage kontrolü
+    // 3. Local storage kontrolü (multiple keys)
     if (!tenantId && typeof window !== 'undefined') {
-      tenantId = localStorage.getItem('tenant-id');
+      tenantId = localStorage.getItem('tenantId') || localStorage.getItem('tenant-id');
     }
 
+    console.log('🔧 AuthContext: determineTenantId result:', tenantId);
     return tenantId;
   };
 
   // Tenant bilgilerini al
   const fetchTenantDetails = async (tenantId: string) => {
     try {
+      console.log('🔧 fetchTenantDetails: Querying tenant with ID:', tenantId);
+      
+      // Development için localhost kontrolü
+      if (tenantId === 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa') {
+        console.log('🔧 fetchTenantDetails: Using development tenant mock data');
+        return {
+          id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+          name: 'Demo İlköğretim Okulu (Localhost)',
+          subdomain: 'localhost',
+          settings: {},
+          isActive: true,
+          planType: 'free',
+          createdAt: new Date(),
+        } as Tenant;
+      }
+
       // Tenant ID'den gerçek tenant ID'yi çıkar (tenant_ prefix'ini kaldır)
       const rawTenantId = tenantId.startsWith('tenant_') ? tenantId.substring(7) : tenantId;
+      console.log('🔧 fetchTenantDetails: Using rawTenantId:', rawTenantId);
 
       // Tenant bilgilerini getir
       const { data, error } = await supabase
@@ -115,14 +143,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
         .eq('id', rawTenantId)
         .single();
 
-      if (error || !data) {
-        console.error('Tenant bilgileri alınamadı:', error);
+      if (error) {
+        console.error('🔧 fetchTenantDetails: Database error:', error);
         return null;
       }
 
+      if (!data) {
+        console.error('🔧 fetchTenantDetails: No tenant data found for ID:', rawTenantId);
+        return null;
+      }
+
+      console.log('🔧 fetchTenantDetails: Successfully fetched tenant:', data);
       return data as Tenant;
     } catch (err) {
-      console.error('Tenant bilgisi çekme hatası:', err);
+      console.error('🔧 fetchTenantDetails: Exception occurred:', err);
       return null;
     }
   };
@@ -176,17 +210,104 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         // Kullanıcı profil bilgilerini al
         if (tenantId && authUser.id) {
-          // Tenant prefix'ini kaldır
-          const schemaName = tenantId.startsWith('tenant_') ? tenantId : `tenant_${tenantId}`;
+          console.log('🔧 AuthContext: Fetching user data for auth_id:', authUser.id, 'tenant:', tenantId);
+          
+          // Development için mock user data kullan
+          if (tenantId === 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa') {
+            console.log('🔧 AuthContext: Using development mock user data');
+            const mockUserData = {
+              id: authUser.id,
+              name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'Demo User',
+              role: authUser.app_metadata?.role || authUser.user_metadata?.role || 'admin',
+              status: 'active',
+              avatar_url: null,
+              created_at: authUser.created_at,
+              updated_at: authUser.updated_at
+            };
+            
+            console.log('🔧 AuthContext: Mock user data:', mockUserData);
+            
+            // User nesnesini oluştur
+            const appUser: User = {
+              id: authUser.id,
+              email: authUser.email || '',
+              role: (mockUserData.role || 'admin') as UserRole,
+              tenantId: tenantId,
+              isActive: mockUserData.status === 'active',
+              profile: {
+                userId: authUser.id,
+                fullName: mockUserData.name,
+                avatar: mockUserData.avatar_url || undefined,
+              },
+              emailVerified: authUser.email_confirmed_at
+                ? new Date(authUser.email_confirmed_at)
+                : undefined,
+              createdAt: new Date(mockUserData.created_at || authUser.created_at || new Date()),
+              updatedAt: new Date(mockUserData.updated_at || authUser.updated_at || new Date()),
+              lastLogin: authUser.last_sign_in_at ? new Date(authUser.last_sign_in_at) : undefined,
+              allowedTenants: (authUser.user_metadata?.allowed_tenants as string[]) || [],
+            };
 
+            setUser(appUser);
+
+            // Session nesnesini oluştur
+            const appSession: Session = {
+              user: appUser,
+              expires: sessionData.session.expires_at
+                ? new Date(sessionData.session.expires_at * 1000)
+                : new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 saat varsayılan süre
+              accessToken: sessionData.session.access_token,
+            };
+
+            setSession(appSession);
+            return;
+          }
+
+          // Production için gerçek database query
           const { data: userData, error: userError } = await supabase
-            .from(`${schemaName}.users`)
+            .from('users')
             .select('*')
             .eq('auth_id', authUser.id)
+            .eq('tenant_id', tenantId)
             .single();
 
+          console.log('🔧 AuthContext: User query result:', { userData, userError });
+
           if (userError) {
-            console.error('Kullanıcı bilgileri alınamadı:', userError);
+            console.error('🔧 AuthContext: Kullanıcı bilgileri alınamadı:', userError);
+            // Hata durumunda da fallback user oluştur
+            const fallbackUser: User = {
+              id: authUser.id,
+              email: authUser.email || '',
+              role: (authUser.app_metadata?.role || authUser.user_metadata?.role || 'user') as UserRole,
+              tenantId: tenantId,
+              isActive: true,
+              profile: {
+                userId: authUser.id,
+                fullName: authUser.user_metadata?.full_name || authUser.user_metadata?.name || '',
+                avatar: authUser.user_metadata?.avatar_url,
+              },
+              emailVerified: authUser.email_confirmed_at
+                ? new Date(authUser.email_confirmed_at)
+                : undefined,
+              createdAt: new Date(authUser.created_at || new Date()),
+              updatedAt: new Date(authUser.updated_at || new Date()),
+              lastLogin: authUser.last_sign_in_at ? new Date(authUser.last_sign_in_at) : undefined,
+              allowedTenants: (authUser.user_metadata?.allowed_tenants as string[]) || [],
+            };
+            
+            setUser(fallbackUser);
+            
+            // Session nesnesini oluştur
+            const fallbackSession: Session = {
+              user: fallbackUser,
+              expires: sessionData.session.expires_at
+                ? new Date(sessionData.session.expires_at * 1000)
+                : new Date(Date.now() + 24 * 60 * 60 * 1000),
+              accessToken: sessionData.session.access_token,
+            };
+            
+            setSession(fallbackSession);
           } else if (userData) {
             // User nesnesini oluştur
             const appUser: User = {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { apiGet } from '@/lib/api/api-client';
 
 export interface AssignmentStats {
   totalAssignments: number;
@@ -47,16 +48,10 @@ export function useAssignmentData() {
       setLoading(true);
       setError(null);
       
-      // Fetch assignment statistics
+      // Fetch assignment statistics with authentication
       const [assignmentsResponse, statisticsResponse] = await Promise.all([
-        fetch('/api/assignments?limit=3&sort=created_at', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        }),
-        fetch('/api/assignments/statistics', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        })
+        apiGet('/api/assignments?limit=3&sort=created_at'),
+        apiGet('/api/assignments/statistics')
       ]);
 
       let stats: AssignmentStats = {
@@ -68,9 +63,9 @@ export function useAssignmentData() {
         completionRate: 0
       };
 
-      // Get statistics if API works
-      if (statisticsResponse.ok) {
-        const statsData = await statisticsResponse.json();
+      // Get statistics if API works (authentication handled by apiGet)
+      if (statisticsResponse.status === 200 && statisticsResponse.data) {
+        const statsData = statisticsResponse.data;
         stats = {
           totalAssignments: statsData.totalAssignments || 0,
           activeAssignments: statsData.activeAssignments || 0,
@@ -84,9 +79,9 @@ export function useAssignmentData() {
       let recentAssignments: Assignment[] = [];
       let upcomingDeadlines: UpcomingDeadline[] = [];
 
-      // Get recent assignments if API works
-      if (assignmentsResponse.ok) {
-        const assignmentsData = await assignmentsResponse.json();
+      // Get recent assignments if API works (authentication handled by apiGet)
+      if (assignmentsResponse.status === 200 && assignmentsResponse.data) {
+        const assignmentsData = assignmentsResponse.data;
         const assignments = assignmentsData.data || [];
         
         recentAssignments = assignments.map((assignment: any) => ({

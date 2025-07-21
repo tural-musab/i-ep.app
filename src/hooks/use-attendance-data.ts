@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { apiGet } from '@/lib/api/api-client';
 
 export interface AttendanceTodayStats {
   totalStudents: number;
@@ -64,29 +65,17 @@ export function useAttendanceData() {
       setLoading(true);
       setError(null);
       
-      // Fetch attendance data from real API endpoints
+      // Fetch attendance data with authentication
       const [
         attendanceResponse,
         statisticsResponse,
         reportsResponse,
         notificationsResponse
       ] = await Promise.all([
-        fetch('/api/attendance?limit=10&sort=created_at', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        }),
-        fetch('/api/attendance/statistics', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        }),
-        fetch('/api/attendance/reports?type=daily', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        }),
-        fetch('/api/attendance/notifications', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        })
+        apiGet('/api/attendance?limit=10&sort=created_at'),
+        apiGet('/api/attendance/statistics'),
+        apiGet('/api/attendance/reports?type=daily'),
+        apiGet('/api/attendance/notifications')
       ]);
 
       // Default values
@@ -113,8 +102,8 @@ export function useAttendanceData() {
       let upcomingAlerts: UpcomingAlert[] = [];
 
       // Process statistics response
-      if (statisticsResponse.ok) {
-        const statsData = await statisticsResponse.json();
+      if (statisticsResponse.status === 200 && statisticsResponse.data) {
+        const statsData = statisticsResponse.data;
         
         todayStats = {
           totalStudents: statsData.totalStudents || 0,
@@ -136,8 +125,8 @@ export function useAttendanceData() {
       }
 
       // Process attendance records
-      if (attendanceResponse.ok) {
-        const attendanceData = await attendanceResponse.json();
+      if (attendanceResponse.status === 200 && attendanceResponse.data) {
+        const attendanceData = attendanceResponse.data;
         const records = attendanceData.data || [];
         
         recentAbsences = records
@@ -155,8 +144,8 @@ export function useAttendanceData() {
       }
 
       // Process reports for class attendance
-      if (reportsResponse.ok) {
-        const reportsData = await reportsResponse.json();
+      if (reportsResponse.status === 200 && reportsResponse.data) {
+        const reportsData = reportsResponse.data;
         const classReports = reportsData.data || [];
         
         classAttendance = classReports.map((report: any) => ({
@@ -168,8 +157,8 @@ export function useAttendanceData() {
       }
 
       // Process notifications for alerts
-      if (notificationsResponse.ok) {
-        const notificationsData = await notificationsResponse.json();
+      if (notificationsResponse.status === 200 && notificationsResponse.data) {
+        const notificationsData = notificationsResponse.data;
         const notifications = notificationsData.data || [];
         
         upcomingAlerts = notifications

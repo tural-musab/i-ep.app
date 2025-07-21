@@ -2,8 +2,10 @@
  * Dashboard API Service
  * İ-EP.APP - Dashboard Data Fetching Service
  * Replaces mock data with real API calls
- * Client-side compatible service
+ * Uses authenticated API client with NextAuth session
  */
+
+import { apiGet } from './api-client';
 
 export interface DashboardStats {
   totalStudents: number;
@@ -28,41 +30,30 @@ export interface DashboardData {
 
 /**
  * Fetch dashboard statistics
- * Client-side compatible - no server imports
+ * Uses authenticated API client with NextAuth session
  */
 export async function getDashboardStats(): Promise<DashboardStats> {
   try {
-    // Client-side fetch - no need for tenant check as middleware handles it
+    // Use authenticated API client for all requests
     const [studentsResponse, teachersResponse, classesResponse, assignmentsResponse] = await Promise.all([
-      fetch('/api/students?limit=1', { 
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      }),
-      fetch('/api/teachers?limit=1', { 
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      }),
-      fetch('/api/classes', { 
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      }),
-      fetch('/api/assignments?status=published&limit=1', { 
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      })
+      apiGet('/api/students?limit=1'),
+      apiGet('/api/teachers?limit=1'),
+      apiGet('/api/classes'),
+      apiGet('/api/assignments?status=published&limit=1')
     ]);
 
-    // Parse responses
-    const studentsData = await studentsResponse.json();
-    const teachersData = await teachersResponse.json();
-    const classesData = await classesResponse.json();
-    const assignmentsData = await assignmentsResponse.json();
+    // Handle authentication errors
+    if (studentsResponse.status === 401 || teachersResponse.status === 401 || 
+        classesResponse.status === 401 || assignmentsResponse.status === 401) {
+      console.error('Authentication failed for dashboard stats');
+      throw new Error('Authentication required');
+    }
 
-    // Extract counts
-    const totalStudents = studentsData.pagination?.total || 0;
-    const totalTeachers = teachersData.pagination?.total || 0;
-    const totalClasses = Array.isArray(classesData) ? classesData.length : 0;
-    const pendingAssignments = assignmentsData.pagination?.total || 0;
+    // Extract counts from authenticated responses
+    const totalStudents = studentsResponse.data?.pagination?.total || 0;
+    const totalTeachers = teachersResponse.data?.pagination?.total || 0;
+    const totalClasses = Array.isArray(classesResponse.data) ? classesResponse.data.length : 0;
+    const pendingAssignments = assignmentsResponse.data?.pagination?.total || 0;
 
     return {
       totalStudents,
@@ -85,23 +76,18 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
 /**
  * Fetch recent activities from real API endpoints
- * Client-side compatible - no server imports
+ * Uses authenticated API client with NextAuth session
  */
 export async function getRecentActivities(): Promise<RecentActivity[]> {
   try {
-    // Client-side fetch - no need for tenant check as middleware handles it
     const activities: RecentActivity[] = [];
 
     // Fetch recent assignments (last 5)
     try {
-      const assignmentResponse = await fetch('/api/assignments?limit=5&status=published', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const assignmentResponse = await apiGet('/api/assignments?limit=5&status=published');
 
-      if (assignmentResponse.ok) {
-        const assignmentData = await assignmentResponse.json();
-        const assignments = assignmentData.data || [];
+      if (assignmentResponse.status === 200 && assignmentResponse.data) {
+        const assignments = assignmentResponse.data.data || [];
         
         assignments.forEach((assignment: any) => {
           const timeAgo = getTimeAgo(assignment.created_at);
@@ -121,14 +107,10 @@ export async function getRecentActivities(): Promise<RecentActivity[]> {
 
     // Fetch recent grades (last 5)
     try {
-      const gradeResponse = await fetch('/api/grades?limit=5&includeComments=true', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const gradeResponse = await apiGet('/api/grades?limit=5&includeComments=true');
 
-      if (gradeResponse.ok) {
-        const gradeData = await gradeResponse.json();
-        const grades = gradeData.data || [];
+      if (gradeResponse.status === 200 && gradeResponse.data) {
+        const grades = gradeResponse.data.data || [];
         
         grades.forEach((grade: any) => {
           const timeAgo = getTimeAgo(grade.created_at);
@@ -148,14 +130,10 @@ export async function getRecentActivities(): Promise<RecentActivity[]> {
 
     // Fetch recent attendance (last 5)
     try {
-      const attendanceResponse = await fetch('/api/attendance?limit=5', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const attendanceResponse = await apiGet('/api/attendance?limit=5');
 
-      if (attendanceResponse.ok) {
-        const attendanceData = await attendanceResponse.json();
-        const attendances = attendanceData.data || [];
+      if (attendanceResponse.status === 200 && attendanceResponse.data) {
+        const attendances = attendanceResponse.data.data || [];
         
         attendances.forEach((attendance: any) => {
           const timeAgo = getTimeAgo(attendance.created_at);

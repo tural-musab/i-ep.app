@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/auth-options';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { getCurrentTenant } from '@/lib/tenant/current-tenant';
+import { verifyTenantAccess, requireRole } from '@/lib/auth/server-session';
 import { logAuditEvent } from '@/lib/audit';
 import { User } from '@/types/auth';
 import * as Sentry from '@sentry/nextjs';
@@ -33,22 +31,16 @@ export async function GET(request: NextRequest) {
     },
     async () => {
       try {
-        // Authentication check
-        const session = await getServerSession(authOptions);
-        if (!session || !session.user) {
-          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // Verify authentication and tenant access
+        const authResult = await verifyTenantAccess(request);
+        if (!authResult) {
+          return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
         }
 
-        // Get tenant information
-        const tenant = await getCurrentTenant();
-        if (!tenant) {
-          return NextResponse.json({ error: 'Tenant not found' }, { status: 400 });
-        }
+        const { user, tenantId } = authResult;
 
         // Authorization check - admin, teacher can view students
-        // @ts-expect-error - NextAuth user type doesn't include role
-        const userRole = session.user.role;
-        if (!['admin', 'teacher', 'parent'].includes(userRole)) {
+        if (!['admin', 'teacher', 'parent'].includes(user.role)) {
           return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
         }
 
@@ -75,7 +67,7 @@ export async function GET(request: NextRequest) {
             is_active
           `
           )
-          .eq('tenant_id', tenant.id)
+          .eq('tenant_id', tenantId)
           .eq('role', 'student')
           .is('deleted_at', null);
 
@@ -103,8 +95,8 @@ export async function GET(request: NextRequest) {
 
         // Log audit event
         await logAuditEvent(
-          tenant.id,
-          session.user.id || '',
+          tenantId,
+          user.id,
           'list',
           'student',
           '',
@@ -143,23 +135,13 @@ export async function POST(request: NextRequest) {
     },
     async () => {
       try {
-        // Authentication check
-        const session = await getServerSession(authOptions);
-        if (!session || !session.user) {
-          return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // Verify authentication and require admin role
+        const user = await requireRole(request, ['admin']);
+        if (!user) {
+          return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
         }
 
-        // Get tenant information
-        const tenant = await getCurrentTenant();
-        if (!tenant) {
-          return NextResponse.json({ error: 'Tenant not found' }, { status: 400 });
-        }
-
-        // Authorization check - only admin can create students
-        const userRole = (session.user as User).role;
-        if (!['admin'].includes(userRole)) {
-          return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 });
-        }
+        const tenantId = user.tenantId;
 
         // Parse request body
         const body: CreateStudentData = await request.json();
@@ -178,7 +160,7 @@ export async function POST(request: NextRequest) {
         const { data: existingStudent, error: checkError } = await supabase
           .from('users')
           .select('id')
-          .eq('tenant_id', tenant.id)
+          .eq('tenant_id', tenantId)
           .eq('role', 'student')
           .contains('metadata', { student_number: body.student_number })
           .maybeSingle();
@@ -194,8 +176,8 @@ export async function POST(request: NextRequest) {
 
         // Create user record
         const userData = {
-          tenant_id: tenant.id,
-          email: body.email || `${body.student_number}@${tenant.name}.local`,
+          tenant_id: tenantId,
+          email: body.email || `${body.student_number}@student.local`,
           first_name: body.first_name,
           last_name: body.last_name,
           role: 'student',
@@ -222,8 +204,8 @@ export async function POST(request: NextRequest) {
 
         // Log audit event
         await logAuditEvent(
-          tenant.id,
-          session.user.id || '',
+          tenantId,
+          user.id,
           'create',
           'student',
           newUser.id,

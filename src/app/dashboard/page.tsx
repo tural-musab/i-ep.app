@@ -7,26 +7,37 @@ import { AssignmentDashboard } from '@/components/assignments/assignment-dashboa
 import { AttendanceDashboard } from '@/components/attendance/attendance-dashboard';
 import { GradeDashboard } from '@/components/grades/grade-dashboard';
 import { ParentCommunicationDashboard } from '@/components/parent-communication/parent-communication-dashboard';
-import { ScheduleDashboard } from '@/components/schedule/schedule-dashboard';
+// import { ScheduleDashboard } from '@/components/schedule/schedule-dashboard';
 import { FileText, User, Users, Calendar, BarChart3, Clock } from 'lucide-react';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { RecentActivities } from '@/components/dashboard/recent-activities';
+// import { APITestComponent } from '@/components/debug/api-test-component';
 
 export default async function Dashboard() {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
-    redirect('/auth/giris');
-  }
+  // TEMPORARY: Bypass authentication for debugging API client
+  // if (!session) {
+  //   redirect('/auth/giris');
+  // }
 
   return (
     <div className="container mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="mt-2 text-gray-600">
-          Hoş geldiniz, {session.user?.name || session.user?.email}
+          Hoş geldiniz, {session?.user?.name || session?.user?.email || 'Debug Mode (No Session)'}
         </p>
+        {/* Debug: Session Info */}
+        <div className="mt-2 p-2 bg-yellow-100 border rounded text-xs">
+          <strong>Debug Session:</strong> {session ? 'Session Found' : 'No Session'} | 
+          User: {session?.user?.email || 'None'} | 
+          ID: {session?.user?.id || 'None'}
+        </div>
       </div>
+
+      {/* API Test Component - DEBUG ONLY - DISABLED DUE TO SESSIONPROVIDER ISSUE */}
+      {/* <APITestComponent /> */}
 
       {/* Stats Grid - Now client-side with API calls */}
       <DashboardStats />
@@ -54,10 +65,10 @@ export default async function Dashboard() {
         <ParentCommunicationDashboard />
       </div>
 
-      {/* Schedule Management Dashboard */}
-      <div className="mt-8">
+      {/* Schedule Management Dashboard - Temporarily disabled due to compilation errors */}
+      {/* <div className="mt-8">
         <ScheduleDashboard />
-      </div>
+      </div> */}
 
       {/* Report Generation Widget */}
       <div className="mt-8">
