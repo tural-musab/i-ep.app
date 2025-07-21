@@ -214,18 +214,21 @@ Demo tenant'lar aşağıdaki amaçlara hizmet eder:
 ### Demo Tenant Tipleri
 
 #### 1. Satış Demo Tenant'ı
+
 - **Amaç**: Potansiyel müşterilere özel gösterimler için
 - **Özellikler**: Tüm premium özellikler aktif, gerçekçi verilerle dolu
 - **Erişim**: Geçici, kontrollü erişim (genellikle satış ekibi eşliğinde)
 - **Veri**: Önceden hazırlanmış, gerçekçi ancak anonim veriler
 
 #### 2. Self-Servis Demo Tenant'ı
+
 - **Amaç**: Potansiyel müşterilerin kendi kendilerine keşfetmeleri için
 - **Özellikler**: Temel ve orta seviye özellikler aktif, sınırlı premium özellikler
 - **Erişim**: Zaman sınırlı self-servis erişim (genellikle 14-30 gün)
 - **Veri**: Basitleştirilmiş, kendini açıklayan örnek veriler
 
 #### 3. Eğitim Demo Tenant'ı
+
 - **Amaç**: Eğitim ve onboarding süreçleri için
 - **Özellikler**: Müşterinin abonelik planına göre yapılandırılmış
 - **Erişim**: Eğitim süresi boyunca
@@ -234,6 +237,7 @@ Demo tenant'lar aşağıdaki amaçlara hizmet eder:
 ### Demo Tenant Oluşturma Kontrol Listesi
 
 #### Demo Tenant Oluşturma Öncesi
+
 - [ ] Demo tipi belirlendi (satış, self-servis, eğitim)
 - [ ] Hedef kitle ve amacı tanımlandı
 - [ ] Uygun veri seti seçildi
@@ -243,6 +247,7 @@ Demo tenant'lar aşağıdaki amaçlara hizmet eder:
 - [ ] Demo senaryoları ve kullanım akışları hazırlandı
 
 #### Demo Tenant Oluşturma
+
 - [ ] Tenant temel bilgileri yapılandırıldı (ad, subdomain, logo, renkler)
 - [ ] Veri seti başarıyla yüklendi
 - [ ] Okul profili bilgileri girildi
@@ -253,6 +258,7 @@ Demo tenant'lar aşağıdaki amaçlara hizmet eder:
 - [ ] Demo tanıtım materyalleri hazırlandı
 
 #### Demo Tenant Kalite Kontrol
+
 - [ ] Tüm demo kullanıcıları ile giriş testi yapıldı
 - [ ] Temel özellikler ve işlevsellik kontrol edildi
 - [ ] Demo senaryolarının tamamı test edildi
@@ -391,33 +397,39 @@ npm run format
 ### External Services Setup
 
 #### Supabase
+
 1. Supabase hesabı açın
 2. Yeni proje oluşturun
 3. API keys'leri `.env.local`'e ekleyin
 4. Authentication providers'ı enable edin
 
 #### Upstash Redis
+
 1. Upstash hesabı açın
 2. Redis database oluşturun
 3. Connection details'ları `.env.local`'e ekleyin
 
 #### Cloudflare
+
 1. Cloudflare hesabı açın
 2. Domain ekleyin (i-ep.app)
 3. API token oluşturun
 4. DNS records yapılandırın
 
 #### İyzico
+
 1. İyzico merchant hesabı açın
 2. Sandbox test keys alın
 3. API keys'leri `.env.local`'e ekleyin
 
 #### Sentry
+
 1. Sentry hesabı açın
 2. Next.js projesi oluşturun
 3. DSN key'i `.env.local`'e ekleyin
 
 #### Vercel
+
 1. Vercel hesabı açın
 2. GitHub repository'yi connect edin
 3. Environment variables'ları yapılandırın

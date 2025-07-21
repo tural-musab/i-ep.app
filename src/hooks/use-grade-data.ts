@@ -73,19 +73,15 @@ export function useGradeData() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Fetch grade data with authentication
-      const [
-        gradesResponse,
-        analyticsResponse,
-        calculationsResponse,
-        reportsResponse
-      ] = await Promise.all([
-        apiGet('/api/grades?limit=10&sort=created_at'),
-        apiGet('/api/grades/analytics'),
-        apiGet('/api/grades/calculations'),
-        apiGet('/api/grades/reports?type=performance')
-      ]);
+      const [gradesResponse, analyticsResponse, calculationsResponse, reportsResponse] =
+        await Promise.all([
+          apiGet('/api/grades?limit=10&sort=created_at'),
+          apiGet('/api/grades/analytics'),
+          apiGet('/api/grades/calculations'),
+          apiGet('/api/grades/reports?type=performance'),
+        ]);
 
       // Default values
       let stats: GradeStats = {
@@ -97,8 +93,15 @@ export function useGradeData() {
         weeklyProgress: 0,
         improvementRate: 0,
         gradeDistribution: {
-          AA: 0, BA: 0, BB: 0, CB: 0, CC: 0, DC: 0, DD: 0, FF: 0
-        }
+          AA: 0,
+          BA: 0,
+          BB: 0,
+          CB: 0,
+          CC: 0,
+          DC: 0,
+          DD: 0,
+          FF: 0,
+        },
       };
 
       let recentGrades: RecentGrade[] = [];
@@ -108,7 +111,7 @@ export function useGradeData() {
       // Process analytics response
       if (analyticsResponse.status === 200 && analyticsResponse.data) {
         const analyticsData = analyticsResponse.data;
-        
+
         stats = {
           totalStudents: analyticsData.totalStudents || 0,
           gradedAssignments: analyticsData.gradedAssignments || 0,
@@ -118,8 +121,15 @@ export function useGradeData() {
           weeklyProgress: analyticsData.weeklyProgress || 0,
           improvementRate: analyticsData.improvementRate || 0,
           gradeDistribution: analyticsData.gradeDistribution || {
-            AA: 0, BA: 0, BB: 0, CB: 0, CC: 0, DC: 0, DD: 0, FF: 0
-          }
+            AA: 0,
+            BA: 0,
+            BB: 0,
+            CB: 0,
+            CC: 0,
+            DC: 0,
+            DD: 0,
+            FF: 0,
+          },
         };
       }
 
@@ -127,25 +137,27 @@ export function useGradeData() {
       if (gradesResponse.status === 200 && gradesResponse.data) {
         const gradesData = gradesResponse.data;
         const grades = gradesData.data || [];
-        
-        recentGrades = grades.map((grade: any) => ({
-          id: grade.id,
-          studentName: grade.student_name || 'Unknown',
-          className: grade.class_name || 'N/A',
-          assignmentTitle: grade.assignment_title || 'N/A',
-          grade: grade.letter_grade || 'N/A',
-          score: grade.numeric_score || 0,
-          date: grade.created_at || grade.graded_at,
-          type: grade.assignment_type || 'assignment',
-          semester: grade.semester || 'Current'
-        })).slice(0, 6);
+
+        recentGrades = grades
+          .map((grade: any) => ({
+            id: grade.id,
+            studentName: grade.student_name || 'Unknown',
+            className: grade.class_name || 'N/A',
+            assignmentTitle: grade.assignment_title || 'N/A',
+            grade: grade.letter_grade || 'N/A',
+            score: grade.numeric_score || 0,
+            date: grade.created_at || grade.graded_at,
+            type: grade.assignment_type || 'assignment',
+            semester: grade.semester || 'Current',
+          }))
+          .slice(0, 6);
       }
 
       // Process calculations/reports response for class performance
       if (calculationsResponse.status === 200 && calculationsResponse.data) {
         const calculationsData = calculationsResponse.data;
         const classStats = calculationsData.classSummary || [];
-        
+
         classPerformance = classStats.map((classData: any) => ({
           className: classData.class_name || 'N/A',
           studentCount: classData.student_count || 0,
@@ -154,7 +166,7 @@ export function useGradeData() {
           highestScore: classData.highest_score || 0,
           lowestScore: classData.lowest_score || 0,
           passRate: classData.pass_rate || 0,
-          trend: classData.trend || 'stable'
+          trend: classData.trend || 'stable',
         }));
       }
 
@@ -162,17 +174,19 @@ export function useGradeData() {
       if (reportsResponse.status === 200 && reportsResponse.data) {
         const reportsData = reportsResponse.data;
         const alertData = reportsData.alerts || [];
-        
-        alerts = alertData.map((alert: any) => ({
-          id: alert.id,
-          type: alert.type || 'improvement',
-          studentName: alert.student_name || 'Unknown',
-          className: alert.class_name || 'N/A',
-          subject: alert.subject || 'N/A',
-          message: alert.message || 'Performance alert',
-          priority: alert.priority || 'medium',
-          actionRequired: alert.action_required || false
-        })).slice(0, 5);
+
+        alerts = alertData
+          .map((alert: any) => ({
+            id: alert.id,
+            type: alert.type || 'improvement',
+            studentName: alert.student_name || 'Unknown',
+            className: alert.class_name || 'N/A',
+            subject: alert.subject || 'N/A',
+            message: alert.message || 'Performance alert',
+            priority: alert.priority || 'medium',
+            actionRequired: alert.action_required || false,
+          }))
+          .slice(0, 5);
       }
 
       // Fallback to mock data if no real data
@@ -186,8 +200,15 @@ export function useGradeData() {
           weeklyProgress: 12,
           improvementRate: 8.3,
           gradeDistribution: {
-            AA: 18, BA: 32, BB: 45, CB: 38, CC: 28, DC: 15, DD: 8, FF: 3
-          }
+            AA: 18,
+            BA: 32,
+            BB: 45,
+            CB: 38,
+            CC: 28,
+            DC: 15,
+            DD: 8,
+            FF: 3,
+          },
         };
       }
 
@@ -202,7 +223,7 @@ export function useGradeData() {
             score: 95,
             date: '2025-07-18',
             type: 'quiz',
-            semester: 'Güz 2024'
+            semester: 'Güz 2024',
           },
           {
             id: 'mock-2',
@@ -213,7 +234,7 @@ export function useGradeData() {
             score: 88,
             date: '2025-07-17',
             type: 'project',
-            semester: 'Güz 2024'
+            semester: 'Güz 2024',
           },
           {
             id: 'mock-3',
@@ -224,8 +245,8 @@ export function useGradeData() {
             score: 82,
             date: '2025-07-17',
             type: 'exam',
-            semester: 'Güz 2024'
-          }
+            semester: 'Güz 2024',
+          },
         ];
       }
 
@@ -239,7 +260,7 @@ export function useGradeData() {
             highestScore: 95,
             lowestScore: 45,
             passRate: 86.7,
-            trend: 'up'
+            trend: 'up',
           },
           {
             className: '5-B',
@@ -249,7 +270,7 @@ export function useGradeData() {
             highestScore: 92,
             lowestScore: 38,
             passRate: 82.1,
-            trend: 'stable'
+            trend: 'stable',
           },
           {
             className: '6-A',
@@ -259,8 +280,8 @@ export function useGradeData() {
             highestScore: 98,
             lowestScore: 52,
             passRate: 90.6,
-            trend: 'up'
-          }
+            trend: 'up',
+          },
         ];
       }
 
@@ -274,7 +295,7 @@ export function useGradeData() {
             subject: 'Matematik',
             message: 'Matematik dersinde başarısızlık riski',
             priority: 'high',
-            actionRequired: true
+            actionRequired: true,
           },
           {
             id: 'mock-alert-2',
@@ -284,7 +305,7 @@ export function useGradeData() {
             subject: 'Fen Bilgisi',
             message: 'Son haftalarda kayda değer gelişim',
             priority: 'medium',
-            actionRequired: false
+            actionRequired: false,
           },
           {
             id: 'mock-alert-3',
@@ -294,8 +315,8 @@ export function useGradeData() {
             subject: 'Türkçe',
             message: 'Mükemmel performans gösteriyor',
             priority: 'low',
-            actionRequired: false
-          }
+            actionRequired: false,
+          },
         ];
       }
 
@@ -303,12 +324,12 @@ export function useGradeData() {
         stats,
         recentGrades,
         classPerformance,
-        alerts
+        alerts,
       });
     } catch (err) {
       console.error('Grade data fetch error:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch grade data');
-      
+
       // Set fallback data on error
       setData({
         stats: {
@@ -320,8 +341,15 @@ export function useGradeData() {
           weeklyProgress: 12,
           improvementRate: 8.3,
           gradeDistribution: {
-            AA: 18, BA: 32, BB: 45, CB: 38, CC: 28, DC: 15, DD: 8, FF: 3
-          }
+            AA: 18,
+            BA: 32,
+            BB: 45,
+            CB: 38,
+            CC: 28,
+            DC: 15,
+            DD: 8,
+            FF: 3,
+          },
         },
         recentGrades: [
           {
@@ -333,8 +361,8 @@ export function useGradeData() {
             score: 95,
             date: '2025-07-18',
             type: 'quiz',
-            semester: 'Güz 2024'
-          }
+            semester: 'Güz 2024',
+          },
         ],
         classPerformance: [
           {
@@ -345,8 +373,8 @@ export function useGradeData() {
             highestScore: 95,
             lowestScore: 45,
             passRate: 86.7,
-            trend: 'up'
-          }
+            trend: 'up',
+          },
         ],
         alerts: [
           {
@@ -357,9 +385,9 @@ export function useGradeData() {
             subject: 'Matematik',
             message: 'Matematik dersinde başarısızlık riski',
             priority: 'high',
-            actionRequired: true
-          }
-        ]
+            actionRequired: true,
+          },
+        ],
       });
     } finally {
       setLoading(false);

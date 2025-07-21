@@ -128,7 +128,10 @@ export async function POST(request: NextRequest) {
     // Verify authentication and require teacher/admin role
     const user = await requireRole(request, ['teacher', 'admin']);
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Authentication required or insufficient permissions' },
+        { status: 401 }
+      );
     }
 
     const tenantId = user.tenantId;

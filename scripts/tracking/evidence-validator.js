@@ -14,14 +14,14 @@ class EvidenceValidator {
     try {
       const configPath = path.join(this.projectRoot, 'tracking/evidence-config.json');
       console.log(`📁 Loading evidence config from: ${configPath}`);
-      
+
       if (!fs.existsSync(configPath)) {
         console.error(`❌ Evidence config not found at: ${configPath}`);
         console.log(`📁 Project root: ${this.projectRoot}`);
         console.log(`📁 Current working directory: ${process.cwd()}`);
         process.exit(1);
       }
-      
+
       return JSON.parse(fs.readFileSync(configPath, 'utf8'));
     } catch (error) {
       console.error('❌ Failed to load evidence config:', error.message);
@@ -83,7 +83,7 @@ class EvidenceValidator {
       verified: isVerified,
       status: isVerified ? 'VERIFIED' : 'EVIDENCE_INSUFFICIENT',
       evidence_details: evidenceResults,
-      validation_timestamp: new Date().toISOString()
+      validation_timestamp: new Date().toISOString(),
     };
   }
 
@@ -92,44 +92,44 @@ class EvidenceValidator {
       switch (validator.type) {
         case 'file_exists':
           return this.validateFileExists(validator);
-        
+
         case 'api_endpoint':
           return this.validateApiEndpoint(validator);
-        
+
         case 'test_suite':
           return this.validateTestSuite(validator);
-        
+
         case 'component_exists':
           return this.validateComponentExists(validator);
-        
+
         case 'auth_config':
           return this.validateAuthConfig(validator);
-        
+
         case 'demo_users':
           return this.validateDemoUsers(validator);
-        
+
         case 'api_count':
           return this.validateApiCount(validator);
-        
+
         case 'calculation_engine':
           return this.validateCalculationEngine(validator);
-        
+
         case 'turkish_grading':
           return this.validateTurkishGrading(validator);
-        
+
         case 'role_routing':
           return this.validateRoleRouting(validator);
-        
+
         case 'session_management':
           return this.validateSessionManagement(validator);
-        
+
         default:
           return {
             validator_type: validator.type,
             description: validator.description,
             passed: false,
             evidence: `Unknown validator type: ${validator.type}`,
-            weight: validator.weight
+            weight: validator.weight,
           };
       }
     } catch (error) {
@@ -138,7 +138,7 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `Validation error: ${error.message}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     }
   }
@@ -146,19 +146,22 @@ class EvidenceValidator {
   validateFileExists(validator) {
     const searchPath = path.join(this.projectRoot, validator.path);
     const { execSync } = require('child_process');
-    
+
     try {
       // Use glob pattern to find files
       const command = `find "${path.dirname(searchPath)}" -name "${path.basename(validator.path)}" 2>/dev/null || true`;
       const result = execSync(command, { encoding: 'utf8' }).trim();
-      const files = result.split('\n').filter(f => f.length > 0);
-      
+      const files = result.split('\n').filter((f) => f.length > 0);
+
       return {
         validator_type: validator.type,
         description: validator.description,
         passed: files.length > 0,
-        evidence: files.length > 0 ? `Found ${files.length} matching files: ${files.slice(0, 3).join(', ')}` : 'No matching files found',
-        weight: validator.weight
+        evidence:
+          files.length > 0
+            ? `Found ${files.length} matching files: ${files.slice(0, 3).join(', ')}`
+            : 'No matching files found',
+        weight: validator.weight,
       };
     } catch (error) {
       return {
@@ -166,22 +169,29 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `Search failed: ${error.message}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     }
   }
 
   validateApiEndpoint(validator) {
     // For now, just check if the API route file exists
-    const routePath = path.join(this.projectRoot, 'src/app/api', validator.endpoint.substring(5), 'route.ts');
+    const routePath = path.join(
+      this.projectRoot,
+      'src/app/api',
+      validator.endpoint.substring(5),
+      'route.ts'
+    );
     const exists = fs.existsSync(routePath);
-    
+
     return {
       validator_type: validator.type,
       description: validator.description,
       passed: exists,
-      evidence: exists ? `API route file exists: ${routePath}` : `API route file missing: ${routePath}`,
-      weight: validator.weight
+      evidence: exists
+        ? `API route file exists: ${routePath}`
+        : `API route file missing: ${routePath}`,
+      weight: validator.weight,
     };
   }
 
@@ -191,15 +201,15 @@ class EvidenceValidator {
       const testDir = path.join(this.projectRoot, 'src/__tests__');
       const command = `find "${testDir}" -name "${validator.pattern}" 2>/dev/null || true`;
       const result = execSync(command, { encoding: 'utf8' }).trim();
-      const testFiles = result.split('\n').filter(f => f.length > 0);
-      
+      const testFiles = result.split('\n').filter((f) => f.length > 0);
+
       if (testFiles.length === 0) {
         return {
           validator_type: validator.type,
           description: validator.description,
           passed: false,
           evidence: `No test files found matching pattern: ${validator.pattern}`,
-          weight: validator.weight
+          weight: validator.weight,
         };
       }
 
@@ -207,18 +217,18 @@ class EvidenceValidator {
       try {
         const testCommand = `cd "${this.projectRoot}" && npm test -- --testPathPattern="${validator.pattern}" --passWithNoTests --silent 2>&1`;
         const testOutput = execSync(testCommand, { encoding: 'utf8' });
-        
+
         // Extract test count from output
         const testCountMatch = testOutput.match(/(\d+) passed/);
         const testCount = testCountMatch ? parseInt(testCountMatch[1]) : 0;
         const meetsMinimum = validator.min_tests ? testCount >= validator.min_tests : testCount > 0;
-        
+
         return {
           validator_type: validator.type,
           description: validator.description,
           passed: meetsMinimum,
           evidence: `Found ${testFiles.length} test files, ${testCount} tests passed. Required: ${validator.min_tests || 'any'}`,
-          weight: validator.weight
+          weight: validator.weight,
         };
       } catch (testError) {
         return {
@@ -226,7 +236,7 @@ class EvidenceValidator {
           description: validator.description,
           passed: false,
           evidence: `Test execution failed: ${testError.message}`,
-          weight: validator.weight
+          weight: validator.weight,
         };
       }
     } catch (error) {
@@ -235,25 +245,28 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `Validation failed: ${error.message}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     }
   }
 
   validateComponentExists(validator) {
     const searchPath = path.join(this.projectRoot, validator.path);
-    
+
     try {
       const command = `find "${path.dirname(searchPath)}" -name "*.tsx" -o -name "*.ts" 2>/dev/null || true`;
       const result = execSync(command, { encoding: 'utf8' }).trim();
-      const components = result.split('\n').filter(f => f.length > 0);
-      
+      const components = result.split('\n').filter((f) => f.length > 0);
+
       return {
         validator_type: validator.type,
         description: validator.description,
         passed: components.length > 0,
-        evidence: components.length > 0 ? `Found ${components.length} component files` : 'No component files found',
-        weight: validator.weight
+        evidence:
+          components.length > 0
+            ? `Found ${components.length} component files`
+            : 'No component files found',
+        weight: validator.weight,
       };
     } catch (error) {
       return {
@@ -261,30 +274,34 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `Component search failed: ${error.message}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     }
   }
 
   validateAuthConfig(validator) {
     const authPath = path.join(this.projectRoot, validator.path);
-    
+
     try {
       const command = `find "${authPath}" -name "*.ts" -o -name "*.tsx" 2>/dev/null || true`;
       const result = execSync(command, { encoding: 'utf8' }).trim();
-      const authFiles = result.split('\n').filter(f => f.length > 0);
-      
+      const authFiles = result.split('\n').filter((f) => f.length > 0);
+
       // Check for NextAuth specific files
-      const hasAuthConfig = authFiles.some(file => 
-        file.includes('auth') && (file.includes('config') || file.includes('context') || file.includes('session'))
+      const hasAuthConfig = authFiles.some(
+        (file) =>
+          file.includes('auth') &&
+          (file.includes('config') || file.includes('context') || file.includes('session'))
       );
-      
+
       return {
         validator_type: validator.type,
         description: validator.description,
         passed: hasAuthConfig,
-        evidence: hasAuthConfig ? `Found auth configuration files: ${authFiles.length} files` : 'No auth configuration found',
-        weight: validator.weight
+        evidence: hasAuthConfig
+          ? `Found auth configuration files: ${authFiles.length} files`
+          : 'No auth configuration found',
+        weight: validator.weight,
       };
     } catch (error) {
       return {
@@ -292,7 +309,7 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `Auth config validation failed: ${error.message}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     }
   }
@@ -301,13 +318,13 @@ class EvidenceValidator {
     // Check if demo user creation script exists
     const demoScript = path.join(this.projectRoot, 'scripts/create-demo-users.js');
     const exists = fs.existsSync(demoScript);
-    
+
     return {
       validator_type: validator.type,
       description: validator.description,
       passed: exists,
       evidence: exists ? 'Demo users script exists' : 'Demo users script not found',
-      weight: validator.weight
+      weight: validator.weight,
     };
   }
 
@@ -316,16 +333,16 @@ class EvidenceValidator {
       const apiDir = path.join(this.projectRoot, 'src/app/api');
       const command = `find "${apiDir}" -name "route.ts" 2>/dev/null || true`;
       const result = execSync(command, { encoding: 'utf8' }).trim();
-      const apiFiles = result.split('\n').filter(f => f.length > 0);
-      
+      const apiFiles = result.split('\n').filter((f) => f.length > 0);
+
       const meetsMinimum = apiFiles.length >= validator.min_endpoints;
-      
+
       return {
         validator_type: validator.type,
         description: validator.description,
         passed: meetsMinimum,
         evidence: `Found ${apiFiles.length} API endpoints. Required: ${validator.min_endpoints}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     } catch (error) {
       return {
@@ -333,25 +350,28 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `API count validation failed: ${error.message}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     }
   }
 
   validateCalculationEngine(validator) {
     const calcPath = path.join(this.projectRoot, validator.path);
-    
+
     try {
       const command = `find "${path.dirname(calcPath)}" -name "*.ts" -o -name "*.tsx" 2>/dev/null || true`;
       const result = execSync(command, { encoding: 'utf8' }).trim();
-      const calcFiles = result.split('\n').filter(f => f.length > 0);
-      
+      const calcFiles = result.split('\n').filter((f) => f.length > 0);
+
       return {
         validator_type: validator.type,
         description: validator.description,
         passed: calcFiles.length > 0,
-        evidence: calcFiles.length > 0 ? `Found ${calcFiles.length} calculation files` : 'No calculation files found',
-        weight: validator.weight
+        evidence:
+          calcFiles.length > 0
+            ? `Found ${calcFiles.length} calculation files`
+            : 'No calculation files found',
+        weight: validator.weight,
       };
     } catch (error) {
       return {
@@ -359,34 +379,34 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `Calculation engine validation failed: ${error.message}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     }
   }
 
   validateTurkishGrading(validator) {
     const gradeTypesPath = path.join(this.projectRoot, validator.path);
-    
+
     if (!fs.existsSync(gradeTypesPath)) {
       return {
         validator_type: validator.type,
         description: validator.description,
         passed: false,
         evidence: `Grade types file not found: ${validator.path}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     }
 
     try {
       const content = fs.readFileSync(gradeTypesPath, 'utf8');
-      const hasAllGrades = validator.expected_content.every(grade => content.includes(grade));
-      
+      const hasAllGrades = validator.expected_content.every((grade) => content.includes(grade));
+
       return {
         validator_type: validator.type,
         description: validator.description,
         passed: hasAllGrades,
         evidence: hasAllGrades ? 'All Turkish grades (AA-FF) found' : 'Some Turkish grades missing',
-        weight: validator.weight
+        weight: validator.weight,
       };
     } catch (error) {
       return {
@@ -394,7 +414,7 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `Turkish grading validation failed: ${error.message}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     }
   }
@@ -403,11 +423,11 @@ class EvidenceValidator {
     try {
       let foundPaths = [];
       let totalPaths = validator.paths ? validator.paths.length : 0;
-      
+
       for (const routePath of validator.paths || []) {
         // Check if route page exists
         let pageFound = false;
-        
+
         if (routePath === '/dashboard') {
           const dashboardPath = path.join(this.projectRoot, 'src/app/dashboard/page.tsx');
           pageFound = fs.existsSync(dashboardPath);
@@ -418,22 +438,22 @@ class EvidenceValidator {
           const parentPath = path.join(this.projectRoot, 'src/app/veli/page.tsx');
           pageFound = fs.existsSync(parentPath);
         }
-        
+
         if (pageFound) {
           foundPaths.push(routePath);
         }
       }
-      
+
       const allPathsFound = foundPaths.length === totalPaths;
-      
+
       return {
         validator_type: validator.type,
         description: validator.description,
         passed: allPathsFound,
-        evidence: allPathsFound ? 
-          `All ${totalPaths} role-based routes found: ${foundPaths.join(', ')}` :
-          `Found ${foundPaths.length}/${totalPaths} routes: ${foundPaths.join(', ')}`,
-        weight: validator.weight
+        evidence: allPathsFound
+          ? `All ${totalPaths} role-based routes found: ${foundPaths.join(', ')}`
+          : `Found ${foundPaths.length}/${totalPaths} routes: ${foundPaths.join(', ')}`,
+        weight: validator.weight,
       };
     } catch (error) {
       return {
@@ -441,7 +461,7 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `Role routing validation failed: ${error.message}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     }
   }
@@ -451,28 +471,28 @@ class EvidenceValidator {
       const authFiles = [
         'src/lib/auth/server-session.ts',
         'src/lib/auth/auth-context.tsx',
-        'src/lib/auth/auth-options.ts'
+        'src/lib/auth/auth-options.ts',
       ];
-      
+
       let foundFiles = [];
-      
+
       for (const authFile of authFiles) {
         const filePath = path.join(this.projectRoot, authFile);
         if (fs.existsSync(filePath)) {
           foundFiles.push(authFile);
         }
       }
-      
+
       const hasSessionSupport = foundFiles.length >= 2; // At least 2 session-related files
-      
+
       return {
         validator_type: validator.type,
         description: validator.description,
         passed: hasSessionSupport,
-        evidence: hasSessionSupport ? 
-          `Session management files found: ${foundFiles.join(', ')}` :
-          `Insufficient session files: ${foundFiles.join(', ')}`,
-        weight: validator.weight
+        evidence: hasSessionSupport
+          ? `Session management files found: ${foundFiles.join(', ')}`
+          : `Insufficient session files: ${foundFiles.join(', ')}`,
+        weight: validator.weight,
       };
     } catch (error) {
       return {
@@ -480,7 +500,7 @@ class EvidenceValidator {
         description: validator.description,
         passed: false,
         evidence: `Session management validation failed: ${error.message}`,
-        weight: validator.weight
+        weight: validator.weight,
       };
     }
   }
@@ -490,22 +510,30 @@ class EvidenceValidator {
     console.log('==============================');
 
     const totalTasks = Object.keys(this.results).length;
-    const verifiedTasks = Object.values(this.results).filter(r => r.verified).length;
-    const criticalTasks = Object.values(this.results).filter(r => this.evidenceConfig.tasks[r.task_id].critical).length;
-    const verifiedCritical = Object.values(this.results).filter(r => r.verified && this.evidenceConfig.tasks[r.task_id].critical).length;
+    const verifiedTasks = Object.values(this.results).filter((r) => r.verified).length;
+    const criticalTasks = Object.values(this.results).filter(
+      (r) => this.evidenceConfig.tasks[r.task_id].critical
+    ).length;
+    const verifiedCritical = Object.values(this.results).filter(
+      (r) => r.verified && this.evidenceConfig.tasks[r.task_id].critical
+    ).length;
 
     console.log(`\n🎯 Overall Status:`);
     console.log(`   Total Tasks: ${totalTasks}`);
-    console.log(`   Verified: ${verifiedTasks}/${totalTasks} (${Math.round(verifiedTasks/totalTasks*100)}%)`);
+    console.log(
+      `   Verified: ${verifiedTasks}/${totalTasks} (${Math.round((verifiedTasks / totalTasks) * 100)}%)`
+    );
     console.log(`   Critical Tasks: ${criticalTasks}`);
-    console.log(`   Critical Verified: ${verifiedCritical}/${criticalTasks} (${Math.round(verifiedCritical/criticalTasks*100)}%)`);
+    console.log(
+      `   Critical Verified: ${verifiedCritical}/${criticalTasks} (${Math.round((verifiedCritical / criticalTasks) * 100)}%)`
+    );
 
     console.log(`\n📋 Task Details:`);
     for (const [taskId, result] of Object.entries(this.results)) {
       const critical = this.evidenceConfig.tasks[taskId].critical ? '🔴' : '🟡';
       const status = result.verified ? '✅' : '❌';
       console.log(`   ${critical} ${status} ${result.description} (${result.evidence_score}%)`);
-      
+
       if (!result.verified && result.critical_failures.length > 0) {
         console.log(`      🚨 Critical failures: ${result.critical_failures.join(', ')}`);
       }
@@ -514,11 +542,11 @@ class EvidenceValidator {
     return {
       total_tasks: totalTasks,
       verified_tasks: verifiedTasks,
-      verification_rate: Math.round(verifiedTasks/totalTasks*100),
+      verification_rate: Math.round((verifiedTasks / totalTasks) * 100),
       critical_tasks: criticalTasks,
       critical_verified: verifiedCritical,
-      critical_rate: Math.round(verifiedCritical/criticalTasks*100),
-      overall_health: verifiedCritical === criticalTasks ? 'HEALTHY' : 'NEEDS_ATTENTION'
+      critical_rate: Math.round((verifiedCritical / criticalTasks) * 100),
+      overall_health: verifiedCritical === criticalTasks ? 'HEALTHY' : 'NEEDS_ATTENTION',
     };
   }
 
@@ -526,10 +554,10 @@ class EvidenceValidator {
     try {
       const configPath = path.join(this.projectRoot, 'tracking/unified-tracking.yaml');
       const config = yaml.load(fs.readFileSync(configPath, 'utf8'));
-      
+
       // Update evidence validation results
       config.evidence_validation.last_validation = new Date().toISOString();
-      
+
       for (const [taskId, result] of Object.entries(this.results)) {
         if (config.evidence_validation.results[taskId]) {
           config.evidence_validation.results[taskId] = {
@@ -537,15 +565,14 @@ class EvidenceValidator {
             evidence_score: result.evidence_score,
             verified: result.verified,
             status: result.status.toLowerCase(),
-            last_checked: result.validation_timestamp
+            last_checked: result.validation_timestamp,
           };
         }
       }
-      
+
       // Save updated config
       fs.writeFileSync(configPath, yaml.dump(config));
       console.log('\n✅ Updated unified-tracking.yaml with evidence results');
-      
     } catch (error) {
       console.error('\n❌ Failed to update unified tracking:', error.message);
     }
@@ -556,20 +583,19 @@ class EvidenceValidator {
 if (require.main === module) {
   (async () => {
     const validator = new EvidenceValidator();
-    
+
     try {
       await validator.validateAll();
       const summary = validator.generateSummaryReport();
       await validator.updateUnifiedTracking();
-      
+
       console.log('\n🎉 Evidence validation completed!');
       console.log(`Overall health: ${summary.overall_health}`);
-      
+
       // Note: For GitHub Actions, we don't exit with error code
       // This allows continuous tracking even with low evidence scores
       console.log(`\n📊 Critical verification rate: ${summary.critical_rate}%`);
       process.exit(0); // Always exit successfully for tracking purposes
-      
     } catch (error) {
       console.error('\n❌ Validation failed:', error.message);
       process.exit(1);

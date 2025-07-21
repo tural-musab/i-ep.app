@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
           activeAssignmentsResult,
           completedAssignmentsResult,
           pendingGradesResult,
-          submissionsResult
+          submissionsResult,
         ] = await Promise.all([
           // Total assignments
           supabase
@@ -84,7 +84,8 @@ export async function GET(request: NextRequest) {
           // All submissions for completion rate calculation
           supabase
             .from('assignment_submissions')
-            .select(`
+            .select(
+              `
               id,
               assignment_id,
               status,
@@ -93,9 +94,10 @@ export async function GET(request: NextRequest) {
                 id,
                 status
               )
-            `)
+            `
+            )
             .eq('tenant_id', tenant.id)
-            .is('deleted_at', null)
+            .is('deleted_at', null),
         ]);
 
         // Handle query errors
@@ -113,21 +115,22 @@ export async function GET(request: NextRequest) {
 
         // Calculate average score and completion rate from submissions
         const submissions = submissionsResult.data || [];
-        const gradedSubmissions = submissions.filter(s => s.grade !== null);
-        const averageScore = gradedSubmissions.length > 0 
-          ? gradedSubmissions.reduce((sum, s) => sum + (s.grade || 0), 0) / gradedSubmissions.length
-          : 0;
+        const gradedSubmissions = submissions.filter((s) => s.grade !== null);
+        const averageScore =
+          gradedSubmissions.length > 0
+            ? gradedSubmissions.reduce((sum, s) => sum + (s.grade || 0), 0) /
+              gradedSubmissions.length
+            : 0;
 
         // Calculate completion rate (submitted vs total possible submissions)
-        const activeSubmissions = submissions.filter(s => 
-          s.assignments && s.assignments.status === 'published'
+        const activeSubmissions = submissions.filter(
+          (s) => s.assignments && s.assignments.status === 'published'
         );
-        const submittedCount = activeSubmissions.filter(s => 
-          s.status === 'submitted' || s.status === 'graded'
+        const submittedCount = activeSubmissions.filter(
+          (s) => s.status === 'submitted' || s.status === 'graded'
         ).length;
-        const completionRate = activeSubmissions.length > 0 
-          ? (submittedCount / activeSubmissions.length) * 100
-          : 0;
+        const completionRate =
+          activeSubmissions.length > 0 ? (submittedCount / activeSubmissions.length) * 100 : 0;
 
         const statistics = {
           totalAssignments,
@@ -137,7 +140,7 @@ export async function GET(request: NextRequest) {
           averageScore: Math.round(averageScore * 100) / 100, // Round to 2 decimal places
           completionRate: Math.round(completionRate * 100) / 100, // Round to 2 decimal places
           gradedSubmissions: gradedSubmissions.length,
-          totalSubmissions: submissions.length
+          totalSubmissions: submissions.length,
         };
 
         // Log audit event
@@ -157,7 +160,7 @@ export async function GET(request: NextRequest) {
         Sentry.captureException(error);
 
         return NextResponse.json(
-          { error: 'Failed to fetch assignment statistics' }, 
+          { error: 'Failed to fetch assignment statistics' },
           { status: 500 }
         );
       }

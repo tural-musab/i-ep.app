@@ -9,14 +9,17 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   try {
     const allHeaders = Object.fromEntries(request.headers.entries());
-    
+
     const relevantHeaders = Object.keys(allHeaders)
-      .filter(key => key.startsWith('x-tenant-') || key.startsWith('x-auth-') || key === 'host')
-      .reduce((obj, key) => {
-        obj[key] = allHeaders[key];
-        return obj;
-      }, {} as Record<string, string>);
-    
+      .filter((key) => key.startsWith('x-tenant-') || key.startsWith('x-auth-') || key === 'host')
+      .reduce(
+        (obj, key) => {
+          obj[key] = allHeaders[key];
+          return obj;
+        },
+        {} as Record<string, string>
+      );
+
     return NextResponse.json({
       message: 'Headers test endpoint',
       hostname: request.headers.get('host'),
@@ -33,14 +36,16 @@ export async function GET(request: NextRequest) {
         'x-auth-user-role': request.headers.get('x-auth-user-role'),
       },
       allRelevantHeaders: relevantHeaders,
-      environment: process.env.NODE_ENV
+      environment: process.env.NODE_ENV,
     });
-    
   } catch (error) {
     console.error('Test headers error:', error);
-    return NextResponse.json({ 
-      error: 'Test failed',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Test failed',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
   }
 }

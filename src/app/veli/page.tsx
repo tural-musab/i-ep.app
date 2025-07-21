@@ -11,20 +11,18 @@ export default function VeliDashboard() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Yükleniyor...</div>;
+    return <div className="flex min-h-screen items-center justify-center">Yükleniyor...</div>;
   }
 
   if (!user) {
-    return <div className="flex items-center justify-center min-h-screen">Giriş yapılmadı</div>;
+    return <div className="flex min-h-screen items-center justify-center">Giriş yapılmadı</div>;
   }
 
   return (
     <div className="container mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Veli Paneli</h1>
-        <p className="mt-2 text-gray-600">
-          Hoş geldiniz, {user?.profile?.fullName || user?.email}
-        </p>
+        <p className="mt-2 text-gray-600">Hoş geldiniz, {user?.profile?.fullName || user?.email}</p>
       </div>
 
       {/* Children Overview */}
@@ -47,22 +45,22 @@ export default function VeliDashboard() {
                       <CardTitle className="text-lg">Ahmet Yılmaz</CardTitle>
                       <CardDescription>5-A Sınıfı • Öğrenci No: 1023</CardDescription>
                     </div>
-                    <Badge variant="outline" className="text-green-600 border-green-600">
+                    <Badge variant="outline" className="border-green-600 text-green-600">
                       Aktif
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center text-sm">
+                    <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Bu ay devam:</span>
                       <span className="font-medium text-green-600">22/23 gün</span>
                     </div>
-                    <div className="flex justify-between items-center text-sm">
+                    <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Genel ortalama:</span>
                       <span className="font-medium text-blue-600">85.5</span>
                     </div>
-                    <div className="flex justify-between items-center text-sm">
+                    <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Bekleyen ödev:</span>
                       <span className="font-medium text-orange-600">2 adet</span>
                     </div>
@@ -78,22 +76,22 @@ export default function VeliDashboard() {
                       <CardTitle className="text-lg">Ayşe Yılmaz</CardTitle>
                       <CardDescription>3-B Sınıfı • Öğrenci No: 1157</CardDescription>
                     </div>
-                    <Badge variant="outline" className="text-green-600 border-green-600">
+                    <Badge variant="outline" className="border-green-600 text-green-600">
                       Aktif
                     </Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
                   <div className="space-y-2">
-                    <div className="flex justify-between items-center text-sm">
+                    <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Bu ay devam:</span>
                       <span className="font-medium text-green-600">23/23 gün</span>
                     </div>
-                    <div className="flex justify-between items-center text-sm">
+                    <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Genel ortalama:</span>
                       <span className="font-medium text-blue-600">92.3</span>
                     </div>
-                    <div className="flex justify-between items-center text-sm">
+                    <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-600">Bekleyen ödev:</span>
                       <span className="font-medium text-green-600">Yok</span>
                     </div>
@@ -106,56 +104,48 @@ export default function VeliDashboard() {
       </div>
 
       {/* Parent Stats */}
-      <div className="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bugünkü Devam</CardTitle>
-            <User className="h-4 w-4 text-muted-foreground" />
+            <User className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">2/2</div>
-            <p className="text-xs text-muted-foreground">
-              Çocukların bugün okulda
-            </p>
+            <p className="text-muted-foreground text-xs">Çocukların bugün okulda</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Yeni Mesaj</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <MessageSquare className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">
-              Öğretmenlerden mesaj
-            </p>
+            <p className="text-muted-foreground text-xs">Öğretmenlerden mesaj</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bu Hafta Ödev</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">7</div>
-            <p className="text-xs text-muted-foreground">
-              Toplam ödev sayısı
-            </p>
+            <p className="text-muted-foreground text-xs">Toplam ödev sayısı</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Akademik Ortalama</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">88.9</div>
-            <p className="text-xs text-muted-foreground">
-              Genel başarı ortalaması
-            </p>
+            <p className="text-muted-foreground text-xs">Genel başarı ortalaması</p>
           </CardContent>
         </Card>
       </div>
@@ -220,9 +210,9 @@ export default function VeliDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center gap-4 p-3 border rounded-lg">
+              <div className="flex items-center gap-4 rounded-lg border p-3">
                 <div className="flex-shrink-0">
-                  <Badge variant="outline" className="text-green-600 border-green-600">
+                  <Badge variant="outline" className="border-green-600 text-green-600">
                     Not
                   </Badge>
                 </div>
@@ -233,9 +223,9 @@ export default function VeliDashboard() {
                 <div className="text-xs text-gray-500">2 saat önce</div>
               </div>
 
-              <div className="flex items-center gap-4 p-3 border rounded-lg">
+              <div className="flex items-center gap-4 rounded-lg border p-3">
                 <div className="flex-shrink-0">
-                  <Badge variant="outline" className="text-blue-600 border-blue-600">
+                  <Badge variant="outline" className="border-blue-600 text-blue-600">
                     Ödev
                   </Badge>
                 </div>
@@ -246,9 +236,9 @@ export default function VeliDashboard() {
                 <div className="text-xs text-gray-500">5 saat önce</div>
               </div>
 
-              <div className="flex items-center gap-4 p-3 border rounded-lg">
+              <div className="flex items-center gap-4 rounded-lg border p-3">
                 <div className="flex-shrink-0">
-                  <Badge variant="outline" className="text-purple-600 border-purple-600">
+                  <Badge variant="outline" className="border-purple-600 text-purple-600">
                     Mesaj
                   </Badge>
                 </div>
@@ -259,9 +249,9 @@ export default function VeliDashboard() {
                 <div className="text-xs text-gray-500">1 gün önce</div>
               </div>
 
-              <div className="flex items-center gap-4 p-3 border rounded-lg">
+              <div className="flex items-center gap-4 rounded-lg border p-3">
                 <div className="flex-shrink-0">
-                  <Badge variant="outline" className="text-orange-600 border-orange-600">
+                  <Badge variant="outline" className="border-orange-600 text-orange-600">
                     Devam
                   </Badge>
                 </div>
@@ -292,29 +282,29 @@ export default function VeliDashboard() {
               <div className="space-y-4">
                 <h4 className="font-medium">Ahmet Yılmaz - 5A</h4>
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span className="text-sm">Matematik</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-24 h-2 bg-gray-200 rounded-full">
-                        <div className="w-20 h-2 bg-blue-500 rounded-full"></div>
+                      <div className="h-2 w-24 rounded-full bg-gray-200">
+                        <div className="h-2 w-20 rounded-full bg-blue-500"></div>
                       </div>
                       <span className="text-sm font-medium">85</span>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span className="text-sm">Türkçe</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-24 h-2 bg-gray-200 rounded-full">
-                        <div className="w-22 h-2 bg-green-500 rounded-full"></div>
+                      <div className="h-2 w-24 rounded-full bg-gray-200">
+                        <div className="h-2 w-22 rounded-full bg-green-500"></div>
                       </div>
                       <span className="text-sm font-medium">90</span>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span className="text-sm">Fen Bilgisi</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-24 h-2 bg-gray-200 rounded-full">
-                        <div className="w-18 h-2 bg-purple-500 rounded-full"></div>
+                      <div className="h-2 w-24 rounded-full bg-gray-200">
+                        <div className="h-2 w-18 rounded-full bg-purple-500"></div>
                       </div>
                       <span className="text-sm font-medium">78</span>
                     </div>
@@ -326,29 +316,29 @@ export default function VeliDashboard() {
               <div className="space-y-4">
                 <h4 className="font-medium">Ayşe Yılmaz - 3B</h4>
                 <div className="space-y-2">
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span className="text-sm">Matematik</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-24 h-2 bg-gray-200 rounded-full">
-                        <div className="w-23 h-2 bg-blue-500 rounded-full"></div>
+                      <div className="h-2 w-24 rounded-full bg-gray-200">
+                        <div className="h-2 w-23 rounded-full bg-blue-500"></div>
                       </div>
                       <span className="text-sm font-medium">95</span>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span className="text-sm">Türkçe</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-24 h-2 bg-gray-200 rounded-full">
-                        <div className="w-21 h-2 bg-green-500 rounded-full"></div>
+                      <div className="h-2 w-24 rounded-full bg-gray-200">
+                        <div className="h-2 w-21 rounded-full bg-green-500"></div>
                       </div>
                       <span className="text-sm font-medium">88</span>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <span className="text-sm">Hayat Bilgisi</span>
                     <div className="flex items-center gap-2">
-                      <div className="w-24 h-2 bg-gray-200 rounded-full">
-                        <div className="w-24 h-2 bg-green-500 rounded-full"></div>
+                      <div className="h-2 w-24 rounded-full bg-gray-200">
+                        <div className="h-2 w-24 rounded-full bg-green-500"></div>
                       </div>
                       <span className="text-sm font-medium">98</span>
                     </div>

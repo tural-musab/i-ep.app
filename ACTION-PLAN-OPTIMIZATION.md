@@ -45,7 +45,7 @@ CRITICAL ACTIONS FOR PHASE 6.1:
 FBI-001: Frontend-Backend Integration (+15 SP) - 🔥 CRITICAL
 ├── Dashboard API Integration - Connect dashboard components to real APIs
 ├── Assignment System Integration - Connect assignment UI to backend
-├── Attendance System Integration - Connect attendance UI to backend  
+├── Attendance System Integration - Connect attendance UI to backend
 ├── Grade System Integration - Connect grade UI to backend
 ├── Mock Data Replacement - Replace all mock data with API calls
 └── Error Handling - Proper error states and loading indicators
@@ -57,7 +57,7 @@ Impact: Core systems become fully functional
 #### **API Integration Testing (+12 SP)**
 
 ```bash
-AIT-001: API Integration Testing (+12 SP) - 🔥 CRITICAL  
+AIT-001: API Integration Testing (+12 SP) - 🔥 CRITICAL
 ├── Assignment API Testing - Test 4 assignment endpoints with frontend
 ├── Attendance API Testing - Test 5 attendance endpoints with frontend
 ├── Grade API Testing - Test 5 grade endpoints with frontend

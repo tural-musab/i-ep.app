@@ -117,8 +117,8 @@ export function AssignmentDashboard() {
         <div className="flex items-center gap-4">
           <h2 className="text-2xl font-bold">Ödev Yönetimi</h2>
           {/* Data source indicator */}
-          <Badge variant={assignmentData ? "default" : "secondary"}>
-            {assignmentData ? "🔗 Canlı Veri" : "📊 Mock Veri"}
+          <Badge variant={assignmentData ? 'default' : 'secondary'}>
+            {assignmentData ? '🔗 Canlı Veri' : '📊 Mock Veri'}
           </Badge>
         </div>
         <div className="flex gap-2">

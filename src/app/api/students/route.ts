@@ -138,7 +138,10 @@ export async function POST(request: NextRequest) {
         // Verify authentication and require admin role
         const user = await requireRole(request, ['admin']);
         if (!user) {
-          return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
+          return NextResponse.json(
+            { error: 'Authentication required or insufficient permissions' },
+            { status: 401 }
+          );
         }
 
         const tenantId = user.tenantId;

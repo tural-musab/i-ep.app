@@ -36,7 +36,7 @@ export class ApiIntegrationTester {
       method: 'GET',
       requiresAuth: true,
       description: 'List all students with pagination',
-      status: 'not_tested'
+      status: 'not_tested',
     },
     {
       name: 'Teachers API',
@@ -44,7 +44,7 @@ export class ApiIntegrationTester {
       method: 'GET',
       requiresAuth: true,
       description: 'List all teachers with pagination',
-      status: 'not_tested'
+      status: 'not_tested',
     },
     {
       name: 'Classes API',
@@ -52,7 +52,7 @@ export class ApiIntegrationTester {
       method: 'GET',
       requiresAuth: true,
       description: 'List all classes with teacher/student counts',
-      status: 'not_tested'
+      status: 'not_tested',
     },
 
     // Assignment System APIs
@@ -62,7 +62,7 @@ export class ApiIntegrationTester {
       method: 'GET',
       requiresAuth: true,
       description: 'List assignments with filtering',
-      status: 'not_tested'
+      status: 'not_tested',
     },
     {
       name: 'Assignment Create',
@@ -79,8 +79,8 @@ export class ApiIntegrationTester {
         class_id: '550e8400-e29b-41d4-a716-446655440000',
         teacher_id: '550e8400-e29b-41d4-a716-446655440001',
         due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        max_score: 100
-      }
+        max_score: 100,
+      },
     },
     {
       name: 'Assignment Detail',
@@ -88,7 +88,7 @@ export class ApiIntegrationTester {
       method: 'GET',
       requiresAuth: true,
       description: 'Get assignment details',
-      status: 'not_tested'
+      status: 'not_tested',
     },
 
     // Attendance System APIs
@@ -98,7 +98,7 @@ export class ApiIntegrationTester {
       method: 'GET',
       requiresAuth: true,
       description: 'List attendance records',
-      status: 'not_tested'
+      status: 'not_tested',
     },
     {
       name: 'Attendance Create',
@@ -111,8 +111,8 @@ export class ApiIntegrationTester {
         student_id: '550e8400-e29b-41d4-a716-446655440002',
         class_id: '550e8400-e29b-41d4-a716-446655440000',
         date: new Date().toISOString().split('T')[0],
-        status: 'present'
-      }
+        status: 'present',
+      },
     },
     {
       name: 'Attendance Reports',
@@ -120,7 +120,7 @@ export class ApiIntegrationTester {
       method: 'GET',
       requiresAuth: true,
       description: 'Generate attendance reports',
-      status: 'not_tested'
+      status: 'not_tested',
     },
 
     // Grade System APIs
@@ -130,7 +130,7 @@ export class ApiIntegrationTester {
       method: 'GET',
       requiresAuth: true,
       description: 'List student grades',
-      status: 'not_tested'
+      status: 'not_tested',
     },
     {
       name: 'Grade Create',
@@ -146,8 +146,8 @@ export class ApiIntegrationTester {
         max_grade: 100,
         grade_type: 'exam',
         semester: 1,
-        academic_year: '2024-2025'
-      }
+        academic_year: '2024-2025',
+      },
     },
     {
       name: 'Grade Analytics',
@@ -155,7 +155,7 @@ export class ApiIntegrationTester {
       method: 'GET',
       requiresAuth: true,
       description: 'Generate grade analytics',
-      status: 'not_tested'
+      status: 'not_tested',
     },
 
     // Parent Communication APIs
@@ -165,7 +165,7 @@ export class ApiIntegrationTester {
       method: 'GET',
       requiresAuth: true,
       description: 'List parent communication messages',
-      status: 'not_tested'
+      status: 'not_tested',
     },
 
     // System APIs
@@ -175,8 +175,8 @@ export class ApiIntegrationTester {
       method: 'GET',
       requiresAuth: false,
       description: 'System health check',
-      status: 'not_tested'
-    }
+      status: 'not_tested',
+    },
   ];
 
   /**
@@ -184,7 +184,7 @@ export class ApiIntegrationTester {
    */
   async testEndpoint(endpoint: ApiEndpoint): Promise<ApiTestResult> {
     const startTime = Date.now();
-    
+
     try {
       const options: RequestInit = {
         method: endpoint.method,
@@ -215,9 +215,8 @@ export class ApiIntegrationTester {
         responseTime,
         statusCode: response.status,
         data,
-        error: response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`
+        error: response.ok ? undefined : `HTTP ${response.status}: ${response.statusText}`,
       };
-
     } catch (error) {
       const responseTime = Date.now() - startTime;
       return {
@@ -226,7 +225,7 @@ export class ApiIntegrationTester {
         status: 'failed',
         responseTime,
         statusCode: 0,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -236,14 +235,14 @@ export class ApiIntegrationTester {
    */
   async testAllEndpoints(): Promise<ApiTestResult[]> {
     const results: ApiTestResult[] = [];
-    
+
     for (const endpoint of this.endpoints) {
       console.log(`Testing ${endpoint.name} (${endpoint.method} ${endpoint.url})`);
       endpoint.status = 'testing';
-      
+
       const result = await this.testEndpoint(endpoint);
       results.push(result);
-      
+
       // Update endpoint status
       endpoint.status = result.status;
       endpoint.lastTested = new Date();
@@ -265,9 +264,9 @@ export class ApiIntegrationTester {
     coverage: number;
   } {
     const total = this.endpoints.length;
-    const passed = this.endpoints.filter(e => e.status === 'passed').length;
-    const failed = this.endpoints.filter(e => e.status === 'failed').length;
-    const notTested = this.endpoints.filter(e => e.status === 'not_tested').length;
+    const passed = this.endpoints.filter((e) => e.status === 'passed').length;
+    const failed = this.endpoints.filter((e) => e.status === 'failed').length;
+    const notTested = this.endpoints.filter((e) => e.status === 'not_tested').length;
     const coverage = Math.round((passed / total) * 100);
 
     return {
@@ -275,7 +274,7 @@ export class ApiIntegrationTester {
       passed,
       failed,
       notTested,
-      coverage
+      coverage,
     };
   }
 
@@ -283,7 +282,7 @@ export class ApiIntegrationTester {
    * Get endpoints by status
    */
   getEndpointsByStatus(status: ApiEndpoint['status']): ApiEndpoint[] {
-    return this.endpoints.filter(e => e.status === status);
+    return this.endpoints.filter((e) => e.status === status);
   }
 
   /**
@@ -293,7 +292,7 @@ export class ApiIntegrationTester {
     const summary = this.getTestingSummary();
     const passed = this.getEndpointsByStatus('passed');
     const failed = this.getEndpointsByStatus('failed');
-    
+
     let report = `
 # API Integration Test Report
 Generated: ${new Date().toISOString()}
@@ -306,14 +305,14 @@ Generated: ${new Date().toISOString()}
 - Coverage: ${summary.coverage}%
 
 ## Passed Endpoints (${passed.length})
-${passed.map(e => `- ✅ ${e.name} (${e.method} ${e.url}) - ${e.responseTime}ms`).join('\n')}
+${passed.map((e) => `- ✅ ${e.name} (${e.method} ${e.url}) - ${e.responseTime}ms`).join('\n')}
 
 ## Failed Endpoints (${failed.length})
-${failed.map(e => `- ❌ ${e.name} (${e.method} ${e.url}) - ${e.error}`).join('\n')}
+${failed.map((e) => `- ❌ ${e.name} (${e.method} ${e.url}) - ${e.error}`).join('\n')}
 
 ## Authentication Status
-- Endpoints requiring auth: ${this.endpoints.filter(e => e.requiresAuth).length}
-- Public endpoints: ${this.endpoints.filter(e => !e.requiresAuth).length}
+- Endpoints requiring auth: ${this.endpoints.filter((e) => e.requiresAuth).length}
+- Public endpoints: ${this.endpoints.filter((e) => !e.requiresAuth).length}
 `;
 
     return report;

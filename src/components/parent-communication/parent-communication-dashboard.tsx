@@ -214,8 +214,8 @@ export function ParentCommunicationDashboard() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <h2 className="text-2xl font-bold">Veli İletişim Sistemi</h2>
-          <Badge variant={isUsingMockData ? "secondary" : "default"}>
-            {isUsingMockData ? "📊 Mock Veri" : "🔗 Canlı Veri"}
+          <Badge variant={isUsingMockData ? 'secondary' : 'default'}>
+            {isUsingMockData ? '📊 Mock Veri' : '🔗 Canlı Veri'}
           </Badge>
           {error && (
             <Badge variant="destructive" className="text-xs">
@@ -435,14 +435,14 @@ export function ParentCommunicationDashboard() {
                         <p className="text-xs text-gray-600">{action.count} öğe</p>
                       </div>
                     </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className={getPriorityColor(action.priority)}>
-                      {action.priority}
-                    </Badge>
-                    <Button variant="outline" size="sm">
-                      {action.action}
-                    </Button>
-                  </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className={getPriorityColor(action.priority)}>
+                        {action.priority}
+                      </Badge>
+                      <Button variant="outline" size="sm">
+                        {action.action}
+                      </Button>
+                    </div>
                   </div>
                 );
               })}
@@ -520,24 +520,24 @@ export function ParentCommunicationDashboard() {
                     <IconComponent className="h-5 w-5" />
                     <h3 className="font-medium">{channel.channel}</h3>
                   </div>
-                <div className="space-y-2">
-                  <div>
-                    <div className="mb-1 flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Kullanım</span>
-                      <span className="text-sm font-medium">{channel.usage}%</span>
+                  <div className="space-y-2">
+                    <div>
+                      <div className="mb-1 flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Kullanım</span>
+                        <span className="text-sm font-medium">{channel.usage}%</span>
+                      </div>
+                      <Progress value={channel.usage} className="h-2" />
                     </div>
-                    <Progress value={channel.usage} className="h-2" />
-                  </div>
-                  <div>
-                    <div className="mb-1 flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Tercih</span>
-                      <span className="text-sm font-medium">{channel.preference}%</span>
+                    <div>
+                      <div className="mb-1 flex items-center justify-between">
+                        <span className="text-sm text-gray-600">Tercih</span>
+                        <span className="text-sm font-medium">{channel.preference}%</span>
+                      </div>
+                      <Progress value={channel.preference} className="h-2" />
                     </div>
-                    <Progress value={channel.preference} className="h-2" />
+                    <div className="text-xs text-gray-600">Avg. yanıt: {channel.responseTime}h</div>
                   </div>
-                  <div className="text-xs text-gray-600">Avg. yanıt: {channel.responseTime}h</div>
                 </div>
-              </div>
               );
             })}
           </div>

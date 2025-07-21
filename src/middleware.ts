@@ -49,7 +49,7 @@ function isProtectedPath(pathname: string): boolean {
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const hostname = request.headers.get('host') || '';
-  
+
   console.log('🔧 Middleware: Processing request', pathname, 'hostname:', hostname);
 
   // Early return for static assets
@@ -181,7 +181,7 @@ function addTenantHeadersInDevelopment(request: NextRequest): NextResponse {
   // Development için demo tenant
   const tenantId = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
   console.log('🔧 Middleware: Setting tenant headers, tenant-id:', tenantId);
-  
+
   response.headers.set('x-tenant-id', tenantId); // actual database tenant ID
   response.headers.set('x-tenant-hostname', 'localhost:3000');
   response.headers.set('x-tenant-name', 'Demo İlköğretim Okulu');

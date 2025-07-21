@@ -15,7 +15,7 @@ export function DashboardStats() {
               <CardTitle className="text-sm text-gray-500">Yükleniyor...</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-8 w-16 animate-pulse bg-gray-200 rounded"></div>
+              <div className="h-8 w-16 animate-pulse rounded bg-gray-200"></div>
             </CardContent>
           </Card>
         ))}
@@ -25,7 +25,7 @@ export function DashboardStats() {
 
   if (error) {
     return (
-      <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg">
+      <div className="mb-8 rounded-lg border border-red-200 bg-red-50 p-4">
         <p className="text-red-700">Hata: {error}</p>
       </div>
     );
@@ -33,7 +33,7 @@ export function DashboardStats() {
 
   if (!data) {
     return (
-      <div className="mb-8 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+      <div className="mb-8 rounded-lg border border-gray-200 bg-gray-50 p-4">
         <p className="text-gray-700">Veri yüklenemedi</p>
       </div>
     );

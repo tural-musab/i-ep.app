@@ -8,6 +8,7 @@
 ## 🚨 KRİTİK BUG FIX - CLOUDFLARE_EMAIL Validation Hatası
 
 ### **HATA:**
+
 ```bash
 ❌ Invalid environment variables: [
   {
@@ -20,6 +21,7 @@
 ```
 
 ### **ÇÖZÜM:**
+
 ```bash
 # ❌ YANLIŞ - Build hatasına neden olur
 CLOUDFLARE_EMAIL=dev@localhost
@@ -29,13 +31,16 @@ CLOUDFLARE_EMAIL=dev@example.com
 ```
 
 ### **NEDEN OLDU:**
+
 - `src/env.ts` dosyasında Zod ile email validasyonu var
 - `dev@localhost` geçerli email formatı değil
 - Build sırasında environment validation yapılıyor
 - Validation başarısız olunca build durur
 
 ### **KALICI ÇÖZÜM:**
+
 Development ortamında her zaman geçerli email formatı kullanın:
+
 ```bash
 # Development için önerilen formatlar
 CLOUDFLARE_EMAIL=dev@example.com
@@ -65,15 +70,15 @@ CLOUDFLARE_EMAIL=noreply@dev.local
 
 ### **✅ DOĞRU Dosya Kullanımı**
 
-| Dosya                    | Amaç                | İçerik                    | Güvenlik Seviyesi | Öncelik |
-| ------------------------ | ------------------- | ------------------------- | ----------------- | ------- |
-| `.env.development.local` | **Sadece Development** | Mock/test kimlik bilgileri | ✅ GÜVENLİ        | **1** |
-| `.env.local`             | **Genel Override**     | Sadece genel ayarlar      | ✅ GÜVENLİ        | **2** |
-| `.env.development`       | Development şablonu    | Mock credentials template | ✅ GÜVENLİ        | 3 |
-| `.env.staging`           | Staging şablonu        | Placeholder değerler      | ✅ GÜVENLİ        | 3 |
-| `.env.production`        | Production şablonu     | Placeholder değerler      | ✅ GÜVENLİ        | 3 |
-| `.env`                   | Fallback şablonu       | Placeholder değerler      | ✅ GÜVENLİ        | 4 |
-| `.env.example`           | Dokümantasyon          | Sadece placeholder değerler | ✅ GÜVENLİ        | - |
+| Dosya                    | Amaç                   | İçerik                      | Güvenlik Seviyesi | Öncelik |
+| ------------------------ | ---------------------- | --------------------------- | ----------------- | ------- |
+| `.env.development.local` | **Sadece Development** | Mock/test kimlik bilgileri  | ✅ GÜVENLİ        | **1**   |
+| `.env.local`             | **Genel Override**     | Sadece genel ayarlar        | ✅ GÜVENLİ        | **2**   |
+| `.env.development`       | Development şablonu    | Mock credentials template   | ✅ GÜVENLİ        | 3       |
+| `.env.staging`           | Staging şablonu        | Placeholder değerler        | ✅ GÜVENLİ        | 3       |
+| `.env.production`        | Production şablonu     | Placeholder değerler        | ✅ GÜVENLİ        | 3       |
+| `.env`                   | Fallback şablonu       | Placeholder değerler        | ✅ GÜVENLİ        | 4       |
+| `.env.example`           | Dokümantasyon          | Sadece placeholder değerler | ✅ GÜVENLİ        | -       |
 
 ### **🚨 YANLIŞ Dosya Kullanımı (DÜZELTİLDİ)**
 
@@ -85,17 +90,18 @@ CLOUDFLARE_EMAIL=noreply@dev.local
 ## 🛠️ Environment Variable Validation Kuralları
 
 ### **Zod Schema Validasyonu**
+
 Uygulama `src/env.ts` dosyasında Zod ile runtime validation yapıyor:
 
 ```typescript
 import { z } from 'zod';
 
 const envSchema = z.object({
-  CLOUDFLARE_EMAIL: z.string().email(),           // Email formatı zorunlu
-  NEXT_PUBLIC_APP_URL: z.string().url(),          // Geçerli URL zorunlu  
-  NEXTAUTH_SECRET: z.string().min(32),            // Minimum 32 karakter
-  UPSTASH_REDIS_URL: z.string().url(),            // Redis URL formatı
-  IYZICO_API_KEY: z.string().min(1),              // Boş olamaz
+  CLOUDFLARE_EMAIL: z.string().email(), // Email formatı zorunlu
+  NEXT_PUBLIC_APP_URL: z.string().url(), // Geçerli URL zorunlu
+  NEXTAUTH_SECRET: z.string().min(32), // Minimum 32 karakter
+  UPSTASH_REDIS_URL: z.string().url(), // Redis URL formatı
+  IYZICO_API_KEY: z.string().min(1), // Boş olamaz
   // ... diğer validasyonlar
 });
 ```
@@ -103,6 +109,7 @@ const envSchema = z.object({
 ### **Yaygın Validation Hataları ve Çözümleri**
 
 #### **1. Invalid Email Format**
+
 ```bash
 # ❌ HATA
 CLOUDFLARE_EMAIL=dev@localhost
@@ -114,6 +121,7 @@ EMAIL_FROM=admin@example.com
 ```
 
 #### **2. Invalid URL Format**
+
 ```bash
 # ❌ HATA
 NEXT_PUBLIC_APP_URL=localhost:3000
@@ -125,6 +133,7 @@ UPSTASH_REDIS_URL=redis://localhost:6379
 ```
 
 #### **3. Too Short Secret**
+
 ```bash
 # ❌ HATA
 NEXTAUTH_SECRET=short
@@ -134,6 +143,7 @@ NEXTAUTH_SECRET=32-character-minimum-secret-key-here
 ```
 
 #### **4. Missing Required Variables**
+
 ```bash
 # ❌ HATA - Boş bırakılması
 IYZICO_API_KEY=
@@ -143,6 +153,7 @@ IYZICO_API_KEY=sandbox-test-key-not-real
 ```
 
 ### **Validation Test Komutu**
+
 ```bash
 # Environment variables'ı test et
 npm run build
@@ -238,6 +249,7 @@ NEXT_PUBLIC_SUPABASE_URL="gercek-production-url"
 ### **🏗️ Core System Variables**
 
 #### **Next.js Application**
+
 ```bash
 NEXT_PUBLIC_APP_NAME="İ-EP.APP"                 # Uygulama adı
 NEXT_PUBLIC_APP_URL="https://i-ep.app"          # Ana URL (validation: URL format)
@@ -247,6 +259,7 @@ NODE_ENV="production"                           # Environment type
 ```
 
 #### **Authentication (NextAuth.js)**
+
 ```bash
 NEXTAUTH_SECRET="32-char-min-secret-key"        # JWT secret (validation: min 32 chars)
 NEXTAUTH_URL="https://i-ep.app"                 # NextAuth base URL
@@ -255,6 +268,7 @@ NEXTAUTH_URL="https://i-ep.app"                 # NextAuth base URL
 ### **🗄️ Database & Storage**
 
 #### **Supabase Configuration**
+
 ```bash
 NEXT_PUBLIC_SUPABASE_URL="https://project.supabase.co"    # Public URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJ..."           # Public anon key
@@ -262,6 +276,7 @@ SUPABASE_SERVICE_ROLE_KEY="eyJhbGciOiJ..."               # 🔴 SECRET - Server 
 ```
 
 #### **Redis Cache**
+
 ```bash
 UPSTASH_REDIS_URL="https://redis.upstash.io"    # Redis URL (validation: URL format)
 UPSTASH_REDIS_TOKEN="your-redis-token"          # Redis auth token
@@ -271,6 +286,7 @@ REDIS_DB="0"                                    # Redis database number
 ### **🏢 Multi-Tenant System**
 
 #### **Domain Management**
+
 ```bash
 NEXT_PUBLIC_TENANT_DOMAIN="i-ep.app"            # Tenant base domain
 NEXT_PUBLIC_ADMIN_DOMAIN="admin.i-ep.app"       # Admin subdomain
@@ -280,6 +296,7 @@ ENABLE_DOMAIN_MANAGEMENT="true"                 # Enable domain features
 ### **☁️ Cloud Services**
 
 #### **Cloudflare DNS & CDN**
+
 ```bash
 CLOUDFLARE_API_TOKEN="your-token"               # API token
 CLOUDFLARE_ZONE_ID="your-zone-id"               # Zone ID
@@ -288,6 +305,7 @@ CLOUDFLARE_ACCOUNT_ID="your-account-id"         # Account ID
 ```
 
 #### **Cloudflare R2 Storage**
+
 ```bash
 CLOUDFLARE_R2_ACCESS_KEY_ID="your-key"          # R2 access key
 CLOUDFLARE_R2_SECRET_ACCESS_KEY="your-secret"   # 🔴 SECRET - R2 secret
@@ -300,6 +318,7 @@ CLOUDFLARE_R2_PUBLIC_URL="https://cdn.url"      # Public CDN URL
 ### **💳 Payment System**
 
 #### **İyzico Payment Gateway**
+
 ```bash
 IYZICO_API_KEY="your-api-key"                   # İyzico API key
 IYZICO_SECRET_KEY="your-secret-key"             # 🔴 SECRET - İyzico secret
@@ -309,6 +328,7 @@ IYZICO_BASE_URL="https://api.iyzipay.com"       # API base URL
 ### **📧 Email Services**
 
 #### **SMTP Configuration**
+
 ```bash
 EMAIL_SERVER_HOST="smtp.gmail.com"              # SMTP server host
 EMAIL_SERVER_PORT="587"                         # SMTP port
@@ -320,6 +340,7 @@ EMAIL_FROM="noreply@i-ep.app"                   # From address (validation: emai
 ### **🔧 Development Settings**
 
 #### **Debug & Development**
+
 ```bash
 DEBUG="true"                                    # Enable debug mode
 ENABLE_MOCK_SERVICES="true"                     # Use mock services
@@ -329,6 +350,7 @@ DISABLE_RATE_LIMITING="true"                    # Disable rate limits
 ### **🛡️ Security Variables**
 
 #### **Security Configuration**
+
 ```bash
 ENABLE_SECURITY_HEADERS="true"                  # Enable security headers
 ENABLE_AUDIT_LOGGING="true"                     # Enable audit logs
@@ -338,6 +360,7 @@ CSRF_SECRET="your-csrf-secret"                  # CSRF protection secret
 ### **⚙️ Performance & Monitoring**
 
 #### **Performance Settings**
+
 ```bash
 ENABLE_REDIS_CACHE="true"                       # Enable Redis caching
 CACHE_TTL="3600"                                # Cache TTL in seconds
@@ -347,6 +370,7 @@ ENABLE_COMPRESSION="true"                       # Enable gzip compression
 ### **📊 Analytics & Monitoring**
 
 #### **Sentry Error Tracking**
+
 ```bash
 SENTRY_DSN="https://sentry.dsn.url"             # Sentry DSN
 SENTRY_ENVIRONMENT="production"                 # Environment name
@@ -356,6 +380,7 @@ SENTRY_RELEASE="1.0.0"                         # Release version
 ### **🔄 Environment-Specific Examples**
 
 #### **Development (.env.local)**
+
 ```bash
 # Fixed version with proper email validation
 CLOUDFLARE_EMAIL=dev@example.com                # ✅ Valid email format
@@ -366,6 +391,7 @@ DEBUG=true                                      # Enable debug
 ```
 
 #### **Production (.env.production)**
+
 ```bash
 # Production configuration - set in deployment platform
 CLOUDFLARE_EMAIL=admin@i-ep.app                 # ✅ Valid email format

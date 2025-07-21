@@ -19,8 +19,15 @@ export async function GET(request: NextRequest) {
 
     // 2. Test Supabase session
     const supabase = createServerSupabaseClient();
-    const { data: { session: supabaseSession }, error: supabaseError } = await supabase.auth.getSession();
-    console.log('🔧 Debug Auth: Supabase session:', supabaseSession ? 'EXISTS' : 'NULL', supabaseError ? `ERROR: ${supabaseError.message}` : 'NO ERROR');
+    const {
+      data: { session: supabaseSession },
+      error: supabaseError,
+    } = await supabase.auth.getSession();
+    console.log(
+      '🔧 Debug Auth: Supabase session:',
+      supabaseSession ? 'EXISTS' : 'NULL',
+      supabaseError ? `ERROR: ${supabaseError.message}` : 'NO ERROR'
+    );
 
     // 3. Test hybrid auth function
     const hybridUser = await getAuthenticatedUser(request);
@@ -44,43 +51,53 @@ export async function GET(request: NextRequest) {
       debug: {
         nextAuth: {
           hasSession: !!nextAuthSession,
-          user: nextAuthSession?.user ? {
-            email: nextAuthSession.user.email,
-            role: (nextAuthSession.user as any).role
-          } : null
+          user: nextAuthSession?.user
+            ? {
+                email: nextAuthSession.user.email,
+                role: (nextAuthSession.user as any).role,
+              }
+            : null,
         },
         supabase: {
           hasSession: !!supabaseSession,
           error: supabaseError?.message || null,
-          user: supabaseSession?.user ? {
-            email: supabaseSession.user.email,
-            role: supabaseSession.user.app_metadata?.role || supabaseSession.user.user_metadata?.role
-          } : null
+          user: supabaseSession?.user
+            ? {
+                email: supabaseSession.user.email,
+                role:
+                  supabaseSession.user.app_metadata?.role ||
+                  supabaseSession.user.user_metadata?.role,
+              }
+            : null,
         },
         hybrid: {
           hasUser: !!hybridUser,
-          user: hybridUser ? {
-            email: hybridUser.email,
-            role: hybridUser.role,
-            tenantId: hybridUser.tenantId
-          } : null
+          user: hybridUser
+            ? {
+                email: hybridUser.email,
+                role: hybridUser.role,
+                tenantId: hybridUser.tenantId,
+              }
+            : null,
         },
         request: {
           tenantId: tenantId,
           host: host,
           hasAuthHeader: !!authHeader,
           cookieCount: cookies.length,
-          cookies: cookies.map(c => ({ name: c.name, hasValue: !!c.value }))
+          cookies: cookies.map((c) => ({ name: c.name, hasValue: !!c.value })),
         },
-        timestamp: new Date().toISOString()
-      }
+        timestamp: new Date().toISOString(),
+      },
     });
-
   } catch (error) {
     console.error('🔧 Debug Auth: Error:', error);
-    return NextResponse.json({
-      error: error instanceof Error ? error.message : 'Unknown error',
-      timestamp: new Date().toISOString()
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    );
   }
 }

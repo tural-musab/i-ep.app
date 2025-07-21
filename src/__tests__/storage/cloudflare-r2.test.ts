@@ -32,17 +32,17 @@ describe('CloudflareR2Provider', () => {
   beforeEach(() => {
     // Reset mocks
     jest.clearAllMocks();
-    
+
     // Mock environment
     Object.assign(process.env, mockEnv);
-    
+
     // Create provider instance
     provider = new CloudflareR2Provider();
   });
 
   afterEach(() => {
     // Clean up environment
-    Object.keys(mockEnv).forEach(key => {
+    Object.keys(mockEnv).forEach((key) => {
       delete process.env[key];
     });
   });
@@ -65,7 +65,7 @@ describe('CloudflareR2Provider', () => {
           CLOUDFLARE_R2_BUCKET_NAME: 'test-bucket',
         },
       }));
-      
+
       const provider2 = new CloudflareR2Provider();
       const configStatus = provider2.getConfigStatus();
       expect(configStatus.configured).toBe(false);
@@ -148,7 +148,7 @@ describe('CloudflareR2Provider', () => {
 
   describe('Mock Mode', () => {
     const mockFile = new File(['test content'], 'test.txt', { type: 'text/plain' });
-    
+
     beforeEach(() => {
       // Mock empty environment for these tests
       jest.doMock('@/env', () => ({
@@ -164,10 +164,10 @@ describe('CloudflareR2Provider', () => {
     it('should use mock upload when not configured', async () => {
       // Create a new provider instance that isn't configured
       const unconfiguredProvider = new CloudflareR2Provider();
-      
+
       // Override the isConfigured method to return false
       (unconfiguredProvider as any).isConfigured = () => false;
-      
+
       const result = await unconfiguredProvider.upload(mockFile, 'test/path.txt');
       expect(result.id).toContain('test/path.txt');
     });
@@ -175,7 +175,7 @@ describe('CloudflareR2Provider', () => {
     it('should use mock download when not configured', async () => {
       const unconfiguredProvider = new CloudflareR2Provider();
       (unconfiguredProvider as any).isConfigured = () => false;
-      
+
       const result = await unconfiguredProvider.download('test-file-id');
       expect(result).toBeInstanceOf(Blob);
     });
@@ -183,7 +183,7 @@ describe('CloudflareR2Provider', () => {
     it('should use mock delete when not configured', async () => {
       const unconfiguredProvider = new CloudflareR2Provider();
       (unconfiguredProvider as any).isConfigured = () => false;
-      
+
       await expect(unconfiguredProvider.delete('test-file-id')).resolves.not.toThrow();
     });
   });

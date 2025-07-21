@@ -17,7 +17,9 @@ const createMessageSchema = z.object({
   student_id: z.string().uuid(),
   subject: z.string().min(1).max(255),
   message: z.string().min(1),
-  message_type: z.enum(['inquiry', 'concern', 'compliment', 'meeting_request', 'general']).default('general'),
+  message_type: z
+    .enum(['inquiry', 'concern', 'compliment', 'meeting_request', 'general'])
+    .default('general'),
   priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
   is_anonymous: z.boolean().default(false),
   scheduled_for: z.string().datetime().optional(),
@@ -36,22 +38,19 @@ const getMessagesSchema = z.object({
 export async function POST(request: NextRequest) {
   try {
     const supabase = createServerSupabaseClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get current tenant
     const tenant = await getCurrentTenant();
     if (!tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
     }
 
     // Parse and validate request body
@@ -71,46 +70,39 @@ export async function POST(request: NextRequest) {
       success: true,
       data: message,
     });
-
   } catch (error) {
     console.error('Error creating parent message:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
-          error: 'Validation failed', 
-          details: error.errors 
+        {
+          error: 'Validation failed',
+          details: error.errors,
         },
         { status: 400 }
       );
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
 export async function GET(request: NextRequest) {
   try {
     const supabase = createServerSupabaseClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Get current tenant
     const tenant = await getCurrentTenant();
     if (!tenant) {
-      return NextResponse.json(
-        { error: 'Tenant not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
     }
 
     // Parse query parameters
@@ -144,10 +136,7 @@ export async function GET(request: NextRequest) {
         validatedQuery.limit
       );
     } else if (validatedQuery.student_id) {
-      messages = await repo.getMessagesByStudent(
-        validatedQuery.student_id,
-        validatedQuery.limit
-      );
+      messages = await repo.getMessagesByStudent(validatedQuery.student_id, validatedQuery.limit);
     } else {
       return NextResponse.json(
         { error: 'At least one of parent_id, teacher_id, or student_id is required' },
@@ -164,23 +153,19 @@ export async function GET(request: NextRequest) {
         total: messages.length,
       },
     });
-
   } catch (error) {
     console.error('Error fetching parent messages:', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
-          error: 'Validation failed', 
-          details: error.errors 
+        {
+          error: 'Validation failed',
+          details: error.errors,
         },
         { status: 400 }
       );
     }
 
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

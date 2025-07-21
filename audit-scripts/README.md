@@ -15,9 +15,11 @@ chmod +x run-all-audits.sh
 ## 📋 Mevcut Audit Scriptleri
 
 ### 1. comprehensive-audit.sh
+
 **Kapsamlı Kod Kalitesi Denetimi**
 
 Kontrol ettikleri:
+
 - TypeScript 'any' type kullanımı
 - ESLint hataları
 - Repository pattern tutarlılığı
@@ -28,14 +30,17 @@ Kontrol ettikleri:
 - API endpoint sağlığı
 
 Kullanım:
+
 ```bash
 ./comprehensive-audit.sh
 ```
 
 ### 2. database-consistency-check.sh
+
 **Database-Code Tutarlılık Kontrolü**
 
 Kontrol ettikleri:
+
 - Database tabloları vs TypeScript interface'leri
 - RLS policy varlığı
 - Foreign key ilişkileri
@@ -43,14 +48,17 @@ Kontrol ettikleri:
 - Data type tutarlılığı
 
 Kullanım:
+
 ```bash
 ./database-consistency-check.sh
 ```
 
 ### 3. performance-audit.sh
+
 **Performans Analizi**
 
 Kontrol ettikleri:
+
 - Bundle size analizi
 - Code splitting kullanımı
 - Image optimization
@@ -61,11 +69,13 @@ Kontrol ettikleri:
 - API optimization (pagination, caching)
 
 Kullanım:
+
 ```bash
 ./performance-audit.sh
 ```
 
 ### 4. run-all-audits.sh
+
 **Master Audit Runner**
 
 Tüm audit'leri sırayla çalıştırır ve sonuçları organize eder.
@@ -103,6 +113,7 @@ audit-results/
 Script'leri projenizin ihtiyaçlarına göre özelleştirebilirsiniz:
 
 ### Yeni kontrol eklemek:
+
 ```bash
 # comprehensive-audit.sh içine yeni bir bölüm ekleyin
 echo -e "${BLUE}X. YENİ KONTROL${NC}"
@@ -111,6 +122,7 @@ echo "------------------------"
 ```
 
 ### Threshold değerlerini değiştirmek:
+
 Script'lerdeki skorlama mantığında kullanılan değerleri güncelleyin.
 
 ## 🚨 Kritik Eşik Değerleri
@@ -132,17 +144,21 @@ Script'lerdeki skorlama mantığında kullanılan değerleri güncelleyin.
 ## 🐛 Sorun Giderme
 
 ### Script çalışmıyor
+
 ```bash
 chmod +x *.sh
 ```
 
 ### Command not found hataları
+
 Gerekli tool'ları yükleyin:
+
 ```bash
 npm install -g madge depcheck
 ```
 
 ### Audit çok uzun sürüyor
+
 Performance-intensive kontrolleri comment out edebilirsiniz.
 
 ## 📈 Gelecek Geliştirmeler

@@ -47,11 +47,11 @@ export function useAssignmentData() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Fetch assignment statistics with authentication
       const [assignmentsResponse, statisticsResponse] = await Promise.all([
         apiGet('/api/assignments?limit=3&sort=created_at'),
-        apiGet('/api/assignments/statistics')
+        apiGet('/api/assignments/statistics'),
       ]);
 
       let stats: AssignmentStats = {
@@ -60,7 +60,7 @@ export function useAssignmentData() {
         pendingGrades: 0,
         completedAssignments: 0,
         averageScore: 0,
-        completionRate: 0
+        completionRate: 0,
       };
 
       // Get statistics if API works (authentication handled by apiGet)
@@ -72,7 +72,7 @@ export function useAssignmentData() {
           pendingGrades: statsData.pendingGrades || 0,
           completedAssignments: statsData.completedAssignments || 0,
           averageScore: statsData.averageScore || 0,
-          completionRate: statsData.completionRate || 0
+          completionRate: statsData.completionRate || 0,
         };
       }
 
@@ -83,7 +83,7 @@ export function useAssignmentData() {
       if (assignmentsResponse.status === 200 && assignmentsResponse.data) {
         const assignmentsData = assignmentsResponse.data;
         const assignments = assignmentsData.data || [];
-        
+
         recentAssignments = assignments.map((assignment: any) => ({
           id: assignment.id,
           title: assignment.title,
@@ -93,7 +93,7 @@ export function useAssignmentData() {
           submissions: assignment.submissions_count || 0,
           totalStudents: assignment.total_students || 0,
           graded: assignment.graded_count || 0,
-          status: assignment.status
+          status: assignment.status,
         }));
 
         // Calculate upcoming deadlines from recent assignments
@@ -105,13 +105,15 @@ export function useAssignmentData() {
           })
           .map((assignment: any) => {
             const dueDate = new Date(assignment.due_date);
-            const daysLeft = Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+            const daysLeft = Math.ceil(
+              (dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+            );
             return {
               id: assignment.id,
               title: assignment.title,
               class: assignment.class_name || 'N/A',
               dueDate: assignment.due_date,
-              daysLeft
+              daysLeft,
             };
           })
           .sort((a: any, b: any) => a.daysLeft - b.daysLeft)
@@ -142,7 +144,7 @@ export function useAssignmentData() {
             totalStudents: 28,
             graded: 10,
             status: 'active',
-          }
+          },
         ];
       }
 
@@ -161,19 +163,19 @@ export function useAssignmentData() {
             class: '6-B',
             dueDate: '2025-01-24',
             daysLeft: 4,
-          }
+          },
         ];
       }
 
       setData({
         stats,
         recentAssignments,
-        upcomingDeadlines
+        upcomingDeadlines,
       });
     } catch (err) {
       console.error('Assignment data fetch error:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch assignment data');
-      
+
       // Set fallback data on error
       setData({
         stats: {
@@ -182,7 +184,7 @@ export function useAssignmentData() {
           pendingGrades: 23,
           completedAssignments: 7,
           averageScore: 78,
-          completionRate: 85
+          completionRate: 85,
         },
         recentAssignments: [
           {
@@ -195,7 +197,7 @@ export function useAssignmentData() {
             totalStudents: 30,
             graded: 20,
             status: 'active',
-          }
+          },
         ],
         upcomingDeadlines: [
           {
@@ -204,8 +206,8 @@ export function useAssignmentData() {
             class: '6-A',
             dueDate: '2025-01-22',
             daysLeft: 2,
-          }
-        ]
+          },
+        ],
       });
     } finally {
       setLoading(false);

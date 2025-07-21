@@ -14,73 +14,63 @@ export default function OgretmenDashboard() {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Yükleniyor...</div>;
+    return <div className="flex min-h-screen items-center justify-center">Yükleniyor...</div>;
   }
 
   if (!user) {
-    return <div className="flex items-center justify-center min-h-screen">Giriş yapılmadı</div>;
+    return <div className="flex min-h-screen items-center justify-center">Giriş yapılmadı</div>;
   }
 
   return (
     <div className="container mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Öğretmen Paneli</h1>
-        <p className="mt-2 text-gray-600">
-          Hoş geldiniz, {user?.profile?.fullName || user?.email}
-        </p>
+        <p className="mt-2 text-gray-600">Hoş geldiniz, {user?.profile?.fullName || user?.email}</p>
       </div>
 
       {/* Teacher-specific Stats */}
-      <div className="grid grid-cols-1 gap-4 mb-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Sınıflarım</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3</div>
-            <p className="text-xs text-muted-foreground">
-              +1 yeni sınıf bu dönem
-            </p>
+            <p className="text-muted-foreground text-xs">+1 yeni sınıf bu dönem</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Toplam Öğrenci</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">87</div>
-            <p className="text-xs text-muted-foreground">
-              Tüm sınıflarınızda
-            </p>
+            <p className="text-muted-foreground text-xs">Tüm sınıflarınızda</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bekleyen Ödevler</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <FileText className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-muted-foreground">
-              Değerlendirme bekliyor
-            </p>
+            <p className="text-muted-foreground text-xs">Değerlendirme bekliyor</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Bu Hafta</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Calendar className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">18</div>
-            <p className="text-xs text-muted-foreground">
-              Toplam ders saati
-            </p>
+            <p className="text-muted-foreground text-xs">Toplam ders saati</p>
           </CardContent>
         </Card>
       </div>
@@ -166,7 +156,7 @@ export default function OgretmenDashboard() {
                   <CardDescription>29 öğrenci • Matematik</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center justify-between text-sm">
                     <span className="text-green-600">✓ Bugün: Devam 28/29</span>
                     <span className="text-blue-600">3 yeni ödev</span>
                   </div>
@@ -179,7 +169,7 @@ export default function OgretmenDashboard() {
                   <CardDescription>31 öğrenci • Matematik</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center justify-between text-sm">
                     <span className="text-green-600">✓ Bugün: Devam 30/31</span>
                     <span className="text-blue-600">5 yeni ödev</span>
                   </div>
@@ -192,7 +182,7 @@ export default function OgretmenDashboard() {
                   <CardDescription>27 öğrenci • Matematik</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center justify-between text-sm">
                     <span className="text-green-600">✓ Bugün: Devam 25/27</span>
                     <span className="text-blue-600">4 yeni ödev</span>
                   </div>

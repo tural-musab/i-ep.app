@@ -32,7 +32,7 @@ export const env = createEnv({
     // Email - optional for now
     EMAIL_SERVER_HOST: z.string().optional(),
     EMAIL_SERVER_PORT: z.preprocess(
-      (val) => val ? Number(val) : undefined,
+      (val) => (val ? Number(val) : undefined),
       z.number().int().min(1).max(65535).optional()
     ),
     EMAIL_SERVER_USER: z.string().optional(),
@@ -64,11 +64,11 @@ export const env = createEnv({
 
     // Rate Limiting - optional
     RATE_LIMIT_WINDOW_MS: z.preprocess(
-      (val) => val ? Number(val) : undefined,
+      (val) => (val ? Number(val) : undefined),
       z.number().int().min(1000).optional()
     ),
     RATE_LIMIT_MAX: z.preprocess(
-      (val) => val ? Number(val) : undefined,
+      (val) => (val ? Number(val) : undefined),
       z.number().int().min(1).optional()
     ),
 
@@ -83,36 +83,37 @@ export const env = createEnv({
     SENTRY_ENVIRONMENT: z.enum(['development', 'staging', 'production']).optional(),
 
     // Development-specific flags - only allowed in dev
-    DEBUG: z.preprocess(
-      (val) => val === 'true',
-      z.boolean().optional()
-    ),
-    ENABLE_MOCK_SERVICES: z.preprocess(
-      (val) => val === 'true',
-      z.boolean().optional()
-    ).refine((val) => {
-      if (val && process.env.NODE_ENV !== 'development') {
-        return false;
-      }
-      return true;
-    }, {
-      message: 'ENABLE_MOCK_SERVICES can only be enabled in development mode',
-    }),
-    DISABLE_RATE_LIMITING: z.preprocess(
-      (val) => val === 'true',
-      z.boolean().optional()
-    ).refine((val) => {
-      if (val && process.env.NODE_ENV !== 'development') {
-        return false;
-      }
-      return true;
-    }, {
-      message: 'DISABLE_RATE_LIMITING can only be disabled in development mode',
-    }),
+    DEBUG: z.preprocess((val) => val === 'true', z.boolean().optional()),
+    ENABLE_MOCK_SERVICES: z
+      .preprocess((val) => val === 'true', z.boolean().optional())
+      .refine(
+        (val) => {
+          if (val && process.env.NODE_ENV !== 'development') {
+            return false;
+          }
+          return true;
+        },
+        {
+          message: 'ENABLE_MOCK_SERVICES can only be enabled in development mode',
+        }
+      ),
+    DISABLE_RATE_LIMITING: z
+      .preprocess((val) => val === 'true', z.boolean().optional())
+      .refine(
+        (val) => {
+          if (val && process.env.NODE_ENV !== 'development') {
+            return false;
+          }
+          return true;
+        },
+        {
+          message: 'DISABLE_RATE_LIMITING can only be disabled in development mode',
+        }
+      ),
 
     // Redis Database - development only
     REDIS_DB: z.preprocess(
-      (val) => val ? Number(val) : undefined,
+      (val) => (val ? Number(val) : undefined),
       z.number().int().min(0).max(15).optional()
     ),
 
@@ -123,34 +124,43 @@ export const env = createEnv({
     ),
 
     // Feature Flags
-    ENABLE_DOMAIN_MANAGEMENT: z.preprocess(
-      (val) => val === 'true',
-      z.boolean().optional()
-    ),
+    ENABLE_DOMAIN_MANAGEMENT: z.preprocess((val) => val === 'true', z.boolean().optional()),
 
     // Env Profile (optional) - Only allowed in development
-    NEXT_ENV_PROFILE: z.enum(['local-remote']).optional()
-      .refine((val) => {
-        if (val && process.env.NODE_ENV !== 'development') {
-          return false;
+    NEXT_ENV_PROFILE: z
+      .enum(['local-remote'])
+      .optional()
+      .refine(
+        (val) => {
+          if (val && process.env.NODE_ENV !== 'development') {
+            return false;
+          }
+          return true;
+        },
+        {
+          message: 'NEXT_ENV_PROFILE can only be set in development mode',
         }
-        return true;
-      }, {
-        message: 'NEXT_ENV_PROFILE can only be set in development mode',
-      }),
+      ),
 
     // CORS Settings
     CORS_ALLOW_ORIGINS: z.string().optional(),
 
     // Domain - Critical for production security
-    ROOT_DOMAIN: z.string().optional().refine(val => {
-      if (process.env.NODE_ENV === 'production') {
-        return !!val;
-      }
-      return true;
-    }, {
-      message: 'ROOT_DOMAIN must be set in production environment for security',
-    }).default('i-ep.app'),
+    ROOT_DOMAIN: z
+      .string()
+      .optional()
+      .refine(
+        (val) => {
+          if (process.env.NODE_ENV === 'production') {
+            return !!val;
+          }
+          return true;
+        },
+        {
+          message: 'ROOT_DOMAIN must be set in production environment for security',
+        }
+      )
+      .default('i-ep.app'),
     VERCEL_URL: z.string().optional(),
   },
   client: {
@@ -237,6 +247,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
   // Environment validation enabled for security
-  skipValidation: process.env.NODE_ENV === 'test' || process.env.CI === 'true' || !process.env.NODE_ENV, // Skip in test, CI, or when NODE_ENV is not set
+  skipValidation:
+    process.env.NODE_ENV === 'test' || process.env.CI === 'true' || !process.env.NODE_ENV, // Skip in test, CI, or when NODE_ENV is not set
   emptyStringAsUndefined: true,
 });

@@ -8,13 +8,14 @@
 **Icon**: 📋
 
 **Properties**:
+
 ```
 1. Title (Title)
    - Task description
-   
+
 2. Priority (Select)
    - 🔴 Critical (P0) - Red
-   - 🟡 High (P1) - Yellow  
+   - 🟡 High (P1) - Yellow
    - 🟠 Medium (P2) - Orange
    - 🟢 Low (P3) - Green
 
@@ -57,6 +58,7 @@
 ```
 
 **Views**:
+
 1. **Kanban Board** - Group by Status
 2. **Priority Matrix** - Board view grouped by Priority
 3. **Sprint Board** - Filter by current sprint
@@ -71,6 +73,7 @@
 **Icon**: 🔌
 
 **Properties**:
+
 ```
 1. Endpoint (Title)
    - e.g., /api/assignments/create
@@ -118,6 +121,7 @@
 ```
 
 **Views**:
+
 1. **By System** - Group by System
 2. **By Status** - Group by Status
 3. **REST Reference** - Table view sorted by endpoint
@@ -131,6 +135,7 @@
 **Icon**: 🧪
 
 **Properties**:
+
 ```
 1. Test Suite (Title)
    - e.g., Assignment System Unit Tests
@@ -163,13 +168,14 @@
    - In milliseconds
 
 10. Status (Formula)
-    - if(prop("Pass Rate") == "100%", "✅ All Passing", 
+    - if(prop("Pass Rate") == "100%", "✅ All Passing",
         if(prop("Pass Rate") >= "80%", "🟡 Some Failures", "🔴 Critical"))
 
 11. Report Link (URL)
 ```
 
 **Views**:
+
 1. **Coverage Dashboard** - Gallery view with cards
 2. **By System** - Group by System
 3. **Failed Tests** - Filter where Pass Rate < 100%
@@ -183,6 +189,7 @@
 **Icon**: 🚀
 
 **Properties**:
+
 ```
 1. Sprint Name (Title)
    - e.g., Sprint 24 - Database Deployment
@@ -220,6 +227,7 @@
 ```
 
 **Views**:
+
 1. **Current Sprint** - Filter Status = Active
 2. **Sprint Timeline** - Timeline view
 3. **Velocity Chart** - Gallery view showing metrics
@@ -233,6 +241,7 @@
 **Icon**: 📦
 
 **Properties**:
+
 ```
 1. System Name (Title)
 
@@ -274,6 +283,7 @@
 ```
 
 **Views**:
+
 1. **System Overview** - Gallery view with progress bars
 2. **By Phase** - Board view grouped by Phase
 3. **Test Coverage** - Table view with test metrics
@@ -287,6 +297,7 @@
 **Icon**: 📈
 
 **Properties**:
+
 ```
 1. Metric Name (Title)
 
@@ -309,7 +320,7 @@
 5. Target (Number)
 
 6. Status (Formula)
-   - if(prop("Value") >= prop("Target"), "✅ On Track", 
+   - if(prop("Value") >= prop("Target"), "✅ On Track",
        if(prop("Value") >= prop("Target") * 0.8, "🟡 At Risk", "🔴 Off Track"))
 
 7. Date (Date)
@@ -324,6 +335,7 @@
 ```
 
 **Views**:
+
 1. **Metrics Dashboard** - Gallery view
 2. **Weekly Trends** - Line chart by Week
 3. **By Category** - Group by Category
@@ -334,32 +346,39 @@
 ## 🎨 Page Templates
 
 ### Home Dashboard Template
+
 ```markdown
 # 🏫 İ-EP.APP Dashboard
 
 ## 📊 Project Status
+
 /linked-database Project Metrics
 Filter: Category = Progress, Latest entry
 
 ## 🚀 Current Sprint
+
 /linked-database Sprints
 Filter: Status = Active
 
 ## 🔥 High Priority Tasks
+
 /linked-database Tasks
 Filter: Priority = Critical OR High, Status != Done
 Sort: Due Date ascending
 
 ## 📈 System Progress
+
 /linked-database Core Systems
 View: Gallery
 
 ## 🧪 Test Coverage
+
 /linked-database Test Suites
 View: Coverage Dashboard
 ```
 
 ### Sprint Planning Template
+
 ```markdown
 # 🚀 Sprint {{Number}} Planning
 
@@ -367,21 +386,25 @@ View: Coverage Dashboard
 **Duration**: {{Start Date}} - {{End Date}}
 
 ## 👥 Team Capacity
-- 
+
+-
 
 ## 📋 Sprint Backlog
+
 /linked-database Tasks
 Filter: Sprint = Current Sprint
 
 ## 📊 Velocity Planning
+
 - **Previous Sprint**: {{Previous Velocity}} points
 - **Team Capacity**: {{Capacity}} points
 - **Planned**: {{Planned}} points
 
 ## 🎯 Success Criteria
-- [ ] 
-- [ ] 
-- [ ] 
+
+- [ ]
+- [ ]
+- [ ]
 ```
 
 ---
@@ -389,6 +412,7 @@ Filter: Sprint = Current Sprint
 ## 🔧 Setup Instructions
 
 1. **Create Main Page**
+
    ```
    Title: 🏫 İ-EP.APP Documentation
    Cover: Add a modern cover image
@@ -456,6 +480,6 @@ Filter: Sprint = Current Sprint
 
 ---
 
-*Template Version: 1.0*
-*Created for İ-EP.APP by Development Assistant*
-*Date: 19 Temmuz 2025*
+_Template Version: 1.0_
+_Created for İ-EP.APP by Development Assistant_
+_Date: 19 Temmuz 2025_

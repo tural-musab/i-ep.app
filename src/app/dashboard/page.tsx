@@ -29,10 +29,9 @@ export default async function Dashboard() {
           Hoş geldiniz, {session?.user?.name || session?.user?.email || 'Debug Mode (No Session)'}
         </p>
         {/* Debug: Session Info */}
-        <div className="mt-2 p-2 bg-yellow-100 border rounded text-xs">
-          <strong>Debug Session:</strong> {session ? 'Session Found' : 'No Session'} | 
-          User: {session?.user?.email || 'None'} | 
-          ID: {session?.user?.id || 'None'}
+        <div className="mt-2 rounded border bg-yellow-100 p-2 text-xs">
+          <strong>Debug Session:</strong> {session ? 'Session Found' : 'No Session'} | User:{' '}
+          {session?.user?.email || 'None'} | ID: {session?.user?.id || 'None'}
         </div>
       </div>
 

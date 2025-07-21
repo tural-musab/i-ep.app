@@ -89,7 +89,10 @@ export async function POST(request: NextRequest) {
         // Verify authentication and require admin/teacher role
         const user = await requireRole(request, ['admin', 'super_admin', 'teacher']);
         if (!user) {
-          return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
+          return NextResponse.json(
+            { error: 'Authentication required or insufficient permissions' },
+            { status: 401 }
+          );
         }
 
         const tenantId = user.tenantId;
@@ -143,7 +146,10 @@ export async function PUT(request: NextRequest) {
         // Verify authentication and require admin/teacher role
         const user = await requireRole(request, ['admin', 'super_admin', 'teacher']);
         if (!user) {
-          return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
+          return NextResponse.json(
+            { error: 'Authentication required or insufficient permissions' },
+            { status: 401 }
+          );
         }
 
         const tenantId = user.tenantId;

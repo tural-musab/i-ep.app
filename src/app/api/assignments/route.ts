@@ -59,7 +59,6 @@ const QueryParamsSchema = z.object({
   search: z.string().optional(),
 });
 
-
 /**
  * GET /api/assignments
  * List assignments with filtering, pagination, and search
@@ -153,7 +152,10 @@ export async function POST(request: NextRequest) {
     // Verify authentication and require teacher/admin role
     const user = await requireRole(request, ['teacher', 'admin', 'super_admin']);
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Authentication required or insufficient permissions' },
+        { status: 401 }
+      );
     }
 
     const tenantId = user.tenantId;
@@ -200,7 +202,10 @@ export async function PUT(request: NextRequest) {
     // Verify authentication and require teacher/admin role
     const user = await requireRole(request, ['teacher', 'admin', 'super_admin']);
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Authentication required or insufficient permissions' },
+        { status: 401 }
+      );
     }
 
     const tenantId = user.tenantId;
@@ -219,10 +224,7 @@ export async function PUT(request: NextRequest) {
 
     // TODO: Implement bulk update functionality
     // For now, return not implemented error
-    return NextResponse.json(
-      { error: 'Bulk update not implemented yet' },
-      { status: 501 }
-    );
+    return NextResponse.json({ error: 'Bulk update not implemented yet' }, { status: 501 });
   } catch (error) {
     console.error('Error bulk updating assignments:', error);
 
@@ -246,7 +248,10 @@ export async function DELETE(request: NextRequest) {
     // Verify authentication and require teacher/admin role
     const user = await requireRole(request, ['teacher', 'admin', 'super_admin']);
     if (!user) {
-      return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Authentication required or insufficient permissions' },
+        { status: 401 }
+      );
     }
 
     const tenantId = user.tenantId;
@@ -264,10 +269,7 @@ export async function DELETE(request: NextRequest) {
 
     // TODO: Implement bulk delete functionality
     // For now, return not implemented error
-    return NextResponse.json(
-      { error: 'Bulk delete not implemented yet' },
-      { status: 501 }
-    );
+    return NextResponse.json({ error: 'Bulk delete not implemented yet' }, { status: 501 });
   } catch (error) {
     console.error('Error bulk deleting assignments:', error);
 
