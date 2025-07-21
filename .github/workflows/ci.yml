@@ -270,10 +270,14 @@ jobs:
           else
             echo "ℹ️ ZAP XML report not found - scan may not have completed"
             echo "🔍 Available files in zap-reports:"
-            ls -la zap-reports/ || echo "ZAP reports directory not found"
-            echo "ℹ️ This is acceptable in some CI environments"
-          fi
-        continue-on-error: true
+          ls -la zap-reports/ || echo "ZAP reports directory not found"
+          echo "ℹ️ This is acceptable in some CI environments"
+        fi
+      continue-on-error: true
+
+      - name: Stop application
+        if: always() && env.APP_PID
+        run: kill $APP_PID || true
 
       - name: Stop application
         if: always() && env.APP_PID
