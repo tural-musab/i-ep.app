@@ -65,10 +65,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Localhost kontrolü - geliştirme ortamı için basit response
+  // Localhost ve staging kontrolü - geliştirme/test ortamı için basit response
   if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
     console.log('🔧 Middleware: localhost detected, hostname:', hostname);
     return addTenantHeadersInDevelopment(request);
+  }
+
+  // Staging environment için özel kontrol
+  if (hostname === 'staging.i-ep.app') {
+    console.log('🔧 Middleware: staging environment detected');
+    return addTenantHeadersForStaging(request);
   }
 
   // Create supabase client for auth
@@ -200,6 +206,25 @@ function addTenantHeadersInDevelopment(request: NextRequest): NextResponse {
   response.headers.set('x-tenant-id', tenantId); // actual database tenant ID
   response.headers.set('x-tenant-hostname', 'localhost:3000');
   response.headers.set('x-tenant-name', 'Demo İlköğretim Okulu');
+  response.headers.set('x-tenant-primary', 'true');
+  response.headers.set('x-tenant-custom-domain', 'false');
+
+  return response;
+}
+
+/**
+ * Staging ortamında tenant bilgilerini headerlarla ekler
+ */
+function addTenantHeadersForStaging(request: NextRequest): NextResponse {
+  const response = NextResponse.next();
+
+  // Staging için demo tenant
+  const tenantId = 'staging-tenant-id';
+  console.log('🔧 Middleware: Setting staging tenant headers, tenant-id:', tenantId);
+
+  response.headers.set('x-tenant-id', tenantId);
+  response.headers.set('x-tenant-hostname', 'staging.i-ep.app');
+  response.headers.set('x-tenant-name', 'Staging Demo Okulu');
   response.headers.set('x-tenant-primary', 'true');
   response.headers.set('x-tenant-custom-domain', 'false');
 
