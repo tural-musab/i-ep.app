@@ -89,11 +89,19 @@ jobs:
           echo "📁 Current directory contents:"
           ls -la
 
+      - name: Pre-Upload Directory Check
+        run: |
+          echo "🔍 Final check before artifact upload..."
+          pwd
+          ls -la .next/ || echo "❌ .next directory missing before upload!"
+          echo "Directory size:"
+          du -sh .next/ || echo "❌ Cannot check .next size"
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: staging-build
-          path: .next/
+          path: .next
           retention-days: 3
 
   # 2) Security scan: CodeQL analizi
