@@ -175,8 +175,8 @@ export async function middleware(request: NextRequest) {
   } catch (error) {
     console.error('🚨 Middleware Error:', error);
     console.error('🚨 Error details:', {
-      message: error?.message,
-      stack: error?.stack,
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace',
       pathname: request.nextUrl.pathname,
       hostname: request.headers.get('host'),
     });
