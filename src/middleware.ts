@@ -53,6 +53,14 @@ export async function middleware(request: NextRequest) {
 
     console.log('🔧 Middleware: Processing request', pathname, 'hostname:', hostname);
 
+    // PRODUCTION HOTFIX: Basit staging bypass
+    if (hostname === 'staging.i-ep.app') {
+      const response = NextResponse.next();
+      response.headers.set('x-tenant-id', 'staging-tenant');
+      response.headers.set('x-tenant-name', 'Staging Demo');
+      return response;
+    }
+
   // Early return for static assets
   if (
     pathname.startsWith('/_next/') ||
