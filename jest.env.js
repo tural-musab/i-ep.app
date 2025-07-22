@@ -15,21 +15,14 @@ process.env.SUPABASE_SERVICE_ROLE_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.DaYlNEoUrrEn2Ig7tqibS-PHK5E4s9YK88K6Sj0X4AY';
 
 // Next.js Configuration
-process.env.NEXTAUTH_URL = 'http://localhost:3001';
 process.env.NEXTAUTH_SECRET = 'test-secret-key-for-testing-only-not-secure';
 
 // Application Configuration
 process.env.NODE_ENV = 'test';
 process.env.NEXT_PUBLIC_APP_ENV = 'test';
-process.env.NEXT_PUBLIC_SITE_URL = 'http://localhost:3001';
 process.env.NEXT_PUBLIC_APP_NAME = 'İ-EP.APP (Test)';
-process.env.NEXT_PUBLIC_APP_URL = 'http://localhost:3001';
-process.env.NEXT_PUBLIC_BASE_DOMAIN = 'localhost:3001';
+process.env.NEXT_PUBLIC_BASE_URL = 'http://localhost:3001';
 process.env.ROOT_DOMAIN = 'localhost:3001';
-
-// Multi-tenant Configuration
-process.env.NEXT_PUBLIC_TENANT_DOMAIN = 'localhost:3001';
-process.env.NEXT_PUBLIC_ADMIN_DOMAIN = 'admin.localhost:3001';
 process.env.ENABLE_DOMAIN_MANAGEMENT = 'false';
 
 // Redis Configuration (for testing)

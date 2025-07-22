@@ -23,7 +23,6 @@ export const env = createEnv({
 
     // Auth
     NEXTAUTH_SECRET: z.string().min(32),
-    NEXTAUTH_URL: z.string().url(),
 
     // Supabase
     SUPABASE_SERVICE_ROLE_KEY: z.string(),
@@ -164,18 +163,13 @@ export const env = createEnv({
     VERCEL_URL: z.string().optional(),
   },
   client: {
-    // Public URLs
+    // Public URLs - consolidated to single BASE_URL
     NEXT_PUBLIC_APP_NAME: z.string(),
-    NEXT_PUBLIC_APP_URL: z.string().url(),
+    NEXT_PUBLIC_BASE_URL: z.string().url(),
 
     // Supabase Public
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
-
-    // Multi-tenant - optional
-    NEXT_PUBLIC_TENANT_DOMAIN: z.string().optional(),
-    NEXT_PUBLIC_ADMIN_DOMAIN: z.string().optional(),
-    NEXT_PUBLIC_BASE_DOMAIN: z.string().optional(),
 
     // Storage Configuration - optional
     NEXT_PUBLIC_STORAGE_PROVIDER: z.enum(['supabase', 'r2']).optional(),
@@ -195,7 +189,6 @@ export const env = createEnv({
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
     POSTGRES_DATABASE: process.env.POSTGRES_DATABASE,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     SUPABASE_JWT_SECRET: process.env.SUPABASE_JWT_SECRET,
     EMAIL_SERVER_HOST: process.env.EMAIL_SERVER_HOST,
@@ -222,7 +215,6 @@ export const env = createEnv({
     RATE_LIMIT_MAX: process.env.RATE_LIMIT_MAX,
     LOG_LEVEL: process.env.LOG_LEVEL,
     NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT,
     DEBUG: process.env.DEBUG,
     ENABLE_MOCK_SERVICES: process.env.ENABLE_MOCK_SERVICES,
@@ -236,12 +228,9 @@ export const env = createEnv({
     VERCEL_URL: process.env.VERCEL_URL,
     // Client
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    NEXT_PUBLIC_TENANT_DOMAIN: process.env.NEXT_PUBLIC_TENANT_DOMAIN,
-    NEXT_PUBLIC_ADMIN_DOMAIN: process.env.NEXT_PUBLIC_ADMIN_DOMAIN,
-    NEXT_PUBLIC_BASE_DOMAIN: process.env.NEXT_PUBLIC_BASE_DOMAIN,
     NEXT_PUBLIC_STORAGE_PROVIDER: process.env.NEXT_PUBLIC_STORAGE_PROVIDER,
     NEXT_PUBLIC_ROUTE_LARGE_FILES: process.env.NEXT_PUBLIC_ROUTE_LARGE_FILES,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,

@@ -1,6 +1,16 @@
 /* eslint-disable import/no-commonjs */
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    NEXT_PUBLIC_BASE_URL: (() => {
+      if (process.env.NODE_ENV === 'development') {
+        return 'http://localhost:3000';
+      }
+      // Use VERCEL_URL in preview/staging, fallback to i-ep.app in production
+      const host = process.env.VERCEL_URL || 'i-ep.app';
+      return `https://${host}`;
+    })(),
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

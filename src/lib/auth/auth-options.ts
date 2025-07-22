@@ -21,6 +21,10 @@ export const authOptions: NextAuthOptions = {
     url: process.env.NEXT_PUBLIC_SUPABASE_URL!,
     secret: process.env.SUPABASE_SERVICE_ROLE_KEY!,
   }),
+  
+  // Use dynamic BASE_URL for callbacks
+  basePath: '/api/auth',
+  secret: process.env.NEXTAUTH_SECRET,
 
   // Desteklenen oturum açma metodları
   providers: [

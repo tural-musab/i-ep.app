@@ -126,11 +126,16 @@ export async function middleware(request: NextRequest) {
   }
 
   // Ana domain (ve www subdomain) üzerindeki lansman sayfaları için tenant kontrolü yok
-  const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app';
+  // Extract domain from BASE_URL
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app';
+  const BASE_DOMAIN = new URL(BASE_URL).hostname;
   if (isBaseDomain(hostname, BASE_DOMAIN)) {
     return handleBaseDomainRequest(request, pathname);
   }
 
+  // Set CORS headers for multi-domain support
+  const corsHeaders = getCorsHeaders(hostname);
+  
   // Domain bilgisinden tenant ID'sini tespit et
   const currentTenant = await resolveTenantFromDomain(hostname);
 
@@ -184,6 +189,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+    // Apply CORS headers to the final response
+    if (corsHeaders) {
+      Object.entries(corsHeaders).forEach(([key, value]) => {
+        finalResponse.headers.set(key, value);
+      });
+    }
+    
     return finalResponse;
 
   } catch (error) {
@@ -237,6 +249,40 @@ function addTenantHeadersForStaging(request: NextRequest): NextResponse {
   response.headers.set('x-tenant-custom-domain', 'false');
 
   return response;
+}
+
+/**
+ * Get CORS headers for multi-domain support
+ */
+function getCorsHeaders(hostname: string): Record<string, string> {
+  // Extract domain from BASE_URL for CORS configuration
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app';
+  const baseDomain = new URL(BASE_URL).hostname;
+  
+  // Allowed origins for CORS
+  const allowedOrigins = [
+    `https://${baseDomain}`,
+    `https://demo.${baseDomain}`,
+    `https://staging.${baseDomain}`,
+    `https://demo-staging.${baseDomain}`,
+    ...(process.env.NODE_ENV === 'development' ? ['http://localhost:3000'] : [])
+  ];
+
+  const origin = `https://${hostname}`;
+  const isAllowed = allowedOrigins.includes(origin) || 
+                   hostname.includes('localhost') ||
+                   hostname.endsWith(`.${baseDomain}`);
+
+  if (isAllowed) {
+    return {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-tenant-id',
+      'Access-Control-Allow-Credentials': 'true',
+    };
+  }
+
+  return {};
 }
 
 /**

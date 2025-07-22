@@ -78,7 +78,9 @@ export async function getCurrentTenant(): Promise<TenantInfo | null> {
  * @returns Tam domain adresi
  */
 export function buildTenantDomain(subdomain: string): string {
-  const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app';
+  // Extract domain from BASE_URL  
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app';
+  const BASE_DOMAIN = new URL(BASE_URL).hostname;
   return `${subdomain}.${BASE_DOMAIN}`;
 }
 

@@ -40,7 +40,9 @@ export async function resolveTenantFromDomain(domain: string): Promise<TenantInf
     }
 
     // Subdomain kontrolü
-    const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app';
+    // Extract domain from BASE_URL
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app';
+    const BASE_DOMAIN = new URL(BASE_URL).hostname;
     if (domain.endsWith(`.${BASE_DOMAIN}`)) {
       const subdomain = domain.replace(`.${BASE_DOMAIN}`, '');
       return await getTenantBySubdomain(subdomain);
@@ -82,7 +84,7 @@ async function getTenantBySubdomain(subdomain: string): Promise<TenantInfo | nul
       return {
         id: 'staging-tenant-id',
         name: 'Staging Environment',
-        domain: `staging.${process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app'}`,
+        domain: `staging.${new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app').hostname}`,
         isPrimary: true,
         isCustomDomain: false,
       };
@@ -109,7 +111,7 @@ async function getTenantBySubdomain(subdomain: string): Promise<TenantInfo | nul
       return {
         id: data.id,
         name: data.name,
-        domain: `${subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app'}`,
+        domain: `${subdomain}.${new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app').hostname}`,
         isPrimary: true, // Subdomain is always considered primary
         isCustomDomain: false,
       };
