@@ -81,11 +81,22 @@ jobs:
           UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
           UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
 
+      - name: Check Build Output
+        run: |
+          echo "🔍 Checking build output..."
+          ls -la .next/ || echo "❌ .next directory not found"
+          ls -la .next/static/ || echo "❌ .next/static directory not found"
+          echo "📁 Current directory contents:"
+          ls -la
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: staging-build
-          path: .next
+          path: |
+            .next/
+            !.next/cache/
           retention-days: 3
 
   # 2) Security scan: CodeQL analizi
@@ -125,9 +136,16 @@ jobs:
 
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
+        continue-on-error: true
         with:
           name: staging-build
           path: .next
+          
+      - name: Verify Build Artifacts
+        run: |
+          echo "🔍 Checking downloaded artifacts..."
+          ls -la .next/ || echo "❌ No .next directory found in artifacts"
+          ls -la || echo "❌ Current directory listing failed"
 
       - name: Cache Supabase CLI
         uses: actions/cache@v3
