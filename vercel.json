@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "buildCommand": "npm install --legacy-peer-deps && npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
   "env": {
     "NEXTAUTH_URL": "${NEXTAUTH_URL}",
     "NEXTAUTH_SECRET": "${NEXTAUTH_SECRET}",
