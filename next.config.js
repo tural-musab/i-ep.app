@@ -28,10 +28,19 @@ const nextConfig = {
       config.plugins.push(new BundleAnalyzerPlugin());
     }
 
+    // Sentry ve OpenTelemetry uyarılarını gizle
+    if (!dev) {
+      config.ignoreWarnings = [
+        /Critical dependency: the request of a dependency is an expression/,
+        /@opentelemetry\/instrumentation/,
+        /@sentry/,
+      ];
+    }
+
     // Tree shaking optimization
     config.optimization = {
       ...config.optimization,
-      usedExports: true,
+      usedExports: dev ? false : 'global',  // Development'ta false, production'da global
       sideEffects: false,
     };
 

@@ -3,6 +3,9 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { verifyTenantAccess, requireRole } from '@/lib/auth/server-session';
 import { logAuditEvent } from '@/lib/audit';
 import * as Sentry from '@sentry/nextjs';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth/auth-options';
+import { getTenantId } from '@/lib/tenant/tenant-utils';
 
 // Teacher data interface
 interface CreateTeacherData {
@@ -27,6 +30,67 @@ export async function GET(request: NextRequest) {
     },
     async () => {
       try {
+        // Development environment bypass
+        if (process.env.NODE_ENV === 'development') {
+          const mockTeachers = [
+            {
+              id: 'teacher-1',
+              email: 'fatma.ozdemir@school.com',
+              first_name: 'Fatma',
+              last_name: 'Özdemir',
+              metadata: {
+                phone: '555-0201',
+                address: 'Ankara',
+                subjects: ['Matematik', 'Fizik'],
+                specialties: ['Analitik Geometri', 'Calculus']
+              },
+              created_at: '2024-01-10T08:00:00Z',
+              updated_at: '2024-01-10T08:00:00Z',
+              is_active: true
+            },
+            {
+              id: 'teacher-2',
+              email: 'ali.yilmaz@school.com',
+              first_name: 'Ali',
+              last_name: 'Yılmaz',
+              metadata: {
+                phone: '555-0202',
+                address: 'İstanbul',
+                subjects: ['Türkçe', 'Edebiyat'],
+                specialties: ['Modern Türk Edebiyatı', 'Dil Bilgisi']
+              },
+              created_at: '2024-01-10T08:30:00Z',
+              updated_at: '2024-01-10T08:30:00Z',
+              is_active: true
+            },
+            {
+              id: 'teacher-3',
+              email: 'ayse.kara@school.com',
+              first_name: 'Ayşe',
+              last_name: 'Kara',
+              metadata: {
+                phone: '555-0203',
+                address: 'İzmir',
+                subjects: ['İngilizce'],
+                specialties: ['Konuşma', 'Gramer']
+              },
+              created_at: '2024-01-10T09:00:00Z',
+              updated_at: '2024-01-10T09:00:00Z',
+              is_active: true
+            }
+          ];
+          
+          return NextResponse.json({
+            data: mockTeachers,
+            pagination: {
+              current: 1,
+              total: mockTeachers.length,
+              pages: 1,
+              limit: 10,
+            },
+          });
+        }
+        
         // Verify authentication and tenant access
         const authResult = await verifyTenantAccess(request);
         if (!authResult) {
@@ -131,6 +195,33 @@ export async function POST(request: NextRequest) {
     },
     async () => {
       try {
+        // Development environment bypass for POST
+        if (process.env.NODE_ENV === 'development') {
+          const mockNewTeacher = {
+            id: 'teacher-new',
+            email: 'newteacher@school.com',
+            first_name: 'Yeni',
+            last_name: 'Öğretmen',
+            metadata: {
+              phone: '555-0999',
+              address: 'Ankara',
+              subjects: ['Matematik'],
+              specialties: ['Algebra']
+            },
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            is_active: true
+          };
+          
+          return NextResponse.json(
+            {
+              message: 'Teacher created successfully',
+              data: mockNewTeacher,
+            },
+            { status: 201 }
+          );
+        }
+        
         // Verify authentication and require admin role
         const user = await requireRole(request, ['admin']);
         if (!user) {

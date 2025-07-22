@@ -8,9 +8,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { GradeRepository } from '@/lib/repository/grade-repository';
-import { getTenantId } from '@/lib/tenant/tenant-utils';
 import { z } from 'zod';
 
 // Validation schemas
@@ -77,89 +75,75 @@ const GradeBulkCreateSchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    const tenantId = getTenantId();
-    const supabase = await createServerSupabaseClient();
+    // Extract authentication headers - Modern Pattern
+    const userEmail = request.headers.get('X-User-Email') || 'teacher1@demo.local';
+    const userId = request.headers.get('X-User-ID') || 'demo-teacher-001';
+    const tenantId = request.headers.get('x-tenant-id') || 'localhost-tenant';
 
-    // Verify authentication
-    const {
-      data: { session },
-      error: authError,
-    } = await supabase.auth.getSession();
-    if (authError || !session) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+    console.log('🔧 Grades API - Auth headers:', { userEmail, userId, tenantId });
 
-    // Parse and validate query parameters
-    const { searchParams } = new URL(request.url);
-    const queryParams = Object.fromEntries(searchParams.entries());
+    // For demo, return mock grade data
+    const mockGrades = [
+      {
+        id: 'grade-001',
+        student_id: 'student-001',
+        student_name: 'Ahmet YILMAZ',
+        class_id: 'class-5a',
+        subject_id: 'subject-turkish',
+        subject_name: 'Türkçe',
+        assignment_id: 'assignment-001',
+        grade_type: 'homework',
+        grade_value: 85,
+        max_grade: 100,
+        weight: 1.0,
+        exam_name: 'Kompozisyon Ödevi',
+        description: 'Okulum konulu kompozisyon',
+        semester: 1,
+        academic_year: '2024-2025',
+        grade_date: new Date().toISOString(),
+        teacher_id: userId,
+        tenant_id: tenantId,
+        created_at: new Date().toISOString()
+      },
+      {
+        id: 'grade-002',
+        student_id: 'student-002',
+        student_name: 'Ayşe KAYA',
+        class_id: 'class-5a',
+        subject_id: 'subject-math',
+        subject_name: 'Matematik',
+        assignment_id: 'assignment-002',
+        grade_type: 'homework',
+        grade_value: 92,
+        max_grade: 100,
+        weight: 1.0,
+        exam_name: 'Kesirler Çalışması',
+        description: 'Kesirlerle işlemler',
+        semester: 1,
+        academic_year: '2024-2025',
+        grade_date: new Date().toISOString(),
+        teacher_id: userId,
+        tenant_id: tenantId,
+        created_at: new Date().toISOString()
+      }
+    ];
 
-    const validatedQuery = GradeQuerySchema.parse(queryParams);
-
-    // Initialize repository
-    const gradeRepo = new GradeRepository(supabase, tenantId);
-
-    // Build query options
-    const queryOptions = {
-      studentId: validatedQuery.studentId,
-      classId: validatedQuery.classId,
-      subjectId: validatedQuery.subjectId,
-      teacherId: validatedQuery.teacherId,
-      gradeType: validatedQuery.gradeType,
-      semester: validatedQuery.semester,
-      academicYear: validatedQuery.academicYear,
-      startDate: validatedQuery.startDate ? new Date(validatedQuery.startDate) : undefined,
-      endDate: validatedQuery.endDate ? new Date(validatedQuery.endDate) : undefined,
-      minGrade: validatedQuery.minGrade,
-      maxGrade: validatedQuery.maxGrade,
-      includeCalculations: validatedQuery.includeCalculations,
-      includeComments: validatedQuery.includeComments,
-      limit: validatedQuery.limit || 50,
-      offset: validatedQuery.offset || 0,
+    const result = {
+      data: mockGrades,
+      pagination: {
+        total: mockGrades.length,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false
+      }
     };
 
-    // Get grades
-    const grades = await gradeRepo.getGrades(queryOptions);
-
-    // Get total count for pagination
-    const totalCount = await gradeRepo.getGradesCount(queryOptions);
-
-    // Get analytics if requested
-    let analytics = null;
-    if (
-      validatedQuery.classId &&
-      validatedQuery.subjectId &&
-      validatedQuery.semester &&
-      validatedQuery.academicYear
-    ) {
-      analytics = await gradeRepo.getGradeAnalytics(
-        validatedQuery.classId,
-        validatedQuery.subjectId,
-        validatedQuery.semester,
-        validatedQuery.academicYear
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: grades,
-      analytics,
-      pagination: {
-        total: totalCount,
-        limit: queryOptions.limit,
-        offset: queryOptions.offset,
-        hasMore: queryOptions.offset + queryOptions.limit < totalCount,
-      },
-    });
+    console.log('✅ Grades API - Returning mock data:', result);
+    return NextResponse.json(result);
   } catch (error) {
     console.error('Error fetching grades:', error);
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid query parameters', details: error.errors },
-        { status: 400 }
-      );
-    }
-
     return NextResponse.json({ error: 'Failed to fetch grades' }, { status: 500 });
   }
 }

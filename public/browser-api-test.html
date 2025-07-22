@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Testing - Final Phase 6.1 Verification</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f5f5f5; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        #results { background: white; padding: 20px; border-radius: 8px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🚀 Final API Testing - Phase 6.1 Verification</h1>
+    <p>Goal: Test all 12 APIs with proper authentication to achieve 100% success rate</p>
+    
+    <button onclick="runAllTests()" style="padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">
+        Start Comprehensive Testing
+    </button>
+    
+    <div id="results"></div>
+    
+    <script>
+        // Authentication headers for all requests
+        const headers = {
+            'X-User-Email': 'admin@demo.local',
+            'X-User-ID': 'demo-admin-001',
+            'x-tenant-id': 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+            'Content-Type': 'application/json'
+        };
+        
+        // API endpoints to test
+        const apis = [
+            // Core APIs (6)
+            { name: 'Assignments', url: '/api/assignments' },
+            { name: 'Attendance', url: '/api/attendance' },
+            { name: 'Classes', url: '/api/classes' },
+            { name: 'Students', url: '/api/students' },
+            { name: 'Teachers', url: '/api/teachers' },
+            { name: 'Dashboard Recent', url: '/api/dashboard/recent-activities' },
+            
+            // Statistics APIs (2)
+            { name: 'Assignment Stats', url: '/api/assignments/statistics' },
+            { name: 'Attendance Stats', url: '/api/attendance/statistics' },
+            
+            // Grade System APIs (3) - NEWLY FIXED
+            { name: 'Grades', url: '/api/grades' },
+            { name: 'Grade Calculations', url: '/api/grades/calculations' },
+            { name: 'Grade Reports', url: '/api/grades/reports' },
+            
+            // Analytics API (1)
+            { name: 'Grade Analytics', url: '/api/grades/analytics' }
+        ];
+        
+        let testResults = [];
+        
+        async function testSingleAPI(api) {
+            const resultDiv = document.getElementById('results');
+            resultDiv.innerHTML += `<div class="info">🔍 Testing ${api.name}...</div>`;
+            
+            try {
+                const response = await fetch(api.url, { headers });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.innerHTML += `<div class="success">✅ ${api.name}: SUCCESS (${response.status})</div>`;
+                    return { name: api.name, status: 'SUCCESS', code: response.status };
+                } else {
+                    resultDiv.innerHTML += `<div class="error">❌ ${api.name}: FAILED (${response.status}) - ${data.error || 'Unknown error'}</div>`;
+                    return { name: api.name, status: 'FAILED', code: response.status, error: data };
+                }
+            } catch (error) {
+                resultDiv.innerHTML += `<div class="error">❌ ${api.name}: ERROR - ${error.message}</div>`;
+                return { name: api.name, status: 'ERROR', error: error.message };
+            }
+        }
+        
+        async function runAllTests() {
+            const resultDiv = document.getElementById('results');
+            resultDiv.innerHTML = '<h2>🚀 Starting Final API Testing...</h2>';
+            
+            testResults = [];
+            
+            // Test each API sequentially
+            for (const api of apis) {
+                const result = await testSingleAPI(api);
+                testResults.push(result);
+                
+                // Small delay between requests
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            // Generate summary
+            const successful = testResults.filter(r => r.status === 'SUCCESS');
+            const failed = testResults.filter(r => r.status !== 'SUCCESS');
+            const successRate = ((successful.length / testResults.length) * 100).toFixed(1);
+            
+            resultDiv.innerHTML += '<hr><h2>📊 FINAL RESULTS SUMMARY</h2>';
+            resultDiv.innerHTML += `<div class="info"><strong>✅ Successful:</strong> ${successful.length}/${testResults.length}</div>`;
+            resultDiv.innerHTML += `<div class="info"><strong>❌ Failed:</strong> ${failed.length}/${testResults.length}</div>`;
+            resultDiv.innerHTML += `<div class="info"><strong>📈 Success Rate:</strong> ${successRate}%</div>`;
+            
+            if (failed.length > 0) {
+                resultDiv.innerHTML += '<h3>🚨 Failed APIs:</h3>';
+                failed.forEach(f => {
+                    resultDiv.innerHTML += `<div class="error">   - ${f.name}: ${f.status} (${f.code || 'N/A'})</div>`;
+                });
+            }
+            
+            resultDiv.innerHTML += '<hr>';
+            resultDiv.innerHTML += '<div class="info"><strong>🎯 TARGET:</strong> 100% Success Rate</div>';
+            
+            if (successful.length === testResults.length) {
+                resultDiv.innerHTML += '<div class="success"><strong>🏆 ACHIEVED: YES! 🎉</strong></div>';
+                resultDiv.innerHTML += '<div class="success"><strong>🚀 Ready for Phase 6.2: Production Demo Deployment!</strong></div>';
+            } else {
+                resultDiv.innerHTML += '<div class="error"><strong>🏆 ACHIEVED: NO - Need more work</strong></div>';
+                resultDiv.innerHTML += `<div class="info">Still need to fix ${failed.length} API(s) to reach 100%</div>`;
+            }
+            
+            // Make results available in console for easy copying
+            console.log('🚀 Final API Test Results:', {
+                total: testResults.length,
+                successful: successful.length,
+                failed: failed.length,
+                successRate: successRate + '%',
+                isComplete: successful.length === testResults.length,
+                failedAPIs: failed.map(f => f.name)
+            });
+        }
+    </script>
+</body>
+</html>

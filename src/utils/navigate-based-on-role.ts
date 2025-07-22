@@ -21,7 +21,7 @@ export function navigateBasedOnRole(role: string, router: AppRouterInstance): vo
 
   // Öğretmen rolü için yönlendirme
   if (role === 'teacher') {
-    router.push('/dashboard');
+    router.push('/ogretmen');
     return;
   }
 
