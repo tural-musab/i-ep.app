@@ -11,19 +11,9 @@ const unitConfig = {
   displayName: 'unit',
   testEnvironment: 'node',
 
-  // ES modules transformation support
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  // ES modules transformation support - Use babel for all files
   transform: {
-    '^.+\\.(mjs|ts|tsx)$': [
-      'ts-jest',
-      {
-        useESM: true,
-        tsconfig: {
-          jsx: 'react-jsx',
-        },
-      },
-    ],
-    '^.+\\.(js|jsx)$': ['babel-jest', { presets: ['next/babel'] }],
+    '^.+\\.(js|jsx|ts|tsx|mjs)$': ['babel-jest'],
   },
 
   // Module path mapping for '@/' aliases
