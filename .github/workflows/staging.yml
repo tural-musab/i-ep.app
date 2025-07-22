@@ -47,10 +47,12 @@ jobs:
         run: npm run validate:env
         env:
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_STAGING_SERVICE_ROLE_KEY }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_STAGING_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_STAGING_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_APP_NAME: ${{ secrets.NEXT_PUBLIC_APP_NAME }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
 
       - name: Lint
         run: npm run lint || echo "⚠️ Lint errors, continuing"
@@ -70,12 +72,14 @@ jobs:
         run: npm run build
         env:
           NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_STAGING_SERVICE_ROLE_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           VERCEL_ENV: preview
           NEXT_PUBLIC_BASE_URL: https://staging.i-ep.app
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_STAGING_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_STAGING_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_APP_NAME: ${{ secrets.NEXT_PUBLIC_APP_NAME }}
+          UPSTASH_REDIS_REST_URL: ${{ secrets.UPSTASH_REDIS_REST_URL }}
+          UPSTASH_REDIS_REST_TOKEN: ${{ secrets.UPSTASH_REDIS_REST_TOKEN }}
 
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
@@ -144,11 +148,11 @@ jobs:
       - name: Deploy Database Migrations
         run: |
           echo "🗄️ Deploying migrations to Staging Supabase..."
-          supabase projects target set staging --project-ref ${{ secrets.SUPABASE_STAGING_PROJECT_REF }}
+          supabase projects target set staging --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
           supabase db push
           echo "✅ Staging migrations completed"
         env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_STAGING_SERVICE_ROLE_KEY }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         continue-on-error: true
 
       - name: Install Vercel CLI
@@ -160,6 +164,6 @@ jobs:
           vercel --token ${{ secrets.VERCEL_TOKEN }} --prebuilt --yes
           echo "✅ Staging deployment completed successfully"
         env:
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_STAGING_PROJECT_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_ENV: preview
