@@ -22,6 +22,12 @@ const nextConfig = {
 
   // Webpack optimizations
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Fix path alias resolution for Vercel build
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': require('path').resolve(__dirname, 'src'),
+    };
+
     // Bundle analyzer configuration
     if (process.env.ANALYZE === 'true') {
       const BundleAnalyzerPlugin = require('@next/bundle-analyzer')();
