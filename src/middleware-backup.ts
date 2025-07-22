@@ -47,11 +47,10 @@ function isProtectedPath(pathname: string): boolean {
  * Referans: docs/architecture/multi-tenant-strategy.md, URL Tabanlı Tenant Ayrımı
  */
 export async function middleware(request: NextRequest) {
-  try {
-    const pathname = request.nextUrl.pathname;
-    const hostname = request.headers.get('host') || '';
+  const pathname = request.nextUrl.pathname;
+  const hostname = request.headers.get('host') || '';
 
-    console.log('🔧 Middleware: Processing request', pathname, 'hostname:', hostname);
+  console.log('🔧 Middleware: Processing request', pathname, 'hostname:', hostname);
 
   // Early return for static assets
   if (
@@ -148,126 +147,89 @@ export async function middleware(request: NextRequest) {
     const allowedTenantsArray =
       typeof allowedTenants === 'string'
         ? JSON.parse(allowedTenants)
-        : Array.isArray(allowedTenants)
-          ? allowedTenants
-          : [];
+        : allowedTenants;
 
-    // Super admin'ler tüm tenant'lara erişebilir
-    // Normal kullanıcılar sadece izin verilen tenant'lara erişebilir
-    const canAccessTenant =
-      isSuperAdmin ||
-      session.user.user_metadata?.tenant_id === currentTenant.id ||
-      allowedTenantsArray.includes(currentTenant.id);
-
-    // Kullanıcının bu tenant'a erişim yetkisi yoksa ve koruma altındaki bir sayfaya erişmeye çalışıyorsa
-    if (!canAccessTenant && isProtectedPath(pathname)) {
+    // Kurum yöneticisi veya süper admin olmayan kullanıcılar için tenant kontrolü
+    if (!isSuperAdmin && !allowedTenantsArray.includes(currentTenant.id)) {
       return NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
     }
-  } else if (isProtectedPath(pathname)) {
-    // Oturum yoksa ve korumalı bir sayfaya erişmeye çalışıyorsa, giriş sayfasına yönlendir
+  }
+
+  // Korumalı sayfalarda auth kontrolü
+  if (isProtectedPath(pathname) && !session) {
     const loginUrl = new URL('/auth/giris', request.url);
     loginUrl.searchParams.set('callbackUrl', request.url);
     return NextResponse.redirect(loginUrl);
   }
 
-    return finalResponse;
+  console.log(
+    '🔧 Middleware: Successfully processed',
+    pathname,
+    tenantInfo.fromCache ? '(cached)' : '(fresh)',
+    session ? 'authenticated' : 'anonymous'
+  );
 
-  } catch (error) {
-    console.error('🚨 Middleware Error:', error);
-    console.error('🚨 Error details:', {
-      message: error?.message,
-      stack: error?.stack,
-      pathname: request.nextUrl.pathname,
-      hostname: request.headers.get('host'),
-    });
-    
-    // In case of middleware error, allow request to continue
-    // This prevents 500 MIDDLEWARE_INVOCATION_FAILED
-    return NextResponse.next();
-  }
+  return finalResponse;
 }
 
-/**
- * Geliştirme ortamında tenant bilgilerini headerlarla ekler
- */
-function addTenantHeadersInDevelopment(request: NextRequest): NextResponse {
-  const response = NextResponse.next();
-
-  // Development için demo tenant
-  const tenantId = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
-  console.log('🔧 Middleware: Setting tenant headers, tenant-id:', tenantId);
-
-  response.headers.set('x-tenant-id', tenantId); // actual database tenant ID
-  response.headers.set('x-tenant-hostname', 'localhost:3000');
-  response.headers.set('x-tenant-name', 'Demo İlköğretim Okulu');
-  response.headers.set('x-tenant-primary', 'true');
-  response.headers.set('x-tenant-custom-domain', 'false');
-
-  return response;
-}
-
-/**
- * Public path kontrolü
- */
+// Helper functions
 function isPublicPath(pathname: string): boolean {
-  return (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api/auth') ||
-    pathname.startsWith('/api/super-admin') ||
-    pathname.startsWith('/favicon.ico') ||
-    pathname.startsWith('/static') ||
-    pathname.startsWith('/images') ||
-    pathname.startsWith('/logo.webp') ||
-    pathname.startsWith('/logo.optimized.svg') ||
-    pathname === '/auth/giris' ||
-    pathname === '/auth/sifremi-unuttum' ||
-    pathname === '/auth/sifre-yenile' ||
-    pathname === '/auth/yetkisiz'
-  );
-}
+  const publicPaths = [
+    '/',
+    '/auth',
+    '/api/health',
+    '/api/ready',
+    '/docs',
+    '/privacy',
+    '/terms',
+    '/api-docs',
+    '/sentry-example-page',
+    '/developer',
+    '/gdpr',
+  ];
 
-/**
- * Domain'in ana domain olup olmadığını kontrol eder
- */
-function isBaseDomain(hostname: string, baseDomain: string): boolean {
   return (
-    hostname === baseDomain ||
-    hostname === `www.${baseDomain}` ||
-    hostname === `staging.${baseDomain}` ||
-    hostname === `test.${baseDomain}` ||
-    hostname === `dev.${baseDomain}`
-  );
-}
-
-/**
- * Ana domain isteklerini yönetir
- */
-function handleBaseDomainRequest(request: NextRequest, pathname: string): NextResponse {
-  // Ana domain'de sadece lansman sayfalarına ve auth sayfalarına erişim izni
-  if (
-    pathname === '/' ||
-    pathname === '/onboarding' ||
-    pathname.startsWith('/onboarding/') ||
+    publicPaths.includes(pathname) ||
     pathname.startsWith('/auth/') ||
+    pathname.startsWith('/docs/') ||
+    pathname.startsWith('/_next/') ||
     pathname.startsWith('/api/auth/') ||
-    pathname.startsWith('/blog') ||
-    pathname.startsWith('/hakkimizda') ||
-    pathname.startsWith('/iletisim') ||
-    pathname.startsWith('/plan')
-  ) {
+    pathname.startsWith('/api/health') ||
+    pathname.startsWith('/static/')
+  );
+}
+
+function isBaseDomain(hostname: string, baseDomain: string): boolean {
+  return hostname === baseDomain || hostname === `www.${baseDomain}`;
+}
+
+function handleBaseDomainRequest(request: NextRequest, pathname: string) {
+  const publicPaths = ['/', '/auth', '/docs', '/api-docs', '/pricing', '/features', '/privacy', '/terms'];
+
+  if (publicPaths.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
   }
 
-  // Ana domaine gelen tenant-specific istekler ana sayfaya yönlendirilir
+  // Diğer tüm istekler ana sayfa veya genel 404'e yönlendirilir
   return NextResponse.redirect(new URL('/', request.url));
 }
 
-// Middleware hangi pathler için çalışacak
+function addTenantHeadersInDevelopment(request: NextRequest) {
+  const response = NextResponse.next();
+
+  // Development ortamında sabit tenant ID kullan
+  response.headers.set('x-tenant-id', 'localhost-tenant-dev');
+  response.headers.set('x-tenant-hostname', 'localhost:3000');
+  response.headers.set('x-tenant-name', 'Development Tenant');
+  response.headers.set('x-environment', 'development');
+
+  console.log('🔧 Development headers added for localhost');
+  return response;
+}
+
 export const config = {
   matcher: [
-    // Tüm routes'ları dahil et, sadece gerçekten gerekli olanları hariç tut
-    '/((?!_next/static|_next/image|favicon.ico|.*\\..*$).*)',
-    // API routes'ları özellikle dahil et
-    '/api/(.*)',
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    '/api/((?!auth).*)', // API routes hariç auth
   ],
 };
