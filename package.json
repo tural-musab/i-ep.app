@@ -85,7 +85,9 @@
     "ua-parser-js": "^1.0.37",
     "@auth/supabase-adapter": "^0.6.1",
     "@upstash/redis": "^1.28.4",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "pino": "^8.19.0",
+    "iyzipay": "^1.0.52"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.2.2",
