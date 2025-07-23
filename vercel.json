@@ -3,7 +3,7 @@
   "buildCommand": "corepack enable && corepack prepare pnpm@10.12.4 --activate && pnpm install && pnpm run build",
   "installCommand": "corepack enable && corepack prepare pnpm@10.12.4 --activate && pnpm install",
   "functions": {
-    "**": {
+    ".next/server/**/*.js": {
       "includeFiles": "node_modules/iyzipay/**"
     }
   },
