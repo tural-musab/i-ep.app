@@ -5,6 +5,17 @@
  */
 
 import { apiClient, apiGet, apiPost, apiPut, apiDelete } from './api-client';
+import { 
+  EnhancedAPIClient, 
+  AssignmentAPIClient, 
+  getErrorMessage,
+  EnhancedAPIResponse 
+} from './enhanced-api-client';
+import { 
+  AssignmentListResponse as ValidatedAssignmentListResponse,
+  AssignmentStatistics as ValidatedAssignmentStatistics,
+  Assignment as ValidatedAssignment
+} from './validation';
 
 export interface Assignment {
   id: string;
@@ -120,6 +131,28 @@ class AssignmentApiService {
       return response;
     } catch (error) {
       console.error('❌ Assignment API - Error fetching statistics:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Enhanced: Get assignment statistics with validation
+   */
+  async getStatisticsEnhanced(): Promise<ValidatedAssignmentStatistics> {
+    try {
+      console.log('🔧 Assignment API (Enhanced) - Fetching statistics with validation');
+      
+      const response = await AssignmentAPIClient.getAssignmentStatistics();
+      
+      if (!response.success) {
+        const errorMessage = response.error ? getErrorMessage(response.error) : 'Unknown error';
+        throw new Error(errorMessage);
+      }
+
+      console.log('✅ Assignment API (Enhanced) - Statistics validated successfully');
+      return response.data!;
+    } catch (error) {
+      console.error('❌ Assignment API (Enhanced) - Error fetching statistics:', error);
       throw error;
     }
   }

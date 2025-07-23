@@ -1,0 +1,900 @@
+{
+  "timestamp": "2025-07-23T21:10:59.366Z",
+  "phase": "Phase 6.1 - Authentication Flow Testing",
+  "config": {
+    "baseUrl": "http://localhost:3000",
+    "timeout": 10000,
+    "retries": 2,
+    "authHeaders": {
+      "Content-Type": "application/json",
+      "X-User-Email": "admin@demo.local",
+      "X-User-ID": "demo-admin-001",
+      "x-tenant-id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+    }
+  },
+  "results": {
+    "total": 14,
+    "passed": 10,
+    "failed": 4,
+    "skipped": 0,
+    "errors": [
+      {
+        "endpoint": "attendance-list",
+        "error": "500: Failed to fetch attendance records"
+      },
+      {
+        "endpoint": "grades-create",
+        "error": "500: Failed to create grade"
+      }
+    ],
+    "details": [
+      {
+        "endpoint": "assignments-list",
+        "url": "/api/assignments",
+        "method": "GET",
+        "category": "assignment",
+        "priority": "high",
+        "status": "success",
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "data": {
+            "data": [
+              {
+                "id": "assignment-001",
+                "title": "Türkçe Kompozisyon - Okulum",
+                "description": "Okulunuz hakkında 200 kelimelik bir kompozisyon yazınız.",
+                "type": "homework",
+                "subject": "Türkçe",
+                "class_id": "class-5a",
+                "teacher_id": "demo-admin-001",
+                "due_date": "2025-07-30T21:10:55.143Z",
+                "max_score": 100,
+                "instructions": "Kompozisyonunuzda giriş, gelişme ve sonuç bölümleri olsun.",
+                "status": "published",
+                "is_graded": false,
+                "tenant_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                "created_at": "2025-07-23T21:10:55.143Z",
+                "updated_at": "2025-07-23T21:10:55.143Z"
+              },
+              {
+                "id": "assignment-002",
+                "title": "Matematik - Kesirler Konusu",
+                "description": "Kesirlerle toplama ve çıkarma işlemleri çalışma kağıdı.",
+                "type": "homework",
+                "subject": "Matematik",
+                "class_id": "class-5a",
+                "teacher_id": "demo-admin-001",
+                "due_date": "2025-07-26T21:10:55.143Z",
+                "max_score": 50,
+                "instructions": "Tüm işlemleri gösteriniz.",
+                "status": "published",
+                "is_graded": false,
+                "tenant_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                "created_at": "2025-07-23T21:10:55.143Z",
+                "updated_at": "2025-07-23T21:10:55.143Z"
+              }
+            ],
+            "pagination": {
+              "total": 2,
+              "page": 1,
+              "limit": 10,
+              "totalPages": 1,
+              "hasNextPage": false,
+              "hasPreviousPage": false
+            }
+          },
+          "responseTime": 2,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:55 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:55.017Z"
+      },
+      {
+        "endpoint": "assignments-statistics",
+        "url": "/api/assignments/statistics",
+        "method": "GET",
+        "category": "assignment",
+        "priority": "high",
+        "status": "success",
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "data": {
+            "totalAssignments": 15,
+            "activeAssignments": 8,
+            "completedAssignments": 7,
+            "pendingGrades": 12,
+            "completionRate": 78,
+            "averageGrade": 85.4,
+            "recentAssignments": [
+              {
+                "id": "1",
+                "title": "Matematik Problemleri Çözümü",
+                "subject": "Matematik",
+                "due_date": "2025-07-28T21:10:55.382Z",
+                "status": "published",
+                "submission_count": 23
+              },
+              {
+                "id": "2",
+                "title": "Fen Bilgisi Deney Raporu",
+                "subject": "Fen Bilgisi",
+                "due_date": "2025-08-02T21:10:55.382Z",
+                "status": "published",
+                "submission_count": 18
+              },
+              {
+                "id": "3",
+                "title": "İngilizce Kelime Testi",
+                "subject": "İngilizce",
+                "due_date": "2025-07-25T21:10:55.382Z",
+                "status": "published",
+                "submission_count": 25
+              }
+            ]
+          },
+          "responseTime": 0,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:55 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:55.352Z"
+      },
+      {
+        "endpoint": "assignments-create",
+        "url": "/api/assignments",
+        "method": "POST",
+        "category": "assignment",
+        "priority": "medium",
+        "status": "client_error",
+        "response": {
+          "status": 400,
+          "statusText": "Bad Request",
+          "data": {
+            "error": "Invalid request data",
+            "details": [
+              {
+                "validation": "uuid",
+                "code": "invalid_string",
+                "message": "Invalid class ID",
+                "path": [
+                  "class_id"
+                ]
+              },
+              {
+                "validation": "uuid",
+                "code": "invalid_string",
+                "message": "Invalid teacher ID",
+                "path": [
+                  "teacher_id"
+                ]
+              }
+            ]
+          },
+          "responseTime": 1,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:55 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:55.586Z"
+      },
+      {
+        "endpoint": "assignment-detail",
+        "url": "/api/assignments/assignment-001",
+        "method": "GET",
+        "category": "assignment",
+        "priority": "medium",
+        "status": "auth_required",
+        "response": {
+          "status": 401,
+          "statusText": "Unauthorized",
+          "data": {
+            "error": "Authentication required"
+          },
+          "responseTime": 1,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:56 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:56.346Z"
+      },
+      {
+        "endpoint": "attendance-list",
+        "url": "/api/attendance",
+        "method": "GET",
+        "category": "attendance",
+        "priority": "high",
+        "status": "server_error",
+        "response": {
+          "status": 500,
+          "statusText": "Internal Server Error",
+          "data": {
+            "error": "Failed to fetch attendance records"
+          },
+          "responseTime": 0,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:57 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": "Failed to fetch attendance records",
+        "timestamp": "2025-07-23T21:10:57.034Z"
+      },
+      {
+        "endpoint": "attendance-statistics",
+        "url": "/api/attendance/statistics",
+        "method": "GET",
+        "category": "attendance",
+        "priority": "high",
+        "status": "success",
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "data": {
+            "success": true,
+            "data": {
+              "totalDays": 180,
+              "presentDays": 165,
+              "absentDays": 15,
+              "lateArrivals": 8,
+              "attendanceRate": 91.7,
+              "trends": {
+                "thisMonth": 95.2,
+                "lastMonth": 88.4,
+                "improvement": 6.8
+              }
+            },
+            "type": "student"
+          },
+          "responseTime": 1,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:57 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:57.306Z"
+      },
+      {
+        "endpoint": "attendance-create",
+        "url": "/api/attendance",
+        "method": "POST",
+        "category": "attendance",
+        "priority": "medium",
+        "status": "client_error",
+        "response": {
+          "status": 400,
+          "statusText": "Bad Request",
+          "data": {
+            "error": "Invalid request data",
+            "details": [
+              {
+                "code": "invalid_type",
+                "expected": "string",
+                "received": "undefined",
+                "path": [
+                  "studentId"
+                ],
+                "message": "Required"
+              },
+              {
+                "code": "invalid_type",
+                "expected": "string",
+                "received": "undefined",
+                "path": [
+                  "classId"
+                ],
+                "message": "Required"
+              },
+              {
+                "code": "invalid_type",
+                "expected": "string",
+                "received": "undefined",
+                "path": [
+                  "date"
+                ],
+                "message": "Required"
+              },
+              {
+                "expected": "'present' | 'absent' | 'late' | 'excused' | 'sick'",
+                "received": "undefined",
+                "code": "invalid_type",
+                "path": [
+                  "status"
+                ],
+                "message": "Required"
+              }
+            ]
+          },
+          "responseTime": 1,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:57 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:57.517Z"
+      },
+      {
+        "endpoint": "grades-list",
+        "url": "/api/grades",
+        "method": "GET",
+        "category": "grades",
+        "priority": "high",
+        "status": "success",
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "data": {
+            "data": [
+              {
+                "id": "grade-001",
+                "student_id": "student-001",
+                "student_name": "Ahmet YILMAZ",
+                "class_id": "class-5a",
+                "subject_id": "subject-turkish",
+                "subject_name": "Türkçe",
+                "assignment_id": "assignment-001",
+                "grade_type": "homework",
+                "grade_value": 85,
+                "max_grade": 100,
+                "weight": 1,
+                "exam_name": "Kompozisyon Ödevi",
+                "description": "Okulum konulu kompozisyon",
+                "semester": 1,
+                "academic_year": "2024-2025",
+                "grade_date": "2025-07-23T21:10:57.838Z",
+                "teacher_id": "demo-admin-001",
+                "tenant_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                "created_at": "2025-07-23T21:10:57.838Z"
+              },
+              {
+                "id": "grade-002",
+                "student_id": "student-002",
+                "student_name": "Ayşe KAYA",
+                "class_id": "class-5a",
+                "subject_id": "subject-math",
+                "subject_name": "Matematik",
+                "assignment_id": "assignment-002",
+                "grade_type": "homework",
+                "grade_value": 92,
+                "max_grade": 100,
+                "weight": 1,
+                "exam_name": "Kesirler Çalışması",
+                "description": "Kesirlerle işlemler",
+                "semester": 1,
+                "academic_year": "2024-2025",
+                "grade_date": "2025-07-23T21:10:57.838Z",
+                "teacher_id": "demo-admin-001",
+                "tenant_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                "created_at": "2025-07-23T21:10:57.838Z"
+              }
+            ],
+            "pagination": {
+              "total": 2,
+              "page": 1,
+              "limit": 10,
+              "totalPages": 1,
+              "hasNextPage": false,
+              "hasPreviousPage": false
+            }
+          },
+          "responseTime": 0,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:57 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:57.833Z"
+      },
+      {
+        "endpoint": "grades-analytics",
+        "url": "/api/grades/analytics",
+        "method": "GET",
+        "category": "grades",
+        "priority": "high",
+        "status": "success",
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "data": {
+            "success": true,
+            "data": {
+              "gpa": 3.45,
+              "averageGrade": 86.2,
+              "totalGrades": 42,
+              "subjectBreakdown": {
+                "Matematik": {
+                  "average": 88.5,
+                  "count": 12,
+                  "trend": "+2.3"
+                },
+                "Türkçe": {
+                  "average": 84,
+                  "count": 10,
+                  "trend": "-1.2"
+                },
+                "İngilizce": {
+                  "average": 91.2,
+                  "count": 8,
+                  "trend": "+4.1"
+                }
+              },
+              "trends": {
+                "thisMonth": 87.3,
+                "lastMonth": 84.1,
+                "improvement": 3.2
+              }
+            },
+            "type": "student",
+            "generatedAt": "2025-07-23T21:10:58.047Z"
+          },
+          "responseTime": 0,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:58 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:58.040Z"
+      },
+      {
+        "endpoint": "grades-create",
+        "url": "/api/grades",
+        "method": "POST",
+        "category": "grades",
+        "priority": "medium",
+        "status": "server_error",
+        "response": {
+          "status": 500,
+          "statusText": "Internal Server Error",
+          "data": {
+            "error": "Failed to create grade"
+          },
+          "responseTime": 0,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:58 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": "Failed to create grade",
+        "timestamp": "2025-07-23T21:10:58.250Z"
+      },
+      {
+        "endpoint": "classes-list",
+        "url": "/api/classes",
+        "method": "GET",
+        "category": "system",
+        "priority": "high",
+        "status": "success",
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "data": {
+            "data": [
+              {
+                "id": "class-5a",
+                "name": "5/A",
+                "grade": "5",
+                "section": "A",
+                "capacity": 25,
+                "current_enrollment": 22,
+                "academic_year": "2024-2025",
+                "teacher_id": "demo-admin-001",
+                "room_number": "101",
+                "status": "active",
+                "description": "Beşinci sınıf A şubesi",
+                "tenant_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                "created_at": "2025-07-23T21:10:58.529Z"
+              },
+              {
+                "id": "class-5b",
+                "name": "5/B",
+                "grade": "5",
+                "section": "B",
+                "capacity": 25,
+                "current_enrollment": 20,
+                "academic_year": "2024-2025",
+                "teacher_id": "demo-teacher-002",
+                "room_number": "102",
+                "status": "active",
+                "description": "Beşinci sınıf B şubesi",
+                "tenant_id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                "created_at": "2025-07-23T21:10:58.529Z"
+              }
+            ],
+            "total": 2,
+            "page": 1,
+            "limit": 50,
+            "totalPages": 1
+          },
+          "responseTime": 0,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:58 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:58.523Z"
+      },
+      {
+        "endpoint": "students-list",
+        "url": "/api/students",
+        "method": "GET",
+        "category": "system",
+        "priority": "high",
+        "status": "success",
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "data": {
+            "data": [
+              {
+                "id": "student-1",
+                "email": "ahmet@student.com",
+                "first_name": "Ahmet",
+                "last_name": "Yılmaz",
+                "metadata": {
+                  "student_number": "2024001",
+                  "birth_date": "2010-05-15",
+                  "gender": "male",
+                  "phone": "555-0101",
+                  "address": "Ankara"
+                },
+                "created_at": "2024-01-15T10:00:00Z",
+                "updated_at": "2024-01-15T10:00:00Z",
+                "is_active": true
+              },
+              {
+                "id": "student-2",
+                "email": "zeynep@student.com",
+                "first_name": "Zeynep",
+                "last_name": "Kaya",
+                "metadata": {
+                  "student_number": "2024002",
+                  "birth_date": "2010-08-22",
+                  "gender": "female",
+                  "phone": "555-0102",
+                  "address": "İstanbul"
+                },
+                "created_at": "2024-01-15T10:30:00Z",
+                "updated_at": "2024-01-15T10:30:00Z",
+                "is_active": true
+              },
+              {
+                "id": "student-3",
+                "email": "mehmet@student.com",
+                "first_name": "Mehmet",
+                "last_name": "Demir",
+                "metadata": {
+                  "student_number": "2024003",
+                  "birth_date": "2010-12-10",
+                  "gender": "male",
+                  "phone": "555-0103",
+                  "address": "İzmir"
+                },
+                "created_at": "2024-01-16T09:00:00Z",
+                "updated_at": "2024-01-16T09:00:00Z",
+                "is_active": true
+              }
+            ],
+            "pagination": {
+              "current": 1,
+              "total": 3,
+              "pages": 1,
+              "limit": 10
+            }
+          },
+          "responseTime": 0,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:58 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:58.731Z"
+      },
+      {
+        "endpoint": "teachers-list",
+        "url": "/api/teachers",
+        "method": "GET",
+        "category": "system",
+        "priority": "high",
+        "status": "success",
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "data": {
+            "data": [
+              {
+                "id": "teacher-1",
+                "email": "fatma.ozdemir@school.com",
+                "first_name": "Fatma",
+                "last_name": "Özdemir",
+                "metadata": {
+                  "phone": "555-0201",
+                  "address": "Ankara",
+                  "subjects": [
+                    "Matematik",
+                    "Fizik"
+                  ],
+                  "specialties": [
+                    "Analitik Geometri",
+                    "Calculus"
+                  ]
+                },
+                "created_at": "2024-01-10T08:00:00Z",
+                "updated_at": "2024-01-10T08:00:00Z",
+                "is_active": true
+              },
+              {
+                "id": "teacher-2",
+                "email": "ali.yilmaz@school.com",
+                "first_name": "Ali",
+                "last_name": "Yılmaz",
+                "metadata": {
+                  "phone": "555-0202",
+                  "address": "İstanbul",
+                  "subjects": [
+                    "Türkçe",
+                    "Edebiyat"
+                  ],
+                  "specialties": [
+                    "Modern Türk Edebiyatı",
+                    "Dil Bilgisi"
+                  ]
+                },
+                "created_at": "2024-01-10T08:30:00Z",
+                "updated_at": "2024-01-10T08:30:00Z",
+                "is_active": true
+              },
+              {
+                "id": "teacher-3",
+                "email": "ayse.kara@school.com",
+                "first_name": "Ayşe",
+                "last_name": "Kara",
+                "metadata": {
+                  "phone": "555-0203",
+                  "address": "İzmir",
+                  "subjects": [
+                    "İngilizce"
+                  ],
+                  "specialties": [
+                    "Konuşma",
+                    "Gramer"
+                  ]
+                },
+                "created_at": "2024-01-10T09:00:00Z",
+                "updated_at": "2024-01-10T09:00:00Z",
+                "is_active": true
+              }
+            ],
+            "pagination": {
+              "current": 1,
+              "total": 3,
+              "pages": 1,
+              "limit": 10
+            }
+          },
+          "responseTime": 0,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:58 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:58.938Z"
+      },
+      {
+        "endpoint": "health-check",
+        "url": "/api/health",
+        "method": "GET",
+        "category": "system",
+        "priority": "low",
+        "status": "success",
+        "response": {
+          "status": 200,
+          "statusText": "OK",
+          "data": {
+            "status": "healthy",
+            "timestamp": "2025-07-23T21:10:59.165Z",
+            "version": "0.1.0",
+            "checks": {
+              "database": "healthy",
+              "redis": "healthy",
+              "externalApis": "healthy"
+            }
+          },
+          "responseTime": 0,
+          "headers": {
+            "connection": "keep-alive",
+            "content-type": "application/json",
+            "date": "Wed, 23 Jul 2025 21:10:59 GMT",
+            "keep-alive": "timeout=5",
+            "transfer-encoding": "chunked",
+            "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch"
+          }
+        },
+        "error": null,
+        "timestamp": "2025-07-23T21:10:59.146Z"
+      }
+    ]
+  },
+  "endpoints": [
+    {
+      "name": "assignments-list",
+      "url": "/api/assignments",
+      "method": "GET",
+      "category": "assignment",
+      "priority": "high",
+      "description": "List assignments with filtering"
+    },
+    {
+      "name": "assignments-statistics",
+      "url": "/api/assignments/statistics",
+      "method": "GET",
+      "category": "assignment",
+      "priority": "high",
+      "description": "Assignment dashboard statistics"
+    },
+    {
+      "name": "assignments-create",
+      "url": "/api/assignments",
+      "method": "POST",
+      "category": "assignment",
+      "priority": "medium",
+      "description": "Create new assignment"
+    },
+    {
+      "name": "assignment-detail",
+      "url": "/api/assignments/assignment-001",
+      "method": "GET",
+      "category": "assignment",
+      "priority": "medium",
+      "description": "Get single assignment details"
+    },
+    {
+      "name": "attendance-list",
+      "url": "/api/attendance",
+      "method": "GET",
+      "category": "attendance",
+      "priority": "high",
+      "description": "List attendance records"
+    },
+    {
+      "name": "attendance-statistics",
+      "url": "/api/attendance/statistics",
+      "method": "GET",
+      "category": "attendance",
+      "priority": "high",
+      "description": "Attendance dashboard statistics"
+    },
+    {
+      "name": "attendance-create",
+      "url": "/api/attendance",
+      "method": "POST",
+      "category": "attendance",
+      "priority": "medium",
+      "description": "Create attendance record"
+    },
+    {
+      "name": "grades-list",
+      "url": "/api/grades",
+      "method": "GET",
+      "category": "grades",
+      "priority": "high",
+      "description": "List grade records"
+    },
+    {
+      "name": "grades-analytics",
+      "url": "/api/grades/analytics",
+      "method": "GET",
+      "category": "grades",
+      "priority": "high",
+      "description": "Grade analytics and reports"
+    },
+    {
+      "name": "grades-create",
+      "url": "/api/grades",
+      "method": "POST",
+      "category": "grades",
+      "priority": "medium",
+      "description": "Create grade record"
+    },
+    {
+      "name": "classes-list",
+      "url": "/api/classes",
+      "method": "GET",
+      "category": "system",
+      "priority": "high",
+      "description": "List classes for tenant"
+    },
+    {
+      "name": "students-list",
+      "url": "/api/students",
+      "method": "GET",
+      "category": "system",
+      "priority": "high",
+      "description": "List students for tenant"
+    },
+    {
+      "name": "teachers-list",
+      "url": "/api/teachers",
+      "method": "GET",
+      "category": "system",
+      "priority": "high",
+      "description": "List teachers for tenant"
+    },
+    {
+      "name": "health-check",
+      "url": "/api/health",
+      "method": "GET",
+      "category": "system",
+      "priority": "low",
+      "description": "System health check"
+    }
+  ]
+}
