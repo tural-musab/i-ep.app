@@ -60,6 +60,7 @@ process.env.DEBUG = 'true';
 process.env.ENABLE_MOCK_SERVICES = 'true';
 process.env.DISABLE_RATE_LIMITING = 'true';
 process.env.SKIP_ENV_VALIDATION = 'true';
+process.env.TEST_TENANT_ID = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 
 // Email Services (Mock/Test)
 process.env.EMAIL_SERVER_HOST = 'localhost';

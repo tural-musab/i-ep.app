@@ -129,7 +129,7 @@ export function resetRateLimit() {
 }
 
 // XSS kontrolü için yardımcı fonksiyon
-function containsXSS(obj: Record<string, unknown>): boolean {
+export function containsXSS(obj: Record<string, unknown>): boolean {
   const stringified = JSON.stringify(obj);
   return (
     stringified.includes('<script>') ||
@@ -140,7 +140,7 @@ function containsXSS(obj: Record<string, unknown>): boolean {
 }
 
 // SQL Injection kontrolü için yardımcı fonksiyon
-function containsSQLInjection(value: string): boolean {
+export function containsSQLInjection(value: string): boolean {
   const sqlInjectionPatterns = [
     'DROP TABLE',
     'DELETE FROM',

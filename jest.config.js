@@ -7,8 +7,8 @@ const integrationConfig = require('./jest.config.integration.js');
 const multiProjectConfig = {
   projects: [unitConfig, componentConfig, integrationConfig],
 
-  // Global settings for all projects
-  testTimeout: 10000,
+  // Global settings for all projects (increased timeout for integration tests)
+  testTimeout: 30000, // 30 seconds for container startup
   // testRetries not supported in Jest 29.7, needs Jest 30+
   coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
 

@@ -58,8 +58,10 @@ const unitConfig = {
     '^@/lib/audit/audit-log$': '<rootDir>/src/__mocks__/audit-log.ts',
   },
 
-  // Transform ignored node_modules (enhanced for .mjs support)
-  transformIgnorePatterns: ['node_modules/(?!(@t3-oss|msw|@mswjs)/)'],
+  // Transform ignored node_modules (enhanced for .mjs support and testcontainers)
+  transformIgnorePatterns: [
+    'node_modules/(?!(@t3-oss|msw|@mswjs|testcontainers|@testcontainers|uuid)/)'
+  ],
 
   // Module resolution
   moduleDirectories: ['node_modules', '<rootDir>/'],
@@ -76,11 +78,15 @@ const unitConfig = {
   // Enhanced timeout (moved to root config)
   // testTimeout: 10000,
 
-  // Test patterns for unit tests - Include restored unit tests AND security tests
+  // Test patterns for unit tests - Include restored unit tests, security tests, AND integration tests
   testMatch: [
     '<rootDir>/src/__tests__/*-unit.test.(ts|tsx|js)',  // Root level unit tests (restored from quarantine)
     '<rootDir>/src/__tests__/*system-unit.test.(ts|tsx|js)',  // System unit tests (assignment, attendance, grade)
     '<rootDir>/src/__tests__/security-*.test.(ts|tsx|js)',  // Security tests (Phase 2)
+    '<rootDir>/src/__tests__/integration-db-lightweight.test.(ts|tsx|js)',  // Database integration tests (Phase 3.2)
+    '<rootDir>/src/__tests__/integration-env-lightweight.test.(ts|tsx|js)',  // Environment integration tests (Phase 3.4)
+    '<rootDir>/src/__tests__/integration-redis-lightweight.test.(ts|tsx|js)',  // Redis integration tests (Phase 3.3) - ✅ ACTIVATED
+    '<rootDir>/src/__tests__/coverage-improvement.test.(ts|tsx|js)',  // Coverage improvement tests (Priority 1)
     '<rootDir>/src/lib/**/*.(unit.test|unit.spec).(ts|tsx|js)',  // Lib unit tests (if any)
   ],
 
