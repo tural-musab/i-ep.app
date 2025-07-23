@@ -53,12 +53,10 @@ export async function middleware(request: NextRequest) {
 
     console.log('🔧 Middleware: Processing request', pathname, 'hostname:', hostname);
 
-    // PRODUCTION HOTFIX: Basit staging bypass
+    // PRODUCTION HOTFIX: Complete staging bypass with proper headers
     if (hostname === 'staging.i-ep.app') {
-      const response = NextResponse.next();
-      response.headers.set('x-tenant-id', 'staging-tenant');
-      response.headers.set('x-tenant-name', 'Staging Demo');
-      return response;
+      console.log('🔧 Middleware: Staging environment - applying complete bypass');
+      return addTenantHeadersForStaging(request);
     }
 
   // Early return for static assets
@@ -79,11 +77,6 @@ export async function middleware(request: NextRequest) {
     return addTenantHeadersInDevelopment(request);
   }
 
-  // Staging environment için özel kontrol
-  if (hostname === 'staging.i-ep.app') {
-    console.log('🔧 Middleware: staging environment detected');
-    return addTenantHeadersForStaging(request);
-  }
 
   // Create supabase client for auth
   const supabase = createMiddlewareClient({ req: request, res: NextResponse.next() });
