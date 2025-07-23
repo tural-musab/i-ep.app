@@ -8,7 +8,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createPayment, IyzicoPaymentRequest } from '@/lib/payment/iyzico';
 import {
   createTenantSubscription,
   getSubscriptionPlan,
@@ -138,7 +137,7 @@ export async function POST(request: NextRequest) {
       '127.0.0.1';
 
     // Create payment request for İyzico
-    const paymentRequest: IyzicoPaymentRequest = {
+    const paymentRequest = {
       price: validatedData.amount,
       paidPrice: validatedData.amount, // Same as price for simple payments
       currency: validatedData.currency,
@@ -179,7 +178,8 @@ export async function POST(request: NextRequest) {
       conversationId: `${tenantId}_${Date.now()}`,
     };
 
-    // Process payment with İyzico
+    // Process payment with İyzico - using dynamic import to avoid module-level initialization
+    const { createPayment } = await import('@/lib/payment/iyzico');
     const paymentResult = await createPayment(paymentRequest);
 
     if (paymentResult.status !== 'success') {
