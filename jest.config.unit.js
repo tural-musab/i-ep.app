@@ -76,10 +76,11 @@ const unitConfig = {
   // Enhanced timeout (moved to root config)
   // testTimeout: 10000,
 
-  // Test patterns for unit tests - Include restored unit tests
+  // Test patterns for unit tests - Include restored unit tests AND security tests
   testMatch: [
     '<rootDir>/src/__tests__/*-unit.test.(ts|tsx|js)',  // Root level unit tests (restored from quarantine)
     '<rootDir>/src/__tests__/*system-unit.test.(ts|tsx|js)',  // System unit tests (assignment, attendance, grade)
+    '<rootDir>/src/__tests__/security-*.test.(ts|tsx|js)',  // Security tests (Phase 2)
     '<rootDir>/src/lib/**/*.(unit.test|unit.spec).(ts|tsx|js)',  // Lib unit tests (if any)
   ],
 
