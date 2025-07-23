@@ -130,7 +130,7 @@ jobs:
   deploy-staging:
     needs: [test-build-staging, security-scan-staging]
     runs-on: ubuntu-latest
-    environment: staging
+    environment: Preview
     permissions:
       contents: read
     concurrency:
