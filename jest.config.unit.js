@@ -14,11 +14,31 @@ const unitConfig = {
   displayName: 'unit',
   testEnvironment: 'node',
 
-  // Let Next.js Jest handle transformation completely - no custom transform
-  // This resolves .babelrc.js removal issues by using Next.js built-in SWC transforms
-  
-  // Add retry mechanism for flaky tests
-  testRetries: process.env.CI ? 2 : 0,
+  // TypeScript transformation configuration
+  // Use ts-jest for TypeScript files, Next.js SWC for JS files
+  transform: {
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
+      useESM: true,
+      tsconfig: {
+        jsx: 'react-jsx',
+        module: 'esnext',
+        moduleResolution: 'node',
+        allowSyntheticDefaultImports: true,
+        esModuleInterop: true,
+      },
+    }],
+    '^.+\\.(js|jsx|mjs)$': ['babel-jest', { 
+      presets: [
+        'next/babel',
+        ['@babel/preset-typescript', {
+          allowDeclareFields: true,
+          optimizeConstEnums: true,
+        }]
+      ]
+    }],
+  },
+  // Add retry mechanism for flaky tests (moved to root config)
+  // testRetries: process.env.CI ? 2 : 0,
 
   // Module path mapping for '@/' aliases
   moduleNameMapper: {
@@ -53,13 +73,14 @@ const unitConfig = {
     customExportConditions: [''],
   },
 
-  // Enhanced timeout with retry mechanism
-  testTimeout: 10000,
+  // Enhanced timeout (moved to root config)
+  // testTimeout: 10000,
 
-  // Test patterns for unit tests - STRICT pattern to avoid quarantine (NO TESTS CURRENTLY)
+  // Test patterns for unit tests - Include restored unit tests
   testMatch: [
-    '<rootDir>/src/__tests__/*-unit.test.(ts|tsx|js)',  // ONLY root level unit tests (none exist)
-    '<rootDir>/src/lib/**/*.(unit.test|unit.spec).(ts|tsx|js)',  // Only lib unit tests (if any)
+    '<rootDir>/src/__tests__/*-unit.test.(ts|tsx|js)',  // Root level unit tests (restored from quarantine)
+    '<rootDir>/src/__tests__/*system-unit.test.(ts|tsx|js)',  // System unit tests (assignment, attendance, grade)
+    '<rootDir>/src/lib/**/*.(unit.test|unit.spec).(ts|tsx|js)',  // Lib unit tests (if any)
   ],
 
   // COMPREHENSIVE QUARANTINE: Isolate all problematic tests completely
@@ -116,49 +137,11 @@ const unitConfig = {
         },
       },
 
-  // Coverage report formats with JUnit support
-  coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
-
-  // ENHANCED PROFESSIONAL REPORTING SUITE
-  reporters: [
-    'default',
-    [
-      'jest-junit',
-      {
-        outputDirectory: 'test-results',
-        outputName: 'junit-unit.xml',
-        suiteName: 'İ-EP.APP Unit Tests',
-        classNameTemplate: '{classname}',
-        titleTemplate: '{title}',
-        ancestorSeparator: ' › ',
-        usePathForSuiteName: true,
-        addFileAttribute: true,
-        includeConsoleOutput: true,
-      },
-    ],
-    // Professional Custom Reporter (fallback to built-in)
-    [
-      '<rootDir>/test-utils/professional-test-reporter.js',
-      {
-        outputPath: 'test-results/professional-report.html',
-        pageTitle: 'İ-EP.APP - Professional Test Results',
-        includeFailureMsg: true,
-        includeSuiteFailure: true,
-        includeConsoleLog: true,
-        theme: 'lightTheme',
-        executionTimeWarningThreshold: 3, // Flag tests >3 seconds
-        dateFormat: 'yyyy-mm-dd HH:MM:ss',
-        sort: 'status',
-        executionMode: 'development',
-        hideIcon: false,
-        customInfos: [
-          { title: 'Project', value: 'İ-EP.APP - Iqra Education Portal' },
-          { title: 'Environment', value: 'Development' },
-          { title: 'Test Suite', value: 'Unit Tests - Core Business Logic' }
-        ]
-      }
-    ]
-  ],
+  // Coverage and reporters moved to root config
+  // coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
+  // reporters: [...] // Moved to root config
 };
 
-module.exports = createJestConfig(unitConfig);
+// For multi-project setup, export the config directly without Next.js wrapper
+// The Next.js wrapper is mainly needed for SWC transforms, but we're using ts-jest
+module.exports = unitConfig;

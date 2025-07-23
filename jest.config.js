@@ -9,6 +9,7 @@ const multiProjectConfig = {
 
   // Global settings for all projects
   testTimeout: 10000,
+  // testRetries not supported in Jest 29.7, needs Jest 30+
   coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
 
   // JUnit reporter for CI/CD
