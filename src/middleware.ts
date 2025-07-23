@@ -53,10 +53,16 @@ export async function middleware(request: NextRequest) {
 
     console.log('🔧 Middleware: Processing request', pathname, 'hostname:', hostname);
 
-    // PRODUCTION HOTFIX: Complete staging bypass with proper headers
+    // PRODUCTION HOTFIX: Simple staging bypass to avoid Supabase import issues
     if (hostname === 'staging.i-ep.app') {
-      console.log('🔧 Middleware: Staging environment - applying complete bypass');
-      return addTenantHeadersForStaging(request);
+      console.log('🔧 Middleware: Staging environment - applying simple bypass');
+      const response = NextResponse.next();
+      response.headers.set('x-tenant-id', 'staging-tenant-id');
+      response.headers.set('x-tenant-hostname', 'staging.i-ep.app');
+      response.headers.set('x-tenant-name', 'Staging Demo Okulu');
+      response.headers.set('x-tenant-primary', 'true');
+      response.headers.set('x-tenant-custom-domain', 'false');
+      return response;
     }
 
   // Early return for static assets
