@@ -25,16 +25,17 @@ jobs:
       - name: 🔄 Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: 📦 Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
+
+      - name: Setup pnpm (via Corepack)
+        run: corepack prepare pnpm@10.12.4 --activate
 
       - name: 🔧 Install dependencies
         run: |
@@ -66,16 +67,17 @@ jobs:
       - name: 🔄 Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: 📦 Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'pnpm'
+
+      - name: Setup pnpm (via Corepack)
+        run: corepack prepare pnpm@10.12.4 --activate
 
       - name: 🔧 Install dependencies
         run: |
@@ -127,16 +129,17 @@ jobs:
       - name: 🔄 Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: 📦 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
+
+      - name: Setup pnpm (via Corepack)
+        run: corepack prepare pnpm@10.12.4 --activate
 
       - name: 🔧 Install dependencies
         run: |
@@ -173,16 +176,17 @@ jobs:
       - name: 🔄 Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: 📦 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
+
+      - name: Setup pnpm (via Corepack)
+        run: corepack prepare pnpm@10.12.4 --activate
 
       - name: 🔧 Install dependencies
         run: |
