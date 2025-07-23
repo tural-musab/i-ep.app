@@ -1,0 +1,56 @@
+0407813e2641ca80105314599176243f
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "GET", {
+    enumerable: true,
+    get: function() {
+        return GET;
+    }
+});
+const _server = require("next/server");
+const _client = require("../../../lib/supabase/client");
+const _logger = /*#__PURE__*/ _interop_require_default(require("../../../lib/logger"));
+function _interop_require_default(obj) {
+    return obj && obj.__esModule ? obj : {
+        default: obj
+    };
+}
+async function GET() {
+    const timestamp = new Date().toISOString();
+    try {
+        // Supabase bağlantısını test etmek için basit bir query yap
+        const { error } = await _client.supabase.from('auth.users').select('count').limit(1).single();
+        if (error) {
+            _logger.default.error({
+                err: error
+            }, 'Database bağlantı hatası');
+            return _server.NextResponse.json({
+                status: 'not_ready',
+                timestamp,
+                dbConnection: false
+            }, {
+                status: 503
+            });
+        }
+        return _server.NextResponse.json({
+            status: 'ready',
+            timestamp,
+            dbConnection: true
+        });
+    } catch (error) {
+        _logger.default.error({
+            err: error
+        }, 'Ready check hatası');
+        return _server.NextResponse.json({
+            status: 'not_ready',
+            timestamp,
+            dbConnection: false
+        }, {
+            status: 503
+        });
+    }
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy90dXJhbm11c2Fib3NtYW4vUHJvamVjdHMvaS1lcC5hcHAvc3JjL2FwcC9hcGkvcmVhZHkvcm91dGUudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgTmV4dFJlc3BvbnNlIH0gZnJvbSAnbmV4dC9zZXJ2ZXInO1xuaW1wb3J0IHsgc3VwYWJhc2UgfSBmcm9tICdAL2xpYi9zdXBhYmFzZS9jbGllbnQnO1xuaW1wb3J0IGxvZ2dlciBmcm9tICdAL2xpYi9sb2dnZXInO1xuXG4vKipcbiAqIEdFVCAvYXBpL3JlYWR5XG4gKlxuICogVXlndWxhbWEgaGF6xLFyIG9sbWEgZHVydW11IGtvbnRyb2zDvCAtIERCIGJhxJ9sYW50xLFzxLFuxLEgdGVzdCBlZGVyXG4gKi9cbmV4cG9ydCBhc3luYyBmdW5jdGlvbiBHRVQoKSB7XG4gIGNvbnN0IHRpbWVzdGFtcCA9IG5ldyBEYXRlKCkudG9JU09TdHJpbmcoKTtcblxuICB0cnkge1xuICAgIC8vIFN1cGFiYXNlIGJhxJ9sYW50xLFzxLFuxLEgdGVzdCBldG1layBpw6dpbiBiYXNpdCBiaXIgcXVlcnkgeWFwXG4gICAgY29uc3QgeyBlcnJvciB9ID0gYXdhaXQgc3VwYWJhc2UuZnJvbSgnYXV0aC51c2VycycpLnNlbGVjdCgnY291bnQnKS5saW1pdCgxKS5zaW5nbGUoKTtcblxuICAgIGlmIChlcnJvcikge1xuICAgICAgbG9nZ2VyLmVycm9yKHsgZXJyOiBlcnJvciB9LCAnRGF0YWJhc2UgYmHEn2xhbnTEsSBoYXRhc8SxJyk7XG5cbiAgICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbihcbiAgICAgICAge1xuICAgICAgICAgIHN0YXR1czogJ25vdF9yZWFkeScsXG4gICAgICAgICAgdGltZXN0YW1wLFxuICAgICAgICAgIGRiQ29ubmVjdGlvbjogZmFsc2UsXG4gICAgICAgIH0sXG4gICAgICAgIHsgc3RhdHVzOiA1MDMgfVxuICAgICAgKTtcbiAgICB9XG5cbiAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oe1xuICAgICAgc3RhdHVzOiAncmVhZHknLFxuICAgICAgdGltZXN0YW1wLFxuICAgICAgZGJDb25uZWN0aW9uOiB0cnVlLFxuICAgIH0pO1xuICB9IGNhdGNoIChlcnJvcikge1xuICAgIGxvZ2dlci5lcnJvcih7IGVycjogZXJyb3IgfSwgJ1JlYWR5IGNoZWNrIGhhdGFzxLEnKTtcblxuICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbihcbiAgICAgIHtcbiAgICAgICAgc3RhdHVzOiAnbm90X3JlYWR5JyxcbiAgICAgICAgdGltZXN0YW1wLFxuICAgICAgICBkYkNvbm5lY3Rpb246IGZhbHNlLFxuICAgICAgfSxcbiAgICAgIHsgc3RhdHVzOiA1MDMgfVxuICAgICk7XG4gIH1cbn1cbiJdLCJuYW1lcyI6WyJHRVQiLCJ0aW1lc3RhbXAiLCJEYXRlIiwidG9JU09TdHJpbmciLCJlcnJvciIsInN1cGFiYXNlIiwiZnJvbSIsInNlbGVjdCIsImxpbWl0Iiwic2luZ2xlIiwibG9nZ2VyIiwiZXJyIiwiTmV4dFJlc3BvbnNlIiwianNvbiIsInN0YXR1cyIsImRiQ29ubmVjdGlvbiJdLCJtYXBwaW5ncyI6Ijs7OzsrQkFTc0JBOzs7ZUFBQUE7Ozt3QkFUTzt3QkFDSjsrREFDTjs7Ozs7O0FBT1osZUFBZUE7SUFDcEIsTUFBTUMsWUFBWSxJQUFJQyxPQUFPQyxXQUFXO0lBRXhDLElBQUk7UUFDRiw0REFBNEQ7UUFDNUQsTUFBTSxFQUFFQyxLQUFLLEVBQUUsR0FBRyxNQUFNQyxnQkFBUSxDQUFDQyxJQUFJLENBQUMsY0FBY0MsTUFBTSxDQUFDLFNBQVNDLEtBQUssQ0FBQyxHQUFHQyxNQUFNO1FBRW5GLElBQUlMLE9BQU87WUFDVE0sZUFBTSxDQUFDTixLQUFLLENBQUM7Z0JBQUVPLEtBQUtQO1lBQU0sR0FBRztZQUU3QixPQUFPUSxvQkFBWSxDQUFDQyxJQUFJLENBQ3RCO2dCQUNFQyxRQUFRO2dCQUNSYjtnQkFDQWMsY0FBYztZQUNoQixHQUNBO2dCQUFFRCxRQUFRO1lBQUk7UUFFbEI7UUFFQSxPQUFPRixvQkFBWSxDQUFDQyxJQUFJLENBQUM7WUFDdkJDLFFBQVE7WUFDUmI7WUFDQWMsY0FBYztRQUNoQjtJQUNGLEVBQUUsT0FBT1gsT0FBTztRQUNkTSxlQUFNLENBQUNOLEtBQUssQ0FBQztZQUFFTyxLQUFLUDtRQUFNLEdBQUc7UUFFN0IsT0FBT1Esb0JBQVksQ0FBQ0MsSUFBSSxDQUN0QjtZQUNFQyxRQUFRO1lBQ1JiO1lBQ0FjLGNBQWM7UUFDaEIsR0FDQTtZQUFFRCxRQUFRO1FBQUk7SUFFbEI7QUFDRiJ9

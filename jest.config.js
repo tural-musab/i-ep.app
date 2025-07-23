@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 const unitConfig = require('./jest.config.unit.js');
 const componentConfig = require('./jest.config.components.js');
+const integrationConfig = require('./jest.config.integration.js');
 
 // Multi-project configuration that uses separate config files
 const multiProjectConfig = {
-  projects: [unitConfig, componentConfig],
+  projects: [unitConfig, componentConfig, integrationConfig],
 
   // Global settings for all projects
   testTimeout: 10000,

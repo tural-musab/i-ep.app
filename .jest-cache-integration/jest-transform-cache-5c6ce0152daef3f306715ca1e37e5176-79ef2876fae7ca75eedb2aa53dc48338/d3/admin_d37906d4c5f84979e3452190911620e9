@@ -1,0 +1,23 @@
+41cb3fa9b1be8cc0956660ab0691d6a2
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+Object.defineProperty(exports, "supabaseAdmin", {
+    enumerable: true,
+    get: function() {
+        return supabaseAdmin;
+    }
+});
+const _supabasejs = require("@supabase/supabase-js");
+// Supabase URL ve admin anahtarı için ortam değişkenlerini kullan
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseAdmin = (0, _supabasejs.createClient)(supabaseUrl, supabaseServiceKey, {
+    auth: {
+        autoRefreshToken: false,
+        persistSession: false
+    }
+});
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy90dXJhbm11c2Fib3NtYW4vUHJvamVjdHMvaS1lcC5hcHAvc3JjL2xpYi9zdXBhYmFzZS9hZG1pbi50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBjcmVhdGVDbGllbnQgfSBmcm9tICdAc3VwYWJhc2Uvc3VwYWJhc2UtanMnO1xuXG4vLyBTdXBhYmFzZSBVUkwgdmUgYWRtaW4gYW5haHRhcsSxIGnDp2luIG9ydGFtIGRlxJ9pxZ9rZW5sZXJpbmkga3VsbGFuXG5jb25zdCBzdXBhYmFzZVVybCA9IHByb2Nlc3MuZW52Lk5FWFRfUFVCTElDX1NVUEFCQVNFX1VSTCB8fCAnJztcbmNvbnN0IHN1cGFiYXNlU2VydmljZUtleSA9IHByb2Nlc3MuZW52LlNVUEFCQVNFX1NFUlZJQ0VfUk9MRV9LRVkgfHwgJyc7XG5cbi8vIFNlcnZpY2Ugcm9sZSBrZXkgaWxlIGlzdGVtY2kgb2x1xZ90dXJ1bG1hc8SxLCBidSBpc3RlbWNpIFJMUyBwb2xpdGlrYWxhcsSxbsSxIGJ5cGFzcyBlZGVyXG4vLyBCdSBpc3RlbWNpIHNhZGVjZSBnw7x2ZW5saSBzdW51Y3UgdGFyYWbEsSBpxZ9sZW1sZXJpbmRlIGt1bGxhbsSxbG1hbMSxZMSxclxuZXhwb3J0IGNvbnN0IHN1cGFiYXNlQWRtaW4gPSBjcmVhdGVDbGllbnQoc3VwYWJhc2VVcmwsIHN1cGFiYXNlU2VydmljZUtleSwge1xuICBhdXRoOiB7XG4gICAgYXV0b1JlZnJlc2hUb2tlbjogZmFsc2UsXG4gICAgcGVyc2lzdFNlc3Npb246IGZhbHNlLFxuICB9LFxufSk7XG4iXSwibmFtZXMiOlsic3VwYWJhc2VBZG1pbiIsInN1cGFiYXNlVXJsIiwicHJvY2VzcyIsImVudiIsIk5FWFRfUFVCTElDX1NVUEFCQVNFX1VSTCIsInN1cGFiYXNlU2VydmljZUtleSIsIlNVUEFCQVNFX1NFUlZJQ0VfUk9MRV9LRVkiLCJjcmVhdGVDbGllbnQiLCJhdXRoIiwiYXV0b1JlZnJlc2hUb2tlbiIsInBlcnNpc3RTZXNzaW9uIl0sIm1hcHBpbmdzIjoiOzs7OytCQVFhQTs7O2VBQUFBOzs7NEJBUmdCO0FBRTdCLGtFQUFrRTtBQUNsRSxNQUFNQyxjQUFjQyxRQUFRQyxHQUFHLENBQUNDLHdCQUF3QixJQUFJO0FBQzVELE1BQU1DLHFCQUFxQkgsUUFBUUMsR0FBRyxDQUFDRyx5QkFBeUIsSUFBSTtBQUk3RCxNQUFNTixnQkFBZ0JPLElBQUFBLHdCQUFZLEVBQUNOLGFBQWFJLG9CQUFvQjtJQUN6RUcsTUFBTTtRQUNKQyxrQkFBa0I7UUFDbEJDLGdCQUFnQjtJQUNsQjtBQUNGIn0=

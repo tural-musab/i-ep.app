@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { AssignmentRepository } from '@/lib/repository/assignment-repository';
+import { requireRole } from '@/lib/auth/server-session';
 // Modern authentication pattern
 
 // Validation schema for assignment creation
