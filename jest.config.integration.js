@@ -18,9 +18,15 @@ const integrationConfig = {
     '<rootDir>/test-utils/integration-test-setup.js'
   ],
 
-  // TypeScript transformation with Babel for integration tests
+  // TypeScript transformation with ts-jest (no babel needed)
   transform: {
-    '^.+\\.(js|jsx|ts|tsx|mjs)$': ['babel-jest'],
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
+      useESM: true,
+      tsconfig: {
+        jsx: 'react-jsx',
+      },
+    }],
+    '^.+\\.(js|jsx|mjs)$': ['babel-jest', { presets: ['next/babel'] }],
   },
 
   // Module path mapping for '@/' aliases - NO MOCKS for integration tests
