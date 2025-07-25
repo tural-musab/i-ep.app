@@ -1,0 +1,1746 @@
+openapi: 3.0.3
+info:
+  title: İ-EP.APP API
+  description: |
+    İ-EP.APP çoklu kiracılı okul yönetim sistemi için kapsamlı RESTful API.
+    
+    ## Özellikler
+    - Çoklu kiracı mimarisi (Multi-tenant)
+    - Role tabanlı erişim kontrolü (RBAC)
+    - Güvenli dosya yönetimi
+    - Türk eğitim sistemi desteği
+    - Gerçek zamanlı bildirimler
+    
+    ## Kimlik Doğrulama
+    API, NextAuth.js tabanlı kimlik doğrulama kullanır. Her istekte aşağıdaki header'lar gereklidir:
+    - `X-User-Email`: Kullanıcı e-posta adresi
+    - `X-User-ID`: Kullanıcı benzersiz ID'si
+    - `x-tenant-id`: Kiracı (okul) ID'si
+    
+    ## Roller
+    - `super_admin`: Sistem yöneticisi
+    - `admin`: Okul yöneticisi
+    - `teacher`: Öğretmen
+    - `student`: Öğrenci
+    - `parent`: Veli
+  version: 1.0.0
+  contact:
+    name: İ-EP.APP API Desteği
+    url: https://i-ep.app/support
+    email: api-support@i-ep.app
+  license:
+    name: Proprietary
+servers:
+  - url: https://api.i-ep.app
+    description: Production sunucusu
+  - url: http://localhost:3000/api
+    description: Development sunucusu
+
+security:
+  - ApiKeyAuth: []
+  - TenantAuth: []
+
+paths:
+  # ========================================
+  # ASSIGNMENTS (ÖDEVLER)
+  # ========================================
+  /assignments:
+    get:
+      tags:
+        - Assignments (Ödevler)
+      summary: Ödev listesini getir
+      description: |
+        Ödevleri filtreler ve sayfalı olarak listeler.
+        Öğretmenler kendi ödevlerini, yöneticiler tüm ödevleri görebilir.
+      parameters:
+        - name: page
+          in: query
+          description: Sayfa numarası
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        - name: limit
+          in: query
+          description: Sayfa başına kayıt sayısı
+          schema:
+            type: integer
+            default: 10
+            minimum: 1
+            maximum: 100
+        - name: class_id
+          in: query
+          description: Sınıf ID'si ile filtrele
+          schema:
+            type: string
+            format: uuid
+        - name: teacher_id
+          in: query
+          description: Öğretmen ID'si ile filtrele
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          description: Ödev türü ile filtrele
+          schema:
+            $ref: '#/components/schemas/AssignmentType'
+        - name: status
+          in: query
+          description: Ödev durumu ile filtrele
+          schema:
+            $ref: '#/components/schemas/AssignmentStatus'
+        - name: subject
+          in: query
+          description: Ders adı ile filtrele
+          schema:
+            type: string
+        - name: due_date_from
+          in: query
+          description: Teslim tarihi başlangıç (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: due_date_to
+          in: query
+          description: Teslim tarihi bitiş (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+        - name: search
+          in: query
+          description: Başlık ve açıklamada arama
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ödev listesi başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Assignment'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - ApiKeyAuth: []
+        - TenantAuth: []
+
+    post:
+      tags:
+        - Assignments (Ödevler)
+      summary: Yeni ödev oluştur
+      description: |
+        Yeni bir ödev oluşturur. Sadece öğretmen ve yönetici yetkisiyle.
+        Oluşturulan ödev varsayılan olarak 'draft' durumunda olur.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAssignmentRequest'
+      responses:
+        '201':
+          description: Ödev başarıyla oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+      security:
+        - ApiKeyAuth: []
+        - TenantAuth: []
+
+  /assignments/{id}:
+    get:
+      tags:
+        - Assignments (Ödevler)
+      summary: Ödev detayını getir
+      description: Belirtilen ID'ye sahip ödevin detaylı bilgilerini getirir
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Ödev ID'si
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Ödev detayı başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    put:
+      tags:
+        - Assignments (Ödevler)
+      summary: Ödevi güncelle
+      description: Mevcut ödevin bilgilerini güncelller
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Ödev ID'si
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAssignmentRequest'
+      responses:
+        '200':
+          description: Ödev başarıyla güncellendi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    delete:
+      tags:
+        - Assignments (Ödevler)
+      summary: Ödevi sil
+      description: Belirtilen ödevi sistemden siler
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Ödev ID'si
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Ödev başarıyla silindi
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ========================================
+  # ATTENDANCE (DEVAMSIZLIK)
+  # ========================================
+  /attendance:
+    get:
+      tags:
+        - Attendance (Devamsızlık)
+      summary: Devam kayıtlarını listele
+      description: |
+        Devam kayıtlarını filtreli olarak getirir.
+        Öğretmenler kendi sınıflarını, öğrenciler kendi kayıtlarını görebilir.
+      parameters:
+        - name: studentId
+          in: query
+          description: Öğrenci ID'si ile filtrele
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: query
+          description: Sınıf ID'si ile filtrele
+          schema:
+            type: string
+            format: uuid
+        - name: date
+          in: query
+          description: Belirli tarih (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: startDate
+          in: query
+          description: Başlangıç tarihi (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: Bitiş tarihi (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: status
+          in: query
+          description: Devam durumu
+          schema:
+            $ref: '#/components/schemas/AttendanceStatus'
+        - name: limit
+          in: query
+          description: Kayıt limiti
+          schema:
+            type: integer
+            default: 50
+            maximum: 200
+        - name: offset
+          in: query
+          description: Başlangıç pozisyonu
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Devam kayıtları başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AttendanceRecord'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      tags:
+        - Attendance (Devamsızlık)
+      summary: Devam kaydı oluştur
+      description: |
+        Tek veya toplu devam kaydı oluşturur.
+        Toplu kayıt için 'attendance' dizisi kullanılır.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CreateAttendanceRequest'
+                - $ref: '#/components/schemas/BulkAttendanceRequest'
+      responses:
+        '201':
+          description: Devam kaydı başarıyla oluşturuldu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    oneOf:
+                      - $ref: '#/components/schemas/AttendanceRecord'
+                      - type: array
+                        items:
+                          $ref: '#/components/schemas/AttendanceRecord'
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Devam kaydı zaten mevcut
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ========================================
+  # GRADES (NOTLAR)
+  # ========================================
+  /grades:
+    get:
+      tags:
+        - Grades (Notlar)
+      summary: Not listesini getir
+      description: |
+        Notları filtreli olarak listeler.
+        Türk eğitim sistemi not hesaplama desteği.
+      parameters:
+        - name: studentId
+          in: query
+          description: Öğrenci ID'si
+          schema:
+            type: string
+            format: uuid
+        - name: classId
+          in: query
+          description: Sınıf ID'si
+          schema:
+            type: string
+            format: uuid
+        - name: subjectId
+          in: query
+          description: Ders ID'si
+          schema:
+            type: string
+            format: uuid
+        - name: teacherId
+          in: query
+          description: Öğretmen ID'si
+          schema:
+            type: string
+            format: uuid
+        - name: gradeType
+          in: query
+          description: Not türü
+          schema:
+            $ref: '#/components/schemas/GradeType'
+        - name: semester
+          in: query
+          description: Dönem (1 veya 2)
+          schema:
+            type: integer
+            enum: [1, 2]
+        - name: academicYear
+          in: query
+          description: Akademik yıl (YYYY-YYYY)
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{4}$'
+            example: '2024-2025'
+        - name: includeCalculations
+          in: query
+          description: Hesaplama sonuçlarını dahil et
+          schema:
+            type: boolean
+            default: false
+        - name: includeComments
+          in: query
+          description: Öğretmen yorumlarını dahil et
+          schema:
+            type: boolean
+            default: false
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Not listesi başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Grade'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      tags:
+        - Grades (Notlar)
+      summary: Not girişi yap
+      description: |
+        Tek veya toplu not girişi yapar.
+        Türk eğitim sistemi AA-FF not sistemi desteklenir.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CreateGradeRequest'
+                - $ref: '#/components/schemas/BulkGradeRequest'
+      responses:
+        '201':
+          description: Not başarıyla girildi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    oneOf:
+                      - $ref: '#/components/schemas/Grade'
+                      - type: array
+                        items:
+                          $ref: '#/components/schemas/Grade'
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Bu sınav için not zaten girilmiş
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ========================================
+  # CLASSES (SINIFLAR)
+  # ========================================
+  /classes:
+    get:
+      tags:
+        - Classes (Sınıflar)
+      summary: Sınıf listesini getir
+      description: Okuldaki tüm sınıfları listeler
+      parameters:
+        - name: grade
+          in: query
+          description: Sınıf seviyesi ile filtrele
+          schema:
+            type: string
+        - name: academic_year
+          in: query
+          description: Akademik yıl ile filtrele
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{4}$'
+        - name: status
+          in: query
+          description: Sınıf durumu
+          schema:
+            $ref: '#/components/schemas/ClassStatus'
+        - name: teacher_id
+          in: query
+          description: Sınıf öğretmeni ID'si
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sınıf listesi başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Class'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  limit:
+                    type: integer
+                  totalPages:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    post:
+      tags:
+        - Classes (Sınıflar)
+      summary: Yeni sınıf oluştur
+      description: Yeni bir sınıf oluşturur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClassRequest'
+      responses:
+        '201':
+          description: Sınıf başarıyla oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Class'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ========================================
+  # STORAGE (DOSYA YÖNETİMİ)
+  # ========================================
+  /storage/upload:
+    post:
+      tags:
+        - Storage (Dosya Yönetimi)
+      summary: Dosya yükle
+      description: |
+        Ödev, profil veya döküman dosyası yükler.
+        Desteklenen formatlar: PDF, Word, Excel, PowerPoint, resim dosyaları.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Yüklenecek dosya
+                type:
+                  type: string
+                  enum: [assignment, profile, document, image]
+                  description: Dosya türü
+                assignment_id:
+                  type: string
+                  format: uuid
+                  description: Ödev ID'si (ödev dosyaları için)
+                public:
+                  type: boolean
+                  description: Herkese açık mı?
+                  default: false
+              required:
+                - file
+                - type
+      responses:
+        '200':
+          description: Dosya başarıyla yüklendi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  file:
+                    $ref: '#/components/schemas/UploadedFile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: Dosya boyutu çok büyük
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '415':
+          description: Desteklenmeyen dosya türü
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+    get:
+      tags:
+        - Storage (Dosya Yönetimi)
+      summary: Yükleme yapılandırması
+      description: Dosya yükleme limitleri ve kısıtlamaları
+      responses:
+        '200':
+          description: Yapılandırma bilgileri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadConfig'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ========================================
+  # DASHBOARD
+  # ========================================
+  /dashboard/recent-activities:
+    get:
+      tags:
+        - Dashboard
+      summary: Son aktiviteler
+      description: Dashboard için son aktiviteleri getirir
+      parameters:
+        - name: limit
+          in: query
+          description: Aktivite sayısı limiti
+          schema:
+            type: integer
+            default: 10
+            maximum: 50
+      responses:
+        '200':
+          description: Son aktiviteler başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Activity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  # ========================================
+  # SYSTEM HEALTH
+  # ========================================
+  /health:
+    get:
+      tags:
+        - System (Sistem)
+      summary: Sistem sağlık kontrolü
+      description: API ve bağımlı servislerin sağlık durumunu kontrol eder
+      responses:
+        '200':
+          description: Sistem sağlıklı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+        '500':
+          description: Sistem sağlıksız
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthStatus'
+
+# ========================================
+# COMPONENTS
+# ========================================
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-User-ID
+      description: Kullanıcı ID'si
+    TenantAuth:
+      type: apiKey
+      in: header
+      name: x-tenant-id
+      description: Kiracı (okul) ID'si
+
+  schemas:
+    # ========================================
+    # ASSIGNMENT SCHEMAS
+    # ========================================
+    Assignment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Ödev benzersiz ID'si
+        title:
+          type: string
+          description: Ödev başlığı
+          maxLength: 255
+        description:
+          type: string
+          description: Ödev açıklaması
+        type:
+          $ref: '#/components/schemas/AssignmentType'
+        subject:
+          type: string
+          description: Ders adı
+          maxLength: 100
+        class_id:
+          type: string
+          format: uuid
+          description: Sınıf ID'si
+        teacher_id:
+          type: string
+          format: uuid
+          description: Öğretmen ID'si
+        due_date:
+          type: string
+          format: date-time
+          description: Teslim tarihi
+        max_score:
+          type: number
+          description: Maksimum puan
+          minimum: 1
+          maximum: 1000
+        instructions:
+          type: string
+          description: Ödev talimatları
+        attachments:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Ek dosya ID'leri
+        rubric:
+          type: array
+          items:
+            type: object
+            properties:
+              criteria:
+                type: string
+                description: Değerlendirme kriteri
+              points:
+                type: number
+                description: Puan
+              description:
+                type: string
+                description: Açıklama
+        status:
+          $ref: '#/components/schemas/AssignmentStatus'
+        is_graded:
+          type: boolean
+          description: Notlandırılmış mı?
+        tenant_id:
+          type: string
+          format: uuid
+          description: Kiracı ID'si
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - type
+        - subject
+        - class_id
+        - teacher_id
+        - due_date
+        - max_score
+        - status
+        - tenant_id
+
+    AssignmentType:
+      type: string
+      enum:
+        - homework
+        - exam
+        - project
+        - quiz
+        - presentation
+      description: |
+        Ödev türleri:
+        - homework: Ev ödevi
+        - exam: Sınav
+        - project: Proje
+        - quiz: Quiz
+        - presentation: Sunum
+
+    AssignmentStatus:
+      type: string
+      enum:
+        - draft
+        - published
+        - completed
+        - archived
+      description: |
+        Ödev durumları:
+        - draft: Taslak
+        - published: Yayınlandı
+        - completed: Tamamlandı
+        - archived: Arşivlendi
+
+    CreateAssignmentRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        type:
+          $ref: '#/components/schemas/AssignmentType'
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 100
+        class_id:
+          type: string
+          format: uuid
+        teacher_id:
+          type: string
+          format: uuid
+        due_date:
+          type: string
+          format: date-time
+        max_score:
+          type: number
+          minimum: 1
+          maximum: 1000
+        instructions:
+          type: string
+        attachments:
+          type: array
+          items:
+            type: string
+        rubric:
+          type: array
+          items:
+            type: object
+            properties:
+              criteria:
+                type: string
+              points:
+                type: number
+              description:
+                type: string
+        metadata:
+          type: object
+          additionalProperties: true
+      required:
+        - title
+        - type
+        - subject
+        - class_id
+        - teacher_id
+        - due_date
+        - max_score
+
+    UpdateAssignmentRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateAssignmentRequest'
+        - type: object
+          properties:
+            status:
+              $ref: '#/components/schemas/AssignmentStatus'
+            is_graded:
+              type: boolean
+
+    # ========================================
+    # ATTENDANCE SCHEMAS
+    # ========================================
+    AttendanceRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        student_id:
+          type: string
+          format: uuid
+        student_name:
+          type: string
+          description: Öğrenci adı
+        class_id:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/AttendanceStatus'
+        time_in:
+          type: string
+          format: time
+          description: Giriş saati
+        time_out:
+          type: string
+          format: time
+          description: Çıkış saati
+        notes:
+          type: string
+          description: Notlar
+        excuse_reason:
+          type: string
+          description: Mazeret nedeni
+        excuse_document:
+          type: string
+          description: Mazeret belgesi
+        marked_by:
+          type: string
+          format: uuid
+          description: Kaydı yapan kişi ID'si
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - student_id
+        - class_id
+        - date
+        - status
+        - tenant_id
+
+    AttendanceStatus:
+      type: string
+      enum:
+        - present
+        - absent
+        - late
+        - excused
+        - sick
+      description: |
+        Devam durumları:
+        - present: Mevcut
+        - absent: Devamsız
+        - late: Geç
+        - excused: Mazeretli
+        - sick: Hasta
+
+    CreateAttendanceRequest:
+      type: object
+      properties:
+        studentId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/AttendanceStatus'
+        timeIn:
+          type: string
+          format: time
+        timeOut:
+          type: string
+          format: time
+        notes:
+          type: string
+        excuseReason:
+          type: string
+        excuseDocument:
+          type: string
+      required:
+        - studentId
+        - classId
+        - date
+        - status
+
+    BulkAttendanceRequest:
+      type: object
+      properties:
+        classId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        attendance:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            properties:
+              studentId:
+                type: string
+                format: uuid
+              status:
+                $ref: '#/components/schemas/AttendanceStatus'
+              timeIn:
+                type: string
+                format: time
+              timeOut:
+                type: string
+                format: time
+              notes:
+                type: string
+              excuseReason:
+                type: string
+            required:
+              - studentId
+              - status
+      required:
+        - classId
+        - date
+        - attendance
+
+    # ========================================
+    # GRADE SCHEMAS
+    # ========================================
+    Grade:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        student_id:
+          type: string
+          format: uuid
+        student_name:
+          type: string
+        class_id:
+          type: string
+          format: uuid
+        subject_id:
+          type: string
+          format: uuid
+        subject_name:
+          type: string
+        assignment_id:
+          type: string
+          format: uuid
+        grade_type:
+          $ref: '#/components/schemas/GradeType'
+        grade_value:
+          type: number
+          description: Not değeri
+        max_grade:
+          type: number
+          description: Maksimum not
+        weight:
+          type: number
+          description: Ağırlık (0-1 arası)
+          minimum: 0
+          maximum: 1
+        exam_name:
+          type: string
+          description: Sınav adı
+        description:
+          type: string
+        semester:
+          type: integer
+          enum: [1, 2]
+        academic_year:
+          type: string
+          pattern: '^\d{4}-\d{4}$'
+        grade_date:
+          type: string
+          format: date-time
+        teacher_id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - student_id
+        - class_id
+        - subject_id
+        - grade_type
+        - grade_value
+        - max_grade
+        - semester
+        - academic_year
+        - teacher_id
+        - tenant_id
+
+    GradeType:
+      type: string
+      enum:
+        - exam
+        - homework
+        - project
+        - participation
+        - quiz
+        - midterm
+        - final
+      description: |
+        Not türleri:
+        - exam: Sınav
+        - homework: Ödev
+        - project: Proje
+        - participation: Katılım
+        - quiz: Quiz
+        - midterm: Ara sınav
+        - final: Final
+
+    CreateGradeRequest:
+      type: object
+      properties:
+        studentId:
+          type: string
+          format: uuid
+        classId:
+          type: string
+          format: uuid
+        subjectId:
+          type: string
+          format: uuid
+        assignmentId:
+          type: string
+          format: uuid
+        gradeType:
+          $ref: '#/components/schemas/GradeType'
+        gradeValue:
+          type: number
+          minimum: 0
+        maxGrade:
+          type: number
+          minimum: 1
+        weight:
+          type: number
+          minimum: 0
+          maximum: 1
+          default: 1.0
+        examName:
+          type: string
+        description:
+          type: string
+        semester:
+          type: integer
+          enum: [1, 2]
+        academicYear:
+          type: string
+          pattern: '^\d{4}-\d{4}$'
+        gradeDate:
+          type: string
+          format: date-time
+      required:
+        - studentId
+        - classId
+        - subjectId
+        - gradeType
+        - gradeValue
+        - maxGrade
+        - semester
+        - academicYear
+
+    BulkGradeRequest:
+      type: object
+      properties:
+        classId:
+          type: string
+          format: uuid
+        subjectId:
+          type: string
+          format: uuid
+        gradeType:
+          $ref: '#/components/schemas/GradeType'
+        examName:
+          type: string
+        maxGrade:
+          type: number
+          minimum: 1
+        weight:
+          type: number
+          minimum: 0
+          maximum: 1
+          default: 1.0
+        semester:
+          type: integer
+          enum: [1, 2]
+        academicYear:
+          type: string
+          pattern: '^\d{4}-\d{4}$'
+        gradeDate:
+          type: string
+          format: date-time
+        grades:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            properties:
+              studentId:
+                type: string
+                format: uuid
+              gradeValue:
+                type: number
+                minimum: 0
+              description:
+                type: string
+            required:
+              - studentId
+              - gradeValue
+      required:
+        - classId
+        - subjectId
+        - gradeType
+        - maxGrade
+        - semester
+        - academicYear
+        - grades
+
+    # ========================================
+    # CLASS SCHEMAS
+    # ========================================
+    Class:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: Sınıf adı (örn. 5/A)
+        grade:
+          type: string
+          description: Sınıf seviyesi
+        section:
+          type: string
+          description: Şube
+        capacity:
+          type: integer
+          description: Kapasite
+          minimum: 1
+          maximum: 50
+        current_enrollment:
+          type: integer
+          description: Mevcut öğrenci sayısı
+        academic_year:
+          type: string
+          pattern: '^\d{4}-\d{4}$'
+        teacher_id:
+          type: string
+          format: uuid
+          description: Sınıf öğretmeni ID'si
+        room_number:
+          type: string
+          description: Sınıf numarası
+        status:
+          $ref: '#/components/schemas/ClassStatus'
+        description:
+          type: string
+        tenant_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - grade
+        - section
+        - capacity
+        - academic_year
+        - status
+        - tenant_id
+
+    ClassStatus:
+      type: string
+      enum:
+        - active
+        - inactive
+        - archived
+      description: |
+        Sınıf durumları:
+        - active: Aktif
+        - inactive: Pasif
+        - archived: Arşivlendi
+
+    CreateClassRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 100
+        grade:
+          type: string
+          minLength: 1
+          maxLength: 10
+        section:
+          type: string
+          minLength: 1
+          maxLength: 10
+        capacity:
+          type: integer
+          minimum: 1
+          maximum: 50
+        academic_year:
+          type: string
+          pattern: '^\d{4}-\d{4}$'
+        teacher_id:
+          type: string
+          format: uuid
+        room_number:
+          type: string
+        current_enrollment:
+          type: integer
+          minimum: 0
+          default: 0
+        status:
+          $ref: '#/components/schemas/ClassStatus'
+          default: active
+        description:
+          type: string
+      required:
+        - name
+        - grade
+        - section
+        - capacity
+        - academic_year
+
+    # ========================================
+    # STORAGE SCHEMAS
+    # ========================================
+    UploadedFile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: Dosya adı
+        path:
+          type: string
+          description: Depolama yolu
+        size:
+          type: integer
+          description: Dosya boyutu (byte)
+        mimeType:
+          type: string
+          description: MIME türü
+        url:
+          type: string
+          format: uri
+          description: Dosya URL'si
+        provider:
+          type: string
+          description: Depolama sağlayıcısı
+        metadata:
+          type: object
+          properties:
+            uploadedBy:
+              type: string
+              format: uuid
+            uploadedAt:
+              type: string
+              format: date-time
+            type:
+              type: string
+            assignmentId:
+              type: string
+              format: uuid
+      required:
+        - id
+        - name
+        - path
+        - size
+        - mimeType
+        - url
+        - provider
+
+    UploadConfig:
+      type: object
+      properties:
+        maxFileSize:
+          type: object
+          properties:
+            assignment:
+              type: integer
+              description: Ödev dosyası max boyutu (byte)
+            profile:
+              type: integer
+              description: Profil resmi max boyutu (byte)
+            document:
+              type: integer
+              description: Döküman max boyutu (byte)
+            image:
+              type: integer
+              description: Resim max boyutu (byte)
+        allowedMimeTypes:
+          type: object
+          properties:
+            assignment:
+              type: array
+              items:
+                type: string
+              description: Ödev için izin verilen dosya türleri
+            profile:
+              type: array
+              items:
+                type: string
+              description: Profil için izin verilen dosya türleri
+            document:
+              type: array
+              items:
+                type: string
+              description: Döküman için izin verilen dosya türleri
+            image:
+              type: array
+              items:
+                type: string
+              description: Resim için izin verilen dosya türleri
+
+    # ========================================
+    # DASHBOARD SCHEMAS
+    # ========================================
+    Activity:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum:
+            - assignment
+            - attendance
+            - grade
+            - parent_communication
+            - system
+        title:
+          type: string
+          description: Aktivite başlığı
+        description:
+          type: string
+          description: Aktivite açıklaması
+        timestamp:
+          type: string
+          format: date-time
+        user:
+          type: string
+          description: Aktiviteyi yapan kullanıcı
+        icon:
+          type: string
+          description: İkon adı
+      required:
+        - id
+        - type
+        - title
+        - timestamp
+        - user
+
+    # ========================================
+    # SYSTEM SCHEMAS
+    # ========================================
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, unhealthy]
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+          description: API versiyonu
+        checks:
+          type: object
+          properties:
+            database:
+              type: string
+              enum: [healthy, unhealthy]
+            redis:
+              type: string
+              enum: [healthy, unhealthy]
+            externalApis:
+              type: string
+              enum: [healthy, unhealthy]
+        error:
+          type: string
+          description: Hata mesajı (unhealthy durumunda)
+      required:
+        - status
+        - timestamp
+
+    # ========================================
+    # COMMON SCHEMAS
+    # ========================================
+    PaginationResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Toplam kayıt sayısı
+        page:
+          type: integer
+          description: Mevcut sayfa
+        limit:
+          type: integer
+          description: Sayfa başına kayıt
+        totalPages:
+          type: integer
+          description: Toplam sayfa sayısı
+        hasNextPage:
+          type: boolean
+          description: Sonraki sayfa var mı?
+        hasPreviousPage:
+          type: boolean
+          description: Önceki sayfa var mı?
+        offset:
+          type: integer
+          description: Başlangıç pozisyonu
+        hasMore:
+          type: boolean
+          description: Daha fazla kayıt var mı?
+      required:
+        - total
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Hata mesajı
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: Hatalı alan
+              message:
+                type: string
+                description: Alan için hata mesajı
+              code:
+                type: string
+                description: Hata kodu
+        timestamp:
+          type: string
+          format: date-time
+        path:
+          type: string
+          description: İstek yolu
+        method:
+          type: string
+          description: HTTP metodu
+        code:
+          type: string
+          description: Hata kodu
+      required:
+        - error
+
+  # ========================================
+  # RESPONSES
+  # ========================================
+  responses:
+    BadRequest:
+      description: Geçersiz istek parametreleri
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Geçersiz istek parametreleri
+            details:
+              - field: studentId
+                message: UUID formatında olmalıdır
+                code: INVALID_UUID
+            timestamp: '2025-07-24T14:30:00Z'
+
+    Unauthorized:
+      description: Kimlik doğrulama gerekli veya geçersiz
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Authentication required or insufficient permissions
+            code: AUTH_REQUIRED
+            timestamp: '2025-07-24T14:30:00Z'
+
+    Forbidden:
+      description: Yetkisiz erişim
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Insufficient permissions
+            code: INSUFFICIENT_PERMISSIONS
+            timestamp: '2025-07-24T14:30:00Z'
+
+    NotFound:
+      description: Kayıt bulunamadı
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Assignment not found
+            code: RESOURCE_NOT_FOUND
+            resource: assignment
+            id: assignment-999
+            timestamp: '2025-07-24T14:30:00Z'
+
+    ValidationError:
+      description: Validasyon hatası
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Invalid request data
+            details:
+              - field: title
+                message: Title is required
+                code: REQUIRED_FIELD
+              - field: due_date
+                message: Invalid due date
+                code: INVALID_DATE
+            timestamp: '2025-07-24T14:30:00Z'
+
+    InternalError:
+      description: Sunucu hatası
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            error: Internal server error
+            code: INTERNAL_ERROR
+            timestamp: '2025-07-24T14:30:00Z'
+
+tags:
+  - name: Assignments (Ödevler)
+    description: Ödev yönetimi - oluşturma, düzenleme, listeleme
+  - name: Attendance (Devamsızlık)
+    description: Devam takibi - günlük kayıtlar, istatistikler
+  - name: Grades (Notlar)
+    description: Not yönetimi - Türk eğitim sistemi desteği
+  - name: Classes (Sınıflar)
+    description: Sınıf yönetimi - sınıf oluşturma ve düzenleme
+  - name: Storage (Dosya Yönetimi)
+    description: Dosya yükleme ve indirme işlemleri
+  - name: Dashboard
+    description: Dashboard ve aktivite bilgileri
+  - name: System (Sistem)
+    description: Sistem sağlığı ve durum kontrolü

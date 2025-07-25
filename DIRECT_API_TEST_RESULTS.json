@@ -1,0 +1,298 @@
+{
+  "testMetadata": {
+    "phase": "6.1 Frontend-Backend Integration",
+    "date": "2025-07-24T15:47:32.091Z",
+    "testType": "Direct API Testing",
+    "totalEndpoints": 13
+  },
+  "summary": {
+    "totalTests": 23,
+    "successfulTests": 12,
+    "failedTests": 11,
+    "successRate": 52.2
+  },
+  "prioritySummary": {
+    "critical": {
+      "total": 2,
+      "success": 1,
+      "rate": 50
+    },
+    "high": {
+      "total": 9,
+      "success": 5,
+      "rate": 55.55555555555556
+    },
+    "medium": {
+      "total": 6,
+      "success": 3,
+      "rate": 50
+    },
+    "low": {
+      "total": 6,
+      "success": 3,
+      "rate": 50
+    }
+  },
+  "authSummary": {
+    "none": {
+      "total": 13,
+      "success": 4,
+      "rate": 30.76923076923077
+    },
+    "mock-headers": {
+      "total": 10,
+      "success": 8,
+      "rate": 80
+    }
+  },
+  "detailedResults": [
+    {
+      "endpoint": "/api/health",
+      "method": "GET",
+      "priority": "critical",
+      "authType": "none",
+      "status": 200,
+      "success": true,
+      "responseTime": 17,
+      "responseSize": 152
+    },
+    {
+      "endpoint": "/api/ready",
+      "method": "GET",
+      "priority": "critical",
+      "authType": "none",
+      "status": 503,
+      "success": false,
+      "responseTime": 16,
+      "responseSize": 82,
+      "error": "{\"status\":\"not_ready\",\"timestamp\":\"2025-07-24T15:47:31.631Z\",\"dbConnection\":false}"
+    },
+    {
+      "endpoint": "/api/debug-auth",
+      "method": "GET",
+      "priority": "high",
+      "authType": "none",
+      "status": 200,
+      "success": true,
+      "responseTime": 10,
+      "responseSize": 293
+    },
+    {
+      "endpoint": "/api/tenant/current",
+      "method": "GET",
+      "priority": "high",
+      "authType": "none",
+      "status": 401,
+      "success": true,
+      "responseTime": 20,
+      "responseSize": 28
+    },
+    {
+      "endpoint": "/api/assignments",
+      "method": "GET",
+      "priority": "high",
+      "authType": "none",
+      "status": 200,
+      "success": false,
+      "responseTime": 9,
+      "responseSize": 1094,
+      "error": "{\"data\":[{\"id\":\"assignment-001\",\"title\":\"Türkçe Kompozisyon - Okulum\",\"description\":\"Okulunuz hakkında 200 kelimelik bir kompozisyon yazınız.\",\"type\":\"homework\",\"subject\":\"Türkçe\",\"class_id\":\"class-5a"
+    },
+    {
+      "endpoint": "/api/attendance",
+      "method": "GET",
+      "priority": "high",
+      "authType": "none",
+      "status": 200,
+      "success": false,
+      "responseTime": 21,
+      "responseSize": 74,
+      "error": "{\"data\":[],\"pagination\":{\"total\":0,\"limit\":50,\"offset\":0,\"hasMore\":false}}"
+    },
+    {
+      "endpoint": "/api/grades",
+      "method": "GET",
+      "priority": "high",
+      "authType": "none",
+      "status": 401,
+      "success": true,
+      "responseTime": 11,
+      "responseSize": 35
+    },
+    {
+      "endpoint": "/api/students",
+      "method": "GET",
+      "priority": "medium",
+      "authType": "none",
+      "status": 200,
+      "success": false,
+      "responseTime": 9,
+      "responseSize": 966,
+      "error": "{\"data\":[{\"id\":\"student-1\",\"email\":\"ahmet@student.com\",\"first_name\":\"Ahmet\",\"last_name\":\"Yılmaz\",\"metadata\":{\"student_number\":\"2024001\",\"birth_date\":\"2010-05-15\",\"gender\":\"male\",\"phone\":\"555-0101\",\"ad"
+    },
+    {
+      "endpoint": "/api/classes",
+      "method": "GET",
+      "priority": "medium",
+      "authType": "none",
+      "status": 200,
+      "success": false,
+      "responseTime": 9,
+      "responseSize": 659,
+      "error": "{\"data\":[{\"id\":\"class-5a\",\"name\":\"5/A\",\"grade\":\"5\",\"section\":\"A\",\"capacity\":25,\"current_enrollment\":22,\"academic_year\":\"2024-2025\",\"teacher_id\":\"demo-admin-001\",\"room_number\":\"101\",\"status\":\"active\",\""
+    },
+    {
+      "endpoint": "/api/dashboard/recent-activities",
+      "method": "GET",
+      "priority": "medium",
+      "authType": "none",
+      "status": 200,
+      "success": false,
+      "responseTime": 9,
+      "responseSize": 1064,
+      "error": "{\"success\":true,\"data\":[{\"id\":\"1\",\"type\":\"assignment\",\"title\":\"Matematik Ödev 3 teslim edildi\",\"description\":\"Ahmet Yılmaz tarafından matematik ödevi teslim edildi\",\"timestamp\":\"2025-07-24T15:17:31.74"
+    },
+    {
+      "endpoint": "/api/assignments/statistics",
+      "method": "GET",
+      "priority": "low",
+      "authType": "none",
+      "status": 200,
+      "success": false,
+      "responseTime": 7,
+      "responseSize": 602,
+      "error": "{\"totalAssignments\":15,\"activeAssignments\":8,\"completedAssignments\":7,\"pendingGrades\":12,\"completionRate\":78,\"averageGrade\":85.4,\"recentAssignments\":[{\"id\":\"1\",\"title\":\"Matematik Problemleri Çözümü\",\""
+    },
+    {
+      "endpoint": "/api/attendance/statistics",
+      "method": "GET",
+      "priority": "low",
+      "authType": "none",
+      "status": 200,
+      "success": false,
+      "responseTime": 8,
+      "responseSize": 194,
+      "error": "{\"success\":true,\"data\":{\"totalDays\":180,\"presentDays\":165,\"absentDays\":15,\"lateArrivals\":8,\"attendanceRate\":91.7,\"trends\":{\"thisMonth\":95.2,\"lastMonth\":88.4,\"improvement\":6.8}},\"type\":\"student\"}"
+    },
+    {
+      "endpoint": "/api/grades/analytics",
+      "method": "GET",
+      "priority": "low",
+      "authType": "none",
+      "status": 200,
+      "success": false,
+      "responseTime": 7,
+      "responseSize": 374,
+      "error": "{\"success\":true,\"data\":{\"gpa\":3.45,\"averageGrade\":86.2,\"totalGrades\":42,\"subjectBreakdown\":{\"Matematik\":{\"average\":88.5,\"count\":12,\"trend\":\"+2.3\"},\"Türkçe\":{\"average\":84,\"count\":10,\"trend\":\"-1.2\"},\"İn"
+    },
+    {
+      "endpoint": "/api/tenant/current",
+      "method": "GET",
+      "priority": "high",
+      "authType": "mock-headers",
+      "status": 401,
+      "success": false,
+      "responseTime": 21,
+      "responseSize": 28,
+      "error": "{\"error\":\"Oturum açılmamış\"}"
+    },
+    {
+      "endpoint": "/api/assignments",
+      "method": "GET",
+      "priority": "high",
+      "authType": "mock-headers",
+      "status": 200,
+      "success": true,
+      "responseTime": 8,
+      "responseSize": 1080
+    },
+    {
+      "endpoint": "/api/attendance",
+      "method": "GET",
+      "priority": "high",
+      "authType": "mock-headers",
+      "status": 200,
+      "success": true,
+      "responseTime": 24,
+      "responseSize": 74
+    },
+    {
+      "endpoint": "/api/grades",
+      "method": "GET",
+      "priority": "high",
+      "authType": "mock-headers",
+      "status": 401,
+      "success": false,
+      "responseTime": 9,
+      "responseSize": 35,
+      "error": "{\"error\":\"Authentication required\"}"
+    },
+    {
+      "endpoint": "/api/students",
+      "method": "GET",
+      "priority": "medium",
+      "authType": "mock-headers",
+      "status": 200,
+      "success": true,
+      "responseTime": 8,
+      "responseSize": 966
+    },
+    {
+      "endpoint": "/api/classes",
+      "method": "GET",
+      "priority": "medium",
+      "authType": "mock-headers",
+      "status": 200,
+      "success": true,
+      "responseTime": 7,
+      "responseSize": 645
+    },
+    {
+      "endpoint": "/api/dashboard/recent-activities",
+      "method": "GET",
+      "priority": "medium",
+      "authType": "mock-headers",
+      "status": 200,
+      "success": true,
+      "responseTime": 6,
+      "responseSize": 1064
+    },
+    {
+      "endpoint": "/api/assignments/statistics",
+      "method": "GET",
+      "priority": "low",
+      "authType": "mock-headers",
+      "status": 200,
+      "success": true,
+      "responseTime": 8,
+      "responseSize": 602
+    },
+    {
+      "endpoint": "/api/attendance/statistics",
+      "method": "GET",
+      "priority": "low",
+      "authType": "mock-headers",
+      "status": 200,
+      "success": true,
+      "responseTime": 7,
+      "responseSize": 194
+    },
+    {
+      "endpoint": "/api/grades/analytics",
+      "method": "GET",
+      "priority": "low",
+      "authType": "mock-headers",
+      "status": 200,
+      "success": true,
+      "responseTime": 7,
+      "responseSize": 374
+    }
+  ],
+  "recommendations": [
+    "🔴 CRITICAL: Direct API success rate below 70%",
+    "🔴 CRITICAL endpoints must have >90% success rate",
+    "🔴 none authentication method has major issues (30.8%)",
+    "🔧 Next: Implement proper session-based authentication testing",
+    "📊 Review detailed results for specific error patterns"
+  ]
+}

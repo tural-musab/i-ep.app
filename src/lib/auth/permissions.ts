@@ -36,41 +36,75 @@ export interface Permission {
   level: UserRole;
 }
 
-// Tüm yetkilerin listesi
+// Safari-compatible constants for enums
+const RESOURCE_TYPES = {
+  TENANT: 'tenant',
+  STUDENT: 'student',
+  TEACHER: 'teacher',
+  CLASS: 'class',
+  COURSE: 'course',
+  GRADE: 'grade',
+  ATTENDANCE: 'attendance',
+  REPORT: 'report',
+  SETTINGS: 'settings',
+  USER: 'user',
+} as const;
+
+const ACTION_TYPES = {
+  CREATE: 'create',
+  READ: 'read',
+  UPDATE: 'update',
+  DELETE: 'delete',
+  MANAGE: 'manage',
+  EXPORT: 'export',
+  IMPORT: 'import',
+} as const;
+
+const USER_ROLES = {
+  SUPER_ADMIN: 'super_admin',
+  ADMIN: 'admin',
+  MANAGER: 'manager',
+  TEACHER: 'teacher',
+  STUDENT: 'student',
+  PARENT: 'parent',
+  GUEST: 'guest',
+} as const;
+
+// Tüm yetkilerin listesi - Safari compatible
 export const PERMISSIONS: Permission[] = [
   // Tenant yetkileri
-  { resource: ResourceType.TENANT, action: ActionType.MANAGE, level: UserRole.ADMIN },
-  { resource: ResourceType.TENANT, action: ActionType.READ, level: UserRole.MANAGER },
+  { resource: RESOURCE_TYPES.TENANT, action: ACTION_TYPES.MANAGE, level: USER_ROLES.ADMIN },
+  { resource: RESOURCE_TYPES.TENANT, action: ACTION_TYPES.READ, level: USER_ROLES.MANAGER },
 
   // Öğrenci yetkileri
-  { resource: ResourceType.STUDENT, action: ActionType.CREATE, level: UserRole.ADMIN },
-  { resource: ResourceType.STUDENT, action: ActionType.READ, level: UserRole.TEACHER },
-  { resource: ResourceType.STUDENT, action: ActionType.UPDATE, level: UserRole.MANAGER },
-  { resource: ResourceType.STUDENT, action: ActionType.DELETE, level: UserRole.ADMIN },
+  { resource: RESOURCE_TYPES.STUDENT, action: ACTION_TYPES.CREATE, level: USER_ROLES.ADMIN },
+  { resource: RESOURCE_TYPES.STUDENT, action: ACTION_TYPES.READ, level: USER_ROLES.TEACHER },
+  { resource: RESOURCE_TYPES.STUDENT, action: ACTION_TYPES.UPDATE, level: USER_ROLES.MANAGER },
+  { resource: RESOURCE_TYPES.STUDENT, action: ACTION_TYPES.DELETE, level: USER_ROLES.ADMIN },
 
   // Öğretmen yetkileri
-  { resource: ResourceType.TEACHER, action: ActionType.CREATE, level: UserRole.ADMIN },
-  { resource: ResourceType.TEACHER, action: ActionType.READ, level: UserRole.MANAGER },
-  { resource: ResourceType.TEACHER, action: ActionType.UPDATE, level: UserRole.ADMIN },
-  { resource: ResourceType.TEACHER, action: ActionType.DELETE, level: UserRole.ADMIN },
+  { resource: RESOURCE_TYPES.TEACHER, action: ACTION_TYPES.CREATE, level: USER_ROLES.ADMIN },
+  { resource: RESOURCE_TYPES.TEACHER, action: ACTION_TYPES.READ, level: USER_ROLES.MANAGER },
+  { resource: RESOURCE_TYPES.TEACHER, action: ACTION_TYPES.UPDATE, level: USER_ROLES.ADMIN },
+  { resource: RESOURCE_TYPES.TEACHER, action: ACTION_TYPES.DELETE, level: USER_ROLES.ADMIN },
 
   // Kullanıcı yetkileri
-  { resource: ResourceType.USER, action: ActionType.CREATE, level: UserRole.ADMIN },
-  { resource: ResourceType.USER, action: ActionType.READ, level: UserRole.MANAGER },
-  { resource: ResourceType.USER, action: ActionType.UPDATE, level: UserRole.ADMIN },
-  { resource: ResourceType.USER, action: ActionType.DELETE, level: UserRole.ADMIN },
+  { resource: RESOURCE_TYPES.USER, action: ACTION_TYPES.CREATE, level: USER_ROLES.ADMIN },
+  { resource: RESOURCE_TYPES.USER, action: ACTION_TYPES.READ, level: USER_ROLES.MANAGER },
+  { resource: RESOURCE_TYPES.USER, action: ACTION_TYPES.UPDATE, level: USER_ROLES.ADMIN },
+  { resource: RESOURCE_TYPES.USER, action: ACTION_TYPES.DELETE, level: USER_ROLES.ADMIN },
 
   // Sınıf yetkileri
-  { resource: ResourceType.CLASS, action: ActionType.CREATE, level: UserRole.MANAGER },
-  { resource: ResourceType.CLASS, action: ActionType.READ, level: UserRole.TEACHER },
-  { resource: ResourceType.CLASS, action: ActionType.UPDATE, level: UserRole.MANAGER },
-  { resource: ResourceType.CLASS, action: ActionType.DELETE, level: UserRole.ADMIN },
+  { resource: RESOURCE_TYPES.CLASS, action: ACTION_TYPES.CREATE, level: USER_ROLES.MANAGER },
+  { resource: RESOURCE_TYPES.CLASS, action: ACTION_TYPES.READ, level: USER_ROLES.TEACHER },
+  { resource: RESOURCE_TYPES.CLASS, action: ACTION_TYPES.UPDATE, level: USER_ROLES.MANAGER },
+  { resource: RESOURCE_TYPES.CLASS, action: ACTION_TYPES.DELETE, level: USER_ROLES.ADMIN },
 
   // Dışa aktarma yetkileri
-  { resource: ResourceType.STUDENT, action: ActionType.EXPORT, level: UserRole.MANAGER },
-  { resource: ResourceType.TEACHER, action: ActionType.EXPORT, level: UserRole.MANAGER },
-  { resource: ResourceType.GRADE, action: ActionType.EXPORT, level: UserRole.MANAGER },
-  { resource: ResourceType.TENANT, action: ActionType.EXPORT, level: UserRole.ADMIN },
+  { resource: RESOURCE_TYPES.STUDENT, action: ACTION_TYPES.EXPORT, level: USER_ROLES.MANAGER },
+  { resource: RESOURCE_TYPES.TEACHER, action: ACTION_TYPES.EXPORT, level: USER_ROLES.MANAGER },
+  { resource: RESOURCE_TYPES.GRADE, action: ACTION_TYPES.EXPORT, level: USER_ROLES.MANAGER },
+  { resource: RESOURCE_TYPES.TENANT, action: ACTION_TYPES.EXPORT, level: USER_ROLES.ADMIN },
 ];
 
 /**
@@ -87,22 +121,22 @@ export function hasPermission(
 ): boolean {
   if (!user) return false;
 
-  // Süper admin her zaman tüm yetkilere sahiptir
-  if (user.role === UserRole.ADMIN) return true;
+  // Süper admin her zaman tüm yetkilere sahiptir - Safari compatible
+  if (user.role === 'admin') return true;
 
   // İzin verilen en düşük yetki seviyesini bul
   const permission = PERMISSIONS.find((p) => p.resource === resource && p.action === action);
 
   if (!permission) return false;
 
-  // Yetki seviyelerinin hiyerarşisi
+  // Yetki seviyelerinin hiyerarşisi - Safari compatible
   const levels = [
-    UserRole.GUEST,
-    UserRole.STUDENT,
-    UserRole.PARENT,
-    UserRole.TEACHER,
-    UserRole.MANAGER,
-    UserRole.ADMIN,
+    'guest',
+    'student',
+    'parent',
+    'teacher',
+    'manager',
+    'admin',
   ];
 
   const userLevelIndex = levels.indexOf(user.role);

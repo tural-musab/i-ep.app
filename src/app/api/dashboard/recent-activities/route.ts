@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import * as Sentry from '@sentry/nextjs';
+import { requireRole } from '@/lib/auth/server-session';
 
 /**
  * GET /api/dashboard/recent-activities
@@ -18,6 +19,17 @@ export async function GET(request: NextRequest) {
     },
     async () => {
       try {
+        // SECURITY FIX: Require proper authentication
+        const user = await requireRole(request, ['admin', 'super_admin', 'teacher', 'student', 'parent']);
+        if (!user) {
+          return NextResponse.json(
+            { error: 'Authentication required or insufficient permissions' },
+            { status: 401 }
+          );
+        }
+
+        console.log('🔧 Recent Activities API - Authenticated user:', { userId: user.id, role: user.role });
+
         const recentActivities = [
           {
             id: '1',

@@ -1,14 +1,16 @@
 /**
  * Grade API - Main Route
  * İ-EP.APP - Grade Management System
- *
+ * 
  * Endpoints:
  * - GET /api/grades - List grades with filtering and analytics
  * - POST /api/grades - Create new grade record or bulk create
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { GradeRepository } from '@/lib/repository/grade-repository';
+import { getTenantId } from '@/lib/tenant/tenant-utils';
 import { z } from 'zod';
 
 // Validation schemas
@@ -33,9 +35,7 @@ const GradeQuerySchema = z.object({
   classId: z.string().uuid().optional(),
   subjectId: z.string().uuid().optional(),
   teacherId: z.string().uuid().optional(),
-  gradeType: z
-    .enum(['exam', 'homework', 'project', 'participation', 'quiz', 'midterm', 'final'])
-    .optional(),
+  gradeType: z.enum(['exam', 'homework', 'project', 'participation', 'quiz', 'midterm', 'final']).optional(),
   semester: z.string().transform(Number).optional(),
   academicYear: z.string().optional(),
   startDate: z.string().optional(),
@@ -58,15 +58,11 @@ const GradeBulkCreateSchema = z.object({
   semester: z.number().int().min(1).max(2),
   academicYear: z.string().regex(/^\d{4}-\d{4}$/, 'Invalid academic year format'),
   gradeDate: z.string().optional(),
-  grades: z
-    .array(
-      z.object({
-        studentId: z.string().uuid('Invalid student ID'),
-        gradeValue: z.number().min(0, 'Grade value must be positive'),
-        description: z.string().optional(),
-      })
-    )
-    .min(1, 'At least one grade is required'),
+  grades: z.array(z.object({
+    studentId: z.string().uuid('Invalid student ID'),
+    gradeValue: z.number().min(0, 'Grade value must be positive'),
+    description: z.string().optional(),
+  })).min(1, 'At least one grade is required'),
 });
 
 /**
@@ -75,76 +71,89 @@ const GradeBulkCreateSchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    // Extract authentication headers - Modern Pattern
-    const userEmail = request.headers.get('X-User-Email') || 'teacher1@demo.local';
-    const userId = request.headers.get('X-User-ID') || 'demo-teacher-001';
-    const tenantId = request.headers.get('x-tenant-id') || 'localhost-tenant';
+    const tenantId = getTenantId();
+    const supabase = await createServerSupabaseClient();
+    
+    // Verify authentication
+    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    if (authError || !session) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
 
-    console.log('🔧 Grades API - Auth headers:', { userEmail, userId, tenantId });
-
-    // For demo, return mock grade data
-    const mockGrades = [
-      {
-        id: 'grade-001',
-        student_id: 'student-001',
-        student_name: 'Ahmet YILMAZ',
-        class_id: 'class-5a',
-        subject_id: 'subject-turkish',
-        subject_name: 'Türkçe',
-        assignment_id: 'assignment-001',
-        grade_type: 'homework',
-        grade_value: 85,
-        max_grade: 100,
-        weight: 1.0,
-        exam_name: 'Kompozisyon Ödevi',
-        description: 'Okulum konulu kompozisyon',
-        semester: 1,
-        academic_year: '2024-2025',
-        grade_date: new Date().toISOString(),
-        teacher_id: userId,
-        tenant_id: tenantId,
-        created_at: new Date().toISOString()
-      },
-      {
-        id: 'grade-002',
-        student_id: 'student-002',
-        student_name: 'Ayşe KAYA',
-        class_id: 'class-5a',
-        subject_id: 'subject-math',
-        subject_name: 'Matematik',
-        assignment_id: 'assignment-002',
-        grade_type: 'homework',
-        grade_value: 92,
-        max_grade: 100,
-        weight: 1.0,
-        exam_name: 'Kesirler Çalışması',
-        description: 'Kesirlerle işlemler',
-        semester: 1,
-        academic_year: '2024-2025',
-        grade_date: new Date().toISOString(),
-        teacher_id: userId,
-        tenant_id: tenantId,
-        created_at: new Date().toISOString()
-      }
-    ];
-
-    const result = {
-      data: mockGrades,
-      pagination: {
-        total: mockGrades.length,
-        page: 1,
-        limit: 10,
-        totalPages: 1,
-        hasNextPage: false,
-        hasPreviousPage: false
-      }
+    // Parse and validate query parameters
+    const { searchParams } = new URL(request.url);
+    const queryParams = Object.fromEntries(searchParams.entries());
+    
+    const validatedQuery = GradeQuerySchema.parse(queryParams);
+    
+    // Initialize repository
+    const gradeRepo = new GradeRepository(supabase, tenantId);
+    
+    // Build query options
+    const queryOptions = {
+      studentId: validatedQuery.studentId,
+      classId: validatedQuery.classId,
+      subjectId: validatedQuery.subjectId,
+      teacherId: validatedQuery.teacherId,
+      gradeType: validatedQuery.gradeType,
+      semester: validatedQuery.semester,
+      academicYear: validatedQuery.academicYear,
+      startDate: validatedQuery.startDate ? new Date(validatedQuery.startDate) : undefined,
+      endDate: validatedQuery.endDate ? new Date(validatedQuery.endDate) : undefined,
+      minGrade: validatedQuery.minGrade,
+      maxGrade: validatedQuery.maxGrade,
+      includeCalculations: validatedQuery.includeCalculations,
+      includeComments: validatedQuery.includeComments,
+      limit: validatedQuery.limit || 50,
+      offset: validatedQuery.offset || 0,
     };
 
-    console.log('✅ Grades API - Returning mock data:', result);
-    return NextResponse.json(result);
+    // Get grades
+    const grades = await gradeRepo.getGrades(queryOptions);
+    
+    // Get total count for pagination
+    const totalCount = await gradeRepo.getGradesCount(queryOptions);
+
+    // Get analytics if requested
+    let analytics = null;
+    if (validatedQuery.classId && validatedQuery.subjectId && validatedQuery.semester && validatedQuery.academicYear) {
+      analytics = await gradeRepo.getGradeAnalytics(
+        validatedQuery.classId,
+        validatedQuery.subjectId,
+        validatedQuery.semester,
+        validatedQuery.academicYear
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: grades,
+      analytics,
+      pagination: {
+        total: totalCount,
+        limit: queryOptions.limit,
+        offset: queryOptions.offset,
+        hasMore: (queryOptions.offset + queryOptions.limit) < totalCount,
+      },
+    });
+
   } catch (error) {
     console.error('Error fetching grades:', error);
-    return NextResponse.json({ error: 'Failed to fetch grades' }, { status: 500 });
+    
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { error: 'Invalid query parameters', details: error.errors },
+        { status: 400 }
+      );
+    }
+    
+    return NextResponse.json(
+      { error: 'Failed to fetch grades' },
+      { status: 500 }
+    );
   }
 }
 
@@ -156,14 +165,14 @@ export async function POST(request: NextRequest) {
   try {
     const tenantId = getTenantId();
     const supabase = await createServerSupabaseClient();
-
+    
     // Verify authentication
-    const {
-      data: { session },
-      error: authError,
-    } = await supabase.auth.getSession();
+    const { data: { session }, error: authError } = await supabase.auth.getSession();
     if (authError || !session) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
     }
 
     const body = await request.json();
@@ -173,14 +182,14 @@ export async function POST(request: NextRequest) {
     if (body.grades && Array.isArray(body.grades)) {
       // Bulk create
       const validatedData = GradeBulkCreateSchema.parse(body);
-
+      
       // Verify user has permission to grade this class and subject
       const hasPermission = await gradeRepo.verifyGradingPermission(
         validatedData.classId,
         validatedData.subjectId,
         session.user.id
       );
-
+      
       if (!hasPermission) {
         return NextResponse.json(
           { error: 'Insufficient permissions to grade this class and subject' },
@@ -205,25 +214,23 @@ export async function POST(request: NextRequest) {
         validatedData.grades
       );
 
-      return NextResponse.json(
-        {
-          success: true,
-          data: createdGrades,
-          message: `${createdGrades.length} grades created successfully`,
-        },
-        { status: 201 }
-      );
+      return NextResponse.json({
+        success: true,
+        data: createdGrades,
+        message: `${createdGrades.length} grades created successfully`,
+      }, { status: 201 });
+
     } else {
       // Single create
       const validatedData = GradeCreateSchema.parse(body);
-
+      
       // Verify user has permission to grade this student
       const hasPermission = await gradeRepo.verifyGradingPermission(
         validatedData.classId,
         validatedData.subjectId,
         session.user.id
       );
-
+      
       if (!hasPermission) {
         return NextResponse.json(
           { error: 'Insufficient permissions to grade this student' },
@@ -266,25 +273,26 @@ export async function POST(request: NextRequest) {
         teacherId: session.user.id,
       });
 
-      return NextResponse.json(
-        {
-          success: true,
-          data: grade,
-          message: 'Grade created successfully',
-        },
-        { status: 201 }
-      );
+      return NextResponse.json({
+        success: true,
+        data: grade,
+        message: 'Grade created successfully',
+      }, { status: 201 });
     }
+
   } catch (error) {
     console.error('Error creating grade:', error);
-
+    
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: 'Invalid request data', details: error.errors },
         { status: 400 }
       );
     }
-
-    return NextResponse.json({ error: 'Failed to create grade' }, { status: 500 });
+    
+    return NextResponse.json(
+      { error: 'Failed to create grade' },
+      { status: 500 }
+    );
   }
 }

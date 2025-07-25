@@ -1,14 +1,21 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useAuth } from '@/lib/auth/auth-context';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { User, GraduationCap, FileText, Calendar, MessageSquare, TrendingUp } from 'lucide-react';
+import { User, GraduationCap, FileText, Calendar, MessageSquare, TrendingUp, CreditCard } from 'lucide-react';
+import Link from 'next/link';
+import { ProgressiveDemoTour } from '@/components/demo/progressive-demo-tour';
 
-export default function VeliDashboard() {
+function VeliDashboardContent() {
   const { user, isLoading } = useAuth();
+  const searchParams = useSearchParams();
+  
+  const tourMode = searchParams.get('tour') === 'start';
+  const tourRole = searchParams.get('role') || 'parent';
 
   if (isLoading) {
     return <div className="flex min-h-screen items-center justify-center">Yükleniyor...</div>;
@@ -20,6 +27,7 @@ export default function VeliDashboard() {
 
   return (
     <div className="container mx-auto p-6">
+      {tourMode && <ProgressiveDemoTour role={tourRole} />}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Veli Paneli</h1>
         <p className="mt-2 text-gray-600">Hoş geldiniz, {user?.profile?.fullName || user?.email}</p>
@@ -140,12 +148,12 @@ export default function VeliDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Akademik Ortalama</CardTitle>
-            <TrendingUp className="text-muted-foreground h-4 w-4" />
+            <CardTitle className="text-sm font-medium">Bekleyen Ödeme</CardTitle>
+            <CreditCard className="text-muted-foreground h-4 w-4" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">88.9</div>
-            <p className="text-muted-foreground text-xs">Genel başarı ortalaması</p>
+            <div className="text-2xl font-bold">3.330₺</div>
+            <p className="text-muted-foreground text-xs">3 adet bekleyen ödeme</p>
           </CardContent>
         </Card>
       </div>
@@ -161,14 +169,16 @@ export default function VeliDashboard() {
             <CardDescription>Veli takip ve iletişim araçları</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Button variant="outline" className="h-auto w-full justify-start p-4">
-                <div className="flex flex-col items-center gap-2">
-                  <MessageSquare className="h-6 w-6 text-blue-500" />
-                  <span className="text-sm font-medium">Öğretmenle İletişim</span>
-                  <span className="text-xs text-gray-600">Mesaj gönder</span>
-                </div>
-              </Button>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
+              <Link href="/veli/mesajlar">
+                <Button variant="outline" className="h-auto w-full justify-start p-4">
+                  <div className="flex flex-col items-center gap-2">
+                    <MessageSquare className="h-6 w-6 text-blue-500" />
+                    <span className="text-sm font-medium">Öğretmenle İletişim</span>
+                    <span className="text-xs text-gray-600">Mesaj gönder</span>
+                  </div>
+                </Button>
+              </Link>
 
               <Button variant="outline" className="h-auto w-full justify-start p-4">
                 <div className="flex flex-col items-center gap-2">
@@ -193,6 +203,16 @@ export default function VeliDashboard() {
                   <span className="text-xs text-gray-600">Ödev durumu</span>
                 </div>
               </Button>
+
+              <Link href="/veli/odemeler">
+                <Button variant="outline" className="h-auto w-full justify-start p-4">
+                  <div className="flex flex-col items-center gap-2">
+                    <CreditCard className="h-6 w-6 text-green-600" />
+                    <span className="text-sm font-medium">Ödemeler</span>
+                    <span className="text-xs text-gray-600">Ödeme yönetimi</span>
+                  </div>
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -260,6 +280,19 @@ export default function VeliDashboard() {
                   <p className="text-sm text-gray-600">Ahmet ve Ayşe • Tam katılım</p>
                 </div>
                 <div className="text-xs text-gray-500">1 gün önce</div>
+              </div>
+
+              <div className="flex items-center gap-4 rounded-lg border p-3">
+                <div className="flex-shrink-0">
+                  <Badge variant="outline" className="border-green-600 text-green-600">
+                    Ödeme
+                  </Badge>
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium">Yeni Ödeme Bildirimi</p>
+                  <p className="text-sm text-gray-600">Ağustos ayı yemek ücreti • 450₺</p>
+                </div>
+                <div className="text-xs text-gray-500">2 gün önce</div>
               </div>
             </div>
           </CardContent>
@@ -350,5 +383,13 @@ export default function VeliDashboard() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function VeliDashboard() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Yükleniyor...</div>}>
+      <VeliDashboardContent />
+    </Suspense>
   );
 }

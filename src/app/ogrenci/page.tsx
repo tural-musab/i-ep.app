@@ -1,17 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { StudentGuard } from '@/components/auth/role-guard';
 import { AccessDenied } from '@/components/auth/access-denied';
 import { useAuth } from '@/lib/auth/auth-context';
-import { CalendarDays, BookOpen, Clock, User } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { CalendarDays, BookOpen, Clock, User, GraduationCap, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
+import { ProgressiveDemoTour } from '@/components/demo/progressive-demo-tour';
+import { AcademicProgress } from '@/components/student/academic-progress';
 
-export default function OgrenciPage() {
+function OgrenciPageContent() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  
+  const tourMode = searchParams.get('tour') === 'start';
+  const tourRole = searchParams.get('role') || 'student';
 
   // Öğrenci sayfasının içeriği
   const StudentPageContent = () => (
     <div className="p-6">
+      {tourMode && <ProgressiveDemoTour role={tourRole} />}
       <div className="mb-6">
         <h1 className="mb-1 text-2xl font-bold">Merhaba, {user?.profile?.fullName || 'Öğrenci'}</h1>
         <p className="text-gray-600">
@@ -149,6 +158,58 @@ export default function OgrenciPage() {
           </div>
         </div>
       </div>
+
+      {/* Quick Actions Section */}
+      <div className="mt-6">
+        <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold">Hızlı Erişim</h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Link 
+              href="/ogrenci/notlar"
+              className="group flex items-center rounded-lg border border-gray-200 p-4 transition-all hover:border-blue-300 hover:bg-blue-50"
+            >
+              <div className="mr-4 rounded-full bg-blue-100 p-3 group-hover:bg-blue-200">
+                <GraduationCap className="h-6 w-6 text-blue-700" />
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-900">Notlarım</h3>
+                <p className="text-sm text-gray-500">Not kartını görüntüle</p>
+              </div>
+            </Link>
+
+            <Link 
+              href="/ogrenci/odevler"
+              className="group flex items-center rounded-lg border border-gray-200 p-4 transition-all hover:border-orange-300 hover:bg-orange-50"
+            >
+              <div className="mr-4 rounded-full bg-orange-100 p-3 group-hover:bg-orange-200">
+                <BookOpen className="h-6 w-6 text-orange-700" />
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-900">Ödev Teslimi</h3>
+                <p className="text-sm text-gray-500">Ödevlerinizi görüntüleyin ve teslim edin</p>
+              </div>
+            </Link>
+
+            <Link 
+              href="/ogrenci/ilerleme"
+              className="group flex items-center rounded-lg border border-gray-200 p-4 transition-all hover:border-green-300 hover:bg-green-50"
+            >
+              <div className="mr-4 rounded-full bg-green-100 p-3 group-hover:bg-green-200">
+                <TrendingUp className="h-6 w-6 text-green-700" />
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-900">Akademik İlerleme</h3>
+                <p className="text-sm text-gray-500">Performans analizi ve hedefler</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Academic Progress Section */}
+      <div id="academic-progress" className="mt-8">
+        <AcademicProgress />
+      </div>
     </div>
   );
 
@@ -164,5 +225,13 @@ export default function OgrenciPage() {
     >
       <StudentPageContent />
     </StudentGuard>
+  );
+}
+
+export default function OgrenciPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Yükleniyor...</div>}>
+      <OgrenciPageContent />
+    </Suspense>
   );
 }

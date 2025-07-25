@@ -11,10 +11,15 @@ import { ParentCommunicationDashboard } from '@/components/parent-communication/
 import { FileText, User, Users, Calendar, BarChart3, Clock } from 'lucide-react';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
 import { RecentActivities } from '@/components/dashboard/recent-activities';
+import { DemoSessionHandler } from '@/components/demo/demo-session-handler';
+import { ProgressiveDemoTour } from '@/components/demo/progressive-demo-tour';
 // import { APITestComponent } from '@/components/debug/api-test-component';
 
-export default async function Dashboard() {
+export default async function Dashboard({ searchParams }: { searchParams: { demo?: string; tour?: string; role?: string } }) {
   const session = await getServerSession(authOptions);
+  const isDemoMode = searchParams.demo === 'true';
+  const tourMode = searchParams.tour === 'start';
+  const tourRole = searchParams.role || 'admin';
 
   // TEMPORARY: Bypass authentication for debugging API client
   // if (!session) {
@@ -23,10 +28,12 @@ export default async function Dashboard() {
 
   return (
     <div className="container mx-auto p-6">
+      {isDemoMode && <DemoSessionHandler />}
+      {tourMode && <ProgressiveDemoTour role={tourRole} />}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="mt-2 text-gray-600">
-          Hoş geldiniz, {session?.user?.name || session?.user?.email || 'Debug Mode (No Session)'}
+          Hoş geldiniz, {session?.user?.name || session?.user?.email || (isDemoMode ? 'Demo Kullanıcısı' : 'Debug Mode (No Session)')}
         </p>
         {/* Debug: Session Info */}
         <div className="mt-2 rounded border bg-yellow-100 p-2 text-xs">

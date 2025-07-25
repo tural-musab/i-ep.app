@@ -9,6 +9,7 @@ import * as Sentry from '@sentry/nextjs';
 import { z } from 'zod';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { ClassRepository } from '@/lib/repository/class-repository';
+import { requireRole } from '@/lib/auth/server-session';
 
 const classSchema = z.object({
   name: z
@@ -47,12 +48,17 @@ export async function GET(request: NextRequest) {
     },
     async () => {
       try {
-        // Extract authentication headers
-        const userEmail = request.headers.get('X-User-Email') || 'admin@demo.local';
-        const userId = request.headers.get('X-User-ID') || 'demo-admin-001';
-        const tenantId = request.headers.get('x-tenant-id') || 'localhost-tenant';
+        // SECURITY FIX: Require proper authentication
+        const user = await requireRole(request, ['admin', 'super_admin', 'teacher', 'student']);
+        if (!user) {
+          return NextResponse.json(
+            { error: 'Authentication required or insufficient permissions' },
+            { status: 401 }
+          );
+        }
 
-        console.log('🔧 Classes API - Auth headers:', { userEmail, userId, tenantId });
+        const tenantId = user.tenantId;
+        console.log('🔧 Classes API - Authenticated user:', { userId: user.id, role: user.role, tenantId });
 
         // Initialize repository with tenant context
         const classRepo = new ClassRepository(tenantId);
@@ -67,7 +73,7 @@ export async function GET(request: NextRequest) {
             capacity: 25,
             current_enrollment: 22,
             academic_year: '2024-2025',
-            teacher_id: userId,
+            teacher_id: user.id,
             room_number: '101',
             status: 'active',
             description: 'Beşinci sınıf A şubesi',

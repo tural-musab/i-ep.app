@@ -1,3 +1,6 @@
+/* i-ep.app Global Styles - Browser Compatible Version */
+/* Fixed: Removed duplicate :root definitions and OKLCH compatibility issues */
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -44,85 +47,103 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
+/* UNIFIED CSS VARIABLES - Single Definition Only - Safari Compatible */
+/* @layer removed for Safari 14 compatibility */
   :root {
+    /* Core theme colors - HSL format for maximum browser compatibility */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
-
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-
     --primary: 199 84% 55%;
     --primary-foreground: 210 40% 98%;
-
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
-
     --radius: 0.5rem;
+
+    /* Chart colors - Compatible format */
+    --chart-1: 215 100% 56%;
+    --chart-2: 174 77% 47%;
+    --chart-3: 142 69% 58%;
+    --chart-4: 47 96% 89%;
+    --chart-5: 27 96% 61%;
+
+    /* Sidebar colors */
+    --sidebar: 0 0% 98%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --sidebar-primary: 222.2 84% 4.9%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 96.1%;
+    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 215.4 16.3% 46.9%;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
-
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
-
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 199 84% 55%;
     --primary-foreground: 222.2 47.4% 11.2%;
-
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-  }
-}
 
-@layer base {
+    /* Chart colors - Dark mode */
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+
+    /* Sidebar colors - Dark mode */
+    --sidebar: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 217.2 91% 60%;
+    --sidebar-primary-foreground: 222.2 84% 4.9%;
+    --sidebar-accent: 217.2 32.6% 17.5%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217.2 32.6% 17.5%;
+    --sidebar-ring: 217.2 32.6% 17.5%;
+  }
+
   * {
-    /* Border özelliği kaldırıldı */
+    @apply border-border;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
 
-/* Form elemanları için genel stiller */
-@layer components {
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+/* Form Components - Enhanced for cross-browser compatibility - Safari Compatible */
+/* @layer removed for Safari 14 compatibility */
   .form-input {
     @apply appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md 
     text-gray-900 placeholder-gray-500
-    focus:outline-none focus:ring-blue-500 focus:border-blue-500;
+    focus:outline-none focus:ring-blue-500 focus:border-blue-500
+    transition-colors duration-200 ease-in-out;
   }
 
   .form-label {
@@ -133,9 +154,10 @@
     @apply bg-white text-gray-900 placeholder-gray-500;
   }
 
-  /* Koyu tema için form elemanları */
+  /* Dark theme form elements */
   .dark .form-input {
-    @apply bg-gray-800 border-gray-700 text-white placeholder-gray-400;
+    @apply bg-gray-800 border-gray-700 text-white placeholder-gray-400
+    focus:ring-blue-400 focus:border-blue-400;
   }
 
   .dark .form-label {
@@ -145,18 +167,8 @@
   .dark .text-input {
     @apply bg-gray-800 text-white placeholder-gray-400;
   }
-}
 
-/* Temel metin stilleri */
-body {
-  @apply text-gray-900 bg-white;
-}
-
-.dark body {
-  @apply text-gray-100 bg-gray-900;
-}
-
-/* Metin renkleri için yardımcı sınıflar */
+/* Enhanced Text Styling */
 .text-content {
   @apply text-gray-900;
 }
@@ -181,85 +193,7 @@ body {
   @apply text-gray-400;
 }
 
-:root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-/* Micro-interactions and Accessibility Animations */
+/* Cross-browser Animation Support */
 @keyframes ripple {
   to {
     transform: scale(4);
@@ -344,6 +278,12 @@ body {
   to { transform: scale(1); opacity: 1; }
 }
 
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Animation Classes with Browser Prefixes */
 .animate-ripple {
   animation: ripple 0.6s linear;
 }
@@ -388,7 +328,19 @@ body {
   animation: scale-in 0.3s ease-out;
 }
 
-/* Accessibility Improvements */
+/* Loading States */
+.loading-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.dark .loading-shimmer {
+  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+  background-size: 200% 100%;
+}
+
+/* Accessibility Enhancements */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -404,17 +356,17 @@ body {
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   :root {
-    --primary: #000000;
-    --background: #ffffff;
-    --foreground: #000000;
-    --border: #000000;
+    --primary: 0 0% 0%;
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --border: 0 0% 0%;
   }
   
   .dark {
-    --primary: #ffffff;
-    --background: #000000;
-    --foreground: #ffffff;
-    --border: #ffffff;
+    --primary: 0 0% 100%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --border: 0 0% 100%;
   }
 }
 
@@ -430,13 +382,13 @@ body {
   }
 }
 
-/* Focus indicators */
+/* Focus indicators for accessibility */
 .focus-visible {
   outline: 2px solid hsl(var(--primary));
   outline-offset: 2px;
 }
 
-/* Enhanced touch targets for better accessibility */
+/* Enhanced touch targets for mobile */
 @media (hover: none) and (pointer: coarse) {
   button,
   input,
@@ -448,7 +400,7 @@ body {
   }
 }
 
-/* Skip link styling */
+/* Skip link for accessibility */
 .skip-link {
   position: absolute;
   top: -40px;
@@ -471,19 +423,29 @@ body {
   animation: shake 0.5s ease-in-out;
 }
 
-/* Loading states */
-.loading-shimmer {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite;
+/* Dialog/Modal Overlay - Cross-browser compatible - Safari Compatible */
+/* @layer removed for Safari 14 compatibility */
+[data-radix-popper-content-wrapper] {
+  z-index: 60 !important;
 }
 
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+/* Dialog overlay with better cross-browser support */
+[data-state="open"][data-radix-overlay] {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 50 !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
-.dark .loading-shimmer {
-  background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
-  background-size: 200% 100%;
+/* Dialog content with enhanced compatibility */
+[data-state="open"][data-radix-dialog-content] {
+  position: fixed !important;
+  z-index: 60 !important;
+  background-color: hsl(var(--background)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.05) !important;
 }

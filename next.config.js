@@ -44,12 +44,14 @@ const nextConfig = {
       config.plugins.push(new BundleAnalyzerPlugin());
     }
 
-    // Sentry ve OpenTelemetry uyarılarını gizle
+    // Sentry, OpenTelemetry ve SSR uyarılarını gizle
     if (!dev) {
       config.ignoreWarnings = [
         /Critical dependency: the request of a dependency is an expression/,
         /@opentelemetry\/instrumentation/,
         /@sentry/,
+        /useLayoutEffect does nothing on the server/,
+        /Warning: useLayoutEffect does nothing on the server/,
       ];
     }
 

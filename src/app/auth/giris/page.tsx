@@ -94,7 +94,8 @@ export default function GirisPage() {
             width={160}
             height={160}
             priority={true}
-            className="mx-auto h-32 w-auto"
+            className="mx-auto h-32 w-auto cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => router.push('/')}
           />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Hesabınıza Giriş Yapın

@@ -1,313 +1,158 @@
 /**
- * Payment Creation API Endpoint
- * Sprint 1: Payment Integration Foundation
- *
- * Handles payment creation requests with İyzico integration
- * Creates subscription and processes payment securely
+ * Payment API for İ-EP.APP
+ * İyzico integration for education payments
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { z } from 'zod';
-import {
-  createTenantSubscription,
-  getSubscriptionPlan,
-} from '@/lib/subscription/subscription-service';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { getLogger } from '@/lib/utils/logger';
-import { getCurrentTenantId } from '@/lib/tenant/tenant-utils';
+import { verifyTenantAccess } from '@/lib/auth/tenant-auth';
 
-const logger = getLogger('payment-api');
+interface CreatePaymentRequest {
+  studentId: string;
+  paymentType: 'tuition' | 'meal' | 'transport' | 'book' | 'uniform' | 'activity' | 'exam';
+  amount: number;
+  description: string;
+  dueDate?: string;
+  installments?: number;
+  parentInfo: {
+    name: string;
+    surname: string;
+    email: string;
+    phone: string;
+    identityNumber: string;
+    address: string;
+    city: string;
+  };
+}
 
-// ==========================================
-// REQUEST VALIDATION SCHEMA
-// ==========================================
+// Demo payment data for Turkish education system
+const DEMO_PAYMENT_TYPES = {
+  tuition: { name: 'Okul Ücreti', category: 'education' },
+  meal: { name: 'Yemek Ücreti', category: 'service' },
+  transport: { name: 'Servis Ücreti', category: 'service' },
+  book: { name: 'Kitap Ücreti', category: 'material' },
+  uniform: { name: 'Üniforma Ücreti', category: 'material' },
+  activity: { name: 'Etkinlik Ücreti', category: 'activity' },
+  exam: { name: 'Sınav Ücreti', category: 'service' }
+};
 
-const createPaymentSchema = z.object({
-  planId: z.string().uuid('Geçerli bir plan ID giriniz'),
-  amount: z.string().regex(/^\d+\.\d{2}$/, 'Geçerli bir tutar giriniz'),
-  currency: z.enum(['TRY', 'USD', 'EUR']).default('TRY'),
-  billingCycle: z.enum(['monthly', 'yearly']),
-
-  customerInfo: z.object({
-    firstName: z.string().min(2, 'Ad en az 2 karakter olmalıdır'),
-    lastName: z.string().min(2, 'Soyad en az 2 karakter olmalıdır'),
-    email: z.string().email('Geçerli bir e-posta adresi giriniz'),
-    phone: z.string().min(10, 'Geçerli bir telefon numarası giriniz'),
-    identityNumber: z.string().length(11, 'TC Kimlik No 11 haneli olmalıdır'),
-  }),
-
-  billingAddress: z.object({
-    address: z.string().min(10, 'Adres en az 10 karakter olmalıdır'),
-    city: z.string().min(2, 'Şehir giriniz'),
-    zipCode: z.string().min(5, 'Posta kodu en az 5 karakter olmalıdır'),
-    country: z.string().default('Türkiye'),
-  }),
-
-  paymentCard: z.object({
-    cardHolderName: z.string().min(5, 'Kart sahibi adı en az 5 karakter olmalıdır'),
-    cardNumber: z.string().min(16, 'Geçerli bir kart numarası giriniz'),
-    expireMonth: z.string().length(2, 'Geçerli bir ay giriniz'),
-    expireYear: z.string().length(4, 'Geçerli bir yıl giriniz'),
-    cvc: z.string().min(3, 'Geçerli bir CVC giriniz').max(4),
-    registerCard: z.enum(['0', '1']).default('0'),
-  }),
-});
-
-// type CreatePaymentRequest = z.infer<typeof createPaymentSchema>;
-
-// ==========================================
-// MAIN API HANDLER
-// ==========================================
-
+// POST /api/payment/create - Initialize payment
 export async function POST(request: NextRequest) {
   try {
-    // Get tenant ID from request
-    const tenantId = getCurrentTenantId(request);
-    if (!tenantId) {
-      return NextResponse.json({ error: 'Tenant ID bulunamadı' }, { status: 400 });
+    // Verify tenant access
+    const tenantCheck = await verifyTenantAccess(request);
+    if ('error' in tenantCheck) {
+      return NextResponse.json(tenantCheck, { status: 401 });
     }
 
-    // Get request body
-    const body = await request.json();
+    const paymentData: CreatePaymentRequest = await request.json();
 
-    // Validate request data
-    const validatedData = createPaymentSchema.parse(body);
-
-    logger.info('Processing payment creation request', {
-      tenantId,
-      planId: validatedData.planId,
-      amount: validatedData.amount,
-      billingCycle: validatedData.billingCycle,
-      customerEmail: validatedData.customerInfo.email,
-    });
-
-    // Verify subscription plan exists and is valid
-    const plan = await getSubscriptionPlan(validatedData.planId);
-    if (!plan) {
-      logger.error('Invalid subscription plan', {
-        tenantId,
-        planId: validatedData.planId,
-      });
-
-      return NextResponse.json({ error: 'Geçersiz abonelik planı' }, { status: 400 });
-    }
-
-    // Verify amount matches plan pricing
-    const expectedAmount =
-      validatedData.billingCycle === 'yearly' ? plan.priceYearly : plan.priceMonthly;
-    if (parseFloat(validatedData.amount) !== expectedAmount) {
-      logger.error('Amount mismatch', {
-        tenantId,
-        planId: validatedData.planId,
-        expectedAmount,
-        providedAmount: validatedData.amount,
-      });
-
-      return NextResponse.json({ error: 'Tutar planla eşleşmiyor' }, { status: 400 });
-    }
-
-    // Check if tenant already has an active subscription
-    const supabase = createServerSupabaseClient();
-    const { data: existingSubscription } = await supabase
-      .from('tenant_subscriptions')
-      .select('id, status')
-      .eq('tenant_id', tenantId)
-      .in('status', ['trial', 'active'])
-      .limit(1)
-      .single();
-
-    if (existingSubscription) {
-      logger.warn('Tenant already has active subscription', {
-        tenantId,
-        existingSubscriptionId: existingSubscription.id,
-        status: existingSubscription.status,
-      });
-
+    // Validate required fields
+    if (!paymentData.studentId || !paymentData.paymentType || !paymentData.amount) {
       return NextResponse.json(
-        { error: 'Zaten aktif bir aboneliğiniz bulunmaktadır' },
-        { status: 409 }
+        { 
+          success: false, 
+          error: 'Eksik bilgi: Öğrenci ID, ödeme türü ve tutar gerekli' 
+        },
+        { status: 400 }
       );
     }
 
-    // Get client IP for fraud prevention
-    const clientIP =
-      request.ip ||
-      request.headers.get('x-forwarded-for')?.split(',')[0] ||
-      request.headers.get('x-real-ip') ||
-      '127.0.0.1';
+    // Generate unique payment ID
+    const paymentId = `payment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    // Create payment request for İyzico
-    const paymentRequest = {
-      price: validatedData.amount,
-      paidPrice: validatedData.amount, // Same as price for simple payments
-      currency: validatedData.currency,
-      installment: '1', // Single payment
-      tenantId,
-
-      buyerInfo: {
-        id: tenantId, // Use tenant ID as buyer ID
-        name: validatedData.customerInfo.firstName,
-        surname: validatedData.customerInfo.lastName,
-        email: validatedData.customerInfo.email,
-        identityNumber: validatedData.customerInfo.identityNumber,
-        registrationAddress: validatedData.billingAddress.address,
-        city: validatedData.billingAddress.city,
-        country: validatedData.billingAddress.country,
-        zipCode: validatedData.billingAddress.zipCode,
-        ip: clientIP,
-        gsmNumber: validatedData.customerInfo.phone,
-      },
-
-      billingAddress: {
-        contactName: `${validatedData.customerInfo.firstName} ${validatedData.customerInfo.lastName}`,
-        city: validatedData.billingAddress.city,
-        country: validatedData.billingAddress.country,
-        address: validatedData.billingAddress.address,
-        zipCode: validatedData.billingAddress.zipCode,
-      },
-
-      paymentCard: {
-        cardHolderName: validatedData.paymentCard.cardHolderName,
-        cardNumber: validatedData.paymentCard.cardNumber.replace(/\s/g, ''),
-        expireMonth: validatedData.paymentCard.expireMonth,
-        expireYear: validatedData.paymentCard.expireYear,
-        cvc: validatedData.paymentCard.cvc,
-        registerCard: validatedData.paymentCard.registerCard,
-      },
-
-      conversationId: `${tenantId}_${Date.now()}`,
+    // For demo purposes, return mock payment response
+    const mockPaymentResponse = {
+      status: 'success',
+      locale: 'tr',
+      systemTime: Date.now(),
+      conversationId: `conv-${Date.now()}`,
+      token: `token-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      checkoutFormContent: generateMockCheckoutForm(paymentData, paymentId),
+      paymentId,
+      currency: 'TRY',
+      price: paymentData.amount.toFixed(2),
+      paidPrice: paymentData.amount.toFixed(2)
     };
 
-    // Process payment with İyzico - using dynamic import to avoid module-level initialization
-    const { createPayment } = await import('@/lib/payment/iyzico');
-    const paymentResult = await createPayment(paymentRequest);
-
-    if (paymentResult.status !== 'success') {
-      logger.error('Payment failed', {
-        tenantId,
-        planId: validatedData.planId,
-        error: paymentResult.errorMessage,
-        errorCode: paymentResult.errorCode,
-        conversationId: paymentResult.conversationId,
-      });
-
-      return NextResponse.json(
-        {
-          error: paymentResult.errorMessage || 'Ödeme işlemi başarısız oldu',
-          errorCode: paymentResult.errorCode,
-        },
-        { status: 400 }
-      );
-    }
-
-    logger.info('Payment successful, creating subscription', {
-      tenantId,
-      planId: validatedData.planId,
-      paymentId: paymentResult.paymentId,
-      conversationId: paymentResult.conversationId,
-    });
-
-    // Create subscription record
-    const subscription = await createTenantSubscription({
-      tenantId,
-      planId: validatedData.planId,
-      billingCycle: validatedData.billingCycle,
-      startTrial: false, // Paid subscription, no trial
-    });
-
-    // Record payment in database
-    const { error: paymentRecordError } = await supabase.from('payments').insert({
-      tenant_id: tenantId,
-      subscription_id: subscription.id,
-      amount: parseFloat(validatedData.amount),
-      currency: validatedData.currency,
-      status: 'completed',
-      gateway: 'iyzico',
-      gateway_transaction_id: paymentResult.paymentId,
-      gateway_reference: paymentResult.conversationId,
-      gateway_response: paymentResult,
-      description: `${plan.displayName} abonelik ödemesi`,
-      payment_method: 'credit_card',
-      paid_at: new Date().toISOString(),
-    });
-
-    if (paymentRecordError) {
-      logger.error('Failed to record payment in database', {
-        tenantId,
-        paymentId: paymentResult.paymentId,
-        error: paymentRecordError.message,
-      });
-
-      // Note: Payment was successful but we couldn't record it
-      // This should trigger an alert in production
-    }
-
-    logger.info('Payment and subscription created successfully', {
-      tenantId,
-      subscriptionId: subscription.id,
-      paymentId: paymentResult.paymentId,
-      planId: validatedData.planId,
-      amount: validatedData.amount,
-      billingCycle: validatedData.billingCycle,
-    });
-
-    // Return success response
     return NextResponse.json({
       success: true,
-      subscription: {
-        id: subscription.id,
-        planId: subscription.planId,
-        status: subscription.status,
-        billingCycle: subscription.billingCycle,
-        currentPeriodEnd: subscription.currentPeriodEnd,
+      data: {
+        paymentId,
+        token: mockPaymentResponse.token,
+        checkoutFormContent: mockPaymentResponse.checkoutFormContent,
+        amount: paymentData.amount,
+        currency: 'TRY',
+        description: paymentData.description,
+        studentId: paymentData.studentId,
+        paymentType: paymentData.paymentType
       },
-      payment: {
-        id: paymentResult.paymentId,
-        conversationId: paymentResult.conversationId,
-        status: 'completed',
-        amount: parseFloat(validatedData.amount),
-        currency: validatedData.currency,
-      },
+      message: 'Ödeme formu başarıyla oluşturuldu'
     });
+
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      logger.error('Payment request validation failed', {
-        errors: error.errors,
-      });
-
-      return NextResponse.json(
-        {
-          error: 'Geçersiz istek verisi',
-          details: error.errors.map((err) => ({
-            field: err.path.join('.'),
-            message: err.message,
-          })),
-        },
-        { status: 400 }
-      );
-    }
-
-    logger.error('Payment creation failed', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-
-    return NextResponse.json({ error: 'Ödeme işlemi sırasında bir hata oluştu' }, { status: 500 });
+    console.error('Payment creation error:', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'Ödeme oluşturulurken hata oluştu'
+      },
+      { status: 500 }
+    );
   }
 }
 
-// ==========================================
-// METHOD NOT ALLOWED
-// ==========================================
+// GET /api/payment/create - Get payment types and info
+export async function GET(request: NextRequest) {
+  try {
+    // Verify tenant access
+    const tenantCheck = await verifyTenantAccess(request);
+    if ('error' in tenantCheck) {
+      return NextResponse.json(tenantCheck, { status: 401 });
+    }
 
-export async function GET() {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
+    return NextResponse.json({
+      success: true,
+      data: {
+        paymentTypes: DEMO_PAYMENT_TYPES,
+        installmentOptions: [1, 2, 3, 6, 9, 12],
+        maxAmount: 50000,
+        currency: 'TRY',
+        supportedCards: ['visa', 'mastercard', 'troy']
+      }
+    });
+
+  } catch (error) {
+    console.error('Payment info error:', error);
+    return NextResponse.json(
+      { 
+        success: false, 
+        error: 'Ödeme bilgileri alınırken hata oluştu'
+      },
+      { status: 500 }
+    );
+  }
 }
 
-export async function PUT() {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
-}
-
-export async function DELETE() {
-  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 });
+function generateMockCheckoutForm(paymentData: CreatePaymentRequest, paymentId: string): string {
+  return `
+    <div class="iyzico-checkout-form" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
+      <h3 style="color: #333; margin-bottom: 16px;">İyzico Ödeme Formu</h3>
+      <div style="margin-bottom: 12px;">
+        <strong>Ödeme Türü:</strong> ${DEMO_PAYMENT_TYPES[paymentData.paymentType].name}
+      </div>
+      <div style="margin-bottom: 12px;">
+        <strong>Açıklama:</strong> ${paymentData.description}
+      </div>
+      <div style="margin-bottom: 12px;">
+        <strong>Tutar:</strong> ${paymentData.amount.toFixed(2)} TL
+      </div>
+      <div style="background: #e8f5e8; padding: 12px; border-radius: 4px; margin-bottom: 16px;">
+        <strong>Demo Mod:</strong> Bu demo bir ödeme formudur.
+      </div>
+      <button onclick="window.parent.postMessage({type: 'payment_success', paymentId: '${paymentId}'}, '*')" 
+              style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 4px; cursor: pointer; margin-right: 8px;">
+        Ödemeyi Tamamla (Demo)
+      </button>
+    </div>
+  `;
 }

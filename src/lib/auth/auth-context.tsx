@@ -602,21 +602,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return user.tenantId === tenantId || user.allowedTenants?.includes(tenantId) || false;
   };
 
-  // Rol kontrolleri
+  // Rol kontrolleri - Safari compatible string comparison
   const isAdmin = (): boolean => {
-    return user?.role === UserRole.ADMIN;
+    return user?.role === 'admin';
   };
 
   const isTeacher = (): boolean => {
-    return user?.role === UserRole.TEACHER;
+    return user?.role === 'teacher';
   };
 
   const isStudent = (): boolean => {
-    return user?.role === UserRole.STUDENT;
+    return user?.role === 'student';
   };
 
   const isParent = (): boolean => {
-    return user?.role === UserRole.PARENT;
+    return user?.role === 'parent';
   };
 
   // Context değerleri

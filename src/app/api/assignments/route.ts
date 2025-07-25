@@ -66,12 +66,17 @@ const QueryParamsSchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    // Extract authentication headers
-    const userEmail = request.headers.get('X-User-Email') || 'teacher1@demo.local';
-    const userId = request.headers.get('X-User-ID') || 'demo-teacher-001';
-    const tenantId = request.headers.get('x-tenant-id') || 'localhost-tenant';
+    // SECURITY FIX: Require proper authentication
+    const user = await requireRole(request, ['teacher', 'admin', 'super_admin', 'student']);
+    if (!user) {
+      return NextResponse.json(
+        { error: 'Authentication required or insufficient permissions' },
+        { status: 401 }
+      );
+    }
 
-    console.log('🔧 Assignments API - Auth headers:', { userEmail, userId, tenantId });
+    const tenantId = user.tenantId;
+    console.log('🔧 Assignments API - Authenticated user:', { userId: user.id, role: user.role, tenantId });
 
     // For demo, return mock assignment data
     const mockAssignments = [
@@ -82,7 +87,7 @@ export async function GET(request: NextRequest) {
         type: 'homework',
         subject: 'Türkçe',
         class_id: 'class-5a',
-        teacher_id: userId,
+        teacher_id: user.id,
         due_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
         max_score: 100,
         instructions: 'Kompozisyonunuzda giriş, gelişme ve sonuç bölümleri olsun.',
@@ -99,7 +104,7 @@ export async function GET(request: NextRequest) {
         type: 'homework',
         subject: 'Matematik',
         class_id: 'class-5a',
-        teacher_id: userId,
+        teacher_id: user.id,
         due_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
         max_score: 50,
         instructions: 'Tüm işlemleri gösteriniz.',

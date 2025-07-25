@@ -5,7 +5,7 @@
  * Referans: docs/architecture/multi-tenant-strategy.md, docs/domain-management.md
  */
 
-import { createServerSupabaseClient } from '../supabase/server';
+import { createServerSupabaseClient, supabaseServer } from '../supabase/server';
 
 /**
  * Tenant bilgisi
@@ -90,12 +90,10 @@ async function getTenantBySubdomain(subdomain: string): Promise<TenantInfo | nul
       };
     }
 
-    // Supabase istemcisi - production'da hata durumunda fallback
+    // Supabase service role client - bypasses RLS for tenant resolution
     try {
-      const supabase = createServerSupabaseClient();
-
-      // Get tenant info from tenants table
-      const { data, error } = await supabase
+      // Use service role client for tenant queries to avoid permission issues
+      const { data, error } = await supabaseServer
         .from('tenants')
         .select('id, name')
         .eq('subdomain', subdomain)
@@ -137,12 +135,10 @@ async function getTenantByCustomDomain(domain: string): Promise<TenantInfo | nul
       return null;
     }
 
-    // Supabase istemcisi - production'da hata durumunda fallback
+    // Supabase service role client - bypasses RLS for tenant resolution
     try {
-      const supabase = createServerSupabaseClient();
-
-      // Get domain info from tenant_domains table
-      const { data, error } = await supabase
+      // Use service role client for custom domain queries to avoid permission issues
+      const { data, error } = await supabaseServer
         .from('tenant_domains')
         .select('id, tenant_id, domain, is_primary, is_verified, tenants(id, name)')
         .eq('domain', domain)

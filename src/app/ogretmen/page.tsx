@@ -1,7 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useAuth } from '@/lib/auth/auth-context';
+import { useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AssignmentDashboard } from '@/components/assignments/assignment-dashboard';
@@ -9,9 +10,14 @@ import { AttendanceDashboard } from '@/components/attendance/attendance-dashboar
 import { GradeDashboard } from '@/components/grades/grade-dashboard';
 import { BookOpen, Users, FileText, Calendar, BarChart3, Clock } from 'lucide-react';
 import { DashboardStats } from '@/components/dashboard/dashboard-stats';
+import { ProgressiveDemoTour } from '@/components/demo/progressive-demo-tour';
 
-export default function OgretmenDashboard() {
+function OgretmenDashboardContent() {
   const { user, isLoading } = useAuth();
+  const searchParams = useSearchParams();
+  
+  const tourMode = searchParams.get('tour') === 'start';
+  const tourRole = searchParams.get('role') || 'teacher';
 
   if (isLoading) {
     return <div className="flex min-h-screen items-center justify-center">Yükleniyor...</div>;
@@ -23,6 +29,7 @@ export default function OgretmenDashboard() {
 
   return (
     <div className="container mx-auto p-6">
+      {tourMode && <ProgressiveDemoTour role={tourRole} />}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Öğretmen Paneli</h1>
         <p className="mt-2 text-gray-600">Hoş geldiniz, {user?.profile?.fullName || user?.email}</p>
@@ -193,5 +200,13 @@ export default function OgretmenDashboard() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function OgretmenDashboard() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Yükleniyor...</div>}>
+      <OgretmenDashboardContent />
+    </Suspense>
   );
 }
