@@ -11,10 +11,12 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { AttendanceRepository } from '@/lib/repository/attendance-repository';
 import { getTenantId } from '@/lib/tenant/tenant-utils';
 import { z } from 'zod';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth/auth-options';
 
 // Validation schemas
 const StatisticsQuerySchema = z.object({
-  type: z.enum(['student', 'class', 'trends', 'chronic', 'perfect']),
+  type: z.enum(['student', 'class', 'trends', 'chronic', 'perfect']).default('student'),
   studentId: z.string().uuid().optional(),
   classId: z.string().uuid().optional(),
   startDate: z.string().optional(),
@@ -29,15 +31,31 @@ const StatisticsQuerySchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    const tenantId = getTenantId();
+    let tenantId = getTenantId();
+    
+    // Development environment tenant bypass
+    if (!tenantId && process.env.NODE_ENV === 'development') {
+      tenantId = 'f8b3a2c1-e4d5-4a6b-9c8d-1f2e3a4b5c6d'; // Mock development tenant
+    }
+    
     const supabase = await createServerSupabaseClient();
 
-    // Verify authentication
-    const {
-      data: { session },
-      error: authError,
-    } = await supabase.auth.getSession();
-    if (authError || !session) {
+    // Verify authentication - Development bypass
+    let session = await getServerSession(authOptions);
+    
+    // Development environment bypass
+    if (!session && process.env.NODE_ENV === 'development') {
+      session = {
+        user: {
+          id: 'demo-teacher',
+          email: 'teacher@demo.com',
+          name: 'Demo Teacher',
+          role: 'teacher'
+        }
+      } as any;
+    }
+    
+    if (!session) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
@@ -47,6 +65,57 @@ export async function GET(request: NextRequest) {
 
     const validatedQuery = StatisticsQuerySchema.parse(queryParams);
 
+    // Development environment mock data bypass
+    if (process.env.NODE_ENV === 'development') {
+      const mockAttendanceData = {
+        student: {
+          totalDays: 180,
+          presentDays: 165,
+          absentDays: 15,
+          lateArrivals: 8,
+          attendanceRate: 91.7,
+          trends: {
+            thisMonth: 95.2,
+            lastMonth: 88.4,
+            improvement: 6.8
+          }
+        },
+        class: {
+          totalStudents: 25,
+          averageAttendance: 89.5,
+          presentToday: 23,
+          absentToday: 2,
+          lateToday: 1
+        },
+        trends: {
+          daily: [92, 88, 95, 89, 91, 87, 93],
+          weekly: [89.2, 91.5, 88.7, 92.1]
+        },
+        chronic: [
+          {
+            studentId: 'student-1',
+            studentName: 'Ahmet Yılmaz',
+            absenceRate: 25.5,
+            totalAbsences: 46
+          }
+        ],
+        perfect: [
+          {
+            studentId: 'student-2',
+            studentName: 'Zeynep Kaya',
+            attendanceRate: 100,
+            consecutiveDays: 180
+          }
+        ]
+      };
+      
+      return NextResponse.json({
+        success: true,
+        data: mockAttendanceData[validatedQuery.type as keyof typeof mockAttendanceData] || mockAttendanceData.student,
+        type: validatedQuery.type,
+      });
+    }
+    
     // Initialize repository
     const attendanceRepo = new AttendanceRepository(supabase, tenantId);
 

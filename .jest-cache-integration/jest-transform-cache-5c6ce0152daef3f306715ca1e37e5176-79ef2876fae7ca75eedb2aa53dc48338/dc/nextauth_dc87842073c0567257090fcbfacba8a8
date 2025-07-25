@@ -1,0 +1,41 @@
+cb2e180b5995b6242a6daf1072b6430b
+/**
+ * NextAuth Mock for Jest Tests
+ * Sprint 7: Test environment için NextAuth mock'u
+ */ "use strict";
+module.exports = {
+    getServerSession: jest.fn(()=>Promise.resolve({
+            user: {
+                id: 'test-user-id',
+                email: 'test@example.com',
+                name: 'Test User',
+                role: 'super_admin'
+            },
+            expires: '2025-01-01T00:00:00.000Z'
+        })),
+    authOptions: {
+        providers: [],
+        callbacks: {
+            session: jest.fn(),
+            jwt: jest.fn()
+        }
+    },
+    // NextAuth.js default exports
+    default: jest.fn(),
+    // JWT token functions
+    getToken: jest.fn(()=>Promise.resolve({
+            sub: 'test-user-id',
+            email: 'test@example.com',
+            role: 'super_admin'
+        })),
+    // Session functions
+    unstable_getServerSession: jest.fn(()=>Promise.resolve({
+            user: {
+                id: 'test-user-id',
+                email: 'test@example.com',
+                role: 'super_admin'
+            }
+        }))
+};
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy90dXJhbm11c2Fib3NtYW4vUHJvamVjdHMvaS1lcC5hcHAvc3JjL19fbW9ja3NfXy9uZXh0LWF1dGgudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBOZXh0QXV0aCBNb2NrIGZvciBKZXN0IFRlc3RzXG4gKiBTcHJpbnQgNzogVGVzdCBlbnZpcm9ubWVudCBpw6dpbiBOZXh0QXV0aCBtb2NrJ3VcbiAqL1xuXG5tb2R1bGUuZXhwb3J0cyA9IHtcbiAgZ2V0U2VydmVyU2Vzc2lvbjogamVzdC5mbigoKSA9PlxuICAgIFByb21pc2UucmVzb2x2ZSh7XG4gICAgICB1c2VyOiB7XG4gICAgICAgIGlkOiAndGVzdC11c2VyLWlkJyxcbiAgICAgICAgZW1haWw6ICd0ZXN0QGV4YW1wbGUuY29tJyxcbiAgICAgICAgbmFtZTogJ1Rlc3QgVXNlcicsXG4gICAgICAgIHJvbGU6ICdzdXBlcl9hZG1pbicsXG4gICAgICB9LFxuICAgICAgZXhwaXJlczogJzIwMjUtMDEtMDFUMDA6MDA6MDAuMDAwWicsXG4gICAgfSlcbiAgKSxcblxuICBhdXRoT3B0aW9uczoge1xuICAgIHByb3ZpZGVyczogW10sXG4gICAgY2FsbGJhY2tzOiB7XG4gICAgICBzZXNzaW9uOiBqZXN0LmZuKCksXG4gICAgICBqd3Q6IGplc3QuZm4oKSxcbiAgICB9LFxuICB9LFxuXG4gIC8vIE5leHRBdXRoLmpzIGRlZmF1bHQgZXhwb3J0c1xuICBkZWZhdWx0OiBqZXN0LmZuKCksXG5cbiAgLy8gSldUIHRva2VuIGZ1bmN0aW9uc1xuICBnZXRUb2tlbjogamVzdC5mbigoKSA9PlxuICAgIFByb21pc2UucmVzb2x2ZSh7XG4gICAgICBzdWI6ICd0ZXN0LXVzZXItaWQnLFxuICAgICAgZW1haWw6ICd0ZXN0QGV4YW1wbGUuY29tJyxcbiAgICAgIHJvbGU6ICdzdXBlcl9hZG1pbicsXG4gICAgfSlcbiAgKSxcblxuICAvLyBTZXNzaW9uIGZ1bmN0aW9uc1xuICB1bnN0YWJsZV9nZXRTZXJ2ZXJTZXNzaW9uOiBqZXN0LmZuKCgpID0+XG4gICAgUHJvbWlzZS5yZXNvbHZlKHtcbiAgICAgIHVzZXI6IHtcbiAgICAgICAgaWQ6ICd0ZXN0LXVzZXItaWQnLFxuICAgICAgICBlbWFpbDogJ3Rlc3RAZXhhbXBsZS5jb20nLFxuICAgICAgICByb2xlOiAnc3VwZXJfYWRtaW4nLFxuICAgICAgfSxcbiAgICB9KVxuICApLFxufTtcbiJdLCJuYW1lcyI6WyJtb2R1bGUiLCJleHBvcnRzIiwiZ2V0U2VydmVyU2Vzc2lvbiIsImplc3QiLCJmbiIsIlByb21pc2UiLCJyZXNvbHZlIiwidXNlciIsImlkIiwiZW1haWwiLCJuYW1lIiwicm9sZSIsImV4cGlyZXMiLCJhdXRoT3B0aW9ucyIsInByb3ZpZGVycyIsImNhbGxiYWNrcyIsInNlc3Npb24iLCJqd3QiLCJkZWZhdWx0IiwiZ2V0VG9rZW4iLCJzdWIiLCJ1bnN0YWJsZV9nZXRTZXJ2ZXJTZXNzaW9uIl0sIm1hcHBpbmdzIjoiQUFBQTs7O0NBR0M7QUFFREEsT0FBT0MsT0FBTyxHQUFHO0lBQ2ZDLGtCQUFrQkMsS0FBS0MsRUFBRSxDQUFDLElBQ3hCQyxRQUFRQyxPQUFPLENBQUM7WUFDZEMsTUFBTTtnQkFDSkMsSUFBSTtnQkFDSkMsT0FBTztnQkFDUEMsTUFBTTtnQkFDTkMsTUFBTTtZQUNSO1lBQ0FDLFNBQVM7UUFDWDtJQUdGQyxhQUFhO1FBQ1hDLFdBQVcsRUFBRTtRQUNiQyxXQUFXO1lBQ1RDLFNBQVNiLEtBQUtDLEVBQUU7WUFDaEJhLEtBQUtkLEtBQUtDLEVBQUU7UUFDZDtJQUNGO0lBRUEsOEJBQThCO0lBQzlCYyxTQUFTZixLQUFLQyxFQUFFO0lBRWhCLHNCQUFzQjtJQUN0QmUsVUFBVWhCLEtBQUtDLEVBQUUsQ0FBQyxJQUNoQkMsUUFBUUMsT0FBTyxDQUFDO1lBQ2RjLEtBQUs7WUFDTFgsT0FBTztZQUNQRSxNQUFNO1FBQ1I7SUFHRixvQkFBb0I7SUFDcEJVLDJCQUEyQmxCLEtBQUtDLEVBQUUsQ0FBQyxJQUNqQ0MsUUFBUUMsT0FBTyxDQUFDO1lBQ2RDLE1BQU07Z0JBQ0pDLElBQUk7Z0JBQ0pDLE9BQU87Z0JBQ1BFLE1BQU07WUFDUjtRQUNGO0FBRUoifQ==

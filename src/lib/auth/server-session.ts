@@ -29,7 +29,7 @@ export async function getAuthenticatedUser(req?: NextRequest): Promise<User | nu
       const userEmail = req.headers.get('X-User-Email');
       const userId = req.headers.get('X-User-ID');
       const tenantId = req.headers.get('x-tenant-id');
-      
+
       if (userEmail && userId && tenantId) {
         // Create user from headers (already authenticated by API client)
         const user: User = {
@@ -67,7 +67,7 @@ export async function getAuthenticatedUser(req?: NextRequest): Promise<User | nu
  */
 export async function requireRole(req: NextRequest, allowedRoles: string[]): Promise<User | null> {
   const user = await getAuthenticatedUser(req);
-  
+
   if (!user) {
     return null;
   }
@@ -90,7 +90,9 @@ export function getTenantIdFromHeaders(req: NextRequest): string | null {
 /**
  * Verify user belongs to tenant
  */
-export async function verifyTenantAccess(req: NextRequest): Promise<{ user: User; tenantId: string } | null> {
+export async function verifyTenantAccess(
+  req: NextRequest
+): Promise<{ user: User; tenantId: string } | null> {
   const user = await getAuthenticatedUser(req);
   const tenantId = getTenantIdFromHeaders(req);
 

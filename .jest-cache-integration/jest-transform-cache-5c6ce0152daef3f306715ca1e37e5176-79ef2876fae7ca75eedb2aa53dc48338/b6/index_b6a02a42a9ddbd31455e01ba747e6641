@@ -1,0 +1,43 @@
+14e669018aa8ca6f3857848b41c1c079
+/**
+ * Audit/Denetim loglama modülü
+ *
+ * Bu modül, sistemdeki işlemlerin denetim kayıtlarını yönetir ve
+ * erişim reddi loglarına erişim sağlar.
+ */ "use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+function _export(target, all) {
+    for(var name in all)Object.defineProperty(target, name, {
+        enumerable: true,
+        get: all[name]
+    });
+}
+_export(exports, {
+    getAccessDeniedLogs: function() {
+        return _tenantaccess.getAccessDeniedLogs;
+    },
+    logAccessDenied: function() {
+        return _tenantaccess.logAccessDenied;
+    },
+    logAuditEvent: function() {
+        return logAuditEvent;
+    }
+});
+const _tenantaccess = require("../tenant/tenant-access");
+async function logAuditEvent(tenantId, userId, action, entityType, entityId, oldData, newData, metadata) {
+    try {
+        // Erişim reddi loglama fonksiyonunun altyapısını kullan
+        await (0, _tenantaccess.logAccessDenied)(userId, tenantId, entityType, 'audit_logs', action, 'manual_audit_log', {
+            old_data: oldData || null,
+            new_data: newData || null,
+            entity_id: entityId,
+            metadata: metadata || {}
+        });
+    } catch (error) {
+        console.error('Audit log kayıt hatası:', error);
+    }
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy90dXJhbm11c2Fib3NtYW4vUHJvamVjdHMvaS1lcC5hcHAvc3JjL2xpYi9hdWRpdC9pbmRleC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEF1ZGl0L0RlbmV0aW0gbG9nbGFtYSBtb2TDvGzDvFxuICpcbiAqIEJ1IG1vZMO8bCwgc2lzdGVtZGVraSBpxZ9sZW1sZXJpbiBkZW5ldGltIGthecSxdGxhcsSxbsSxIHnDtm5ldGlyIHZlXG4gKiBlcmnFn2ltIHJlZGRpIGxvZ2xhcsSxbmEgZXJpxZ9pbSBzYcSfbGFyLlxuICovXG5cbmltcG9ydCB7IGxvZ0FjY2Vzc0RlbmllZCwgZ2V0QWNjZXNzRGVuaWVkTG9ncyB9IGZyb20gJy4uL3RlbmFudC90ZW5hbnQtYWNjZXNzJztcblxuLyoqXG4gKiBTaXN0ZW0gacWfbGVtbGVyaW5pIGxvZ2xhIChJTlNFUlQsIFVQREFURSwgREVMRVRFKVxuICpcbiAqIE5vdDogQnUgacWfbGVtbGVyIHZlcml0YWJhbsSxIHNldml5ZXNpbmRlIG90b21hdGlrIG9sYXJha1xuICogYXVkaXQubG9nX2FjdGl2aXR5IHRldGlrbGV5aWNpc2kgaWxlIHlhcMSxbG1ha3RhZMSxclxuICovXG5cbi8vIFRlbmFudCBhY2Nlc3MgbW9kw7xsw7xuZGVuIGV4cG9ydCBlZGlsZW4gZm9ua3NpeW9ubGFyxLEgeWVuaWRlbiBleHBvcnQgZXRcbmV4cG9ydCB7IGxvZ0FjY2Vzc0RlbmllZCwgZ2V0QWNjZXNzRGVuaWVkTG9ncyB9O1xuXG4vKipcbiAqIMOWemVsIHV5Z3VsYW1hbGFyxLFuIGRlbmV0aW0gbG9ndVxuICpcbiAqIEBwYXJhbSB0ZW5hbnRJZCDEsGxnaWxpIHRlbmFudCBJRCdzaVxuICogQHBhcmFtIHVzZXJJZCDEsMWfbGVtaSB5YXBhbiBrdWxsYW7EsWPEsSBJRCdzaVxuICogQHBhcmFtIGFjdGlvbiBZYXDEsWxhbiBpxZ9sZW1cbiAqIEBwYXJhbSBlbnRpdHlUeXBlIMSwxZ9sZW0geWFwxLFsYW4gdmFybMSxayB0w7xyw7xcbiAqIEBwYXJhbSBlbnRpdHlJZCDEsMWfbGVtIHlhcMSxbGFuIHZhcmzEsWsgSUQnc2lcbiAqIEBwYXJhbSBtZXRhZGF0YSBFayBiaWxnaWxlclxuICovXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gbG9nQXVkaXRFdmVudChcbiAgdGVuYW50SWQ6IHN0cmluZyxcbiAgdXNlcklkOiBzdHJpbmcsXG4gIGFjdGlvbjogc3RyaW5nLFxuICBlbnRpdHlUeXBlOiBzdHJpbmcsXG4gIGVudGl0eUlkOiBzdHJpbmcsXG4gIG9sZERhdGE/OiBSZWNvcmQ8c3RyaW5nLCBhbnk+LFxuICBuZXdEYXRhPzogUmVjb3JkPHN0cmluZywgYW55PixcbiAgbWV0YWRhdGE/OiBSZWNvcmQ8c3RyaW5nLCBhbnk+XG4pOiBQcm9taXNlPHZvaWQ+IHtcbiAgdHJ5IHtcbiAgICAvLyBFcmnFn2ltIHJlZGRpIGxvZ2xhbWEgZm9ua3NpeW9udW51biBhbHR5YXDEsXPEsW7EsSBrdWxsYW5cbiAgICBhd2FpdCBsb2dBY2Nlc3NEZW5pZWQoXG4gICAgICB1c2VySWQsXG4gICAgICB0ZW5hbnRJZCxcbiAgICAgIGVudGl0eVR5cGUsIC8vIMWeZW1hIGFkxLEgeWVyaW5lIGVudGl0eVR5cGUga3VsbGFuxLF5b3J1elxuICAgICAgJ2F1ZGl0X2xvZ3MnLCAvLyBUYWJsbyBhZMSxIHNhYml0XG4gICAgICBhY3Rpb24sXG4gICAgICAnbWFudWFsX2F1ZGl0X2xvZycsIC8vIE5lZGVuXG4gICAgICB7XG4gICAgICAgIG9sZF9kYXRhOiBvbGREYXRhIHx8IG51bGwsXG4gICAgICAgIG5ld19kYXRhOiBuZXdEYXRhIHx8IG51bGwsXG4gICAgICAgIGVudGl0eV9pZDogZW50aXR5SWQsXG4gICAgICAgIG1ldGFkYXRhOiBtZXRhZGF0YSB8fCB7fSxcbiAgICAgIH1cbiAgICApO1xuICB9IGNhdGNoIChlcnJvcikge1xuICAgIGNvbnNvbGUuZXJyb3IoJ0F1ZGl0IGxvZyBrYXnEsXQgaGF0YXPEsTonLCBlcnJvcik7XG4gIH1cbn1cbiJdLCJuYW1lcyI6WyJnZXRBY2Nlc3NEZW5pZWRMb2dzIiwibG9nQWNjZXNzRGVuaWVkIiwibG9nQXVkaXRFdmVudCIsInRlbmFudElkIiwidXNlcklkIiwiYWN0aW9uIiwiZW50aXR5VHlwZSIsImVudGl0eUlkIiwib2xkRGF0YSIsIm5ld0RhdGEiLCJtZXRhZGF0YSIsIm9sZF9kYXRhIiwibmV3X2RhdGEiLCJlbnRpdHlfaWQiLCJlcnJvciIsImNvbnNvbGUiXSwibWFwcGluZ3MiOiJBQUFBOzs7OztDQUtDOzs7Ozs7Ozs7OztJQVl5QkEsbUJBQW1CO2VBQW5CQSxpQ0FBbUI7O0lBQXBDQyxlQUFlO2VBQWZBLDZCQUFlOztJQVlGQyxhQUFhO2VBQWJBOzs7OEJBdEIrQjtBQXNCOUMsZUFBZUEsY0FDcEJDLFFBQWdCLEVBQ2hCQyxNQUFjLEVBQ2RDLE1BQWMsRUFDZEMsVUFBa0IsRUFDbEJDLFFBQWdCLEVBQ2hCQyxPQUE2QixFQUM3QkMsT0FBNkIsRUFDN0JDLFFBQThCO0lBRTlCLElBQUk7UUFDRix3REFBd0Q7UUFDeEQsTUFBTVQsSUFBQUEsNkJBQWUsRUFDbkJHLFFBQ0FELFVBQ0FHLFlBQ0EsY0FDQUQsUUFDQSxvQkFDQTtZQUNFTSxVQUFVSCxXQUFXO1lBQ3JCSSxVQUFVSCxXQUFXO1lBQ3JCSSxXQUFXTjtZQUNYRyxVQUFVQSxZQUFZLENBQUM7UUFDekI7SUFFSixFQUFFLE9BQU9JLE9BQU87UUFDZEMsUUFBUUQsS0FBSyxDQUFDLDJCQUEyQkE7SUFDM0M7QUFDRiJ9

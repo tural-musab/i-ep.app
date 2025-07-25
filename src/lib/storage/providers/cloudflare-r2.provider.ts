@@ -1,7 +1,7 @@
 /**
  * Cloudflare R2 Storage Provider
  * İ-EP.APP - Enterprise-grade cloud storage with S3 compatibility
- * 
+ *
  * Features:
  * - S3-compatible API with AWS SDK
  * - Multi-tenant file isolation
@@ -52,11 +52,11 @@ export class CloudflareR2Provider implements IStorageProvider {
       region: 'auto', // R2 uses 'auto' region
       token: env.CLOUDFLARE_R2_TOKEN || '',
       publicUrl: env.CLOUDFLARE_R2_PUBLIC_URL || '',
-      customDomain: env.CLOUDFLARE_R2_PUBLIC_URL || 'https://storage.i-ep.app'
+      customDomain: env.CLOUDFLARE_R2_PUBLIC_URL || 'https://storage.i-ep.app',
     };
 
     this.baseUrl = this.config.publicUrl || this.config.customDomain || this.config.endpoint;
-    
+
     // Validate configuration
     if (!this.config.accessKeyId || !this.config.secretAccessKey || !this.config.endpoint) {
       logger.warn('Cloudflare R2 not fully configured - missing credentials');
@@ -72,7 +72,7 @@ export class CloudflareR2Provider implements IStorageProvider {
     const timestamp = Date.now();
     const randomSuffix = Math.random().toString(36).substring(2, 8);
     const uniqueFilename = `${timestamp}_${randomSuffix}_${sanitizedFilename}`;
-    
+
     return `tenants/${tenantId}/${category}/${uniqueFilename}`;
   }
 
@@ -88,19 +88,19 @@ export class CloudflareR2Provider implements IStorageProvider {
       const tenantId = options?.tenantId || 'default';
       const category = options?.category || 'files';
       const filePath = this.generateFilePath(tenantId, category, file.name);
-      
+
       logger.info('Uploading file to R2', {
         filename: file.name,
         size: file.size,
         path: filePath,
-        tenantId
+        tenantId,
       });
 
       // Use real S3 implementation if configured, otherwise use mock
-      const uploadResult = this.isConfigured() 
+      const uploadResult = this.isConfigured()
         ? await this.s3Upload(file, filePath)
         : await this.mockUpload(file, filePath);
-      
+
       const result: UploadResult = {
         id: uploadResult.id,
         filename: file.name,
@@ -110,20 +110,20 @@ export class CloudflareR2Provider implements IStorageProvider {
         url: this.getPublicUrl(uploadResult.id),
         tenantId,
         category,
-        uploadedAt: new Date()
+        uploadedAt: new Date(),
       };
 
       logger.info('File uploaded successfully', {
         fileId: result.id,
         path: result.path,
-        size: result.size
+        size: result.size,
       });
 
       return result;
     } catch (error) {
       logger.error('R2 upload failed', {
         filename: file.name,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       throw error;
     }
@@ -141,16 +141,16 @@ export class CloudflareR2Provider implements IStorageProvider {
       logger.info('Downloading file from R2', { fileId });
 
       // Use real S3 implementation if configured, otherwise use mock
-      const blob = this.isConfigured() 
+      const blob = this.isConfigured()
         ? await this.s3Download(fileId)
         : await this.mockDownload(fileId);
-      
+
       logger.info('File downloaded successfully', { fileId });
       return blob;
     } catch (error) {
       logger.error('R2 download failed', {
         fileId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       throw error;
     }
@@ -173,12 +173,12 @@ export class CloudflareR2Provider implements IStorageProvider {
       } else {
         await this.mockDelete(fileId);
       }
-      
+
       logger.info('File deleted successfully', { fileId });
     } catch (error) {
       logger.error('R2 delete failed', {
         fileId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       throw error;
     }
@@ -209,15 +209,15 @@ export class CloudflareR2Provider implements IStorageProvider {
       logger.info('Generating signed URL', { fileId, expiresIn });
 
       // Mock implementation for now
-      const expirationTime = Date.now() + (expiresIn * 1000);
+      const expirationTime = Date.now() + expiresIn * 1000;
       const mockSignedUrl = `${this.baseUrl}/${fileId}?expires=${expirationTime}&signature=mock-signature`;
-      
+
       logger.info('Signed URL generated', { fileId, expiresAt: new Date(expirationTime) });
       return mockSignedUrl;
     } catch (error) {
       logger.error('Signed URL generation failed', {
         fileId,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       throw error;
     }
@@ -242,22 +242,22 @@ export class CloudflareR2Provider implements IStorageProvider {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('key', path);
-    
+
     // In a real implementation, this would use proper S3 API with signature
     // For now, we'll use a mock approach that can be easily replaced
     const response = await fetch(`${this.config.endpoint}/${this.config.bucketName}`, {
       method: 'PUT',
       body: formData,
       headers: {
-        'Authorization': `Bearer ${this.config.accessKeyId}`,
+        Authorization: `Bearer ${this.config.accessKeyId}`,
         'X-Amz-Content-Sha256': 'UNSIGNED-PAYLOAD',
       },
     });
-    
+
     if (!response.ok) {
       throw new Error(`S3 upload failed: ${response.status} ${response.statusText}`);
     }
-    
+
     return { id: path };
   }
 
@@ -268,11 +268,11 @@ export class CloudflareR2Provider implements IStorageProvider {
     const response = await fetch(`${this.config.endpoint}/${this.config.bucketName}/${fileId}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${this.config.accessKeyId}`,
+        Authorization: `Bearer ${this.config.accessKeyId}`,
         'X-Amz-Content-Sha256': 'UNSIGNED-PAYLOAD',
       },
     });
-    
+
     if (!response.ok) {
       throw new Error(`S3 delete failed: ${response.status} ${response.statusText}`);
     }
@@ -285,14 +285,14 @@ export class CloudflareR2Provider implements IStorageProvider {
     const response = await fetch(`${this.config.endpoint}/${this.config.bucketName}/${fileId}`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${this.config.accessKeyId}`,
+        Authorization: `Bearer ${this.config.accessKeyId}`,
       },
     });
-    
+
     if (!response.ok) {
       throw new Error(`S3 download failed: ${response.status} ${response.statusText}`);
     }
-    
+
     return response.blob();
   }
 
@@ -301,8 +301,8 @@ export class CloudflareR2Provider implements IStorageProvider {
    */
   private async mockUpload(file: File, path: string): Promise<{ id: string }> {
     // Simulate upload delay
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const fileId = `${path}`;
     logger.warn('Using mock upload - R2 not configured');
     return { id: fileId };
@@ -313,7 +313,7 @@ export class CloudflareR2Provider implements IStorageProvider {
    */
   private async mockDelete(fileId: string): Promise<void> {
     // Simulate delete delay
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
     logger.warn('Using mock delete - R2 not configured');
   }
 
@@ -339,7 +339,7 @@ export class CloudflareR2Provider implements IStorageProvider {
       endpoint: this.config.endpoint,
       bucketName: this.config.bucketName,
       publicUrl: this.config.publicUrl,
-      customDomain: this.config.customDomain
+      customDomain: this.config.customDomain,
     };
   }
 
@@ -365,8 +365,8 @@ export class CloudflareR2Provider implements IStorageProvider {
           url: this.getPublicUrl('tenants/demo/assignments/1721136000000_abc123_sample.pdf'),
           tenantId: 'demo',
           category: 'assignments',
-          uploadedAt: new Date()
-        }
+          uploadedAt: new Date(),
+        },
       ];
 
       logger.info('Files listed successfully', { count: mockFiles.length });
@@ -374,7 +374,7 @@ export class CloudflareR2Provider implements IStorageProvider {
     } catch (error) {
       logger.error('R2 list failed', {
         folder,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       throw error;
     }

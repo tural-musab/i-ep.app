@@ -4,6 +4,9 @@ import { verifyTenantAccess, requireRole } from '@/lib/auth/server-session';
 import { logAuditEvent } from '@/lib/audit';
 import { User } from '@/types/auth';
 import * as Sentry from '@sentry/nextjs';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth/auth-options';
+import { getTenantId } from '@/lib/tenant/tenant-utils';
 
 // Create student data interface
 interface CreateStudentData {
@@ -31,6 +34,7 @@ export async function GET(request: NextRequest) {
     },
     async () => {
       try {
+        // SECURITY FIX: Remove development bypass - require authentication always
         // Verify authentication and tenant access
         const authResult = await verifyTenantAccess(request);
         if (!authResult) {
@@ -135,10 +139,14 @@ export async function POST(request: NextRequest) {
     },
     async () => {
       try {
+        // SECURITY FIX: Remove development bypass - require authentication always
         // Verify authentication and require admin role
         const user = await requireRole(request, ['admin']);
         if (!user) {
-          return NextResponse.json({ error: 'Authentication required or insufficient permissions' }, { status: 401 });
+          return NextResponse.json(
+            { error: 'Authentication required or insufficient permissions' },
+            { status: 401 }
+          );
         }
 
         const tenantId = user.tenantId;

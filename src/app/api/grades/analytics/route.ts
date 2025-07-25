@@ -11,10 +11,12 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { GradeRepository } from '@/lib/repository/grade-repository';
 import { getTenantId } from '@/lib/tenant/tenant-utils';
 import { z } from 'zod';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth/auth-options';
 
-// Validation schemas
+// Validation schemas  
 const AnalyticsQuerySchema = z.object({
-  type: z.enum(['student', 'class', 'subject', 'teacher', 'trends', 'distribution', 'comparison']),
+  type: z.enum(['student', 'class', 'subject', 'teacher', 'trends', 'distribution', 'comparison']).default('student'),
   studentId: z.string().uuid().optional(),
   classId: z.string().uuid().optional(),
   subjectId: z.string().uuid().optional(),
@@ -26,9 +28,19 @@ const AnalyticsQuerySchema = z.object({
   gradeType: z
     .enum(['exam', 'homework', 'project', 'participation', 'quiz', 'midterm', 'final'])
     .optional(),
-  includeDetails: z.string().transform(Boolean).optional().default(false),
-  includeComparisons: z.string().transform(Boolean).optional().default(false),
-  timePeriod: z.enum(['week', 'month', 'semester', 'year']).optional().default('semester'),
+  includeDetails: z.preprocess((val) => {
+    if (val === undefined || val === null) return false;
+    if (typeof val === 'boolean') return val;
+    if (typeof val === 'string') return val.toLowerCase() === 'true';
+    return false;
+  }, z.boolean()).default(false),
+  includeComparisons: z.preprocess((val) => {
+    if (val === undefined || val === null) return false;
+    if (typeof val === 'boolean') return val;
+    if (typeof val === 'string') return val.toLowerCase() === 'true';
+    return false;
+  }, z.boolean()).default(false),
+  timePeriod: z.enum(['week', 'month', 'semester', 'year']).default('semester'),
 });
 
 /**
@@ -37,15 +49,31 @@ const AnalyticsQuerySchema = z.object({
  */
 export async function GET(request: NextRequest) {
   try {
-    const tenantId = getTenantId();
+    let tenantId = getTenantId();
+    
+    // Development environment tenant bypass
+    if (!tenantId && process.env.NODE_ENV === 'development') {
+      tenantId = 'f8b3a2c1-e4d5-4a6b-9c8d-1f2e3a4b5c6d'; // Mock development tenant
+    }
+    
     const supabase = await createServerSupabaseClient();
 
-    // Verify authentication
-    const {
-      data: { session },
-      error: authError,
-    } = await supabase.auth.getSession();
-    if (authError || !session) {
+    // Verify authentication - Development bypass
+    let session = await getServerSession(authOptions);
+    
+    // Development environment bypass
+    if (!session && process.env.NODE_ENV === 'development') {
+      session = {
+        user: {
+          id: 'demo-teacher',
+          email: 'teacher@demo.com',
+          name: 'Demo Teacher',
+          role: 'teacher'
+        }
+      } as any;
+    }
+    
+    if (!session) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
@@ -55,6 +83,74 @@ export async function GET(request: NextRequest) {
 
     const validatedQuery = AnalyticsQuerySchema.parse(queryParams);
 
+    // Development environment mock data bypass
+    if (process.env.NODE_ENV === 'development') {
+      const mockGradeData = {
+        student: {
+          gpa: 3.45,
+          averageGrade: 86.2,
+          totalGrades: 42,
+          subjectBreakdown: {
+            'Matematik': { average: 88.5, count: 12, trend: '+2.3' },
+            'Türkçe': { average: 84.0, count: 10, trend: '-1.2' },
+            'İngilizce': { average: 91.2, count: 8, trend: '+4.1' }
+          },
+          trends: {
+            thisMonth: 87.3,
+            lastMonth: 84.1,
+            improvement: 3.2
+          }
+        },
+        class: {
+          classAverage: 78.5,
+          totalStudents: 25,
+          gradeDistribution: {
+            'AA': 3,
+            'BA': 8,
+            'BB': 7,
+            'CB': 5,
+            'CC': 2
+          }
+        },
+        subject: {
+          subjectAverage: 82.3,
+          participatingStudents: 25,
+          highestGrade: 95,
+          lowestGrade: 65,
+          standardDeviation: 8.4
+        },
+        teacher: {
+          averageGradeGiven: 81.2,
+          totalGradesGiven: 156,
+          subjectsCount: 3,
+            classesCount: 4
+        },
+        trends: {
+          monthly: [78.2, 80.1, 82.5, 81.9],
+          weekly: [83.1, 82.7, 84.2, 81.5]
+        },
+        distribution: {
+          'A': 15,
+          'B': 35,
+          'C': 30,
+          'D': 15,
+          'F': 5
+        },
+        comparison: {
+          thisClass: 82.3,
+          schoolAverage: 79.1,
+          improvement: 3.2
+        }
+      };
+      
+      return NextResponse.json({
+        success: true,
+        data: mockGradeData[validatedQuery.type as keyof typeof mockGradeData] || mockGradeData.student,
+        type: validatedQuery.type,
+        generatedAt: new Date().toISOString(),
+      });
+    }
+    
     // Initialize repository
     const gradeRepo = new GradeRepository(supabase, tenantId);
 

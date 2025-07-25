@@ -3,7 +3,7 @@
 /**
  * Create Demo Users for İ-EP.APP
  * Bu script local Supabase'de demo kullanıcıları oluşturur
- * 
+ *
  * Kullanım: node scripts/create-demo-users.js
  */
 
@@ -22,8 +22,8 @@ if (!supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   auth: {
     autoRefreshToken: false,
-    persistSession: false
-  }
+    persistSession: false,
+  },
 });
 
 // Demo users data
@@ -34,8 +34,8 @@ const demoUsers = [
     user_metadata: {
       name: 'Demo Admin',
       role: 'admin',
-      tenant_id: 'localhost-tenant'
-    }
+      tenant_id: 'localhost-tenant',
+    },
   },
   {
     email: 'teacher1@demo.local',
@@ -44,8 +44,8 @@ const demoUsers = [
       name: 'Ayşe Öğretmen',
       role: 'teacher',
       tenant_id: 'localhost-tenant',
-      subject: 'Matematik'
-    }
+      subject: 'Matematik',
+    },
   },
   {
     email: 'teacher2@demo.local',
@@ -54,8 +54,8 @@ const demoUsers = [
       name: 'Mehmet Öğretmen',
       role: 'teacher',
       tenant_id: 'localhost-tenant',
-      subject: 'Türkçe'
-    }
+      subject: 'Türkçe',
+    },
   },
   {
     email: 'student1@demo.local',
@@ -65,8 +65,8 @@ const demoUsers = [
       role: 'student',
       tenant_id: 'localhost-tenant',
       student_id: 'student-001',
-      class_id: 'class-5a'
-    }
+      class_id: 'class-5a',
+    },
   },
   {
     email: 'parent1@demo.local',
@@ -75,9 +75,9 @@ const demoUsers = [
       name: 'Ali Yılmaz',
       role: 'parent',
       tenant_id: 'localhost-tenant',
-      student_ids: ['student-001']
-    }
-  }
+      student_ids: ['student-001'],
+    },
+  },
 ];
 
 async function createDemoUsers() {
@@ -90,22 +90,22 @@ async function createDemoUsers() {
         email: userData.email,
         password: userData.password,
         email_confirm: true,
-        user_metadata: userData.user_metadata
+        user_metadata: userData.user_metadata,
       });
 
       if (error) {
         console.error(`❌ Failed to create ${userData.email}:`, error.message);
-        
+
         // If user exists, try to update instead
         if (error.message.includes('already registered')) {
           console.log(`   Trying to update existing user...`);
           const { data: updateData, error: updateError } = await supabase.auth.admin.updateUserById(
             data?.id || '',
             {
-              user_metadata: userData.user_metadata
+              user_metadata: userData.user_metadata,
             }
           );
-          
+
           if (updateError) {
             console.error(`   ❌ Update also failed:`, updateError.message);
           } else {
@@ -114,7 +114,7 @@ async function createDemoUsers() {
         }
       } else {
         console.log(`✅ Created user: ${userData.email} (Role: ${userData.user_metadata.role})`);
-        
+
         // Update related tables based on role
         if (userData.user_metadata.role === 'teacher' && data.user) {
           // Update teacher_id in classes
@@ -124,14 +124,17 @@ async function createDemoUsers() {
               .update({ teacher_id: data.user.id })
               .in('id', ['class-5a', 'class-5b']);
           }
-          
+
           // Update teacher_id in assignments
           await supabase
             .from('assignments')
             .update({ teacher_id: data.user.id })
-            .eq('subject_id', userData.user_metadata.subject === 'Matematik' ? 'subject-math' : 'subject-turkish');
+            .eq(
+              'subject_id',
+              userData.user_metadata.subject === 'Matematik' ? 'subject-math' : 'subject-turkish'
+            );
         }
-        
+
         if (userData.user_metadata.role === 'student' && data.user) {
           // Update user_id in students table
           await supabase

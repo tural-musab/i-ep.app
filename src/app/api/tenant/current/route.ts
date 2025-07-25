@@ -55,9 +55,13 @@ export async function GET() {
       .eq('is_primary', true)
       .single();
 
+    // Extract domain from NEXT_PUBLIC_BASE_URL
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app';
+    const baseDomain = new URL(BASE_URL).hostname;
+    
     const primaryDomain =
       primaryDomainData?.domain ||
-      `${tenantData.subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app'}`;
+      `${tenantData.subdomain}.${baseDomain}`;
 
     // Tenant aktif değilse uyarı ekle
     const tenantWarnings = [];

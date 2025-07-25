@@ -217,7 +217,7 @@ export async function createPayment(
         reject(new Error('İyzico client not initialized'));
         return;
       }
-      
+
       iyzipay.payment.create(iyzicoRequest, (err: any, result: any) => {
         if (err) {
           reject(err);
@@ -378,7 +378,7 @@ export async function refundPayment(
         reject(new Error('İyzico client not initialized'));
         return;
       }
-      
+
       iyzipay.refund.create(iyzicoRefundRequest, (err: any, result: any) => {
         if (err) {
           reject(err);

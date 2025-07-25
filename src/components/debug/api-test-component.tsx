@@ -44,9 +44,9 @@ export function APITestComponent(): JSX.Element {
   };
 
   return (
-    <div className="p-4 border rounded-lg bg-gray-50">
-      <h3 className="text-lg font-semibold mb-4">API Client Debug Test</h3>
-      
+    <div className="rounded-lg border bg-gray-50 p-4">
+      <h3 className="mb-4 text-lg font-semibold">API Client Debug Test</h3>
+
       <div className="space-y-4">
         <div>
           <strong>Session Status:</strong> {status}
@@ -57,33 +57,33 @@ export function APITestComponent(): JSX.Element {
         <div>
           <strong>User ID:</strong> {session?.user?.id || 'None'}
         </div>
-        
+
         <div className="flex gap-2">
-          <button 
+          <button
             onClick={testAPIWithoutAuth}
-            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+            className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
             disabled={testStatus.includes('testing')}
           >
             Test API (No Auth)
           </button>
-          
-          <button 
+
+          <button
             onClick={testAPIWithAuth}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
             disabled={testStatus.includes('testing') || !session}
           >
             Test API (With Auth)
           </button>
         </div>
-        
+
         <div>
           <strong>Test Status:</strong> {testStatus}
         </div>
-        
+
         {apiResult && (
           <div>
             <strong>API Result:</strong>
-            <pre className="mt-2 p-2 bg-white border rounded text-xs overflow-auto">
+            <pre className="mt-2 overflow-auto rounded border bg-white p-2 text-xs">
               {JSON.stringify(apiResult, null, 2)}
             </pre>
           </div>

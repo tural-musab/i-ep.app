@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
 
 /**
@@ -11,8 +11,9 @@ export async function GET() {
   const timestamp = new Date().toISOString();
 
   try {
-    // Supabase bağlantısını test etmek için basit bir query yap
-    const { error } = await supabase.from('auth.users').select('count').limit(1).single();
+    // SYSTEM HEALTH FIX: Use proper server client and test with a simple query
+    const supabase = createServerSupabaseClient();
+    const { error } = await supabase.from('users').select('count').limit(1).single();
 
     if (error) {
       logger.error({ err: error }, 'Database bağlantı hatası');

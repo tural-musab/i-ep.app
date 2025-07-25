@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { GradeScale, GradeType } from '../types/grade-types';
+import { GradeScale, GradeType } from '@/types/grades';
 
 // Mock validation module
 const mockGradeValidation = {

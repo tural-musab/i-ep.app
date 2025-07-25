@@ -32,11 +32,13 @@ export async function apiClient<T = any>(
     let session = await getSession(); // NextAuth session
     let supabaseSession = null;
     let authSource = 'NextAuth';
-    
+
     // If no NextAuth session, try Supabase session
     if (!session) {
       const supabase = createClientComponentClient();
-      const { data: { session: supaSession } } = await supabase.auth.getSession();
+      const {
+        data: { session: supaSession },
+      } = await supabase.auth.getSession();
       if (supaSession) {
         supabaseSession = supaSession;
         authSource = 'Supabase';
@@ -46,13 +48,14 @@ export async function apiClient<T = any>(
             id: supaSession.user.id,
             email: supaSession.user.email,
             name: supaSession.user.user_metadata?.name || supaSession.user.email,
-            tenantId: supaSession.user.user_metadata?.tenant_id || 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+            tenantId:
+              supaSession.user.user_metadata?.tenant_id || 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
           },
-          expires: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString() // 24 hours from now
+          expires: new Date(Date.now() + 1000 * 60 * 60 * 24).toISOString(), // 24 hours from now
         };
       }
     }
-    
+
     if (!session) {
       if (process.env.NODE_ENV === 'development') {
         console.log('='.repeat(80));
@@ -65,7 +68,7 @@ export async function apiClient<T = any>(
       }
       return {
         error: 'Authentication required - Please login first',
-        status: 401
+        status: 401,
       };
     }
 
@@ -82,7 +85,7 @@ export async function apiClient<T = any>(
     // Prepare headers with authentication
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers
+      ...options.headers,
     };
 
     // Add NextAuth session to headers (if available)
@@ -121,7 +124,7 @@ export async function apiClient<T = any>(
       method: options.method || 'GET',
       headers,
       body: options.body,
-      credentials: 'include' // Include cookies for session
+      credentials: 'include', // Include cookies for session
     });
 
     // Handle authentication errors
@@ -129,7 +132,7 @@ export async function apiClient<T = any>(
       console.error('API Authentication failed for:', endpoint);
       return {
         error: 'Authentication failed',
-        status: 401
+        status: 401,
       };
     }
 
@@ -139,7 +142,7 @@ export async function apiClient<T = any>(
       const errorText = await response.text();
       return {
         error: errorText || `HTTP ${response.status}`,
-        status: response.status
+        status: response.status,
       };
     }
 
@@ -147,14 +150,13 @@ export async function apiClient<T = any>(
     const data = await response.json();
     return {
       data,
-      status: response.status
+      status: response.status,
     };
-
   } catch (error) {
     console.error('API Client error:', error);
     return {
       error: error instanceof Error ? error.message : 'Network error',
-      status: 500
+      status: 500,
     };
   }
 }
@@ -162,7 +164,10 @@ export async function apiClient<T = any>(
 /**
  * GET request helper
  */
-export async function apiGet<T = any>(endpoint: string, headers?: Record<string, string>): Promise<APIResponse<T>> {
+export async function apiGet<T = any>(
+  endpoint: string,
+  headers?: Record<string, string>
+): Promise<APIResponse<T>> {
   return apiClient<T>(endpoint, { method: 'GET', headers });
 }
 
@@ -170,14 +175,14 @@ export async function apiGet<T = any>(endpoint: string, headers?: Record<string,
  * POST request helper
  */
 export async function apiPost<T = any>(
-  endpoint: string, 
-  data?: any, 
+  endpoint: string,
+  data?: any,
   headers?: Record<string, string>
 ): Promise<APIResponse<T>> {
   return apiClient<T>(endpoint, {
     method: 'POST',
     headers,
-    body: data ? JSON.stringify(data) : undefined
+    body: data ? JSON.stringify(data) : undefined,
   });
 }
 
@@ -185,21 +190,24 @@ export async function apiPost<T = any>(
  * PUT request helper
  */
 export async function apiPut<T = any>(
-  endpoint: string, 
-  data?: any, 
+  endpoint: string,
+  data?: any,
   headers?: Record<string, string>
 ): Promise<APIResponse<T>> {
   return apiClient<T>(endpoint, {
     method: 'PUT',
     headers,
-    body: data ? JSON.stringify(data) : undefined
+    body: data ? JSON.stringify(data) : undefined,
   });
 }
 
 /**
  * DELETE request helper
  */
-export async function apiDelete<T = any>(endpoint: string, headers?: Record<string, string>): Promise<APIResponse<T>> {
+export async function apiDelete<T = any>(
+  endpoint: string,
+  headers?: Record<string, string>
+): Promise<APIResponse<T>> {
   return apiClient<T>(endpoint, { method: 'DELETE', headers });
 }
 
@@ -207,16 +215,16 @@ export async function apiDelete<T = any>(endpoint: string, headers?: Record<stri
  * File upload helper with authentication
  */
 export async function apiUpload<T = any>(
-  endpoint: string, 
-  formData: FormData, 
+  endpoint: string,
+  formData: FormData,
   headers?: Record<string, string>
 ): Promise<APIResponse<T>> {
   return apiClient<T>(endpoint, {
     method: 'POST',
     headers: {
       // Don't set Content-Type for FormData - let browser set it with boundary
-      ...headers
+      ...headers,
     },
-    body: formData
+    body: formData,
   });
 }

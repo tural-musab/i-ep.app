@@ -70,8 +70,15 @@ export function GradeDashboard() {
     weeklyProgress: 12,
     improvementRate: 8.3,
     gradeDistribution: {
-      AA: 18, BA: 32, BB: 45, CB: 38, CC: 28, DC: 15, DD: 8, FF: 3
-    }
+      AA: 18,
+      BA: 32,
+      BB: 45,
+      CB: 38,
+      CC: 28,
+      DC: 15,
+      DD: 8,
+      FF: 3,
+    },
   };
 
   const recentGrades = gradeData?.recentGrades || [
@@ -259,8 +266,8 @@ export function GradeDashboard() {
         <div className="flex items-center gap-4">
           <h2 className="text-2xl font-bold">Not Yönetimi</h2>
           {/* Data source indicator */}
-          <Badge variant={gradeData ? "default" : "secondary"}>
-            {gradeData ? "🔗 Canlı Veri" : "📊 Mock Veri"}
+          <Badge variant={gradeData ? 'default' : 'secondary'}>
+            {gradeData ? '🔗 Canlı Veri' : '📊 Mock Veri'}
           </Badge>
         </div>
         <div className="flex gap-2">
@@ -420,9 +427,7 @@ export function GradeDashboard() {
                     </div>
                     <div>
                       <span className="text-gray-600">En Düşük:</span>
-                      <span className="ml-1 font-medium text-red-600">
-                        {classData.lowestScore}
-                      </span>
+                      <span className="ml-1 font-medium text-red-600">{classData.lowestScore}</span>
                     </div>
                   </div>
                 </div>

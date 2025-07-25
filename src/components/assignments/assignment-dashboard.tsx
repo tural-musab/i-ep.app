@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useAssignmentData } from '@/hooks/use-assignment-data';
+import { AssignmentErrorBoundaryWrapper } from '@/components/error-boundary/assignment-error-boundary';
 
 export function AssignmentDashboard() {
   // Real API data using custom hook
@@ -111,16 +112,17 @@ export function AssignmentDashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h2 className="text-2xl font-bold">Ödev Yönetimi</h2>
-          {/* Data source indicator */}
-          <Badge variant={assignmentData ? "default" : "secondary"}>
-            {assignmentData ? "🔗 Canlı Veri" : "📊 Mock Veri"}
-          </Badge>
-        </div>
+    <AssignmentErrorBoundaryWrapper showDetails={process.env.NODE_ENV === 'development'}>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h2 className="text-2xl font-bold">Ödev Yönetimi</h2>
+            {/* Data source indicator */}
+            <Badge variant={assignmentData ? 'default' : 'secondary'}>
+              {assignmentData ? '🔗 Canlı Veri' : '📊 Mock Veri'}
+            </Badge>
+          </div>
         <div className="flex gap-2">
           <Link href="/dashboard/assignments">
             <Button variant="outline">
@@ -323,6 +325,7 @@ export function AssignmentDashboard() {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </AssignmentErrorBoundaryWrapper>
   );
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { AssignmentStatus, AssignmentType } from '../types/assignment';
+import { AssignmentStatus, AssignmentType } from '@/types/assignment';
 
 // Mock validation module
 const mockAssignmentValidation = {

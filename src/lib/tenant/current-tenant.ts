@@ -24,6 +24,23 @@ export async function getCurrentTenant(): Promise<TenantInfo | null> {
     const isPrimary = headersList.get('x-tenant-primary') === 'true';
     const isCustomDomain = headersList.get('x-tenant-custom-domain') === 'true';
 
+    // DEVELOPMENT MODE: Create mock tenant if no headers
+    if ((!tenantId || !tenantHostname) && process.env.NODE_ENV === 'development') {
+      console.log('🔧 [DEV] No tenant headers found, creating mock tenant for development');
+      return {
+        id: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+        hostname: 'localhost:3000',
+        name: 'Demo Okul',
+        isPrimary: true,
+        isCustomDomain: false,
+        settings: {
+          school_type: 'primary',
+          academic_year: '2024-2025',
+          timezone: 'Europe/Istanbul',
+        }
+      };
+    }
+    
     if (!tenantId || !tenantHostname) {
       return null;
     }
@@ -61,7 +78,9 @@ export async function getCurrentTenant(): Promise<TenantInfo | null> {
  * @returns Tam domain adresi
  */
 export function buildTenantDomain(subdomain: string): string {
-  const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app';
+  // Extract domain from BASE_URL  
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app';
+  const BASE_DOMAIN = new URL(BASE_URL).hostname;
   return `${subdomain}.${BASE_DOMAIN}`;
 }
 

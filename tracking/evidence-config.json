@@ -18,7 +18,7 @@
           "type": "api_endpoint",
           "description": "Assignment API responds",
           "endpoint": "/api/assignments",
-          "method": "GET", 
+          "method": "GET",
           "expected_status": [200, 401],
           "weight": 25,
           "required": true
@@ -47,9 +47,9 @@
         }
       ]
     },
-    
+
     "attendance_system_complete": {
-      "description": "Attendance System - Complete Implementation", 
+      "description": "Attendance System - Complete Implementation",
       "claimed_status": "complete",
       "critical": true,
       "validators": [
@@ -62,7 +62,7 @@
         },
         {
           "type": "api_endpoint",
-          "description": "Attendance API responds", 
+          "description": "Attendance API responds",
           "endpoint": "/api/attendance",
           "method": "GET",
           "expected_status": [200, 401],
@@ -72,7 +72,7 @@
         {
           "type": "test_suite",
           "description": "Unit tests pass",
-          "pattern": "*attendance*test*", 
+          "pattern": "*attendance*test*",
           "min_tests": 35,
           "weight": 25,
           "required": true
@@ -93,10 +93,10 @@
         }
       ]
     },
-    
+
     "grade_system_complete": {
       "description": "Grade Management System - Complete Implementation",
-      "claimed_status": "complete", 
+      "claimed_status": "complete",
       "critical": true,
       "validators": [
         {
@@ -107,7 +107,7 @@
           "required": true
         },
         {
-          "type": "api_endpoint", 
+          "type": "api_endpoint",
           "description": "Grade API responds",
           "endpoint": "/api/grades",
           "method": "GET",
@@ -131,7 +131,7 @@
           "required": true
         },
         {
-          "type": "turkish_grading", 
+          "type": "turkish_grading",
           "description": "Turkish education system support",
           "path": "src/types/grades.ts",
           "expected_content": ["AA", "BB", "CC", "DD", "FF"],
@@ -140,7 +140,7 @@
         }
       ]
     },
-    
+
     "authentication_system_complete": {
       "description": "Authentication & Authorization - Production Ready",
       "claimed_status": "complete",
@@ -176,7 +176,7 @@
         }
       ]
     },
-    
+
     "api_infrastructure_complete": {
       "description": "API Infrastructure - Enterprise Grade",
       "claimed_status": "complete",

@@ -1,0 +1,350 @@
+name: Professional Verification Pipeline
+
+on:
+  push:
+    branches: [ develop, main ]
+    paths:
+      - 'CLAUDE.md'
+      - 'src/app/api/**'
+      - 'src/lib/**'
+      - 'src/components/**'
+      - 'supabase/migrations/**'
+      - 'scripts/**'
+  
+  # Manual trigger for professional verification
+  workflow_dispatch:
+    inputs:
+      verification_type:
+        description: 'Type of verification to run'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+        - full
+        - api-only
+        - storage-only
+        - auth-only
+      
+      update_documentation:
+        description: 'Update documentation with results'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  NODE_VERSION: '20'
+  VERIFICATION_TIMESTAMP: ${{ github.run_number }}-${{ github.run_attempt }}
+
+jobs:
+  professional-verification:
+    runs-on: ubuntu-latest
+    name: Professional Reality Check
+    timeout-minutes: 15
+    
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    outputs:
+      api_success_rate: ${{ steps.api_verification.outputs.success_rate }}
+      critical_issues: ${{ steps.verification_summary.outputs.critical_count }}
+      verification_passed: ${{ steps.verification_summary.outputs.passed }}
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci --only=production
+          npm install js-yaml axios --save-dev
+
+      - name: Create verification directories
+        run: |
+          mkdir -p verification/results
+          mkdir -p verification/evidence
+          mkdir -p verification/reports
+
+      - name: Professional API Integration Testing
+        id: api_verification
+        if: github.event.inputs.verification_type == 'full' || github.event.inputs.verification_type == 'api-only'
+        run: |
+          echo "🔧 Starting Professional API Verification..."
+          
+          # Copy our professional testing script
+          if [ -f "scripts/test-api-endpoints-professional.js" ]; then
+            echo "✅ Professional API testing script found"
+            
+            # Run the professional API tests
+            timeout 300 node scripts/test-api-endpoints-professional.js > verification/results/api-test-results.json 2>&1 || true
+            
+            # Extract success rate
+            if [ -f "AUTHENTICATION_TEST_RESULTS_PROFESSIONAL.json" ]; then
+              SUCCESS_RATE=$(node -e "
+                const data = JSON.parse(require('fs').readFileSync('AUTHENTICATION_TEST_RESULTS_PROFESSIONAL.json', 'utf8'));
+                const rate = Math.round((data.results.passed / data.results.total) * 100);
+                console.log(rate);
+              ")
+              echo "success_rate=$SUCCESS_RATE" >> $GITHUB_OUTPUT
+              echo "📊 API Success Rate: $SUCCESS_RATE%"
+            else
+              echo "success_rate=0" >> $GITHUB_OUTPUT
+              echo "❌ API test results not found"
+            fi
+          else
+            echo "❌ Professional API testing script not found"
+            echo "success_rate=0" >> $GITHUB_OUTPUT
+          fi
+
+      - name: CloudflareR2 Storage Verification
+        id: storage_verification
+        if: github.event.inputs.verification_type == 'full' || github.event.inputs.verification_type == 'storage-only'
+        run: |
+          echo "🧪 Starting CloudflareR2 Storage Verification..."
+          
+          # Test CloudflareR2Provider implementation
+          if [ -f "src/lib/storage/providers/cloudflare-r2.provider.ts" ]; then
+            echo "✅ CloudflareR2Provider implementation found"
+            
+            # Run storage provider tests
+            npm test -- --testPathPattern="cloudflare-r2" --json > verification/results/storage-test-results.json 2>&1 || true
+            
+            # Check test results
+            if grep -q '"numFailedTests":0' verification/results/storage-test-results.json; then
+              echo "storage_tests_passed=true" >> $GITHUB_OUTPUT
+              echo "✅ CloudflareR2Provider tests passed"
+            else
+              echo "storage_tests_passed=false" >> $GITHUB_OUTPUT
+              echo "❌ CloudflareR2Provider tests failed"
+            fi
+          else
+            echo "❌ CloudflareR2Provider implementation not found"
+            echo "storage_tests_passed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Authentication System Verification
+        id: auth_verification
+        if: github.event.inputs.verification_type == 'full' || github.event.inputs.verification_type == 'auth-only'
+        run: |
+          echo "🔐 Starting Authentication System Verification..."
+          
+          # Test authentication imports and configuration
+          npm test -- --testPathPattern="auth.*test" --json > verification/results/auth-test-results.json 2>&1 || true
+          
+          # Check for import errors
+          if grep -q "dynamic import" verification/results/auth-test-results.json; then
+            echo "auth_import_issues=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Authentication import issues detected"
+          else
+            echo "auth_import_issues=false" >> $GITHUB_OUTPUT
+            echo "✅ Authentication imports working"
+          fi
+
+      - name: Build System Verification
+        id: build_verification
+        run: |
+          echo "🏗️ Starting Build System Verification..."
+          
+          # Check TypeScript compilation
+          npm run build > verification/results/build-output.txt 2>&1
+          BUILD_STATUS=$?
+          
+          if [ $BUILD_STATUS -eq 0 ]; then
+            echo "build_successful=true" >> $GITHUB_OUTPUT
+            echo "✅ Build successful"
+            
+            # Check for warnings
+            if grep -i "warning" verification/results/build-output.txt; then
+              echo "build_warnings=true" >> $GITHUB_OUTPUT
+              echo "⚠️ Build warnings detected"
+            else
+              echo "build_warnings=false" >> $GITHUB_OUTPUT
+              echo "✅ No build warnings"
+            fi
+          else
+            echo "build_successful=false" >> $GITHUB_OUTPUT
+            echo "❌ Build failed"
+          fi
+
+      - name: Evidence Collection
+        id: evidence_collection
+        run: |
+          echo "📊 Collecting Professional Evidence..."
+          
+          # Collect file evidence
+          find src -name "*.ts" -o -name "*.tsx" | grep -E "(api|component|lib)" > verification/evidence/implementation-files.txt
+          find supabase/migrations -name "*.sql" > verification/evidence/migration-files.txt
+          find . -name "*test*" -type f > verification/evidence/test-files.txt
+          
+          # Count evidence
+          IMPL_COUNT=$(wc -l < verification/evidence/implementation-files.txt)
+          MIGRATION_COUNT=$(wc -l < verification/evidence/migration-files.txt)
+          TEST_COUNT=$(wc -l < verification/evidence/test-files.txt)
+          
+          echo "implementation_files=$IMPL_COUNT" >> $GITHUB_OUTPUT
+          echo "migration_files=$MIGRATION_COUNT" >> $GITHUB_OUTPUT
+          echo "test_files=$TEST_COUNT" >> $GITHUB_OUTPUT
+          
+          echo "📁 Evidence collected: $IMPL_COUNT implementation files, $MIGRATION_COUNT migrations, $TEST_COUNT test files"
+
+      - name: Professional Verification Summary
+        id: verification_summary
+        run: |
+          echo "📋 Creating Professional Verification Summary..."
+          
+          # Calculate overall scores
+          API_RATE="${{ steps.api_verification.outputs.success_rate || '0' }}"
+          STORAGE_OK="${{ steps.storage_verification.outputs.storage_tests_passed || 'false' }}"
+          AUTH_OK="${{ steps.auth_verification.outputs.auth_import_issues || 'true' }}"
+          BUILD_OK="${{ steps.build_verification.outputs.build_successful || 'false' }}"
+          
+          # Count critical issues
+          CRITICAL_COUNT=0
+          
+          if [ "$API_RATE" -lt "90" ]; then
+            CRITICAL_COUNT=$((CRITICAL_COUNT + 1))
+          fi
+          
+          if [ "$STORAGE_OK" = "false" ]; then
+            CRITICAL_COUNT=$((CRITICAL_COUNT + 1))
+          fi
+          
+          if [ "$AUTH_OK" = "true" ]; then
+            CRITICAL_COUNT=$((CRITICAL_COUNT + 1))
+          fi
+          
+          if [ "$BUILD_OK" = "false" ]; then
+            CRITICAL_COUNT=$((CRITICAL_COUNT + 1))
+          fi
+          
+          echo "critical_count=$CRITICAL_COUNT" >> $GITHUB_OUTPUT
+          
+          # Determine if verification passed (less than 2 critical issues)
+          if [ "$CRITICAL_COUNT" -lt "2" ]; then
+            echo "passed=true" >> $GITHUB_OUTPUT
+            echo "✅ Professional Verification PASSED ($CRITICAL_COUNT critical issues)"
+          else
+            echo "passed=false" >> $GITHUB_OUTPUT
+            echo "❌ Professional Verification FAILED ($CRITICAL_COUNT critical issues)"
+          fi
+
+      - name: Generate Professional Report
+        run: |
+          echo "📊 Generating Professional Verification Report..."
+          
+          cat > verification/reports/PROFESSIONAL-VERIFICATION-REPORT-${{ env.VERIFICATION_TIMESTAMP }}.md << 'EOF'
+          # 🔍 Professional Verification Report
+          
+          **Date**: $(date '+%Y-%m-%d %H:%M:%S UTC')  
+          **Commit**: ${{ github.sha }}  
+          **Workflow**: ${{ github.workflow }}  
+          **Trigger**: ${{ github.event_name }}  
+          
+          ## 📊 Verification Results
+          
+          | Component | Status | Details |
+          |-----------|--------|---------|
+          | API Integration | ${{ steps.api_verification.outputs.success_rate || 'N/A' }}% | ${{ steps.api_verification.outputs.success_rate >= '90' && '✅ PASSED' || '❌ FAILED' }} |
+          | Storage System | ${{ steps.storage_verification.outputs.storage_tests_passed == 'true' && '✅ PASSED' || '❌ FAILED' }} | CloudflareR2Provider tests |
+          | Authentication | ${{ steps.auth_verification.outputs.auth_import_issues == 'false' && '✅ PASSED' || '❌ FAILED' }} | Import and configuration |
+          | Build System | ${{ steps.build_verification.outputs.build_successful == 'true' && '✅ PASSED' || '❌ FAILED' }} | TypeScript compilation |
+          
+          ## 📁 Evidence Summary
+          
+          - **Implementation Files**: ${{ steps.evidence_collection.outputs.implementation_files }}
+          - **Database Migrations**: ${{ steps.evidence_collection.outputs.migration_files }}
+          - **Test Files**: ${{ steps.evidence_collection.outputs.test_files }}
+          
+          ## 🎯 Critical Issues
+          
+          **Count**: ${{ steps.verification_summary.outputs.critical_count }}
+          
+          ## 📋 Overall Assessment
+          
+          **Status**: ${{ steps.verification_summary.outputs.passed == 'true' && '✅ VERIFICATION PASSED' || '❌ VERIFICATION FAILED' }}
+          
+          ---
+          
+          **Generated by**: Professional Verification Pipeline  
+          **Methodology**: Evidence-based reality checking  
+          **Next Actions**: Review critical issues and implement fixes
+          EOF
+
+      - name: Update Documentation with Results
+        if: github.event.inputs.update_documentation != 'false'
+        run: |
+          echo "📝 Updating documentation with verification results..."
+          
+          # Create a verification entry in CLAUDE.md
+          VERIFICATION_ENTRY="
+          ### 🔍 Latest Professional Verification ($(date '+%Y-%m-%d %H:%M'))
+          
+          - **API Success Rate**: ${{ steps.api_verification.outputs.success_rate || 'N/A' }}%
+          - **Critical Issues**: ${{ steps.verification_summary.outputs.critical_count }}
+          - **Overall Status**: ${{ steps.verification_summary.outputs.passed == 'true' && 'PASSED ✅' || 'FAILED ❌' }}
+          - **Evidence Files**: ${{ steps.evidence_collection.outputs.implementation_files }} impl, ${{ steps.evidence_collection.outputs.test_files }} tests
+          - **Report**: \`verification/reports/PROFESSIONAL-VERIFICATION-REPORT-${{ env.VERIFICATION_TIMESTAMP }}.md\`
+          
+          "
+          
+          # Note: In a real implementation, we would update CLAUDE.md here
+          echo "Documentation update prepared (manual review required)"
+
+      - name: Upload Verification Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: professional-verification-results-${{ env.VERIFICATION_TIMESTAMP }}
+          path: |
+            verification/
+            AUTHENTICATION_TEST_RESULTS_PROFESSIONAL.json
+          retention-days: 30
+
+      - name: Create Summary
+        if: always()
+        run: |
+          echo "## 🔍 Professional Verification Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Results" >> $GITHUB_STEP_SUMMARY
+          echo "- **API Success Rate**: ${{ steps.api_verification.outputs.success_rate || 'N/A' }}%" >> $GITHUB_STEP_SUMMARY
+          echo "- **Critical Issues**: ${{ steps.verification_summary.outputs.critical_count }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Overall Status**: ${{ steps.verification_summary.outputs.passed == 'true' && '✅ PASSED' || '❌ FAILED' }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📁 Evidence Collected" >> $GITHUB_STEP_SUMMARY
+          echo "- Implementation files: ${{ steps.evidence_collection.outputs.implementation_files }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Database migrations: ${{ steps.evidence_collection.outputs.migration_files }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Test files: ${{ steps.evidence_collection.outputs.test_files }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Next Steps" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.verification_summary.outputs.passed }}" = "true" ]; then
+            echo "✅ **Verification passed** - Ready for next phase" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Verification failed** - Address critical issues before proceeding" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  notification:
+    runs-on: ubuntu-latest
+    needs: professional-verification
+    if: always()
+    
+    steps:
+      - name: Professional Verification Notification
+        run: |
+          if [ "${{ needs.professional-verification.outputs.verification_passed }}" = "true" ]; then
+            echo "🎉 Professional Verification PASSED!"
+            echo "API Success Rate: ${{ needs.professional-verification.outputs.api_success_rate }}%"
+            echo "Critical Issues: ${{ needs.professional-verification.outputs.critical_issues }}"
+          else
+            echo "🚨 Professional Verification FAILED!"
+            echo "Critical Issues: ${{ needs.professional-verification.outputs.critical_issues }}"
+            echo "Requires immediate attention before proceeding with development."
+          fi

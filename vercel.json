@@ -1,7 +1,13 @@
 {
   "version": 2,
+  "buildCommand": "corepack enable && corepack prepare pnpm@10.12.4 --activate && pnpm install && pnpm run build",
+  "installCommand": "corepack enable && corepack prepare pnpm@10.12.4 --activate && pnpm install",
+  "functions": {
+    "src/app/api/**": {
+      "includeFiles": "node_modules/iyzipay/**"
+    }
+  },
   "env": {
-    "NEXTAUTH_URL": "${NEXTAUTH_URL}",
     "NEXTAUTH_SECRET": "${NEXTAUTH_SECRET}",
     "NEXT_PUBLIC_SUPABASE_URL": "${NEXT_PUBLIC_SUPABASE_URL}",
     "NEXT_PUBLIC_SUPABASE_ANON_KEY": "${NEXT_PUBLIC_SUPABASE_ANON_KEY}",

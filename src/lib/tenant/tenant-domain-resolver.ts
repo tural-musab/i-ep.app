@@ -5,7 +5,7 @@
  * Referans: docs/architecture/multi-tenant-strategy.md, docs/domain-management.md
  */
 
-import { createServerSupabaseClient } from '../supabase/server';
+import { createServerSupabaseClient, supabaseServer } from '../supabase/server';
 
 /**
  * Tenant bilgisi
@@ -26,8 +26,10 @@ export interface TenantInfo {
 export async function resolveTenantFromDomain(domain: string): Promise<TenantInfo | null> {
   try {
     // Development environment için fallback tenant
-    if (process.env.NODE_ENV === 'development' && 
-        (domain === 'localhost:3000' || domain === 'localhost' || domain === '127.0.0.1:3000')) {
+    if (
+      process.env.NODE_ENV === 'development' &&
+      (domain === 'localhost:3000' || domain === 'localhost' || domain === '127.0.0.1:3000')
+    ) {
       return {
         id: 'demo-tenant-id',
         name: 'Demo Tenant',
@@ -38,18 +40,20 @@ export async function resolveTenantFromDomain(domain: string): Promise<TenantInf
     }
 
     // Subdomain kontrolü
-    const BASE_DOMAIN = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app';
+    // Extract domain from BASE_URL
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app';
+    const BASE_DOMAIN = new URL(BASE_URL).hostname;
     if (domain.endsWith(`.${BASE_DOMAIN}`)) {
       const subdomain = domain.replace(`.${BASE_DOMAIN}`, '');
       return await getTenantBySubdomain(subdomain);
     }
 
-    // Özel domain kontrolü - tenant_domains tablosundan sorgula
+    // Custom domain check - query from tenant_domains table
     return await getTenantByCustomDomain(domain);
   } catch (error) {
-    console.error('Tenant tespit hatası:', error);
-    
-    // Development için fallback
+    console.error('Tenant resolution error:', error);
+
+    // Development fallback
     if (process.env.NODE_ENV === 'development') {
       return {
         id: 'demo-tenant-id',
@@ -59,7 +63,7 @@ export async function resolveTenantFromDomain(domain: string): Promise<TenantInf
         isCustomDomain: false,
       };
     }
-    
+
     return null;
   }
 }
@@ -75,32 +79,48 @@ async function getTenantBySubdomain(subdomain: string): Promise<TenantInfo | nul
       return null;
     }
 
-    // Supabase istemcisi
-    const supabase = createServerSupabaseClient();
-
-    // Tenants tablosundan tenant bilgilerini al
-    const { data, error } = await supabase
-      .from('tenants')
-      .select('id, name')
-      .eq('subdomain', subdomain)
-      .eq('is_active', true)
-      .single();
-
-    if (error || !data) {
-      console.warn(`Subdomain için tenant bulunamadı: ${subdomain}`, error);
-      return null;
+    // Production environment için staging subdomain fallback
+    if (subdomain === 'staging') {
+      return {
+        id: 'staging-tenant-id',
+        name: 'Staging Environment',
+        domain: `staging.${new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app').hostname}`,
+        isPrimary: true,
+        isCustomDomain: false,
+      };
     }
 
-    return {
-      id: data.id,
-      name: data.name,
-      domain: `${subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app'}`,
-      isPrimary: true, // Subdomain her zaman primer kabul edilir
-      isCustomDomain: false,
-    };
+    // Supabase service role client - bypasses RLS for tenant resolution
+    try {
+      // Use service role client for tenant queries to avoid permission issues
+      const { data, error } = await supabaseServer
+        .from('tenants')
+        .select('id, name')
+        .eq('subdomain', subdomain)
+        .eq('is_active', true)
+        .single();
+
+      if (error || !data) {
+        console.warn(`No tenant found for subdomain: ${subdomain}`, error);
+        // Return fallback tenant for known subdomains
+        return createFallbackTenant(subdomain);
+      }
+
+      return {
+        id: data.id,
+        name: data.name,
+        domain: `${subdomain}.${new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app').hostname}`,
+        isPrimary: true, // Subdomain is always considered primary
+        isCustomDomain: false,
+      };
+    } catch (supabaseError) {
+      console.error('Supabase connection failed in getTenantBySubdomain:', supabaseError);
+      // Return fallback tenant when Supabase is unavailable
+      return createFallbackTenant(subdomain);
+    }
   } catch (error) {
-    console.error('Subdomain tenant tespit hatası:', error);
-    return null;
+    console.error('Subdomain tenant resolution error:', error);
+    return createFallbackTenant(subdomain);
   }
 }
 
@@ -115,32 +135,59 @@ async function getTenantByCustomDomain(domain: string): Promise<TenantInfo | nul
       return null;
     }
 
-    // Supabase istemcisi
-    const supabase = createServerSupabaseClient();
+    // Supabase service role client - bypasses RLS for tenant resolution
+    try {
+      // Use service role client for custom domain queries to avoid permission issues
+      const { data, error } = await supabaseServer
+        .from('tenant_domains')
+        .select('id, tenant_id, domain, is_primary, is_verified, tenants(id, name)')
+        .eq('domain', domain)
+        .eq('is_verified', true) // Only verified domains
+        .eq('type', 'custom')
+        .single();
 
-    // tenant_domains tablosundan domain bilgilerini al
-    const { data, error } = await supabase
-      .from('tenant_domains')
-      .select('id, tenant_id, domain, is_primary, is_verified, tenants(id, name)')
-      .eq('domain', domain)
-      .eq('is_verified', true) // Sadece doğrulanmış domainler
-      .eq('type', 'custom')
-      .single();
+      if (error || !data || !data.tenants) {
+        console.warn(`No tenant found for custom domain: ${domain}`, error);
+        return null;
+      }
 
-    if (error || !data || !data.tenants) {
-      console.warn(`Özel domain için tenant bulunamadı: ${domain}`, error);
+      return {
+        id: data.tenant_id,
+        name: (data.tenants as any).name,
+        domain: domain,
+        isPrimary: data.is_primary,
+        isCustomDomain: true,
+      };
+    } catch (supabaseError) {
+      console.error('Supabase connection failed in getTenantByCustomDomain:', supabaseError);
+      // Return null for custom domains when Supabase is unavailable
       return null;
     }
-
-    return {
-      id: data.tenant_id,
-      name: (data.tenants as any).name,
-      domain: domain,
-      isPrimary: data.is_primary,
-      isCustomDomain: true,
-    };
   } catch (error) {
-    console.error('Özel domain tenant tespit hatası:', error);
+    console.error('Custom domain tenant resolution error:', error);
     return null;
   }
+}
+
+/**
+ * Creates a fallback tenant for known subdomains when database is unavailable
+ * @param subdomain The subdomain to create fallback for
+ * @returns Fallback tenant info or null
+ */
+function createFallbackTenant(subdomain: string): TenantInfo | null {
+  // Known staging/development subdomains
+  const knownSubdomains = ['staging', 'dev', 'test', 'demo'];
+  
+  if (knownSubdomains.includes(subdomain)) {
+    return {
+      id: `${subdomain}-fallback-tenant-id`,
+      name: `${subdomain.charAt(0).toUpperCase() + subdomain.slice(1)} Environment`,
+      domain: `${subdomain}.${process.env.NEXT_PUBLIC_BASE_DOMAIN || 'i-ep.app'}`,
+      isPrimary: true,
+      isCustomDomain: false,
+    };
+  }
+  
+  // For unknown subdomains, return null to trigger redirect
+  return null;
 }

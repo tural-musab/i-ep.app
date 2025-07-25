@@ -23,7 +23,6 @@ export const env = createEnv({
 
     // Auth
     NEXTAUTH_SECRET: z.string().min(32),
-    NEXTAUTH_URL: z.string().url(),
 
     // Supabase
     SUPABASE_SERVICE_ROLE_KEY: z.string(),
@@ -32,7 +31,7 @@ export const env = createEnv({
     // Email - optional for now
     EMAIL_SERVER_HOST: z.string().optional(),
     EMAIL_SERVER_PORT: z.preprocess(
-      (val) => val ? Number(val) : undefined,
+      (val) => (val ? Number(val) : undefined),
       z.number().int().min(1).max(65535).optional()
     ),
     EMAIL_SERVER_USER: z.string().optional(),
@@ -64,11 +63,11 @@ export const env = createEnv({
 
     // Rate Limiting - optional
     RATE_LIMIT_WINDOW_MS: z.preprocess(
-      (val) => val ? Number(val) : undefined,
+      (val) => (val ? Number(val) : undefined),
       z.number().int().min(1000).optional()
     ),
     RATE_LIMIT_MAX: z.preprocess(
-      (val) => val ? Number(val) : undefined,
+      (val) => (val ? Number(val) : undefined),
       z.number().int().min(1).optional()
     ),
 
@@ -83,36 +82,37 @@ export const env = createEnv({
     SENTRY_ENVIRONMENT: z.enum(['development', 'staging', 'production']).optional(),
 
     // Development-specific flags - only allowed in dev
-    DEBUG: z.preprocess(
-      (val) => val === 'true',
-      z.boolean().optional()
-    ),
-    ENABLE_MOCK_SERVICES: z.preprocess(
-      (val) => val === 'true',
-      z.boolean().optional()
-    ).refine((val) => {
-      if (val && process.env.NODE_ENV !== 'development') {
-        return false;
-      }
-      return true;
-    }, {
-      message: 'ENABLE_MOCK_SERVICES can only be enabled in development mode',
-    }),
-    DISABLE_RATE_LIMITING: z.preprocess(
-      (val) => val === 'true',
-      z.boolean().optional()
-    ).refine((val) => {
-      if (val && process.env.NODE_ENV !== 'development') {
-        return false;
-      }
-      return true;
-    }, {
-      message: 'DISABLE_RATE_LIMITING can only be disabled in development mode',
-    }),
+    DEBUG: z.preprocess((val) => val === 'true', z.boolean().optional()),
+    ENABLE_MOCK_SERVICES: z
+      .preprocess((val) => val === 'true', z.boolean().optional())
+      .refine(
+        (val) => {
+          if (val && process.env.NODE_ENV !== 'development') {
+            return false;
+          }
+          return true;
+        },
+        {
+          message: 'ENABLE_MOCK_SERVICES can only be enabled in development mode',
+        }
+      ),
+    DISABLE_RATE_LIMITING: z
+      .preprocess((val) => val === 'true', z.boolean().optional())
+      .refine(
+        (val) => {
+          if (val && process.env.NODE_ENV !== 'development') {
+            return false;
+          }
+          return true;
+        },
+        {
+          message: 'DISABLE_RATE_LIMITING can only be disabled in development mode',
+        }
+      ),
 
     // Redis Database - development only
     REDIS_DB: z.preprocess(
-      (val) => val ? Number(val) : undefined,
+      (val) => (val ? Number(val) : undefined),
       z.number().int().min(0).max(15).optional()
     ),
 
@@ -123,49 +123,53 @@ export const env = createEnv({
     ),
 
     // Feature Flags
-    ENABLE_DOMAIN_MANAGEMENT: z.preprocess(
-      (val) => val === 'true',
-      z.boolean().optional()
-    ),
+    ENABLE_DOMAIN_MANAGEMENT: z.preprocess((val) => val === 'true', z.boolean().optional()),
 
     // Env Profile (optional) - Only allowed in development
-    NEXT_ENV_PROFILE: z.enum(['local-remote']).optional()
-      .refine((val) => {
-        if (val && process.env.NODE_ENV !== 'development') {
-          return false;
+    NEXT_ENV_PROFILE: z
+      .enum(['local-remote'])
+      .optional()
+      .refine(
+        (val) => {
+          if (val && process.env.NODE_ENV !== 'development') {
+            return false;
+          }
+          return true;
+        },
+        {
+          message: 'NEXT_ENV_PROFILE can only be set in development mode',
         }
-        return true;
-      }, {
-        message: 'NEXT_ENV_PROFILE can only be set in development mode',
-      }),
+      ),
 
     // CORS Settings
     CORS_ALLOW_ORIGINS: z.string().optional(),
 
     // Domain - Critical for production security
-    ROOT_DOMAIN: z.string().optional().refine(val => {
-      if (process.env.NODE_ENV === 'production') {
-        return !!val;
-      }
-      return true;
-    }, {
-      message: 'ROOT_DOMAIN must be set in production environment for security',
-    }).default('i-ep.app'),
+    ROOT_DOMAIN: z
+      .string()
+      .optional()
+      .refine(
+        (val) => {
+          if (process.env.NODE_ENV === 'production') {
+            return !!val;
+          }
+          return true;
+        },
+        {
+          message: 'ROOT_DOMAIN must be set in production environment for security',
+        }
+      )
+      .default('i-ep.app'),
     VERCEL_URL: z.string().optional(),
   },
   client: {
-    // Public URLs
+    // Public URLs - consolidated to single BASE_URL
     NEXT_PUBLIC_APP_NAME: z.string(),
-    NEXT_PUBLIC_APP_URL: z.string().url(),
+    NEXT_PUBLIC_BASE_URL: z.string().url(),
 
     // Supabase Public
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
-
-    // Multi-tenant - optional
-    NEXT_PUBLIC_TENANT_DOMAIN: z.string().optional(),
-    NEXT_PUBLIC_ADMIN_DOMAIN: z.string().optional(),
-    NEXT_PUBLIC_BASE_DOMAIN: z.string().optional(),
 
     // Storage Configuration - optional
     NEXT_PUBLIC_STORAGE_PROVIDER: z.enum(['supabase', 'r2']).optional(),
@@ -185,7 +189,6 @@ export const env = createEnv({
     POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
     POSTGRES_DATABASE: process.env.POSTGRES_DATABASE,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     SUPABASE_JWT_SECRET: process.env.SUPABASE_JWT_SECRET,
     EMAIL_SERVER_HOST: process.env.EMAIL_SERVER_HOST,
@@ -212,7 +215,6 @@ export const env = createEnv({
     RATE_LIMIT_MAX: process.env.RATE_LIMIT_MAX,
     LOG_LEVEL: process.env.LOG_LEVEL,
     NODE_ENV: process.env.NODE_ENV,
-    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
     SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT,
     DEBUG: process.env.DEBUG,
     ENABLE_MOCK_SERVICES: process.env.ENABLE_MOCK_SERVICES,
@@ -226,17 +228,15 @@ export const env = createEnv({
     VERCEL_URL: process.env.VERCEL_URL,
     // Client
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    NEXT_PUBLIC_TENANT_DOMAIN: process.env.NEXT_PUBLIC_TENANT_DOMAIN,
-    NEXT_PUBLIC_ADMIN_DOMAIN: process.env.NEXT_PUBLIC_ADMIN_DOMAIN,
-    NEXT_PUBLIC_BASE_DOMAIN: process.env.NEXT_PUBLIC_BASE_DOMAIN,
     NEXT_PUBLIC_STORAGE_PROVIDER: process.env.NEXT_PUBLIC_STORAGE_PROVIDER,
     NEXT_PUBLIC_ROUTE_LARGE_FILES: process.env.NEXT_PUBLIC_ROUTE_LARGE_FILES,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
   // Environment validation enabled for security
-  skipValidation: process.env.NODE_ENV === 'test' || process.env.CI === 'true' || !process.env.NODE_ENV, // Skip in test, CI, or when NODE_ENV is not set
+  skipValidation:
+    process.env.NODE_ENV === 'test' || process.env.CI === 'true' || !process.env.NODE_ENV, // Skip in test, CI, or when NODE_ENV is not set
   emptyStringAsUndefined: true,
 });

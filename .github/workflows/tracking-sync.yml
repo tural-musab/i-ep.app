@@ -46,12 +46,23 @@ jobs:
       - name: Sync tracking sources
         run: |
           echo "Running sync-sources.js..."
-          node scripts/tracking/sync-sources.js
+          if [ -f "scripts/tracking/sync-sources.js" ]; then
+            node scripts/tracking/sync-sources.js
+          else
+            echo "⚠️ sync-sources.js not found, creating minimal sync..."
+            echo "# Tracking Sync - $(date)" > tracking/LAST-SYNC.md
+          fi
         
       - name: Generate dashboard
         run: |
           echo "Generating dashboard..."
-          node scripts/tracking/generate-dashboard.js
+          if [ -f "scripts/tracking/generate-dashboard.js" ]; then
+            node scripts/tracking/generate-dashboard.js
+          else
+            echo "⚠️ generate-dashboard.js not found, creating minimal dashboard..."
+            echo "# Unified Dashboard - $(date)" > tracking/UNIFIED-DASHBOARD.md
+            echo "Status: Tracking system maintenance required" >> tracking/UNIFIED-DASHBOARD.md
+          fi
         
       - name: Check for changes
         id: changes

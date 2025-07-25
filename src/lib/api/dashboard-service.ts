@@ -35,16 +35,21 @@ export interface DashboardData {
 export async function getDashboardStats(): Promise<DashboardStats> {
   try {
     // Use authenticated API client for all requests
-    const [studentsResponse, teachersResponse, classesResponse, assignmentsResponse] = await Promise.all([
-      apiGet('/api/students?limit=1'),
-      apiGet('/api/teachers?limit=1'),
-      apiGet('/api/classes'),
-      apiGet('/api/assignments?status=published&limit=1')
-    ]);
+    const [studentsResponse, teachersResponse, classesResponse, assignmentsResponse] =
+      await Promise.all([
+        apiGet('/api/students?limit=1'),
+        apiGet('/api/teachers?limit=1'),
+        apiGet('/api/classes'),
+        apiGet('/api/assignments?status=published&limit=1'),
+      ]);
 
     // Handle authentication errors
-    if (studentsResponse.status === 401 || teachersResponse.status === 401 || 
-        classesResponse.status === 401 || assignmentsResponse.status === 401) {
+    if (
+      studentsResponse.status === 401 ||
+      teachersResponse.status === 401 ||
+      classesResponse.status === 401 ||
+      assignmentsResponse.status === 401
+    ) {
       console.error('Authentication failed for dashboard stats');
       throw new Error('Authentication required');
     }
@@ -59,17 +64,17 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       totalStudents,
       totalTeachers,
       totalClasses,
-      pendingAssignments
+      pendingAssignments,
     };
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
-    
+
     // Return fallback stats if API fails
     return {
       totalStudents: 0,
       totalTeachers: 0,
       totalClasses: 0,
-      pendingAssignments: 0
+      pendingAssignments: 0,
     };
   }
 }
@@ -88,7 +93,7 @@ export async function getRecentActivities(): Promise<RecentActivity[]> {
 
       if (assignmentResponse.status === 200 && assignmentResponse.data) {
         const assignments = assignmentResponse.data.data || [];
-        
+
         assignments.forEach((assignment: any) => {
           const timeAgo = getTimeAgo(assignment.created_at);
           activities.push({
@@ -97,7 +102,7 @@ export async function getRecentActivities(): Promise<RecentActivity[]> {
             message: `${assignment.title} ödevi oluşturuldu`,
             time: timeAgo,
             userId: assignment.created_by,
-            userName: assignment.teacher_name || 'Öğretmen'
+            userName: assignment.teacher_name || 'Öğretmen',
           });
         });
       }
@@ -111,7 +116,7 @@ export async function getRecentActivities(): Promise<RecentActivity[]> {
 
       if (gradeResponse.status === 200 && gradeResponse.data) {
         const grades = gradeResponse.data.data || [];
-        
+
         grades.forEach((grade: any) => {
           const timeAgo = getTimeAgo(grade.created_at);
           activities.push({
@@ -120,7 +125,7 @@ export async function getRecentActivities(): Promise<RecentActivity[]> {
             message: `${grade.subjectName || 'Ders'} notlandırıldı (${grade.letterGrade || grade.gradeValue})`,
             time: timeAgo,
             userId: grade.studentId,
-            userName: grade.studentName || 'Öğrenci'
+            userName: grade.studentName || 'Öğrenci',
           });
         });
       }
@@ -134,7 +139,7 @@ export async function getRecentActivities(): Promise<RecentActivity[]> {
 
       if (attendanceResponse.status === 200 && attendanceResponse.data) {
         const attendances = attendanceResponse.data.data || [];
-        
+
         attendances.forEach((attendance: any) => {
           const timeAgo = getTimeAgo(attendance.created_at);
           const statusText = getAttendanceStatusText(attendance.status);
@@ -144,7 +149,7 @@ export async function getRecentActivities(): Promise<RecentActivity[]> {
             message: `${attendance.studentName || 'Öğrenci'} yoklama ${statusText}`,
             time: timeAgo,
             userId: attendance.studentId,
-            userName: attendance.studentName || 'Öğrenci'
+            userName: attendance.studentName || 'Öğrenci',
           });
         });
       }
@@ -162,7 +167,7 @@ export async function getRecentActivities(): Promise<RecentActivity[]> {
 
     // Return top 10 activities or fallback to mock data if no activities
     const recentActivities = activities.slice(0, 10);
-    
+
     if (recentActivities.length === 0) {
       // Fallback to mock data if no real activities found
       return getFallbackActivities();
@@ -185,13 +190,13 @@ function getTimeAgo(timestamp: string): string {
 
   if (diffInMinutes < 1) return 'az önce';
   if (diffInMinutes < 60) return `${diffInMinutes} dakika önce`;
-  
+
   const diffInHours = Math.floor(diffInMinutes / 60);
   if (diffInHours < 24) return `${diffInHours} saat önce`;
-  
+
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays < 7) return `${diffInDays} gün önce`;
-  
+
   return `${Math.floor(diffInDays / 7)} hafta önce`;
 }
 
@@ -200,11 +205,11 @@ function getTimeAgo(timestamp: string): string {
  */
 function getAttendanceStatusText(status: string): string {
   const statusMap: Record<string, string> = {
-    'present': 'katıldı',
-    'absent': 'gelmedi',
-    'late': 'geç kaldı',
-    'excused': 'mazereti var',
-    'sick': 'hasta'
+    present: 'katıldı',
+    absent: 'gelmedi',
+    late: 'geç kaldı',
+    excused: 'mazereti var',
+    sick: 'hasta',
   };
   return statusMap[status] || 'kaydedildi';
 }
@@ -232,7 +237,7 @@ function getFallbackActivities(): RecentActivity[] {
       message: 'Matematik ödevi teslim edildi',
       time: '2 saat önce',
       userId: 'user-1',
-      userName: 'Ahmet Yılmaz'
+      userName: 'Ahmet Yılmaz',
     },
     {
       id: 'fallback-2',
@@ -240,7 +245,7 @@ function getFallbackActivities(): RecentActivity[] {
       message: 'Fen bilgisi sınavı notlandırıldı',
       time: '4 saat önce',
       userId: 'user-2',
-      userName: 'Ayşe Demir'
+      userName: 'Ayşe Demir',
     },
     {
       id: 'fallback-3',
@@ -248,8 +253,8 @@ function getFallbackActivities(): RecentActivity[] {
       message: 'Günlük yoklama tamamlandı',
       time: '6 saat önce',
       userId: 'user-3',
-      userName: 'Mehmet Kaya'
-    }
+      userName: 'Mehmet Kaya',
+    },
   ];
 }
 
@@ -260,25 +265,25 @@ export async function getDashboardData(): Promise<DashboardData> {
   try {
     const [stats, recentActivities] = await Promise.all([
       getDashboardStats(),
-      getRecentActivities()
+      getRecentActivities(),
     ]);
 
     return {
       stats,
-      recentActivities
+      recentActivities,
     };
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
-    
+
     // Return fallback data
     return {
       stats: {
         totalStudents: 0,
         totalTeachers: 0,
         totalClasses: 0,
-        pendingAssignments: 0
+        pendingAssignments: 0,
       },
-      recentActivities: []
+      recentActivities: [],
     };
   }
 }

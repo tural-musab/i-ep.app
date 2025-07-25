@@ -24,10 +24,12 @@ const STORAGE_CONFIG = {
 
   // Feature flags
   features: {
-    useCloudflareR2: !!(process.env.CLOUDFLARE_R2_ACCESS_KEY_ID && 
-                       process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY && 
-                       process.env.CLOUDFLARE_R2_ENDPOINT && 
-                       process.env.CLOUDFLARE_R2_BUCKET_NAME),
+    useCloudflareR2: !!(
+      process.env.CLOUDFLARE_R2_ACCESS_KEY_ID &&
+      process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY &&
+      process.env.CLOUDFLARE_R2_ENDPOINT &&
+      process.env.CLOUDFLARE_R2_BUCKET_NAME
+    ),
     routeLargeFiles: process.env.NEXT_PUBLIC_ROUTE_LARGE_FILES === 'true',
   },
 };

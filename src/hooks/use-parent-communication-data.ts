@@ -305,7 +305,7 @@ export function useParentCommunicationData(): ParentCommunicationData {
 
   useEffect(() => {
     const fetchParentCommunicationData = async () => {
-      setData(prev => ({ ...prev, isLoading: true, error: null }));
+      setData((prev) => ({ ...prev, isLoading: true, error: null }));
 
       try {
         // Try to fetch real API data
@@ -381,7 +381,7 @@ export function useParentCommunicationData(): ParentCommunicationData {
         }
 
         // Update data with real API data or keep mock data
-        setData(prev => ({
+        setData((prev) => ({
           ...prev,
           ...newData,
           isLoading: false,
@@ -389,11 +389,13 @@ export function useParentCommunicationData(): ParentCommunicationData {
           error: null,
         }));
 
-        console.log('Parent communication data updated:', hasRealData ? 'Real API data' : 'Mock data fallback');
-
+        console.log(
+          'Parent communication data updated:',
+          hasRealData ? 'Real API data' : 'Mock data fallback'
+        );
       } catch (error) {
         console.error('Error fetching parent communication data:', error);
-        setData(prev => ({
+        setData((prev) => ({
           ...prev,
           isLoading: false,
           isUsingMockData: true,

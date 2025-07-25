@@ -117,7 +117,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const fetchTenantDetails = async (tenantId: string) => {
     try {
       console.log('🔧 fetchTenantDetails: Querying tenant with ID:', tenantId);
-      
+
       // Development için localhost kontrolü
       if (tenantId === 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa') {
         console.log('🔧 fetchTenantDetails: Using development tenant mock data');
@@ -210,23 +210,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         // Kullanıcı profil bilgilerini al
         if (tenantId && authUser.id) {
-          console.log('🔧 AuthContext: Fetching user data for auth_id:', authUser.id, 'tenant:', tenantId);
-          
+          console.log(
+            '🔧 AuthContext: Fetching user data for auth_id:',
+            authUser.id,
+            'tenant:',
+            tenantId
+          );
+
           // Development için mock user data kullan
           if (tenantId === 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa') {
             console.log('🔧 AuthContext: Using development mock user data');
             const mockUserData = {
               id: authUser.id,
-              name: authUser.user_metadata?.full_name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'Demo User',
+              name:
+                authUser.user_metadata?.full_name ||
+                authUser.user_metadata?.name ||
+                authUser.email?.split('@')[0] ||
+                'Demo User',
               role: authUser.app_metadata?.role || authUser.user_metadata?.role || 'admin',
               status: 'active',
               avatar_url: null,
               created_at: authUser.created_at,
-              updated_at: authUser.updated_at
+              updated_at: authUser.updated_at,
             };
-            
+
             console.log('🔧 AuthContext: Mock user data:', mockUserData);
-            
+
             // User nesnesini oluştur
             const appUser: User = {
               id: authUser.id,
@@ -279,7 +288,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
             const fallbackUser: User = {
               id: authUser.id,
               email: authUser.email || '',
-              role: (authUser.app_metadata?.role || authUser.user_metadata?.role || 'user') as UserRole,
+              role: (authUser.app_metadata?.role ||
+                authUser.user_metadata?.role ||
+                'user') as UserRole,
               tenantId: tenantId,
               isActive: true,
               profile: {
@@ -295,9 +306,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
               lastLogin: authUser.last_sign_in_at ? new Date(authUser.last_sign_in_at) : undefined,
               allowedTenants: (authUser.user_metadata?.allowed_tenants as string[]) || [],
             };
-            
+
             setUser(fallbackUser);
-            
+
             // Session nesnesini oluştur
             const fallbackSession: Session = {
               user: fallbackUser,
@@ -306,7 +317,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 : new Date(Date.now() + 24 * 60 * 60 * 1000),
               accessToken: sessionData.session.access_token,
             };
-            
+
             setSession(fallbackSession);
           } else if (userData) {
             // User nesnesini oluştur
@@ -591,21 +602,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return user.tenantId === tenantId || user.allowedTenants?.includes(tenantId) || false;
   };
 
-  // Rol kontrolleri
+  // Rol kontrolleri - Safari compatible string comparison
   const isAdmin = (): boolean => {
-    return user?.role === UserRole.ADMIN;
+    return user?.role === 'admin';
   };
 
   const isTeacher = (): boolean => {
-    return user?.role === UserRole.TEACHER;
+    return user?.role === 'teacher';
   };
 
   const isStudent = (): boolean => {
-    return user?.role === UserRole.STUDENT;
+    return user?.role === 'student';
   };
 
   const isParent = (): boolean => {
-    return user?.role === UserRole.PARENT;
+    return user?.role === 'parent';
   };
 
   // Context değerleri

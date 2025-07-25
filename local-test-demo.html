@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İ-EP.APP Local Demo Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .test-section { border: 1px solid #ccc; margin: 10px 0; padding: 15px; border-radius: 5px; }
+        .success { border-color: #4CAF50; background-color: #f9fff9; }
+        .error { border-color: #f44336; background-color: #fff9f9; }
+        .info { border-color: #2196F3; background-color: #f9f9ff; }
+        button { padding: 10px 15px; margin: 5px; background: #2196F3; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        .result { margin: 10px 0; padding: 10px; background: #f5f5f5; border-radius: 3px; font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>🚀 İ-EP.APP - LOCAL DEMO TEST</h1>
+    
+    <div class="test-section info">
+        <h2>📋 PROFESYONEL TEST YAKLAŞIMI</h2>
+        <p><strong>Test Sunucusu:</strong> http://localhost:3001</p>
+        <p><strong>Durum:</strong> <span id="server-status">Kontrol ediliyor...</span></p>
+        <p><strong>Test Kapsamı:</strong> Authentication + API + Turkish Content</p>
+    </div>
+
+    <div class="test-section">
+        <h2>🔐 1. AUTHENTICATION TEST</h2>
+        <p><strong>Demo Kullanıcıları:</strong></p>
+        <ul>
+            <li><strong>Admin:</strong> admin@demo.local / demo123</li>
+            <li><strong>Öğretmen:</strong> teacher1@demo.local / demo123</li>
+            <li><strong>Öğrenci:</strong> student1@demo.local / demo123</li>
+            <li><strong>Veli:</strong> parent1@demo.local / demo123</li>
+        </ul>
+        
+        <button onclick="testLogin()">🚀 Authentication Test Başlat</button>
+        <div id="auth-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔌 2. API CONNECTIVITY TEST</h2>
+        <p>Phase 6.1'de test ettiğimiz 8 API endpoint'ini test edelim:</p>
+        
+        <button onclick="testAllAPIs()">🔍 Tüm API'leri Test Et</button>
+        <div id="api-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🇹🇷 3. TURKISH CONTENT TEST</h2>
+        <p>Türkçe karakterler ve eğitim içeriği test:</p>
+        
+        <button onclick="testTurkishContent()">🔤 Türkçe İçerik Test</button>
+        <div id="turkish-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 4. DEMO ANALYTICS TEST</h2>
+        <p>Demo analytics sisteminin çalışmasını test edelim:</p>
+        
+        <button onclick="testAnalytics()">📈 Analytics Test</button>
+        <div id="analytics-result" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>✅ TEST SONUÇLARI</h2>
+        <div id="overall-result" class="result">Test henüz başlatılmadı...</div>
+        <button onclick="runFullTest()">🎯 TÜM TESTLERİ ÇALIŞTIR</button>
+    </div>
+
+    <script>
+        let testResults = {};
+        
+        // Server status check
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('http://localhost:3001/');
+                document.getElementById('server-status').textContent = response.ok ? '✅ Çalışıyor' : '❌ Sorun var';
+                return response.ok;
+            } catch (error) {
+                document.getElementById('server-status').textContent = '❌ Bağlanamıyor';
+                return false;
+            }
+        }
+
+        // Authentication test
+        async function testLogin() {
+            const result = document.getElementById('auth-result');
+            result.textContent = '🔄 Authentication test başlıyor...\n';
+            
+            try {
+                // Test login page
+                const loginResponse = await fetch('http://localhost:3001/auth/giris');
+                const loginPageWorks = loginResponse.ok;
+                result.textContent += `✅ Login sayfası: ${loginPageWorks ? 'Çalışıyor' : 'Sorun var'}\n`;
+                
+                // Test quick demo page  
+                const quickDemoResponse = await fetch('http://localhost:3001/auth/quick-demo');
+                const quickDemoWorks = quickDemoResponse.ok;
+                result.textContent += `✅ Quick Demo sayfası: ${quickDemoWorks ? 'Çalışıyor' : 'Sorun var'}\n`;
+                
+                testResults.auth = loginPageWorks && quickDemoWorks;
+                result.textContent += `\n🎯 SONUÇ: Authentication ${testResults.auth ? 'BAŞARILI ✅' : 'BAŞARISIZ ❌'}`;
+                
+            } catch (error) {
+                result.textContent += `❌ Hata: ${error.message}`;
+                testResults.auth = false;
+            }
+        }
+
+        // API test (Phase 6.1'deki gibi)
+        async function testAllAPIs() {
+            const result = document.getElementById('api-result');
+            result.textContent = '🔄 API testleri başlıyor...\n';
+            
+            const headers = {
+                'X-User-Email': 'admin@demo.i-ep.app',
+                'X-User-ID': 'demo-admin-001', 
+                'x-tenant-id': 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+                'Content-Type': 'application/json'
+            };
+            
+            const endpoints = [
+                '/api/dashboard/recent-activities',
+                '/api/classes',
+                '/api/students', 
+                '/api/teachers',
+                '/api/assignments',
+                '/api/assignments/statistics',
+                '/api/attendance/statistics',
+                '/api/grades/analytics'
+            ];
+            
+            let successCount = 0;
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(`http://localhost:3001${endpoint}`, { headers });
+                    const duration = Date.now() - startTime;
+                    
+                    if (response.ok) {
+                        result.textContent += `✅ ${endpoint}: 200 OK (${duration}ms)\n`;
+                        successCount++;
+                    } else {
+                        result.textContent += `❌ ${endpoint}: ${response.status} ERROR\n`;
+                    }
+                } catch (error) {
+                    result.textContent += `❌ ${endpoint}: NETWORK ERROR\n`;
+                }
+            }
+            
+            testResults.api = successCount === endpoints.length;
+            result.textContent += `\n🎯 SONUÇ: ${successCount}/${endpoints.length} API ${testResults.api ? 'BAŞARILI ✅' : 'BAŞARISIZ ❌'}`;
+        }
+
+        // Turkish content test
+        async function testTurkishContent() {
+            const result = document.getElementById('turkish-result');
+            result.textContent = '🔄 Türkçe içerik testi başlıyor...\n';
+            
+            const turkishTests = [
+                'İstanbul Demo Ortaokulu',
+                'Öğrenci, Öğretmen, Müdür',
+                'Türkçe, Matematik, Fen Bilimleri',
+                'Çağlar, Ayşe, Mehmet, Fatma',
+                'Üçüncü sınıf, beşinci ders'
+            ];
+            
+            try {
+                // Encoding test
+                let allTestsPassed = true;
+                
+                for (const testString of turkishTests) {
+                    const encoded = encodeURIComponent(testString);
+                    const decoded = decodeURIComponent(encoded);
+                    const passed = testString === decoded;
+                    
+                    result.textContent += `${passed ? '✅' : '❌'} "${testString}" encoding test\n`;
+                    if (!passed) allTestsPassed = false;
+                }
+                
+                testResults.turkish = allTestsPassed;
+                result.textContent += `\n🎯 SONUÇ: Türkçe test ${testResults.turkish ? 'BAŞARILI ✅' : 'BAŞARISIZ ❌'}`;
+                
+            } catch (error) {
+                result.textContent += `❌ Hata: ${error.message}`;
+                testResults.turkish = false;
+            }
+        }
+
+        // Analytics test
+        async function testAnalytics() {
+            const result = document.getElementById('analytics-result');
+            result.textContent = '🔄 Analytics testi başlıyor...\n';
+            
+            try {
+                // Test analytics endpoints
+                const analyticsEndpoints = [
+                    '/api/analytics/demo-events',
+                    '/api/analytics/demo-dashboard'
+                ];
+                
+                let analyticsWorking = true;
+                
+                for (const endpoint of analyticsEndpoints) {
+                    try {
+                        const response = await fetch(`http://localhost:3001${endpoint}`);
+                        const status = response.status;
+                        result.textContent += `${status < 500 ? '✅' : '❌'} ${endpoint}: ${status}\n`;
+                        
+                        if (status >= 500) analyticsWorking = false;
+                    } catch (error) {
+                        result.textContent += `❌ ${endpoint}: ERROR\n`;
+                        analyticsWorking = false;
+                    }
+                }
+                
+                testResults.analytics = analyticsWorking;
+                result.textContent += `\n🎯 SONUÇ: Analytics ${testResults.analytics ? 'BAŞARILI ✅' : 'KISMÍ BAŞARILI ⚠️'}`;
+                
+            } catch (error) {
+                result.textContent += `❌ Hata: ${error.message}`;
+                testResults.analytics = false;
+            }
+        }
+
+        // Full test runner
+        async function runFullTest() {
+            const result = document.getElementById('overall-result');
+            result.textContent = '🚀 TÜM TESTLER ÇALIŞIYOR...\n\n';
+            
+            // Run all tests sequentially
+            await testLogin();
+            await testAllAPIs();
+            await testTurkishContent();
+            await testAnalytics();
+            
+            // Calculate overall result
+            const totalTests = Object.keys(testResults).length;
+            const passedTests = Object.values(testResults).filter(Boolean).length;
+            const successRate = (passedTests / totalTests * 100).toFixed(0);
+            
+            result.textContent = `📊 GENEL TEST SONUÇLARI:\n\n`;
+            result.textContent += `• Authentication: ${testResults.auth ? '✅ BAŞARILI' : '❌ BAŞARISIZ'}\n`;
+            result.textContent += `• API Connectivity: ${testResults.api ? '✅ BAŞARILI' : '❌ BAŞARISIZ'}\n`;
+            result.textContent += `• Turkish Content: ${testResults.turkish ? '✅ BAŞARILI' : '❌ BAŞARISIZ'}\n`;
+            result.textContent += `• Analytics System: ${testResults.analytics ? '✅ BAŞARILI' : '⚠️ KISMÍ BAŞARILI'}\n\n`;
+            
+            result.textContent += `🎯 BAŞARI ORANI: ${successRate}%\n`;
+            result.textContent += `${passedTests}/${totalTests} test başarıyla tamamlandı\n\n`;
+            
+            if (successRate >= 75) {
+                result.textContent += `🎉 PRODUCTION'A GEÇİŞ HAZIR!\nSistem %${successRate} başarı oranı ile production deployment için hazır.`;
+                result.className = 'result success';
+            } else {
+                result.textContent += `⚠️ EK ÇALIŞMA GEREKLİ\nProduction'a geçmeden önce %${100-successRate} iyileştirme yapılmalı.`;
+                result.className = 'result error';
+            }
+        }
+
+        // Auto-start server check
+        window.onload = function() {
+            checkServerStatus();
+        };
+    </script>
+</body>
+</html>

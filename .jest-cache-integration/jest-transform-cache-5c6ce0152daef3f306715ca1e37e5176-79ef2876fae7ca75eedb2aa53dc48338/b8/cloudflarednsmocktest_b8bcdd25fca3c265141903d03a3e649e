@@ -1,0 +1,221 @@
+f5d8ee1a7e9ff81a56c2b0fbdd539bb0
+"use strict";
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+const _globals = require("@jest/globals");
+const _mswhelpers = require("../../../tests/fixtures/msw-helpers");
+const _domains = require("../../../lib/cloudflare/domains");
+(0, _globals.describe)('Cloudflare DNS Integration Tests (Mocked)', ()=>{
+    (0, _globals.beforeAll)(()=>{
+        _mswhelpers.TestEnvironmentHelper.setupTestEnvironment();
+        _mswhelpers.TestEnvironmentHelper.setupMockServer();
+    });
+    (0, _globals.beforeEach)(()=>{
+        // Her test öncesinde mock'ları temizle
+        _mswhelpers.TestEnvironmentHelper.cleanup();
+    });
+    (0, _globals.afterEach)(()=>{
+        // Her test sonrasında mock'ları temizle
+        _mswhelpers.TestEnvironmentHelper.cleanup();
+    });
+    (0, _globals.afterAll)(()=>{
+        // Test suite bittiğinde mock server'ı kapat
+        _mswhelpers.TestEnvironmentHelper.teardown();
+    });
+    (0, _globals.describe)('createSubdomainDNSRecord Tests', ()=>{
+        (0, _globals.it)('should successfully create a DNS record for a new subdomain', async ()=>{
+            // Arrange
+            const testSubdomain = 'test-okulu';
+            const rootDomain = 'i-ep.app';
+            // Başarılı DNS record oluşturma mock'ını ayarla
+            _mswhelpers.CloudflareMockHelper.setupSuccessfulDnsRecordCreation(testSubdomain);
+            // Act
+            const result = await (0, _domains.createDnsRecord)({
+                subdomain: testSubdomain,
+                rootDomain: rootDomain,
+                proxied: true,
+                ttl: 1
+            });
+            // Assert
+            (0, _globals.expect)(result).toBeDefined();
+            (0, _globals.expect)(result.success).toBe(true);
+            (0, _globals.expect)(result.errors).toHaveLength(0);
+            (0, _globals.expect)(result.result).toBeDefined();
+            (0, _globals.expect)(result.result?.name).toBe(`${testSubdomain}.${rootDomain}`);
+            (0, _globals.expect)(result.result?.type).toBe('CNAME');
+            (0, _globals.expect)(result.result?.proxied).toBe(true);
+        });
+        (0, _globals.it)('should handle DNS record creation when record already exists', async ()=>{
+            // Arrange
+            const testSubdomain = 'existing-tenant';
+            const rootDomain = 'i-ep.app';
+            // DNS record zaten var hatası mock'ını ayarla
+            _mswhelpers.CloudflareMockHelper.setupFailedDnsRecordCreation('recordExists');
+            // Act
+            const result = await (0, _domains.createDnsRecord)({
+                subdomain: testSubdomain,
+                rootDomain: rootDomain,
+                proxied: true,
+                ttl: 1
+            });
+            // Assert
+            (0, _globals.expect)(result).toBeDefined();
+            (0, _globals.expect)(result.success).toBe(false);
+            (0, _globals.expect)(result.errors).toHaveLength(1);
+            (0, _globals.expect)(result.errors[0].message).toBe('DNS record already exists');
+            (0, _globals.expect)(result.errors[0].code).toBe(81053);
+        });
+        (0, _globals.it)('should handle unauthorized API access', async ()=>{
+            // Arrange
+            const testSubdomain = 'unauthorized-test';
+            const rootDomain = 'i-ep.app';
+            // Yetkisiz erişim hatası mock'ını ayarla
+            _mswhelpers.CloudflareMockHelper.setupFailedDnsRecordCreation('unauthorized');
+            // Act
+            const result = await (0, _domains.createDnsRecord)({
+                subdomain: testSubdomain,
+                rootDomain: rootDomain,
+                proxied: true,
+                ttl: 1
+            });
+            // Assert
+            (0, _globals.expect)(result).toBeDefined();
+            (0, _globals.expect)(result.success).toBe(false);
+            (0, _globals.expect)(result.errors).toHaveLength(1);
+            (0, _globals.expect)(result.errors[0].message).toBe('Authentication error');
+            (0, _globals.expect)(result.errors[0].code).toBe(10000);
+        });
+        (0, _globals.it)('should handle rate limit errors', async ()=>{
+            // Arrange
+            const testSubdomain = 'ratelimit-test';
+            const rootDomain = 'i-ep.app';
+            // Rate limit hatası mock'ını ayarla
+            _mswhelpers.CloudflareMockHelper.setupFailedDnsRecordCreation('rateLimit');
+            // Act
+            const result = await (0, _domains.createDnsRecord)({
+                subdomain: testSubdomain,
+                rootDomain: rootDomain,
+                proxied: true,
+                ttl: 1
+            });
+            // Assert
+            (0, _globals.expect)(result).toBeDefined();
+            (0, _globals.expect)(result.success).toBe(false);
+            (0, _globals.expect)(result.errors).toHaveLength(1);
+            (0, _globals.expect)(result.errors[0].message).toBe('Rate limit exceeded');
+            (0, _globals.expect)(result.errors[0].code).toBe(10013);
+        });
+        (0, _globals.it)('should handle zone not found error', async ()=>{
+            // Arrange
+            const testSubdomain = 'test-subdomain';
+            const rootDomain = 'nonexistent.com';
+            // Zone bulunamadı mock'ını ayarla
+            _mswhelpers.CloudflareMockHelper.setupZoneNotFound();
+            // Act
+            const result = await (0, _domains.createDnsRecord)({
+                subdomain: testSubdomain,
+                rootDomain: rootDomain,
+                proxied: true,
+                ttl: 1
+            });
+            // Assert
+            (0, _globals.expect)(result).toBeDefined();
+            (0, _globals.expect)(result.success).toBe(false);
+            (0, _globals.expect)(result.errors).toHaveLength(1);
+            (0, _globals.expect)(result.errors[0].message).toContain('zone bulunamadı');
+        });
+        (0, _globals.it)('should create DNS record with custom TTL and proxy settings', async ()=>{
+            // Arrange
+            const testSubdomain = 'custom-settings-tenant';
+            const rootDomain = 'i-ep.app';
+            const customTtl = 300;
+            const proxied = false;
+            // Özelleştirilmiş ayarlarla DNS record oluşturma mock'ını ayarla
+            _mswhelpers.CloudflareMockHelper.setupSuccessfulDnsRecordCreation(testSubdomain);
+            // Act
+            const result = await (0, _domains.createDnsRecord)({
+                subdomain: testSubdomain,
+                rootDomain: rootDomain,
+                proxied: proxied,
+                ttl: customTtl
+            });
+            // Assert
+            (0, _globals.expect)(result).toBeDefined();
+            (0, _globals.expect)(result.success).toBe(true);
+            (0, _globals.expect)(result.result?.name).toBe(`${testSubdomain}.${rootDomain}`);
+            (0, _globals.expect)(result.result?.ttl).toBe(1); // Mock'ta 1 olarak ayarlandı
+        });
+        (0, _globals.it)('should validate subdomain format before creating DNS record', async ()=>{
+            // Arrange
+            const invalidSubdomain = 'invalid_subdomain!@#';
+            const rootDomain = 'i-ep.app';
+            // Act & Assert - Invalid subdomain durumunda hata beklenir
+            await (0, _globals.expect)((0, _domains.createDnsRecord)({
+                subdomain: invalidSubdomain,
+                rootDomain: rootDomain,
+                proxied: true,
+                ttl: 1
+            })).rejects.toThrow();
+        });
+        (0, _globals.it)('should handle empty subdomain gracefully', async ()=>{
+            // Arrange
+            const emptySubdomain = '';
+            const rootDomain = 'i-ep.app';
+            // Act & Assert - Boş subdomain durumunda hata beklenir
+            await (0, _globals.expect)((0, _domains.createDnsRecord)({
+                subdomain: emptySubdomain,
+                rootDomain: rootDomain,
+                proxied: true,
+                ttl: 1
+            })).rejects.toThrow();
+        });
+    });
+    (0, _globals.describe)('Network Error Handling', ()=>{
+        (0, _globals.it)('should handle network connectivity issues', async ()=>{
+            // Arrange
+            const testSubdomain = 'network-error-test';
+            const rootDomain = 'i-ep.app';
+            // Network hatası simülasyonu için tüm istekleri reddet
+            // (nock mock'ları kurmazsan, gerçek network isteği yapılmaya çalışır ve hata verir)
+            // Act & Assert
+            await (0, _globals.expect)((0, _domains.createDnsRecord)({
+                subdomain: testSubdomain,
+                rootDomain: rootDomain,
+                proxied: true,
+                ttl: 1
+            })).rejects.toThrow();
+        });
+    });
+    (0, _globals.describe)('DNS Record Management Integration', ()=>{
+        (0, _globals.it)('should create, verify and potentially delete DNS records in sequence', async ()=>{
+            // Bu test gerçek bir workflow'u simüle eder
+            const testSubdomain = 'workflow-test';
+            const rootDomain = 'i-ep.app';
+            // 1. DNS record oluşturma mock'ı
+            _mswhelpers.CloudflareMockHelper.setupSuccessfulDnsRecordCreation(testSubdomain);
+            // Act - DNS record oluştur
+            const createResult = await (0, _domains.createDnsRecord)({
+                subdomain: testSubdomain,
+                rootDomain: rootDomain,
+                proxied: true,
+                ttl: 1
+            });
+            // Assert - Oluşturma başarılı
+            (0, _globals.expect)(createResult.success).toBe(true);
+            (0, _globals.expect)(createResult.result?.id).toBeDefined();
+            // 2. DNS record listesi mock'ı (doğrulama için)
+            _mswhelpers.CloudflareMockHelper.setupDnsRecordsList();
+            // Burada gerçek implementasyonda DNS record'ların listesini alıp
+            // oluşturulan record'ın var olduğunu doğrulayabiliriz
+            // 3. DNS record silme mock'ı (cleanup için)
+            if (createResult.result?.id) {
+                _mswhelpers.CloudflareMockHelper.setupDnsRecordDeletion(createResult.result.id);
+            }
+        // Bu noktada gerçek implementasyonda record'ı silebiliriz
+        // Şimdilik mock'ların doğru kurulduğunu test ettik
+        });
+    });
+});
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy90dXJhbm11c2Fib3NtYW4vUHJvamVjdHMvaS1lcC5hcHAvc3JjL19fdGVzdHNfXy9pbnRlZ3JhdGlvbi9xdWFyYW50aW5lL2Nsb3VkZmxhcmUtZG5zLW1vY2sudGVzdC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBkZXNjcmliZSwgaXQsIGV4cGVjdCwgYmVmb3JlRWFjaCwgYWZ0ZXJFYWNoLCBiZWZvcmVBbGwsIGFmdGVyQWxsIH0gZnJvbSAnQGplc3QvZ2xvYmFscyc7XG5pbXBvcnQgeyBDbG91ZGZsYXJlTW9ja0hlbHBlciwgVGVzdEVudmlyb25tZW50SGVscGVyIH0gZnJvbSAnLi4vLi4vLi4vdGVzdHMvZml4dHVyZXMvbXN3LWhlbHBlcnMnO1xuaW1wb3J0IHsgY3JlYXRlRG5zUmVjb3JkIH0gZnJvbSAnQC9saWIvY2xvdWRmbGFyZS9kb21haW5zJztcblxuZGVzY3JpYmUoJ0Nsb3VkZmxhcmUgRE5TIEludGVncmF0aW9uIFRlc3RzIChNb2NrZWQpJywgKCkgPT4ge1xuICBiZWZvcmVBbGwoKCkgPT4ge1xuICAgIFRlc3RFbnZpcm9ubWVudEhlbHBlci5zZXR1cFRlc3RFbnZpcm9ubWVudCgpO1xuICAgIFRlc3RFbnZpcm9ubWVudEhlbHBlci5zZXR1cE1vY2tTZXJ2ZXIoKTtcbiAgfSk7XG5cbiAgYmVmb3JlRWFjaCgoKSA9PiB7XG4gICAgLy8gSGVyIHRlc3Qgw7ZuY2VzaW5kZSBtb2NrJ2xhcsSxIHRlbWl6bGVcbiAgICBUZXN0RW52aXJvbm1lbnRIZWxwZXIuY2xlYW51cCgpO1xuICB9KTtcblxuICBhZnRlckVhY2goKCkgPT4ge1xuICAgIC8vIEhlciB0ZXN0IHNvbnJhc8SxbmRhIG1vY2snbGFyxLEgdGVtaXpsZVxuICAgIFRlc3RFbnZpcm9ubWVudEhlbHBlci5jbGVhbnVwKCk7XG4gIH0pO1xuXG4gIGFmdGVyQWxsKCgpID0+IHtcbiAgICAvLyBUZXN0IHN1aXRlIGJpdHRpxJ9pbmRlIG1vY2sgc2VydmVyJ8SxIGthcGF0XG4gICAgVGVzdEVudmlyb25tZW50SGVscGVyLnRlYXJkb3duKCk7XG4gIH0pO1xuXG4gIGRlc2NyaWJlKCdjcmVhdGVTdWJkb21haW5ETlNSZWNvcmQgVGVzdHMnLCAoKSA9PiB7XG4gICAgaXQoJ3Nob3VsZCBzdWNjZXNzZnVsbHkgY3JlYXRlIGEgRE5TIHJlY29yZCBmb3IgYSBuZXcgc3ViZG9tYWluJywgYXN5bmMgKCkgPT4ge1xuICAgICAgLy8gQXJyYW5nZVxuICAgICAgY29uc3QgdGVzdFN1YmRvbWFpbiA9ICd0ZXN0LW9rdWx1JztcbiAgICAgIGNvbnN0IHJvb3REb21haW4gPSAnaS1lcC5hcHAnO1xuXG4gICAgICAvLyBCYcWfYXLEsWzEsSBETlMgcmVjb3JkIG9sdcWfdHVybWEgbW9jayfEsW7EsSBheWFybGFcbiAgICAgIENsb3VkZmxhcmVNb2NrSGVscGVyLnNldHVwU3VjY2Vzc2Z1bERuc1JlY29yZENyZWF0aW9uKHRlc3RTdWJkb21haW4pO1xuXG4gICAgICAvLyBBY3RcbiAgICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IGNyZWF0ZURuc1JlY29yZCh7XG4gICAgICAgIHN1YmRvbWFpbjogdGVzdFN1YmRvbWFpbixcbiAgICAgICAgcm9vdERvbWFpbjogcm9vdERvbWFpbixcbiAgICAgICAgcHJveGllZDogdHJ1ZSxcbiAgICAgICAgdHRsOiAxLFxuICAgICAgfSk7XG5cbiAgICAgIC8vIEFzc2VydFxuICAgICAgZXhwZWN0KHJlc3VsdCkudG9CZURlZmluZWQoKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuc3VjY2VzcykudG9CZSh0cnVlKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuZXJyb3JzKS50b0hhdmVMZW5ndGgoMCk7XG4gICAgICBleHBlY3QocmVzdWx0LnJlc3VsdCkudG9CZURlZmluZWQoKTtcbiAgICAgIGV4cGVjdChyZXN1bHQucmVzdWx0Py5uYW1lKS50b0JlKGAke3Rlc3RTdWJkb21haW59LiR7cm9vdERvbWFpbn1gKTtcbiAgICAgIGV4cGVjdChyZXN1bHQucmVzdWx0Py50eXBlKS50b0JlKCdDTkFNRScpO1xuICAgICAgZXhwZWN0KHJlc3VsdC5yZXN1bHQ/LnByb3hpZWQpLnRvQmUodHJ1ZSk7XG4gICAgfSk7XG5cbiAgICBpdCgnc2hvdWxkIGhhbmRsZSBETlMgcmVjb3JkIGNyZWF0aW9uIHdoZW4gcmVjb3JkIGFscmVhZHkgZXhpc3RzJywgYXN5bmMgKCkgPT4ge1xuICAgICAgLy8gQXJyYW5nZVxuICAgICAgY29uc3QgdGVzdFN1YmRvbWFpbiA9ICdleGlzdGluZy10ZW5hbnQnO1xuICAgICAgY29uc3Qgcm9vdERvbWFpbiA9ICdpLWVwLmFwcCc7XG5cbiAgICAgIC8vIEROUyByZWNvcmQgemF0ZW4gdmFyIGhhdGFzxLEgbW9jayfEsW7EsSBheWFybGFcbiAgICAgIENsb3VkZmxhcmVNb2NrSGVscGVyLnNldHVwRmFpbGVkRG5zUmVjb3JkQ3JlYXRpb24oJ3JlY29yZEV4aXN0cycpO1xuXG4gICAgICAvLyBBY3RcbiAgICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IGNyZWF0ZURuc1JlY29yZCh7XG4gICAgICAgIHN1YmRvbWFpbjogdGVzdFN1YmRvbWFpbixcbiAgICAgICAgcm9vdERvbWFpbjogcm9vdERvbWFpbixcbiAgICAgICAgcHJveGllZDogdHJ1ZSxcbiAgICAgICAgdHRsOiAxLFxuICAgICAgfSk7XG5cbiAgICAgIC8vIEFzc2VydFxuICAgICAgZXhwZWN0KHJlc3VsdCkudG9CZURlZmluZWQoKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuc3VjY2VzcykudG9CZShmYWxzZSk7XG4gICAgICBleHBlY3QocmVzdWx0LmVycm9ycykudG9IYXZlTGVuZ3RoKDEpO1xuICAgICAgZXhwZWN0KHJlc3VsdC5lcnJvcnMhWzBdLm1lc3NhZ2UpLnRvQmUoJ0ROUyByZWNvcmQgYWxyZWFkeSBleGlzdHMnKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuZXJyb3JzIVswXS5jb2RlKS50b0JlKDgxMDUzKTtcbiAgICB9KTtcblxuICAgIGl0KCdzaG91bGQgaGFuZGxlIHVuYXV0aG9yaXplZCBBUEkgYWNjZXNzJywgYXN5bmMgKCkgPT4ge1xuICAgICAgLy8gQXJyYW5nZVxuICAgICAgY29uc3QgdGVzdFN1YmRvbWFpbiA9ICd1bmF1dGhvcml6ZWQtdGVzdCc7XG4gICAgICBjb25zdCByb290RG9tYWluID0gJ2ktZXAuYXBwJztcblxuICAgICAgLy8gWWV0a2lzaXogZXJpxZ9pbSBoYXRhc8SxIG1vY2snxLFuxLEgYXlhcmxhXG4gICAgICBDbG91ZGZsYXJlTW9ja0hlbHBlci5zZXR1cEZhaWxlZERuc1JlY29yZENyZWF0aW9uKCd1bmF1dGhvcml6ZWQnKTtcblxuICAgICAgLy8gQWN0XG4gICAgICBjb25zdCByZXN1bHQgPSBhd2FpdCBjcmVhdGVEbnNSZWNvcmQoe1xuICAgICAgICBzdWJkb21haW46IHRlc3RTdWJkb21haW4sXG4gICAgICAgIHJvb3REb21haW46IHJvb3REb21haW4sXG4gICAgICAgIHByb3hpZWQ6IHRydWUsXG4gICAgICAgIHR0bDogMSxcbiAgICAgIH0pO1xuXG4gICAgICAvLyBBc3NlcnRcbiAgICAgIGV4cGVjdChyZXN1bHQpLnRvQmVEZWZpbmVkKCk7XG4gICAgICBleHBlY3QocmVzdWx0LnN1Y2Nlc3MpLnRvQmUoZmFsc2UpO1xuICAgICAgZXhwZWN0KHJlc3VsdC5lcnJvcnMpLnRvSGF2ZUxlbmd0aCgxKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuZXJyb3JzIVswXS5tZXNzYWdlKS50b0JlKCdBdXRoZW50aWNhdGlvbiBlcnJvcicpO1xuICAgICAgZXhwZWN0KHJlc3VsdC5lcnJvcnMhWzBdLmNvZGUpLnRvQmUoMTAwMDApO1xuICAgIH0pO1xuXG4gICAgaXQoJ3Nob3VsZCBoYW5kbGUgcmF0ZSBsaW1pdCBlcnJvcnMnLCBhc3luYyAoKSA9PiB7XG4gICAgICAvLyBBcnJhbmdlXG4gICAgICBjb25zdCB0ZXN0U3ViZG9tYWluID0gJ3JhdGVsaW1pdC10ZXN0JztcbiAgICAgIGNvbnN0IHJvb3REb21haW4gPSAnaS1lcC5hcHAnO1xuXG4gICAgICAvLyBSYXRlIGxpbWl0IGhhdGFzxLEgbW9jayfEsW7EsSBheWFybGFcbiAgICAgIENsb3VkZmxhcmVNb2NrSGVscGVyLnNldHVwRmFpbGVkRG5zUmVjb3JkQ3JlYXRpb24oJ3JhdGVMaW1pdCcpO1xuXG4gICAgICAvLyBBY3RcbiAgICAgIGNvbnN0IHJlc3VsdCA9IGF3YWl0IGNyZWF0ZURuc1JlY29yZCh7XG4gICAgICAgIHN1YmRvbWFpbjogdGVzdFN1YmRvbWFpbixcbiAgICAgICAgcm9vdERvbWFpbjogcm9vdERvbWFpbixcbiAgICAgICAgcHJveGllZDogdHJ1ZSxcbiAgICAgICAgdHRsOiAxLFxuICAgICAgfSk7XG5cbiAgICAgIC8vIEFzc2VydFxuICAgICAgZXhwZWN0KHJlc3VsdCkudG9CZURlZmluZWQoKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuc3VjY2VzcykudG9CZShmYWxzZSk7XG4gICAgICBleHBlY3QocmVzdWx0LmVycm9ycykudG9IYXZlTGVuZ3RoKDEpO1xuICAgICAgZXhwZWN0KHJlc3VsdC5lcnJvcnMhWzBdLm1lc3NhZ2UpLnRvQmUoJ1JhdGUgbGltaXQgZXhjZWVkZWQnKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuZXJyb3JzIVswXS5jb2RlKS50b0JlKDEwMDEzKTtcbiAgICB9KTtcblxuICAgIGl0KCdzaG91bGQgaGFuZGxlIHpvbmUgbm90IGZvdW5kIGVycm9yJywgYXN5bmMgKCkgPT4ge1xuICAgICAgLy8gQXJyYW5nZVxuICAgICAgY29uc3QgdGVzdFN1YmRvbWFpbiA9ICd0ZXN0LXN1YmRvbWFpbic7XG4gICAgICBjb25zdCByb290RG9tYWluID0gJ25vbmV4aXN0ZW50LmNvbSc7XG5cbiAgICAgIC8vIFpvbmUgYnVsdW5hbWFkxLEgbW9jayfEsW7EsSBheWFybGFcbiAgICAgIENsb3VkZmxhcmVNb2NrSGVscGVyLnNldHVwWm9uZU5vdEZvdW5kKCk7XG5cbiAgICAgIC8vIEFjdFxuICAgICAgY29uc3QgcmVzdWx0ID0gYXdhaXQgY3JlYXRlRG5zUmVjb3JkKHtcbiAgICAgICAgc3ViZG9tYWluOiB0ZXN0U3ViZG9tYWluLFxuICAgICAgICByb290RG9tYWluOiByb290RG9tYWluLFxuICAgICAgICBwcm94aWVkOiB0cnVlLFxuICAgICAgICB0dGw6IDEsXG4gICAgICB9KTtcblxuICAgICAgLy8gQXNzZXJ0XG4gICAgICBleHBlY3QocmVzdWx0KS50b0JlRGVmaW5lZCgpO1xuICAgICAgZXhwZWN0KHJlc3VsdC5zdWNjZXNzKS50b0JlKGZhbHNlKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuZXJyb3JzKS50b0hhdmVMZW5ndGgoMSk7XG4gICAgICBleHBlY3QocmVzdWx0LmVycm9ycyFbMF0ubWVzc2FnZSkudG9Db250YWluKCd6b25lIGJ1bHVuYW1hZMSxJyk7XG4gICAgfSk7XG5cbiAgICBpdCgnc2hvdWxkIGNyZWF0ZSBETlMgcmVjb3JkIHdpdGggY3VzdG9tIFRUTCBhbmQgcHJveHkgc2V0dGluZ3MnLCBhc3luYyAoKSA9PiB7XG4gICAgICAvLyBBcnJhbmdlXG4gICAgICBjb25zdCB0ZXN0U3ViZG9tYWluID0gJ2N1c3RvbS1zZXR0aW5ncy10ZW5hbnQnO1xuICAgICAgY29uc3Qgcm9vdERvbWFpbiA9ICdpLWVwLmFwcCc7XG4gICAgICBjb25zdCBjdXN0b21UdGwgPSAzMDA7XG4gICAgICBjb25zdCBwcm94aWVkID0gZmFsc2U7XG5cbiAgICAgIC8vIMOWemVsbGXFn3RpcmlsbWnFnyBheWFybGFybGEgRE5TIHJlY29yZCBvbHXFn3R1cm1hIG1vY2snxLFuxLEgYXlhcmxhXG4gICAgICBDbG91ZGZsYXJlTW9ja0hlbHBlci5zZXR1cFN1Y2Nlc3NmdWxEbnNSZWNvcmRDcmVhdGlvbih0ZXN0U3ViZG9tYWluKTtcblxuICAgICAgLy8gQWN0XG4gICAgICBjb25zdCByZXN1bHQgPSBhd2FpdCBjcmVhdGVEbnNSZWNvcmQoe1xuICAgICAgICBzdWJkb21haW46IHRlc3RTdWJkb21haW4sXG4gICAgICAgIHJvb3REb21haW46IHJvb3REb21haW4sXG4gICAgICAgIHByb3hpZWQ6IHByb3hpZWQsXG4gICAgICAgIHR0bDogY3VzdG9tVHRsLFxuICAgICAgfSk7XG5cbiAgICAgIC8vIEFzc2VydFxuICAgICAgZXhwZWN0KHJlc3VsdCkudG9CZURlZmluZWQoKTtcbiAgICAgIGV4cGVjdChyZXN1bHQuc3VjY2VzcykudG9CZSh0cnVlKTtcbiAgICAgIGV4cGVjdChyZXN1bHQucmVzdWx0Py5uYW1lKS50b0JlKGAke3Rlc3RTdWJkb21haW59LiR7cm9vdERvbWFpbn1gKTtcbiAgICAgIGV4cGVjdChyZXN1bHQucmVzdWx0Py50dGwpLnRvQmUoMSk7IC8vIE1vY2sndGEgMSBvbGFyYWsgYXlhcmxhbmTEsVxuICAgIH0pO1xuXG4gICAgaXQoJ3Nob3VsZCB2YWxpZGF0ZSBzdWJkb21haW4gZm9ybWF0IGJlZm9yZSBjcmVhdGluZyBETlMgcmVjb3JkJywgYXN5bmMgKCkgPT4ge1xuICAgICAgLy8gQXJyYW5nZVxuICAgICAgY29uc3QgaW52YWxpZFN1YmRvbWFpbiA9ICdpbnZhbGlkX3N1YmRvbWFpbiFAIyc7XG4gICAgICBjb25zdCByb290RG9tYWluID0gJ2ktZXAuYXBwJztcblxuICAgICAgLy8gQWN0ICYgQXNzZXJ0IC0gSW52YWxpZCBzdWJkb21haW4gZHVydW11bmRhIGhhdGEgYmVrbGVuaXJcbiAgICAgIGF3YWl0IGV4cGVjdChcbiAgICAgICAgY3JlYXRlRG5zUmVjb3JkKHtcbiAgICAgICAgICBzdWJkb21haW46IGludmFsaWRTdWJkb21haW4sXG4gICAgICAgICAgcm9vdERvbWFpbjogcm9vdERvbWFpbixcbiAgICAgICAgICBwcm94aWVkOiB0cnVlLFxuICAgICAgICAgIHR0bDogMSxcbiAgICAgICAgfSlcbiAgICAgICkucmVqZWN0cy50b1Rocm93KCk7XG4gICAgfSk7XG5cbiAgICBpdCgnc2hvdWxkIGhhbmRsZSBlbXB0eSBzdWJkb21haW4gZ3JhY2VmdWxseScsIGFzeW5jICgpID0+IHtcbiAgICAgIC8vIEFycmFuZ2VcbiAgICAgIGNvbnN0IGVtcHR5U3ViZG9tYWluID0gJyc7XG4gICAgICBjb25zdCByb290RG9tYWluID0gJ2ktZXAuYXBwJztcblxuICAgICAgLy8gQWN0ICYgQXNzZXJ0IC0gQm/FnyBzdWJkb21haW4gZHVydW11bmRhIGhhdGEgYmVrbGVuaXJcbiAgICAgIGF3YWl0IGV4cGVjdChcbiAgICAgICAgY3JlYXRlRG5zUmVjb3JkKHtcbiAgICAgICAgICBzdWJkb21haW46IGVtcHR5U3ViZG9tYWluLFxuICAgICAgICAgIHJvb3REb21haW46IHJvb3REb21haW4sXG4gICAgICAgICAgcHJveGllZDogdHJ1ZSxcbiAgICAgICAgICB0dGw6IDEsXG4gICAgICAgIH0pXG4gICAgICApLnJlamVjdHMudG9UaHJvdygpO1xuICAgIH0pO1xuICB9KTtcblxuICBkZXNjcmliZSgnTmV0d29yayBFcnJvciBIYW5kbGluZycsICgpID0+IHtcbiAgICBpdCgnc2hvdWxkIGhhbmRsZSBuZXR3b3JrIGNvbm5lY3Rpdml0eSBpc3N1ZXMnLCBhc3luYyAoKSA9PiB7XG4gICAgICAvLyBBcnJhbmdlXG4gICAgICBjb25zdCB0ZXN0U3ViZG9tYWluID0gJ25ldHdvcmstZXJyb3ItdGVzdCc7XG4gICAgICBjb25zdCByb290RG9tYWluID0gJ2ktZXAuYXBwJztcblxuICAgICAgLy8gTmV0d29yayBoYXRhc8SxIHNpbcO8bGFzeW9udSBpw6dpbiB0w7xtIGlzdGVrbGVyaSByZWRkZXRcbiAgICAgIC8vIChub2NrIG1vY2snbGFyxLEga3VybWF6c2FuLCBnZXLDp2VrIG5ldHdvcmsgaXN0ZcSfaSB5YXDEsWxtYXlhIMOnYWzEscWfxLFyIHZlIGhhdGEgdmVyaXIpXG5cbiAgICAgIC8vIEFjdCAmIEFzc2VydFxuICAgICAgYXdhaXQgZXhwZWN0KFxuICAgICAgICBjcmVhdGVEbnNSZWNvcmQoe1xuICAgICAgICAgIHN1YmRvbWFpbjogdGVzdFN1YmRvbWFpbixcbiAgICAgICAgICByb290RG9tYWluOiByb290RG9tYWluLFxuICAgICAgICAgIHByb3hpZWQ6IHRydWUsXG4gICAgICAgICAgdHRsOiAxLFxuICAgICAgICB9KVxuICAgICAgKS5yZWplY3RzLnRvVGhyb3coKTtcbiAgICB9KTtcbiAgfSk7XG5cbiAgZGVzY3JpYmUoJ0ROUyBSZWNvcmQgTWFuYWdlbWVudCBJbnRlZ3JhdGlvbicsICgpID0+IHtcbiAgICBpdCgnc2hvdWxkIGNyZWF0ZSwgdmVyaWZ5IGFuZCBwb3RlbnRpYWxseSBkZWxldGUgRE5TIHJlY29yZHMgaW4gc2VxdWVuY2UnLCBhc3luYyAoKSA9PiB7XG4gICAgICAvLyBCdSB0ZXN0IGdlcsOnZWsgYmlyIHdvcmtmbG93J3Ugc2ltw7xsZSBlZGVyXG4gICAgICBjb25zdCB0ZXN0U3ViZG9tYWluID0gJ3dvcmtmbG93LXRlc3QnO1xuICAgICAgY29uc3Qgcm9vdERvbWFpbiA9ICdpLWVwLmFwcCc7XG5cbiAgICAgIC8vIDEuIEROUyByZWNvcmQgb2x1xZ90dXJtYSBtb2NrJ8SxXG4gICAgICBDbG91ZGZsYXJlTW9ja0hlbHBlci5zZXR1cFN1Y2Nlc3NmdWxEbnNSZWNvcmRDcmVhdGlvbih0ZXN0U3ViZG9tYWluKTtcblxuICAgICAgLy8gQWN0IC0gRE5TIHJlY29yZCBvbHXFn3R1clxuICAgICAgY29uc3QgY3JlYXRlUmVzdWx0ID0gYXdhaXQgY3JlYXRlRG5zUmVjb3JkKHtcbiAgICAgICAgc3ViZG9tYWluOiB0ZXN0U3ViZG9tYWluLFxuICAgICAgICByb290RG9tYWluOiByb290RG9tYWluLFxuICAgICAgICBwcm94aWVkOiB0cnVlLFxuICAgICAgICB0dGw6IDEsXG4gICAgICB9KTtcblxuICAgICAgLy8gQXNzZXJ0IC0gT2x1xZ90dXJtYSBiYcWfYXLEsWzEsVxuICAgICAgZXhwZWN0KGNyZWF0ZVJlc3VsdC5zdWNjZXNzKS50b0JlKHRydWUpO1xuICAgICAgZXhwZWN0KGNyZWF0ZVJlc3VsdC5yZXN1bHQ/LmlkKS50b0JlRGVmaW5lZCgpO1xuXG4gICAgICAvLyAyLiBETlMgcmVjb3JkIGxpc3Rlc2kgbW9jayfEsSAoZG/En3J1bGFtYSBpw6dpbilcbiAgICAgIENsb3VkZmxhcmVNb2NrSGVscGVyLnNldHVwRG5zUmVjb3Jkc0xpc3QoKTtcblxuICAgICAgLy8gQnVyYWRhIGdlcsOnZWsgaW1wbGVtZW50YXN5b25kYSBETlMgcmVjb3JkJ2xhcsSxbiBsaXN0ZXNpbmkgYWzEsXBcbiAgICAgIC8vIG9sdcWfdHVydWxhbiByZWNvcmQnxLFuIHZhciBvbGR1xJ91bnUgZG/En3J1bGF5YWJpbGlyaXpcblxuICAgICAgLy8gMy4gRE5TIHJlY29yZCBzaWxtZSBtb2NrJ8SxIChjbGVhbnVwIGnDp2luKVxuICAgICAgaWYgKGNyZWF0ZVJlc3VsdC5yZXN1bHQ/LmlkKSB7XG4gICAgICAgIENsb3VkZmxhcmVNb2NrSGVscGVyLnNldHVwRG5zUmVjb3JkRGVsZXRpb24oY3JlYXRlUmVzdWx0LnJlc3VsdC5pZCk7XG4gICAgICB9XG5cbiAgICAgIC8vIEJ1IG5va3RhZGEgZ2Vyw6dlayBpbXBsZW1lbnRhc3lvbmRhIHJlY29yZCfEsSBzaWxlYmlsaXJpelxuICAgICAgLy8gxZ5pbWRpbGlrIG1vY2snbGFyxLFuIGRvxJ9ydSBrdXJ1bGR1xJ91bnUgdGVzdCBldHRpa1xuICAgIH0pO1xuICB9KTtcbn0pO1xuIl0sIm5hbWVzIjpbImRlc2NyaWJlIiwiYmVmb3JlQWxsIiwiVGVzdEVudmlyb25tZW50SGVscGVyIiwic2V0dXBUZXN0RW52aXJvbm1lbnQiLCJzZXR1cE1vY2tTZXJ2ZXIiLCJiZWZvcmVFYWNoIiwiY2xlYW51cCIsImFmdGVyRWFjaCIsImFmdGVyQWxsIiwidGVhcmRvd24iLCJpdCIsInRlc3RTdWJkb21haW4iLCJyb290RG9tYWluIiwiQ2xvdWRmbGFyZU1vY2tIZWxwZXIiLCJzZXR1cFN1Y2Nlc3NmdWxEbnNSZWNvcmRDcmVhdGlvbiIsInJlc3VsdCIsImNyZWF0ZURuc1JlY29yZCIsInN1YmRvbWFpbiIsInByb3hpZWQiLCJ0dGwiLCJleHBlY3QiLCJ0b0JlRGVmaW5lZCIsInN1Y2Nlc3MiLCJ0b0JlIiwiZXJyb3JzIiwidG9IYXZlTGVuZ3RoIiwibmFtZSIsInR5cGUiLCJzZXR1cEZhaWxlZERuc1JlY29yZENyZWF0aW9uIiwibWVzc2FnZSIsImNvZGUiLCJzZXR1cFpvbmVOb3RGb3VuZCIsInRvQ29udGFpbiIsImN1c3RvbVR0bCIsImludmFsaWRTdWJkb21haW4iLCJyZWplY3RzIiwidG9UaHJvdyIsImVtcHR5U3ViZG9tYWluIiwiY3JlYXRlUmVzdWx0IiwiaWQiLCJzZXR1cERuc1JlY29yZHNMaXN0Iiwic2V0dXBEbnNSZWNvcmREZWxldGlvbiJdLCJtYXBwaW5ncyI6Ijs7Ozt5QkFBaUY7NEJBQ3JCO3lCQUM1QjtBQUVoQ0EsSUFBQUEsaUJBQVEsRUFBQyw2Q0FBNkM7SUFDcERDLElBQUFBLGtCQUFTLEVBQUM7UUFDUkMsaUNBQXFCLENBQUNDLG9CQUFvQjtRQUMxQ0QsaUNBQXFCLENBQUNFLGVBQWU7SUFDdkM7SUFFQUMsSUFBQUEsbUJBQVUsRUFBQztRQUNULHVDQUF1QztRQUN2Q0gsaUNBQXFCLENBQUNJLE9BQU87SUFDL0I7SUFFQUMsSUFBQUEsa0JBQVMsRUFBQztRQUNSLHdDQUF3QztRQUN4Q0wsaUNBQXFCLENBQUNJLE9BQU87SUFDL0I7SUFFQUUsSUFBQUEsaUJBQVEsRUFBQztRQUNQLDRDQUE0QztRQUM1Q04saUNBQXFCLENBQUNPLFFBQVE7SUFDaEM7SUFFQVQsSUFBQUEsaUJBQVEsRUFBQyxrQ0FBa0M7UUFDekNVLElBQUFBLFdBQUUsRUFBQywrREFBK0Q7WUFDaEUsVUFBVTtZQUNWLE1BQU1DLGdCQUFnQjtZQUN0QixNQUFNQyxhQUFhO1lBRW5CLGdEQUFnRDtZQUNoREMsZ0NBQW9CLENBQUNDLGdDQUFnQyxDQUFDSDtZQUV0RCxNQUFNO1lBQ04sTUFBTUksU0FBUyxNQUFNQyxJQUFBQSx3QkFBZSxFQUFDO2dCQUNuQ0MsV0FBV047Z0JBQ1hDLFlBQVlBO2dCQUNaTSxTQUFTO2dCQUNUQyxLQUFLO1lBQ1A7WUFFQSxTQUFTO1lBQ1RDLElBQUFBLGVBQU0sRUFBQ0wsUUFBUU0sV0FBVztZQUMxQkQsSUFB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
