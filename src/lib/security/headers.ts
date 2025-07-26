@@ -174,3 +174,20 @@ export function withRequestValidation() {
     return NextResponse.next();
   };
 }
+
+// Apply security headers middleware
+export function withSecurityHeaders() {
+  return (request: NextRequest): NextResponse => {
+    const response = NextResponse.next();
+    const headers = SecurityHeadersManager.getSecurityHeaders();
+    
+    // Apply all security headers
+    Object.entries(headers).forEach(([key, value]) => {
+      if (value) {
+        response.headers.set(key, value);
+      }
+    });
+    
+    return response;
+  };
+}
