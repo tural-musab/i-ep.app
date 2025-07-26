@@ -326,11 +326,13 @@ describe('Assignment System Integration Tests (Fixed)', () => {
           select: jest.fn(() => ({
             eq: jest.fn(() => ({
               order: jest.fn(() => ({
-                range: jest.fn().mockResolvedValue({
-                  data: mockAssignments,
-                  error: null,
-                  count: 2,
-                }),
+                range: jest.fn(() => ({
+                  select: jest.fn().mockResolvedValue({
+                    data: mockAssignments,
+                    error: null,
+                    count: 2,
+                  }),
+                })),
               })),
             })),
           })),
@@ -374,11 +376,13 @@ describe('Assignment System Integration Tests (Fixed)', () => {
         const mockFrom = {
           update: jest.fn(() => ({
             eq: jest.fn(() => ({
-              select: jest.fn(() => ({
-                single: jest.fn().mockResolvedValue({
-                  data: mockUpdatedAssignment,
-                  error: null,
-                }),
+              eq: jest.fn(() => ({
+                select: jest.fn(() => ({
+                  single: jest.fn().mockResolvedValue({
+                    data: mockUpdatedAssignment,
+                    error: null,
+                  }),
+                })),
               })),
             })),
           })),
@@ -540,11 +544,13 @@ describe('Assignment System Integration Tests (Fixed)', () => {
         })),
         update: jest.fn(() => ({
           eq: jest.fn(() => ({
-            select: jest.fn(() => ({
-              single: jest.fn().mockResolvedValue({
-                data: { ...mockCreatedAssignment, status: 'published' },
-                error: null,
-              }),
+            eq: jest.fn(() => ({
+              select: jest.fn(() => ({
+                single: jest.fn().mockResolvedValue({
+                  data: { ...mockCreatedAssignment, status: 'published' },
+                  error: null,
+                }),
+              })),
             })),
           })),
         })),

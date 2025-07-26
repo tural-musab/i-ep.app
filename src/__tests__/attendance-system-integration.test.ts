@@ -247,11 +247,13 @@ describe('Attendance System Integration Tests', () => {
           eq: jest.fn().mockReturnThis(),
           order: jest.fn().mockReturnThis(),
           limit: jest.fn().mockReturnThis(),
-          range: jest.fn().mockResolvedValue({
-            data: mockAttendanceRecords,
-            error: null,
-            count: 2,
-          }),
+          range: jest.fn(() => ({
+            select: jest.fn().mockResolvedValue({
+              data: mockAttendanceRecords,
+              error: null,
+              count: 2,
+            }),
+          })),
         };
 
         mockSupabaseFrom.mockReturnValue(mockChain);
@@ -295,11 +297,13 @@ describe('Attendance System Integration Tests', () => {
           lte: jest.fn().mockReturnThis(),
           order: jest.fn().mockReturnThis(),
           limit: jest.fn().mockReturnThis(),
-          range: jest.fn().mockResolvedValue({
-            data: mockAttendanceRecords,
-            error: null,
-            count: 2,
-          }),
+          range: jest.fn(() => ({
+            select: jest.fn().mockResolvedValue({
+              data: mockAttendanceRecords,
+              error: null,
+              count: 2,
+            }),
+          })),
         };
 
         mockSupabaseFrom.mockReturnValue(mockChain);
@@ -328,13 +332,18 @@ describe('Attendance System Integration Tests', () => {
         };
 
         const mockChain = {
-          update: jest.fn().mockReturnThis(),
-          eq: jest.fn().mockReturnThis(),
-          select: jest.fn().mockReturnThis(),
-          single: jest.fn().mockResolvedValue({
-            data: { id: 'attendance-123', ...updateData },
-            error: null,
-          }),
+          update: jest.fn(() => ({
+            eq: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                select: jest.fn(() => ({
+                  single: jest.fn().mockResolvedValue({
+                    data: { id: 'attendance-123', ...updateData },
+                    error: null,
+                  }),
+                })),
+              })),
+            })),
+          })),
         };
 
         mockSupabaseFrom.mockReturnValue(mockChain);

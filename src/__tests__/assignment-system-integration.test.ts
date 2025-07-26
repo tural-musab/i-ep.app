@@ -262,11 +262,13 @@ describe('Assignment System Integration Tests', () => {
           eq: jest.fn().mockReturnThis(),
           order: jest.fn().mockReturnThis(),
           limit: jest.fn().mockReturnThis(),
-          range: jest.fn().mockResolvedValue({
-            data: mockAssignments,
-            error: null,
-            count: 2,
-          }),
+          range: jest.fn(() => ({
+            select: jest.fn().mockResolvedValue({
+              data: mockAssignments,
+              error: null,
+              count: 2,
+            }),
+          })),
         };
 
         mockSupabaseFrom.mockReturnValue(mockChain);
@@ -290,13 +292,18 @@ describe('Assignment System Integration Tests', () => {
         };
 
         const mockChain = {
-          update: jest.fn().mockReturnThis(),
-          eq: jest.fn().mockReturnThis(),
-          select: jest.fn().mockReturnThis(),
-          single: jest.fn().mockResolvedValue({
-            data: { id: 'assignment-123', ...updateData },
-            error: null,
-          }),
+          update: jest.fn(() => ({
+            eq: jest.fn(() => ({
+              eq: jest.fn(() => ({
+                select: jest.fn(() => ({
+                  single: jest.fn().mockResolvedValue({
+                    data: { id: 'assignment-123', ...updateData },
+                    error: null,
+                  }),
+                })),
+              })),
+            })),
+          })),
         };
 
         mockSupabaseFrom.mockReturnValue(mockChain);
@@ -447,17 +454,22 @@ describe('Assignment System Integration Tests', () => {
 
       // 2. Update assignment status to published
       const updateMockChain = {
-        update: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
-        select: jest.fn().mockReturnThis(),
-        single: jest.fn().mockResolvedValue({
-          data: {
-            id: 'assignment-e2e',
-            ...newAssignment,
-            status: 'published',
-          },
-          error: null,
-        }),
+        update: jest.fn(() => ({
+          eq: jest.fn(() => ({
+            eq: jest.fn(() => ({
+              select: jest.fn(() => ({
+                single: jest.fn().mockResolvedValue({
+                  data: {
+                    id: 'assignment-e2e',
+                    ...newAssignment,
+                    status: 'published',
+                  },
+                  error: null,
+                }),
+              })),
+            })),
+          })),
+        })),
       };
 
       mockSupabaseFrom.mockReturnValue(updateMockChain);
