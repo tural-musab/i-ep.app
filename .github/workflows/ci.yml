@@ -153,7 +153,7 @@ jobs:
           sleep 20
           
           echo "🔍 Checking application health..."
-          for i in {1..15}; do
+          for i in {1..30}; do
             if curl -f -s http://localhost:3000/api/health > /dev/null 2>&1; then
               echo "✅ Application is running successfully!"
               break
@@ -161,11 +161,11 @@ jobs:
               echo "✅ Application is running successfully!"
               break
             else
-              echo "⏳ Attempt $i/15: Application not ready yet, waiting 3 more seconds..."
+              echo "⏳ Attempt $i/30: Application not ready yet, waiting 3 more seconds..."
               sleep 3
             fi
             
-            if [ $i -eq 15 ]; then
+            if [ $i -eq 30 ]; then
               echo "❌ Application failed to start properly"
               echo "🔍 Checking application status:"
               jobs -l
