@@ -83,7 +83,7 @@
     "clsx": "^2.1.0",
     "cmdk": "^0.2.1",
     "date-fns": "^3.3.1",
-    "iyzipay": "^1.0.52",
+    "iyzipay": "^1.1.11",
     "lucide-react": "^0.334.0",
     "next": "15.2.2",
     "next-auth": "^4.24.5",
@@ -142,5 +142,12 @@
   },
   "author": "Turan Musa Osman",
   "license": "MIT",
-  "description": "İ-EP.APP - Multi-tenant SaaS School Management System for Turkish Education Sector"
+  "description": "İ-EP.APP - Multi-tenant SaaS School Management System for Turkish Education Sector",
+  "overrides": {
+    "tough-cookie@<4.1.3": ">=4.1.3",
+    "cookie@<0.7.0": ">=0.7.0",
+    "form-data@<2.5.4": ">=2.5.4",
+    "next@>=15.0.0 <15.2.3": ">=15.2.3",
+    "request@<=2.88.2": ">=2.88.3"
+  }
 }
