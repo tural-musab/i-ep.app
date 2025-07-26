@@ -80,12 +80,15 @@ export class SecurityHeadersManager {
     const nonce = this.generateNonce();
     const headers = this.getSecurityHeaders(nonce);
 
-    // Expose nonce to client for use in <script nonce="...">
-    response.headers.set('x-csp-nonce', nonce);
-
+    // Apply all security headers
     Object.entries(headers).forEach(([key, value]) => {
-      if (value) response.headers.set(key, value);
+      if (value) {
+        response.headers.set(key, value);
+      }
     });
+
+    // Add nonce to response headers for client-side access
+    response.headers.set('x-csp-nonce', nonce);
 
     return response;
   }
@@ -106,30 +109,34 @@ export class SecurityUtils {
       return '';
     }
 
-    // Comprehensive HTML injection prevention with stronger patterns
-    return (
-      input
-        // Remove all HTML tags completely
-        .replace(/<[^>]*>/g, '')
-        // Remove script tags and content
-        .replace(/<script[^>]*>.*?<\/script>/gi, '')
-        // Remove event handlers with stronger patterns
-        .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
-        .replace(/on\w+\s*=\s*[^>\s]+/gi, '')
-        .replace(/on\w+/gi, '') // Remove any remaining on* patterns
-        // Remove javascript: URLs
-        .replace(/javascript:\s*[^"'\s>]+/gi, '')
-        .replace(/href\s*=\s*["']?javascript:/gi, '')
-        // Remove dangerous attributes
-        .replace(/data-\w+\s*=\s*["'][^"']*["']/gi, '')
-        .replace(/style\s*=\s*["'][^"']*["']/gi, '')
-        // Remove any remaining = signs that might be part of attributes
-        .replace(/\s*=\s*["'][^"']*["']/g, '')
-        // Remove any remaining script references
-        .replace(/script/gi, '')
-        // Clean up whitespace
-        .trim()
-    );
+    // Simple but effective sanitization for Edge Runtime
+    let sanitized = input;
+
+    // Remove all HTML tags
+    sanitized = sanitized.replace(/<[^>]*>/g, '');
+
+    // Remove script content
+    sanitized = sanitized.replace(/<script[^>]*>.*?<\/script>/gi, '');
+
+    // Remove event handlers
+    sanitized = sanitized.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
+    sanitized = sanitized.replace(/on\w+\s*=\s*[^>\s]+/gi, '');
+    sanitized = sanitized.replace(/on\w+/gi, '');
+
+    // Remove dangerous protocols
+    sanitized = sanitized.replace(/javascript:/gi, '');
+    sanitized = sanitized.replace(/data:/gi, '');
+    sanitized = sanitized.replace(/vbscript:/gi, '');
+
+    // Remove dangerous attributes
+    sanitized = sanitized.replace(/style\s*=\s*["'][^"']*["']/gi, '');
+    sanitized = sanitized.replace(/data-\w+\s*=\s*["'][^"']*["']/gi, '');
+
+    // Remove any remaining = signs that might be part of attributes
+    sanitized = sanitized.replace(/\s*=\s*["'][^"']*["']/g, '');
+
+    // Final cleanup
+    return sanitized.trim();
   }
 
   static isValidURL(url: string): boolean {
