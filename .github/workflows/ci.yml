@@ -118,12 +118,20 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      # E2E testleri CI environment sorunları nedeniyle geçici olarak devre dışı
-      # Fundamental environment sorunu tespit edildi (minimal test bile başarısız)
-      # Local'da çalışıyor ama CI'da başarısız oluyor
-      # TODO: CI environment debugging gerekiyor
-      # - name: Run E2E Tests
-      #   run: npm run e2e
+      - name: Run E2E Tests
+        run: npm run e2e
+        env:
+          CI: true
+          PORT: 3000
+          BASE_URL: http://localhost:3000
+          NEXT_PUBLIC_BASE_URL: http://localhost:3000
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+          NEXTAUTH_URL: http://localhost:3000
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_APP_NAME: ${{ secrets.NEXT_PUBLIC_APP_NAME }}
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
 
       - name: Upload Playwright HTML Report
         uses: actions/upload-artifact@v4
