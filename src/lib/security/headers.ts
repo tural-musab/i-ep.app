@@ -106,14 +106,17 @@ export class SecurityUtils {
       return '';
     }
 
-    // Comprehensive HTML injection prevention
+    // Comprehensive HTML injection prevention with stronger patterns
     return (
       input
-        // Remove HTML tags
+        // Remove all HTML tags completely
         .replace(/<[^>]*>/g, '')
-        // Remove event handlers (more comprehensive)
+        // Remove script tags and content
+        .replace(/<script[^>]*>.*?<\/script>/gi, '')
+        // Remove event handlers with stronger patterns
         .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
         .replace(/on\w+\s*=\s*[^>\s]+/gi, '')
+        .replace(/on\w+/gi, '') // Remove any remaining on* patterns
         // Remove javascript: URLs
         .replace(/javascript:\s*[^"'\s>]+/gi, '')
         .replace(/href\s*=\s*["']?javascript:/gi, '')
@@ -122,6 +125,8 @@ export class SecurityUtils {
         .replace(/style\s*=\s*["'][^"']*["']/gi, '')
         // Remove any remaining = signs that might be part of attributes
         .replace(/\s*=\s*["'][^"']*["']/g, '')
+        // Remove any remaining script references
+        .replace(/script/gi, '')
         // Clean up whitespace
         .trim()
     );
