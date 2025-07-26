@@ -31,6 +31,7 @@ const mockQueryChain = {
   update: jest.fn().mockReturnThis(),
   delete: jest.fn().mockReturnThis(),
   eq: jest.fn().mockReturnThis(),
+  range: jest.fn().mockReturnThis(),
   limit: jest.fn().mockReturnThis(),
   single: jest.fn(),
 };
