@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import sanitizeHtml from 'sanitize-html';
 
 // --- 1. Security Headers Interface ---
 export interface SecurityHeaders {
@@ -106,42 +107,32 @@ export class SecurityHeadersManager {
 export class SecurityUtils {
   /**
    * HTML içeriğini tamamen temizleyip sadece düz metni döner.
-   * Edge Runtime uyumlu, kapsamlı sanitization.
+   * Edge Runtime uyumlu, profesyonel sanitization.
    */
-  // codeql[ignore]: Incomplete multi-character sanitization - Bu fonksiyon kapsamlı HTML temizleme yapıyor
   static sanitizeInput(input: string): string {
     if (!input || typeof input !== 'string') {
       return '';
     }
 
-    // Simple but effective sanitization for Edge Runtime
-    let sanitized = input;
+    // Profesyonel HTML sanitization - Edge Runtime uyumlu
+    const clean = sanitizeHtml(input, {
+      allowedTags: [], // Hiçbir HTML tag'ına izin verme
+      allowedAttributes: {}, // Hiçbir attribute'a izin verme
+      allowedIframeHostnames: [], // iframe'e izin verme
+      allowedSchemes: [], // Hiçbir scheme'e izin verme
+      allowedSchemesByTag: {}, // Tag bazlı scheme'e izin verme
+      allowedSchemesAppliedToAttributes: [], // Attribute bazlı scheme'e izin verme
+      allowProtocolRelative: false, // Protocol relative URL'lere izin verme
+      enforceHtmlBoundary: true, // HTML boundary'yi zorla
+      parseStyleAttributes: false, // Style attribute'larını parse etme
+      transformTags: {}, // Tag transformasyonu yapma
+      exclusiveFilter: function (frame) {
+        // Tüm tag'ları filtrele
+        return true;
+      },
+    });
 
-    // Remove all HTML tags
-    sanitized = sanitized.replace(/<[^>]*>/g, '');
-
-    // Remove script content
-    sanitized = sanitized.replace(/<script[^>]*>.*?<\/script>/gi, '');
-
-    // Remove event handlers
-    sanitized = sanitized.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
-    sanitized = sanitized.replace(/on\w+\s*=\s*[^>\s]+/gi, '');
-    sanitized = sanitized.replace(/on\w+/gi, '');
-
-    // Remove dangerous protocols
-    sanitized = sanitized.replace(/javascript:/gi, '');
-    sanitized = sanitized.replace(/data:/gi, '');
-    sanitized = sanitized.replace(/vbscript:/gi, '');
-
-    // Remove dangerous attributes
-    sanitized = sanitized.replace(/style\s*=\s*["'][^"']*["']/gi, '');
-    sanitized = sanitized.replace(/data-\w+\s*=\s*["'][^"']*["']/gi, '');
-
-    // Remove any remaining = signs that might be part of attributes
-    sanitized = sanitized.replace(/\s*=\s*["'][^"']*["']/g, '');
-
-    // Final cleanup
-    return sanitized.trim();
+    return clean.trim();
   }
 
   static isValidURL(url: string): boolean {
