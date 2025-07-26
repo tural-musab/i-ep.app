@@ -102,12 +102,29 @@ export class SecurityHeadersManager {
 // --- 3. Security Utilities ---
 export class SecurityUtils {
   static sanitizeInput(input: string): string {
-    // For robust sanitization, consider DOMPurify in real applications
-    return input
-      .replace(/[<>]/g, '')
-      .replace(/javascript:/gi, '')
-      .replace(/on\w+=/gi, '')
-      .trim();
+    if (!input || typeof input !== 'string') {
+      return '';
+    }
+
+    // Comprehensive HTML injection prevention
+    return (
+      input
+        // Remove HTML tags
+        .replace(/<[^>]*>/g, '')
+        // Remove event handlers (more comprehensive)
+        .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+        .replace(/on\w+\s*=\s*[^>\s]+/gi, '')
+        // Remove javascript: URLs
+        .replace(/javascript:\s*[^"'\s>]+/gi, '')
+        .replace(/href\s*=\s*["']?javascript:/gi, '')
+        // Remove dangerous attributes
+        .replace(/data-\w+\s*=\s*["'][^"']*["']/gi, '')
+        .replace(/style\s*=\s*["'][^"']*["']/gi, '')
+        // Remove any remaining = signs that might be part of attributes
+        .replace(/\s*=\s*["'][^"']*["']/g, '')
+        // Clean up whitespace
+        .trim()
+    );
   }
 
   static isValidURL(url: string): boolean {
