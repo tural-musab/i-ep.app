@@ -78,6 +78,7 @@ export const env = createEnv({
     NODE_ENV: z.enum(['development', 'production', 'test', 'staging']),
 
     // Sentry - optional monitoring
+    SENTRY_DSN: z.string().optional(),
     NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
     SENTRY_ENVIRONMENT: z.enum(['development', 'staging', 'production']).optional(),
 
@@ -233,6 +234,7 @@ export const env = createEnv({
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_STORAGE_PROVIDER: process.env.NEXT_PUBLIC_STORAGE_PROVIDER,
     NEXT_PUBLIC_ROUTE_LARGE_FILES: process.env.NEXT_PUBLIC_ROUTE_LARGE_FILES,
+    SENTRY_DSN: process.env.SENTRY_DSN,
     NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
   // Environment validation enabled for security

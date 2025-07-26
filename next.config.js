@@ -4,18 +4,25 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_BASE_URL: (() => {
       if (process.env.NODE_ENV === 'development') {
-        return 'http://localhost:3000';
+        // Otomatik port algılama!
+        const port = process.env.PORT || '3000';
+        return `http://localhost:${port}`;
       }
       // Use VERCEL_URL in preview/staging, fallback to i-ep.app in production
       const host = process.env.VERCEL_URL || 'i-ep.app';
       return `https://${host}`;
     })(),
   },
+
+  // ❌ KRİTİK: Build bypass'ları kaldırıldı - TypeScript ve ESLint kontrolleri aktif
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false, // ESLint kontrollerini zorla
+    dirs: ['src'], // ESLint'in tarayacağı dizinler
   },
+
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false, // TypeScript hatalarını zorla kontrol et
+    tsconfigPath: './tsconfig.json',
   },
 
   // Performance optimizations
@@ -26,8 +33,7 @@ const nextConfig = {
 
   // Swagger UI ve testlerde sorun çıkaran ESM paketleri için transpile seçeneği
   transpilePackages: ['swagger-ui-react', '@supabase/realtime-js', '@supabase/supabase-js', 'msw'],
-  // Vercel'de dağıtım sorunları nedeniyle standalone modunu devre dışı bırakıyoruz
-  // output: 'standalone',
+
   serverExternalPackages: [],
 
   // Webpack optimizations
@@ -58,7 +64,7 @@ const nextConfig = {
     // Tree shaking optimization
     config.optimization = {
       ...config.optimization,
-      usedExports: dev ? false : 'global',  // Development'ta false, production'da global
+      usedExports: dev ? false : 'global',
       sideEffects: false,
     };
 
@@ -108,9 +114,15 @@ const nextConfig = {
 
   // Compiler optimizations
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production',
+    removeConsole:
+      process.env.NODE_ENV === 'production'
+        ? {
+            exclude: ['error', 'warn'], // Production'da error ve warn loglarını koru
+          }
+        : false,
     reactRemoveProperties: process.env.NODE_ENV === 'production',
   },
+
   // Resim optimizasyonu için alan adı yapılandırması
   images: {
     remotePatterns: [
@@ -138,6 +150,7 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
+
   // API dokümantasyonu için yönlendirmeler
   async redirects() {
     return [
@@ -158,8 +171,37 @@ const nextConfig = {
       },
     ];
   },
+
+  // Güvenlik başlıkları
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
+        ],
+      },
+    ];
+  },
 };
 
-// Sentry konfigürasyonu geçici olarak devre dışı bırakıldı
-// Deployment sorunlarını önlemek için basit export
 module.exports = nextConfig;
