@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// --- 1. Security Headers Interface ---
 export interface SecurityHeaders {
   'Content-Security-Policy'?: string;
   'X-Frame-Options'?: string;
@@ -7,18 +8,30 @@ export interface SecurityHeaders {
   'Referrer-Policy'?: string;
   'Permissions-Policy'?: string;
   'Strict-Transport-Security'?: string;
-  'X-XSS-Protection'?: string;
+  'Cross-Origin-Opener-Policy'?: string;
+  'Cross-Origin-Embedder-Policy'?: string;
+  'Cross-Origin-Resource-Policy'?: string;
   'X-DNS-Prefetch-Control'?: string;
 }
 
+// --- 2. Security Headers Manager ---
 export class SecurityHeadersManager {
-  private static getCSPDirectives(): string {
+  /**
+   * Generate a nonce for inline scripts
+   */
+  static generateNonce(): string {
+    return crypto.randomUUID().replace(/-/g, '');
+  }
+
+  /**
+   * Build CSP directives using the provided nonce
+   */
+  private static getCSPDirectives(nonce: string): string {
     const isDevelopment = process.env.NODE_ENV === 'development';
     const domain = process.env.NEXT_PUBLIC_DOMAIN || 'i-ep.app';
-
-    const directives = [
+    const sources = [
       "default-src 'self'",
-      `script-src 'self' 'unsafe-inline' ${isDevelopment ? "'unsafe-eval'" : ''} https://vercel.live https://va.vercel-scripts.com`,
+      `script-src 'self' 'nonce-${nonce}' ${isDevelopment ? "'unsafe-eval'" : ''} https://vercel.live https://va.vercel-scripts.com`,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       `img-src 'self' data: https://${domain} https://staging.${domain} https://test.${domain} https://vercel.com`,
@@ -29,15 +42,18 @@ export class SecurityHeadersManager {
       "frame-ancestors 'none'",
       'upgrade-insecure-requests',
     ];
-
-    return directives.join('; ');
+    return sources.join('; ');
   }
 
-  static getSecurityHeaders(): SecurityHeaders {
+  /**
+   * Generate the full set of security headers
+   */
+  static getSecurityHeaders(nonce?: string): SecurityHeaders {
     const isProduction = process.env.NODE_ENV === 'production';
+    const nonceValue = nonce || this.generateNonce();
 
     return {
-      'Content-Security-Policy': this.getCSPDirectives(),
+      'Content-Security-Policy': this.getCSPDirectives(nonceValue),
       'X-Frame-Options': 'DENY',
       'X-Content-Type-Options': 'nosniff',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
@@ -50,124 +66,99 @@ export class SecurityHeadersManager {
       'Strict-Transport-Security': isProduction
         ? 'max-age=31536000; includeSubDomains; preload'
         : 'max-age=0',
-      'X-XSS-Protection': '1; mode=block',
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Resource-Policy': 'same-origin',
       'X-DNS-Prefetch-Control': 'off',
     };
   }
 
+  /**
+   * Apply all security headers (including CSP nonce) to the response
+   */
   static applySecurityHeaders(response: NextResponse): NextResponse {
-    const headers = this.getSecurityHeaders();
+    const nonce = this.generateNonce();
+    const headers = this.getSecurityHeaders(nonce);
+
+    // Expose nonce to client for use in <script nonce="...">
+    response.headers.set('x-csp-nonce', nonce);
 
     Object.entries(headers).forEach(([key, value]) => {
-      if (value) {
-        response.headers.set(key, value);
-      }
+      if (value) response.headers.set(key, value);
     });
 
     return response;
   }
+
+  // --- Backward Compatibility Methods ---
+  /**
+   * @deprecated Use getSecurityHeaders() instead
+   */
+  static getCSPDirectivesLegacy(): string {
+    return this.getCSPDirectives(this.generateNonce());
+  }
 }
 
-// Security headers middleware
-export function withSecurityHeaders() {
-  return (request: NextRequest) => {
-    const response = NextResponse.next();
-    return SecurityHeadersManager.applySecurityHeaders(response);
-  };
-}
-
-// Additional security utilities
+// --- 3. Security Utilities ---
 export class SecurityUtils {
   static sanitizeInput(input: string): string {
+    // For robust sanitization, consider DOMPurify in real applications
     return input
-      .replace(/[<>]/g, '') // Remove potential HTML tags
-      .replace(/javascript:/gi, '') // Remove javascript: protocol
-      .replace(/on\w+=/gi, '') // Remove event handlers
+      .replace(/[<>]/g, '')
+      .replace(/javascript:/gi, '')
+      .replace(/on\w+=/gi, '')
       .trim();
   }
 
   static isValidURL(url: string): boolean {
     try {
-      const parsedUrl = new URL(url);
-      return ['http:', 'https:'].includes(parsedUrl.protocol);
+      const parsed = new URL(url);
+      return ['http:', 'https:'].includes(parsed.protocol);
     } catch {
       return false;
     }
   }
 
   static isValidEmail(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
-
-  static generateNonce(): string {
-    return Math.random().toString(36).substring(2, 15);
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
   }
 
   static hashPassword(password: string): string {
-    // This would typically use bcrypt or similar
-    // For now, returning a placeholder
+    // Replace with bcrypt/Argon2 in production
     return `hashed_${password}`;
   }
 
-  static validatePassword(password: string): {
-    isValid: boolean;
-    errors: string[];
-  } {
+  static validatePassword(password: string): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
-
-    if (password.length < 8) {
-      errors.push('Password must be at least 8 characters long');
-    }
-
-    if (!/[A-Z]/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter');
-    }
-
-    if (!/[a-z]/.test(password)) {
-      errors.push('Password must contain at least one lowercase letter');
-    }
-
-    if (!/\d/.test(password)) {
-      errors.push('Password must contain at least one number');
-    }
-
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    if (password.length < 8) errors.push('Password must be at least 8 characters long');
+    if (!/[A-Z]/.test(password)) errors.push('Password must contain at least one uppercase letter');
+    if (!/[a-z]/.test(password)) errors.push('Password must contain at least one lowercase letter');
+    if (!/\d/.test(password)) errors.push('Password must contain at least one number');
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password))
       errors.push('Password must contain at least one special character');
-    }
 
-    return {
-      isValid: errors.length === 0,
-      errors,
-    };
+    return { isValid: errors.length === 0, errors };
   }
 }
 
-// Request validation middleware
+// --- 4. Request Validation Middleware ---
 export function withRequestValidation() {
   return async (request: NextRequest) => {
-    // Validate content type for POST requests
     if (request.method === 'POST') {
-      const contentType = request.headers.get('content-type');
-      if (
-        !contentType ||
-        (!contentType.includes('application/json') &&
-          !contentType.includes('application/x-www-form-urlencoded'))
-      ) {
+      const contentType = request.headers.get('content-type') || '';
+      if (!/application\/(json|x-www-form-urlencoded)/.test(contentType)) {
         return NextResponse.json({ error: 'Invalid content type' }, { status: 400 });
       }
     }
 
-    // Validate request size
-    const contentLength = request.headers.get('content-length');
-    if (contentLength && parseInt(contentLength) > 10 * 1024 * 1024) {
-      // 10MB limit
+    const length = request.headers.get('content-length');
+    if (length && parseInt(length) > 10 * 1024 * 1024) {
       return NextResponse.json({ error: 'Request too large' }, { status: 413 });
     }
 
-    // Validate user agent
-    const userAgent = request.headers.get('user-agent');
-    if (!userAgent || userAgent.length > 1000) {
+    const ua = request.headers.get('user-agent');
+    if (!ua || ua.length > 1000) {
       return NextResponse.json({ error: 'Invalid user agent' }, { status: 400 });
     }
 
@@ -175,19 +166,10 @@ export function withRequestValidation() {
   };
 }
 
-// Apply security headers middleware
+// --- 5. Security Headers Middleware ---
 export function withSecurityHeaders() {
   return (request: NextRequest): NextResponse => {
     const response = NextResponse.next();
-    const headers = SecurityHeadersManager.getSecurityHeaders();
-    
-    // Apply all security headers
-    Object.entries(headers).forEach(([key, value]) => {
-      if (value) {
-        response.headers.set(key, value);
-      }
-    });
-    
-    return response;
+    return SecurityHeadersManager.applySecurityHeaders(response);
   };
 }
