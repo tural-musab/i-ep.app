@@ -113,6 +113,7 @@ jobs:
           file: ./coverage/lcov.info
           flags: unittests
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps

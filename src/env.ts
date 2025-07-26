@@ -22,10 +22,14 @@ export const env = createEnv({
     POSTGRES_DATABASE: z.string().optional(),
 
     // Auth
-    NEXTAUTH_SECRET: z.string().min(32),
+    NEXTAUTH_SECRET: process.env.CI
+      ? z.string().min(32).optional()
+      : z.string().min(32),
 
     // Supabase
-    SUPABASE_SERVICE_ROLE_KEY: z.string(),
+    SUPABASE_SERVICE_ROLE_KEY: process.env.CI
+      ? z.string().optional()
+      : z.string(),
     SUPABASE_JWT_SECRET: z.string().min(32).optional(),
 
     // Email - optional for now
