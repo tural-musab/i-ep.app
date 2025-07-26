@@ -18,7 +18,7 @@ Bu proje, eğitim yönetim sistemi olarak hassas veriler işlediği için güven
 
 Eğer GitHub Security Advisories kullanamıyorsanız:
 
-- **Email:** security@i-ep.app
+- **Email:** <security@i-ep.app>
 - **Güvenli İletişim:** [Güvenlik ekibimizle iletişime geçin](mailto:security@i-ep.app)
 
 ## ⏱️ Yanıt Süreleri
@@ -168,7 +168,7 @@ Güvenlik araştırmacılarına teşekkür ediyoruz! Katkılarınız için:
 
 ### Güvenlik Ekibi
 
-- **Email:** security@i-ep.app
+- **Email:** <security@i-ep.app>
 - **GitHub:** [Security Advisories](https://github.com/tural-musab/i-ep.app/security/advisories)
 - **Response Time:** 24-72 saat
 
@@ -176,7 +176,7 @@ Güvenlik araştırmacılarına teşekkür ediyoruz! Katkılarınız için:
 
 Kritik güvenlik açıkları için:
 
-- **Email:** security-emergency@i-ep.app
+- **Email:** <security-emergency@i-ep.app>
 - **Response Time:** 24 saat içinde
 
 ## 📅 Güvenlik Güncellemeleri
@@ -205,4 +205,4 @@ Kritik güvenlik açıkları için:
 
 **Son Güncelleme:** 26 Ocak 2025  
 **Versiyon:** 1.0  
-**İletişim:** security@i-ep.app
+**İletişim:** <security@i-ep.app>
