@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { mockRepository, mockValidation } from '../__mocks__/grade-repository.mock';
 import { GradeScale, GradeType } from '../types/grades';

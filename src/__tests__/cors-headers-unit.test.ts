@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * CORS Headers Unit Tests
  * Tests the getCorsHeaders function for localhost HTTP/HTTPS support

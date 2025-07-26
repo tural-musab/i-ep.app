@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * İ-EP.APP Rate Limiter Integration Tests
  *

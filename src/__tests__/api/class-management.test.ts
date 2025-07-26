@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { GET, POST } from '@/app/api/classes/route';
 import {

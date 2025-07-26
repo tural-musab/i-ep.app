@@ -23,6 +23,16 @@
 .env.production.backup
 .env.local.backup
 
+# Backup files (security risk)
+*.backup
+*.bak
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
 # Vercel
 .vercel
 

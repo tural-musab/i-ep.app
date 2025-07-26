@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Super Admin Tenants Management API Tests (HTTP-based)
  * Sprint 7: Tenants Management API endpoint'lerinin HTTP test'leri

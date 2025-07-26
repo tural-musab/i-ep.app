@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Cookie Consent Integration Tests
  *

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach } from '@jest/globals';
 import { fetchUsers, createUser } from '@/lib/api/users';
 

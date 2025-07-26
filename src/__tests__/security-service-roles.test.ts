@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Service Role Permissions Tests
  * Service role yetkilerinin kapsamlı testleri

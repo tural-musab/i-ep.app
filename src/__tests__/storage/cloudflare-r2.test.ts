@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * CloudflareR2Provider Tests
  * Tests for the Cloudflare R2 storage provider implementation

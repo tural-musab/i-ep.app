@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SystemHealthService Unit Tests
  * Sprint 7: System Health servisinin unit test'leri

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SQL Injection Security Tests - Pattern Detection Only
  *

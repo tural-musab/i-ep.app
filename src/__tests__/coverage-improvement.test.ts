@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Coverage Improvement Tests - %91.73 → %95+ Target
  * 

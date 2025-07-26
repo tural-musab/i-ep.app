@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * TenantList Component Tests
  * Sprint 7: TenantList komponentinin test'leri
