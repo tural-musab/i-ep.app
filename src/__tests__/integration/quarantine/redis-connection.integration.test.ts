@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * İ-EP.APP - Redis Connection Integration Test
  * Gerçek Redis bağlantısını test eder

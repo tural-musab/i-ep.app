@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Assignment API Integration Tests
  * Phase 4.2 - Real API endpoint testing

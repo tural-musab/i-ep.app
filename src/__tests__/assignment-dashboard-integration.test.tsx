@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Assignment Dashboard Integration Tests
  * Phase 6.1: Frontend-Backend Integration

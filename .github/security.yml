@@ -1,0 +1,105 @@
+# 🔒 GitHub Security Policy Configuration
+
+# Security Policy otomatik etkinleştirme
+security_and_analysis:
+  # Security Policy'yi etkinleştir
+  security_policy:
+    enabled: true
+    path: .github/SECURITY.md
+
+  # Dependabot güvenlik güncellemelerini etkinleştir
+  dependabot_security_updates:
+    enabled: true
+
+  # Dependabot versiyon güncellemelerini etkinleştir
+  dependabot_version_updates:
+    enabled: true
+
+  # Code scanning'ı etkinleştir
+  advanced_security:
+    enabled: true
+
+  # Secret scanning'ı etkinleştir
+  secret_scanning:
+    enabled: true
+
+  # Secret scanning push protection'ı etkinleştir
+  secret_scanning_push_protection:
+    enabled: true
+
+# Güvenlik açığı bildirimi için varsayılan ayarlar
+vulnerability_reporting:
+  # Güvenlik açığı bildirimi için email
+  contact_email: security@i-ep.app
+
+  # Güvenlik açığı bildirimi için GitHub Issues
+  github_issues:
+    enabled: true
+
+  # Güvenlik açığı bildirimi için Security Advisories
+  security_advisories:
+    enabled: true
+
+# Güvenlik açığı yanıt süreleri
+response_times:
+  critical: 24h
+  high: 48h
+  medium: 72h
+  low: 1w
+
+# Güvenlik açığı kategorileri
+vulnerability_categories:
+  - authentication
+  - authorization
+  - data_exposure
+  - injection
+  - xss
+  - csrf
+  - rate_limiting
+  - input_validation
+  - sql_injection
+  - rce
+  - privilege_escalation
+  - information_disclosure
+
+# Güvenlik önlemleri
+security_measures:
+  - mfa
+  - rate_limiting
+  - rls
+  - security_headers
+  - input_validation
+  - sql_injection_protection
+  - xss_protection
+  - csrf_protection
+
+# Sürekli güvenlik izleme
+continuous_monitoring:
+  - dependabot
+  - codeql
+  - security_scanning
+  - penetration_testing
+
+# Güvenlik güncellemeleri
+security_updates:
+  weekly: dependency_security_scan
+  monthly: security_assessment
+  quarterly: penetration_test
+  yearly: security_policy_review
+
+# Güvenlik yayınları
+security_publications:
+  - security_advisories
+  - release_notes
+  - blog_posts
+
+# Faydalı bağlantılar
+useful_links:
+  - name: GitHub Security Advisories
+    url: https://github.com/tural-musab/i-ep.app/security/advisories
+  - name: Dependabot Alerts
+    url: https://github.com/tural-musab/i-ep.app/security/dependabot
+  - name: Code Scanning
+    url: https://github.com/tural-musab/i-ep.app/security/code-scanning
+  - name: Security Policy
+    url: https://github.com/tural-musab/i-ep.app/security/policy

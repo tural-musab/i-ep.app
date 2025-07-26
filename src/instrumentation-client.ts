@@ -11,7 +11,7 @@ Sentry.init({
   integrations: [
     Sentry.replayIntegration(),
     // Send console.log, console.error, and console.warn calls as logs to Sentry
-    Sentry.consoleLoggingIntegration({ levels: ['log', 'error', 'warn'] }),
+    // Note: consoleLoggingIntegration is not available in this version
   ],
 
   // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
@@ -34,4 +34,5 @@ Sentry.init({
   debug: false,
 });
 
-export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
+// Note: captureRouterTransitionStart is not available in this version
+// export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;

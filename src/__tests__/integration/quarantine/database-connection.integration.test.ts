@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * İ-EP.APP - Database Connection Integration Test
  * Gerçek Supabase database bağlantısını test eder

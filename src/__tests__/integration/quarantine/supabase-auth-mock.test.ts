@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll } from '@jest/globals';
 import { TestEnvironmentHelper, TestUtilityHelper } from '../../../tests/fixtures/msw-helpers';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';

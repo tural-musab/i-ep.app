@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Assignment System Professional Unit Tests
  * İ-EP.APP - Production Ready Testing

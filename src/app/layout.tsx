@@ -1,12 +1,15 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+
+import { AuthProvider } from '@/lib/auth/auth-context';
+import '@/lib/suppress-warnings'; // Suppress useLayoutEffect warnings
+
 import AnalyticsClient from '../components/AnalyticsClient';
 import SpeedInsightsClient from '../components/SpeedInsightsClient';
-import { AuthProvider } from '@/lib/auth/auth-context';
 import { Toaster } from '@/components/ui/toaster';
 import { CookieConsentBanner } from '@/components/gdpr/cookie-consent-banner';
 import { PWAProvider } from '@/components/pwa/pwa-provider';
-import '@/lib/suppress-warnings'; // Suppress useLayoutEffect warnings
+
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });

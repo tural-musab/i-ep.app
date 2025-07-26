@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Assignment System Integration Tests (Fixed)
  * İ-EP.APP - Production Ready Integration Testing

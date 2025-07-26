@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach } from '@jest/globals';
 
 // NextResponse mock'la

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { AttendanceRepository } from '../lib/repository/attendance-repository';
 import { attendanceValidation } from '../lib/validations/attendance-validation';

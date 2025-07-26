@@ -1,0 +1,88 @@
+# 🔄 Dependabot Configuration
+
+version: 2
+updates:
+  # npm dependencies için güncellemeler
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'Europe/Istanbul'
+    open-pull-requests-limit: 10
+    reviewers:
+      - 'tural-musab'
+    assignees:
+      - 'tural-musab'
+    commit-message:
+      prefix: '🔒'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'security'
+      - 'automated'
+    ignore:
+      # Geçici olarak ignore edilecek paketler
+      - dependency-name: 'iyzipay'
+      - dependency-name: 'request'
+    versioning-strategy: 'auto'
+    allow:
+      - dependency-type: 'direct'
+      - dependency-type: 'indirect'
+    groups:
+      security-updates:
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+      minor-updates:
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+      patch-updates:
+        patterns:
+          - '*'
+        update-types:
+          - 'patch'
+
+  # GitHub Actions için güncellemeler
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'Europe/Istanbul'
+    open-pull-requests-limit: 5
+    reviewers:
+      - 'tural-musab'
+    assignees:
+      - 'tural-musab'
+    commit-message:
+      prefix: '🤖'
+      include: 'scope'
+    labels:
+      - 'github-actions'
+      - 'automated'
+
+  # Docker dependencies için güncellemeler
+  - package-ecosystem: 'docker'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+      timezone: 'Europe/Istanbul'
+    open-pull-requests-limit: 5
+    reviewers:
+      - 'tural-musab'
+    assignees:
+      - 'tural-musab'
+    commit-message:
+      prefix: '🐳'
+      include: 'scope'
+    labels:
+      - 'docker'
+      - 'automated'

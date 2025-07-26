@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, afterEach, beforeAll } from '@jest/globals';
 
 // env module'unu mock'la

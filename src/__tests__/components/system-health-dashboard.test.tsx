@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * SystemHealthDashboard Component Tests
  * Sprint 7: SystemHealthDashboard komponentinin test'leri

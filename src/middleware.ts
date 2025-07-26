@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { applyJWTHeadersToResponse, resolveJWTTenantAuth } from './lib/auth/jwt-tenant-resolver';
 import { withSecurityHeaders } from './lib/security/headers';
-import { resolveJWTTenantAuth, applyJWTHeadersToResponse } from './lib/auth/jwt-tenant-resolver';
+import {
+  apiRateLimit,
+  applyRateLimitHeaders,
+  authRateLimit,
+  ipRateLimit,
+} from './lib/security/rate-limiter';
 
 // Pre-compiled protected paths for faster lookup
 const PROTECTED_PATHS = new Set(['/dashboard', '/admin', '/super-admin', '/profile', '/settings']);
@@ -33,25 +39,93 @@ export async function middleware(request: NextRequest) {
       pathname.startsWith('/_next/') ||
       pathname.startsWith('/static/') ||
       pathname.startsWith('/favicon.ico') ||
-      pathname.startsWith('/logo.') ||
-      pathname.startsWith('/auth/')
+      pathname.startsWith('/logo.')
     ) {
-      console.log('🔧 Middleware: Early return for static/auth path:', pathname);
+      console.log('🔧 Middleware: Early return for static path:', pathname);
       return NextResponse.next();
     }
 
+    // IP-based rate limiting for DDoS protection
+    const ipLimit = await ipRateLimit(request);
+    if (!ipLimit.allowed) {
+      const response = new NextResponse('Too Many Requests', { status: 429 });
+      applyRateLimitHeaders(response.headers, ipLimit);
+      return response;
+    }
+
+    // Authentication endpoint rate limiting
+    if (pathname.startsWith('/api/auth/')) {
+      let endpoint: 'login' | 'register' | 'passwordReset' | 'mfa' = 'login';
+
+      if (pathname.includes('/register') || pathname.includes('/kayit')) {
+        endpoint = 'register';
+      } else if (pathname.includes('/reset') || pathname.includes('/sifremi-unuttum')) {
+        endpoint = 'passwordReset';
+      } else if (pathname.includes('/mfa') || pathname.includes('/two-factor')) {
+        endpoint = 'mfa';
+      }
+
+      const authLimit = await authRateLimit(request, endpoint);
+      if (!authLimit.allowed) {
+        const response = new NextResponse(
+          JSON.stringify({
+            error: 'Too many authentication attempts. Please try again later.',
+            retryAfter: authLimit.retryAfter,
+          }),
+          {
+            status: 429,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+        applyRateLimitHeaders(response.headers, authLimit);
+        return response;
+      }
+    }
+
+    // API endpoint rate limiting
+    if (pathname.startsWith('/api/') && !pathname.startsWith('/api/auth/')) {
+      let category: 'default' | 'upload' | 'sensitive' = 'default';
+
+      if (pathname.includes('/upload') || pathname.includes('/file')) {
+        category = 'upload';
+      } else if (
+        pathname.includes('/admin') ||
+        pathname.includes('/delete') ||
+        pathname.includes('/update')
+      ) {
+        category = 'sensitive';
+      }
+
+      const apiLimit = await apiRateLimit(request, category);
+      if (!apiLimit.allowed) {
+        const response = new NextResponse(
+          JSON.stringify({
+            error: 'API rate limit exceeded. Please slow down your requests.',
+            retryAfter: apiLimit.retryAfter,
+          }),
+          {
+            status: 429,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+        applyRateLimitHeaders(response.headers, apiLimit);
+        return response;
+      }
+    }
+
     // Use JWT-based tenant and auth resolution
-    const fallbackTenantId = hostname.includes('localhost') || hostname.includes('127.0.0.1') 
-      ? 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' 
-      : undefined;
+    const fallbackTenantId =
+      hostname.includes('localhost') || hostname.includes('127.0.0.1')
+        ? 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
+        : undefined;
 
     const { tenant, auth } = await resolveJWTTenantAuth(request, fallbackTenantId);
-    
+
     let response = NextResponse.next();
-    
+
     // Apply security headers
     response = withSecurityHeaders()(request);
-    
+
     // Apply tenant and auth headers using safe header writing
     response = applyJWTHeadersToResponse(response, tenant, auth);
 
@@ -84,7 +158,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Tenant access control
-    if (!tenant || !tenant.isActive) {
+    if ((!tenant || !tenant.isActive) && process.env.NODE_ENV === 'production') {
       return NextResponse.redirect(new URL(`https://${BASE_DOMAIN}`, request.url));
     }
 
@@ -98,10 +172,9 @@ export async function middleware(request: NextRequest) {
 
       // Check tenant access permissions
       const isSuperAdmin = auth.role === 'super_admin';
-      const canAccessTenant = 
+      const canAccessTenant =
         isSuperAdmin ||
-        auth.tenantId === tenant.id ||
-        auth.allowedTenants.includes(tenant.id);
+        (tenant && (auth.tenantId === tenant.id || auth.allowedTenants.includes(tenant.id)));
 
       if (!canAccessTenant) {
         return NextResponse.redirect(new URL('/auth/yetkisiz', request.url));
@@ -115,9 +188,8 @@ export async function middleware(request: NextRequest) {
         response.headers.set(key, value);
       });
     }
-    
-    return response;
 
+    return response;
   } catch (error) {
     console.error('🚨 Middleware Error:', error);
     console.error('🚨 Error details:', {
@@ -126,13 +198,12 @@ export async function middleware(request: NextRequest) {
       pathname: request.nextUrl.pathname,
       hostname: request.headers.get('host'),
     });
-    
+
     // In case of middleware error, allow request to continue
     // This prevents 500 MIDDLEWARE_INVOCATION_FAILED
     return NextResponse.next();
   }
 }
-
 
 /**
  * Get CORS headers for multi-domain support
@@ -141,17 +212,11 @@ function getCorsHeaders(hostname: string): Record<string, string> {
   // Extract domain from BASE_URL for CORS configuration
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://i-ep.app';
   const baseDomain = new URL(BASE_URL).hostname;
-  
-  // Development mode: Allow all localhost origins for easier development
-  if (process.env.NODE_ENV === 'development' && hostname.includes('localhost')) {
-    return {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-tenant-id, x-auth-user, x-auth-tenant',
-      'Access-Control-Allow-Credentials': 'false', // Must be false when origin is *
-    };
-  }
-  
+
+  // Development mode: More restrictive CORS even in development
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isLocalhost = hostname.includes('localhost') || hostname.includes('127.0.0.1');
+
   // Allowed origins for CORS (production and development)
   const allowedOrigins = [
     `https://${baseDomain}`,
@@ -159,14 +224,16 @@ function getCorsHeaders(hostname: string): Record<string, string> {
     `https://staging.${baseDomain}`,
     `https://demo-staging.${baseDomain}`,
     // Development localhost support for both HTTP and HTTPS
-    ...(process.env.NODE_ENV === 'development' ? [
-      'http://localhost:3000',
-      'https://localhost:3000',
-      'http://127.0.0.1:3000',
-      'https://127.0.0.1:3000',
-      'http://localhost:3001',
-      'https://localhost:3001'
-    ] : [])
+    ...(process.env.NODE_ENV === 'development'
+      ? [
+          'http://localhost:3000',
+          'https://localhost:3000',
+          'http://127.0.0.1:3000',
+          'https://127.0.0.1:3000',
+          'http://localhost:3001',
+          'https://localhost:3001',
+        ]
+      : []),
   ];
 
   // Check multiple origin formats for localhost
@@ -177,18 +244,33 @@ function getCorsHeaders(hostname: string): Record<string, string> {
     hostname.includes('localhost') ? `https://${hostname}` : null,
   ].filter(Boolean);
 
-  const matchedOrigin = possibleOrigins.find(origin => allowedOrigins.includes(origin!)) ||
-                       (hostname.endsWith(`.${baseDomain}`) ? `https://${hostname}` : null);
+  const matchedOrigin = possibleOrigins.find((origin) => allowedOrigins.includes(origin!));
 
-  if (matchedOrigin || hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
-    const responseOrigin = matchedOrigin || 
-                          (hostname.includes('localhost') ? `http://${hostname}` : `https://${hostname}`);
-    
+  // Only allow specific origins, no wildcards
+  if (matchedOrigin) {
     return {
-      'Access-Control-Allow-Origin': responseOrigin,
+      'Access-Control-Allow-Origin': matchedOrigin,
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-tenant-id, x-auth-user, x-auth-tenant',
+      'Access-Control-Allow-Headers':
+        'Content-Type, Authorization, x-tenant-id, x-auth-user, x-auth-tenant',
       'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Max-Age': '86400', // 24 hours
+      'Access-Control-Expose-Headers':
+        'X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset',
+    };
+  }
+
+  // For subdomains of the base domain in production
+  if (!isDevelopment && hostname.endsWith(`.${baseDomain}`)) {
+    return {
+      'Access-Control-Allow-Origin': `https://${hostname}`,
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers':
+        'Content-Type, Authorization, x-tenant-id, x-auth-user, x-auth-tenant',
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Max-Age': '86400',
+      'Access-Control-Expose-Headers':
+        'X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset',
     };
   }
 

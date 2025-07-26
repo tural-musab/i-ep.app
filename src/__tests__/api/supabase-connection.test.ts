@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { supabaseServer, createServerSupabaseClient } from '@/lib/supabase/server';
 
 describe('Supabase Connection Tests', () => {

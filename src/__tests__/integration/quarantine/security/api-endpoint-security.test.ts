@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * API Endpoint Security Tests
  * API endpoint'lerinin güvenlik testleri

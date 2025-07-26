@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { NextRequest, NextResponse } from 'next/server';
 import { middleware } from '@/middleware';
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';

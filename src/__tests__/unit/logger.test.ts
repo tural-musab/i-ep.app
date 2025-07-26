@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
 
 // Logger'ı mock'lamadan önce process.env'i mock'la

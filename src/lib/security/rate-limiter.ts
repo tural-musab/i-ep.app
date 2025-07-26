@@ -1,194 +1,210 @@
+import { NextRequest } from 'next/server';
 import { Redis } from '@upstash/redis';
-import { NextRequest, NextResponse } from 'next/server';
 
-const redis = Redis.fromEnv();
+// Rate limiting configuration
+const RATE_LIMIT_CONFIG = {
+  auth: {
+    login: { requests: 5, window: 60 }, // 5 attempts per minute
+    register: { requests: 3, window: 300 }, // 3 attempts per 5 minutes
+    passwordReset: { requests: 3, window: 900 }, // 3 attempts per 15 minutes
+    mfa: { requests: 5, window: 300 }, // 5 attempts per 5 minutes
+  },
+  api: {
+    default: { requests: 100, window: 60 }, // 100 requests per minute
+    upload: { requests: 10, window: 300 }, // 10 uploads per 5 minutes
+    sensitive: { requests: 30, window: 60 }, // 30 requests per minute for sensitive operations
+  },
+};
 
-export interface RateLimitConfig {
-  windowMs: number;
-  maxRequests: number;
-  keyGenerator?: (request: NextRequest) => string;
-  skipSuccessfulRequests?: boolean;
-  skipFailedRequests?: boolean;
-  onLimitReached?: (request: NextRequest) => void;
-}
+// Redis client initialization
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
 export interface RateLimitResult {
-  success: boolean;
-  limit: number;
+  allowed: boolean;
   remaining: number;
   reset: number;
   retryAfter?: number;
 }
 
-export class RateLimiter {
-  private config: RateLimitConfig;
+/**
+ * Generic rate limiter using sliding window algorithm
+ */
+export async function rateLimit(
+  identifier: string,
+  maxRequests: number,
+  windowSeconds: number
+): Promise<RateLimitResult> {
+  const now = Date.now();
+  const window = windowSeconds * 1000;
+  const key = `rate_limit:${identifier}`;
 
-  constructor(config: RateLimitConfig) {
-    this.config = config;
-  }
+  try {
+    // Get current count
+    const count = await redis.incr(key);
+    
+    // Set expiry on first request
+    if (count === 1) {
+      await redis.expire(key, windowSeconds);
+    }
 
-  async check(request: NextRequest): Promise<RateLimitResult> {
-    const key = this.generateKey(request);
-    const now = Date.now();
-    const window = Math.floor(now / this.config.windowMs);
-    const redisKey = `rate_limit:${key}:${window}`;
+    // Get TTL for reset time
+    const ttl = await redis.ttl(key);
+    const reset = now + (ttl * 1000);
 
-    try {
-      const current = (await redis.get<number>(redisKey)) || 0;
-
-      if (current >= this.config.maxRequests) {
-        const reset = (window + 1) * this.config.windowMs;
-        const retryAfter = Math.ceil((reset - now) / 1000);
-
-        if (this.config.onLimitReached) {
-          this.config.onLimitReached(request);
-        }
-
-        return {
-          success: false,
-          limit: this.config.maxRequests,
-          remaining: 0,
-          reset,
-          retryAfter,
-        };
-      }
-
-      // Increment counter
-      const pipeline = redis.pipeline();
-      pipeline.incr(redisKey);
-      pipeline.expire(redisKey, Math.ceil(this.config.windowMs / 1000));
-      await pipeline.exec();
-
+    // Check if limit exceeded
+    if (count > maxRequests) {
       return {
-        success: true,
-        limit: this.config.maxRequests,
-        remaining: this.config.maxRequests - current - 1,
-        reset: (window + 1) * this.config.windowMs,
-      };
-    } catch (error) {
-      console.error('Rate limiter error:', error);
-      // Fail open - allow request if Redis is down
-      return {
-        success: true,
-        limit: this.config.maxRequests,
-        remaining: this.config.maxRequests,
-        reset: now + this.config.windowMs,
+        allowed: false,
+        remaining: 0,
+        reset,
+        retryAfter: ttl,
       };
     }
-  }
 
-  private generateKey(request: NextRequest): string {
-    if (this.config.keyGenerator) {
-      return this.config.keyGenerator(request);
-    }
-
-    // Default key generation based on IP and user agent
-    const ip = this.getClientIP(request);
-    const userAgent = request.headers.get('user-agent') || 'unknown';
-    const userAgentHash = this.hashString(userAgent);
-
-    return `${ip}:${userAgentHash}`;
-  }
-
-  private getClientIP(request: NextRequest): string {
-    const forwardedFor = request.headers.get('x-forwarded-for');
-    if (forwardedFor) {
-      return forwardedFor.split(',')[0].trim();
-    }
-
-    const realIP = request.headers.get('x-real-ip');
-    if (realIP) {
-      return realIP;
-    }
-
-    return request.ip || 'unknown';
-  }
-
-  private hashString(str: string): string {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash = hash & hash; // Convert to 32-bit integer
-    }
-    return hash.toString(36);
+    return {
+      allowed: true,
+      remaining: maxRequests - count,
+      reset,
+    };
+  } catch (error) {
+    console.error('Rate limiting error:', error);
+    // Fail open - allow request if Redis is down
+    return {
+      allowed: true,
+      remaining: maxRequests,
+      reset: now + window,
+    };
   }
 }
 
-// Pre-configured rate limiters
-export const authRateLimiter = new RateLimiter({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  maxRequests: 5, // 5 login attempts per 15 minutes
-  keyGenerator: (request) => {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip || 'unknown';
-    return `auth:${ip}`;
-  },
-  onLimitReached: (request) => {
-    console.warn('Auth rate limit reached:', {
-      ip: request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip,
-      userAgent: request.headers.get('user-agent'),
-      timestamp: new Date().toISOString(),
-    });
-  },
-});
+/**
+ * Rate limiter for authentication endpoints
+ */
+export async function authRateLimit(
+  request: NextRequest,
+  endpoint: keyof typeof RATE_LIMIT_CONFIG.auth
+): Promise<RateLimitResult> {
+  const ip = request.headers.get('x-forwarded-for') || 
+             request.headers.get('x-real-ip') || 
+             request.ip || 
+             'unknown';
+  
+  const identifier = `auth:${endpoint}:${ip}`;
+  const config = RATE_LIMIT_CONFIG.auth[endpoint];
+  
+  return rateLimit(identifier, config.requests, config.window);
+}
 
-export const apiRateLimiter = new RateLimiter({
-  windowMs: 60 * 1000, // 1 minute
-  maxRequests: 100, // 100 API calls per minute
-  keyGenerator: (request) => {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip || 'unknown';
-    return `api:${ip}`;
-  },
-});
+/**
+ * Rate limiter for general API endpoints
+ */
+export async function apiRateLimit(
+  request: NextRequest,
+  category: keyof typeof RATE_LIMIT_CONFIG.api = 'default'
+): Promise<RateLimitResult> {
+  const userId = request.headers.get('x-auth-user') || 'anonymous';
+  const ip = request.headers.get('x-forwarded-for') || 
+             request.headers.get('x-real-ip') || 
+             request.ip || 
+             'unknown';
+  
+  // Use user ID if authenticated, otherwise use IP
+  const identifier = userId !== 'anonymous' 
+    ? `api:${category}:user:${userId}`
+    : `api:${category}:ip:${ip}`;
+  
+  const config = RATE_LIMIT_CONFIG.api[category];
+  
+  return rateLimit(identifier, config.requests, config.window);
+}
 
-export const uploadRateLimiter = new RateLimiter({
-  windowMs: 60 * 1000, // 1 minute
-  maxRequests: 10, // 10 uploads per minute
-  keyGenerator: (request) => {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip || 'unknown';
-    return `upload:${ip}`;
-  },
-});
+/**
+ * Enhanced rate limiter with distributed sliding window
+ */
+export async function distributedRateLimit(
+  identifier: string,
+  maxRequests: number,
+  windowSeconds: number
+): Promise<RateLimitResult> {
+  const now = Date.now();
+  const window = windowSeconds * 1000;
+  const oldWindow = now - window;
+  const key = `rate_limit:sliding:${identifier}`;
 
-export const passwordResetRateLimiter = new RateLimiter({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  maxRequests: 3, // 3 password reset attempts per hour
-  keyGenerator: (request) => {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.ip || 'unknown';
-    return `password_reset:${ip}`;
-  },
-});
-
-// Rate limiting middleware
-export function withRateLimit(limiter: RateLimiter) {
-  return async (request: NextRequest) => {
-    const result = await limiter.check(request);
-
-    if (!result.success) {
-      return NextResponse.json(
-        {
-          error: 'Rate limit exceeded',
-          message: `Too many requests. Try again in ${result.retryAfter} seconds.`,
-          retryAfter: result.retryAfter,
-        },
-        {
-          status: 429,
-          headers: {
-            'X-RateLimit-Limit': result.limit.toString(),
-            'X-RateLimit-Remaining': result.remaining.toString(),
-            'X-RateLimit-Reset': result.reset.toString(),
-            'Retry-After': result.retryAfter?.toString() || '60',
-          },
-        }
-      );
+  try {
+    // Remove old entries
+    await redis.zremrangebyscore(key, '-inf', oldWindow);
+    
+    // Count current window requests
+    const count = await redis.zcard(key);
+    
+    if (count >= maxRequests) {
+      // Get oldest entry to calculate retry time
+      const oldestEntry = await redis.zrange(key, 0, 0, { withScores: true });
+      const oldestTime = oldestEntry?.[0]?.score || now;
+      const retryAfter = Math.ceil((oldestTime + window - now) / 1000);
+      
+      return {
+        allowed: false,
+        remaining: 0,
+        reset: now + (retryAfter * 1000),
+        retryAfter,
+      };
     }
 
-    return NextResponse.next({
-      headers: {
-        'X-RateLimit-Limit': result.limit.toString(),
-        'X-RateLimit-Remaining': result.remaining.toString(),
-        'X-RateLimit-Reset': result.reset.toString(),
-      },
-    });
-  };
+    // Add current request
+    await redis.zadd(key, { score: now, member: `${now}-${Math.random()}` });
+    await redis.expire(key, windowSeconds);
+
+    return {
+      allowed: true,
+      remaining: maxRequests - count - 1,
+      reset: now + window,
+    };
+  } catch (error) {
+    console.error('Distributed rate limiting error:', error);
+    // Fail open
+    return {
+      allowed: true,
+      remaining: maxRequests,
+      reset: now + window,
+    };
+  }
+}
+
+/**
+ * IP-based rate limiter for DDoS protection
+ */
+export async function ipRateLimit(
+  request: NextRequest,
+  maxRequests: number = 1000,
+  windowSeconds: number = 60
+): Promise<RateLimitResult> {
+  const ip = request.headers.get('x-forwarded-for') || 
+             request.headers.get('x-real-ip') || 
+             request.ip || 
+             'unknown';
+  
+  const identifier = `ip:${ip}`;
+  
+  return distributedRateLimit(identifier, maxRequests, windowSeconds);
+}
+
+/**
+ * Apply rate limit headers to response
+ */
+export function applyRateLimitHeaders(
+  headers: Headers,
+  result: RateLimitResult
+): void {
+  headers.set('X-RateLimit-Limit', result.allowed ? '1' : '0');
+  headers.set('X-RateLimit-Remaining', result.remaining.toString());
+  headers.set('X-RateLimit-Reset', result.reset.toString());
+  
+  if (result.retryAfter) {
+    headers.set('Retry-After', result.retryAfter.toString());
+  }
 }

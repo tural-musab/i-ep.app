@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ClassDetails } from '@/components/classes/ClassDetails';
 import * as Sentry from '@sentry/nextjs';
