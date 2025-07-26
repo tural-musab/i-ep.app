@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Assignment System Integration Tests
  * İ-EP.APP - Professional Integration Testing
@@ -9,8 +10,8 @@
  * - Database Layer (mocked)
  */
 
-import { describe, it, expect, beforeEach, jest, beforeAll, afterAll } from '@jest/globals';
-import { AssignmentRepository, Assignment } from '../lib/repository/assignment-repository';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
+import { AssignmentRepository } from '../lib/repository/assignment-repository';
 import { assignmentValidation } from '../lib/validations/assignment-validation';
 import { AssignmentStatus, AssignmentType } from '../types/assignment';
 

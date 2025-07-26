@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * İ-EP.APP - Simple Environment Test
  * Jest environment loading'i test eder

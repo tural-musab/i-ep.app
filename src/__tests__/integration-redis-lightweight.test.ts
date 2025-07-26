@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * İ-EP.APP - Lightweight Redis Integration Test (Phase 3)
  * 

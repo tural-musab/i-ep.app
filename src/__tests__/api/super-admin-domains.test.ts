@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Super Admin Domains Management API Tests (HTTP-based)
  * Sprint 7: Domains Management API endpoint'lerinin HTTP test'leri

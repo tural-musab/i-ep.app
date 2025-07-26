@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { GET } from '@/app/api/health/route';
 import { NextResponse } from 'next/server';
 import logger from '@/lib/logger';

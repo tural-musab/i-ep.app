@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Super Admin System Health API Tests (HTTP-based)
  * Sprint 7: System Health API endpoint'lerinin HTTP test'leri

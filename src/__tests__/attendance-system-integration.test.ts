@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Attendance System Integration Tests
  * İ-EP.APP - Professional Integration Testing

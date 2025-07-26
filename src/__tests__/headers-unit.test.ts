@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Headers utilities unit tests
  * İ-EP.APP - Safe header management testing

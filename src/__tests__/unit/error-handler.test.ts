@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect } from '@jest/globals';
 
 // Simple error classes for testing

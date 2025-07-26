@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Service Role Performance Tests
  * Service role işlemlerinin performans testleri

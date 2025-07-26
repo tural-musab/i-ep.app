@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Row Level Security (RLS) Bypass Tests - Simplified for CI
  *

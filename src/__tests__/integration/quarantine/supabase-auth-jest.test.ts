@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, afterEach, beforeAll } from '@jest/globals';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 

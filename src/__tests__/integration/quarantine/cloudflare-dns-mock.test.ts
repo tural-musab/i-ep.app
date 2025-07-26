@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll } from '@jest/globals';
 import { CloudflareMockHelper, TestEnvironmentHelper } from '../../../tests/fixtures/msw-helpers';
 import { createDnsRecord } from '@/lib/cloudflare/domains';

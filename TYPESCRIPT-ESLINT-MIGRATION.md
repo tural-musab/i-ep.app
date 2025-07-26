@@ -1,18 +1,19 @@
 # TypeScript ve ESLint Migration Guide
 
-## 🚨 Build Artık Fail Olacak!
+## 🚨 Build Artık Fail Olacak
 
 TypeScript ve ESLint bypass'ları kaldırıldığı için muhtemelen ilk build'de hatalar alacaksınız. İşte hızlı çözüm rehberi:
 
 ## 1. TypeScript Hataları
 
 ### `any` Tip Hataları
+
 ```typescript
 // ❌ Eski
 const handleData = (data: any) => { ... }
 
 // ✅ Yeni
-const handleData = (data: unknown) => { 
+const handleData = (data: unknown) => {
   // Type guard kullan
   if (typeof data === 'object' && data !== null) {
     // ...
@@ -28,6 +29,7 @@ const handleData = (data: DataType) => { ... }
 ```
 
 ### Implicit Any Hataları
+
 ```typescript
 // ❌ Eski
 const fetchData = async (url) => { ... }
@@ -37,6 +39,7 @@ const fetchData = async (url: string): Promise<Response> => { ... }
 ```
 
 ### Null/Undefined Kontrolleri
+
 ```typescript
 // ❌ Eski
 if (user.email) { ... }
@@ -50,6 +53,7 @@ if (user && user.email) { ... }
 ## 2. ESLint Hataları
 
 ### Import Sıralama
+
 ```typescript
 // ❌ Eski (karışık sıralama)
 import { useState } from 'react';
@@ -67,6 +71,7 @@ import { Button } from '@/components/ui/button';
 ```
 
 ### Async/Await Hataları
+
 ```typescript
 // ❌ Eski (floating promise)
 fetchData();
@@ -80,6 +85,7 @@ fetchData().catch(console.error);
 ```
 
 ### Console.log Kullanımı
+
 ```typescript
 // ❌ Eski
 console.log('debug', data);
@@ -114,12 +120,14 @@ npx tsc --noEmit src/app/**/*.ts
 Eğer acil bir deployment gerekiyorsa:
 
 ### Belirli Dosyaları Hariç Tutma
+
 ```typescript
 // @ts-nocheck  // Tüm dosyayı TypeScript kontrolünden çıkar
 // eslint-disable // Tüm dosyayı ESLint kontrolünden çıkar
 ```
 
 ### Tek Satır İçin
+
 ```typescript
 // @ts-ignore // Sadece sonraki satır için
 // eslint-disable-next-line
@@ -156,6 +164,7 @@ GitHub Actions veya diğer CI/CD araçlarınızda:
 ## 7. VS Code Ayarları
 
 `.vscode/settings.json`:
+
 ```json
 {
   "typescript.tsdk": "node_modules/typescript/lib",
