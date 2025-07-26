@@ -74,6 +74,8 @@ Tüm secrets'ları ekledikten sonra:
 1. Bir dummy commit yapın veya CI'ı manuel olarak tetikleyin
 2. GitHub Actions sekmesinde workflow'un çalıştığını kontrol edin
 3. "Validate Environment" step'inin başarılı olduğunu doğrulayın
+4. GitHub'da **Settings → Secrets and variables → Actions** sayfasında her
+   secret adının listelendiğini ve yanında yeşil bir onay işareti olduğunu kontrol edin
 
 ## Ek Deployment Secrets
 
@@ -98,6 +100,11 @@ Deployment için aşağıdaki secrets'lar da gerekli olabilir:
 
 - **Açıklama**: Snyk güvenlik taraması için token
 - **Nereden alınır**: Snyk Dashboard → Account Settings → API Token
+
+### CODECOV_TOKEN
+
+- **Açıklama**: Codecov raporlarının yüklenmesi için token
+- **Nereden alınır**: Codecov hesabınızın **Settings → Access** bölümünden
 
 ## Güvenlik Notları
 
