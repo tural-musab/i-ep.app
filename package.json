@@ -48,7 +48,7 @@
     "test:monitor": "npm run test:unit && node test-utils/flaky-test-handler.js"
   },
   "dependencies": {
-    "@auth/supabase-adapter": "^0.6.1",
+    "@auth/supabase-adapter": "^0.7.0",
     "@hookform/resolvers": "^3.3.4",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-avatar": "^1.0.4",
